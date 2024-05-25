@@ -1,0 +1,100 @@
+import { LinearGradient } from "expo-linear-gradient";
+import { View, StyleSheet } from "react-native";
+import themeStyle from "../../../../styles/theme.style";
+import Text from "../../../../components/controls/Text";
+import { useTranslation } from "react-i18next";
+import { getCurrentLang } from "../../../../translations/i18n";
+import moment from "moment";
+import DashedLine from "react-native-dashed-line";
+
+const OrderFooter = ({ order }) => {
+  const { t } = useTranslation();
+
+  const renderOrderTotalRaw = (order) => {
+    const oOrder = order.order;
+    return (
+      <View
+        style={{
+          borderColor: "#707070",
+          marginVertical: 15,
+          marginHorizontal: 10,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+       
+        <View
+          style={{
+            justifyContent: "space-between",
+          }}
+        >
+  
+            <View>
+
+            {order.orderDate && (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View>
+                    <Text style={styles.totalPriceText}>
+                      {t("collect-date-client")}:
+                    </Text>
+                  </View>
+                  <View>
+                    <Text style={styles.dateText}>
+                      {" "}
+                      {t(moment(order.orderDate).format("dddd"))}{" "}
+                      {moment(order.orderDate).format("HH:mm DD/MM")}{" "}
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View>
+                  <Text style={styles.totalPriceText}>
+                    {t(oOrder.payment_method?.toLowerCase())} |{" "}
+                    {t(oOrder.receipt_method?.toLowerCase())}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: "row" }}>
+                <View>
+                  <Text style={styles.totalPriceText}>{t("final-price")}:</Text>
+                </View>
+                <View>
+                  <Text style={styles.totalPriceText}>₪{order.total} </Text>
+                </View>
+              </View>
+            </View>
+        </View>
+      </View>
+    );
+  };
+
+  return <View style={{ width: "100%" }}>
+                 <DashedLine
+                  dashLength={5}
+                  dashThickness={1}
+                  dashGap={0}
+                  dashColor={themeStyle.GRAY_300}
+                  style={{ marginTop:10}}
+                />
+    {renderOrderTotalRaw(order)}
+    </View>;
+};
+
+export default OrderFooter;
+
+const styles = StyleSheet.create({
+  totalPriceText: {
+    fontSize: 18,
+    fontFamily: `${getCurrentLang()}-SemiBold`,
+    color: themeStyle.GRAY_700,
+  },
+  dateText: {
+    fontSize: 18,
+    fontFamily: `${getCurrentLang()}-American-bold`,
+
+    color: themeStyle.GRAY_700,
+    textDecorationLine: "underline",
+  },
+});

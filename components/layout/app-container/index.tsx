@@ -1,0 +1,256 @@
+import Header from "../header/header";
+import { MainStackNavigator } from "../../../navigation/MainStackNavigator";
+import {
+  View,
+  Animated,
+  DeviceEventEmitter,
+  Image,
+  Dimensions,
+  ImageBackground,
+  StatusBar,
+  Text
+} from "react-native";
+import themeStyle from "../../../styles/theme.style";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import { useNavigation, useNavigationState } from "@react-navigation/native";
+import { useState, useEffect } from "react";
+
+import { Platform } from "expo-modules-core";
+import * as FileSystem from "expo-file-system";
+import { cacheImage, findImageInCache, getImgXtension } from "../../custom-fast-image";
+
+const yellowBgTopScreens = ["meal", "terms-and-conditions"];
+const yellowBgBottomScreens = ["homeScreen", "menuScreen", "BCOINSScreen"];
+
+const AppContainer = () => {
+  const navigation = useNavigation();
+  const routeState = useNavigationState((state) => state);
+  const [topBgColor, setTopBgColor] = useState(themeStyle.PRIMARY_COLOR);
+  const [bottomBgColor, setBottomBgColor] = useState(themeStyle.PRIMARY_COLOR);
+  const [isSendToCart, setIsSendToCart] = useState(false);
+  const [productImgUrl, setProductMealUrl] = useState("");
+  useEffect(() => {
+    const animateAddToCart = DeviceEventEmitter.addListener(
+      `add-to-cart-animate`,
+      addToCartAnimate
+    );
+    const onUpdateMealUri = DeviceEventEmitter.addListener(
+      `update-meal-uri`,
+      updateMealUri
+    );
+    return () => {
+      animateAddToCart.remove();
+      onUpdateMealUri.remove();
+    };
+  }, []);
+
+  const updateMealUri = (data) => {
+    // setProductMealUrl(data.imgUrl);
+    loadImg(data.imgUrl,data.cacheKey);
+  };
+  const addToCartAnimate = (data) => {
+    setIsSendToCart(false);
+    setTimeout(() => {
+      handleAnimation();
+      setTimeout(() => {
+        setProductMealUrl('');
+      }, 900);
+    }, 300);
+
+  };
+
+  const setTopColor = () => {
+    if (
+      navigation?.getCurrentRoute()?.name === undefined ||
+      yellowBgTopScreens.indexOf(navigation?.getCurrentRoute()?.name) > -1
+    ) {
+      console.log("aaaa")
+      setTopBgColor(themeStyle.PRIMARY_COLOR);
+    } else {
+      setTopBgColor(themeStyle.PRIMARY_COLOR);
+    }
+  };
+  const setBottomColor = () => {
+    if (
+      navigation?.getCurrentRoute()?.name === undefined ||
+      yellowBgBottomScreens.indexOf(navigation?.getCurrentRoute()?.name) > -1
+    ) {
+      setBottomBgColor(themeStyle.PRIMARY_COLOR);
+    } else {
+      setBottomBgColor("white");
+    }
+  };
+
+  useEffect(() => {
+    setTopColor();
+    setBottomColor();
+  }, [routeState]);
+
+  const getScreenOrWindow = () => {
+    return Platform.OS === "ios" ? "window" : "screen";
+  };
+
+  const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
+  const [heightAnimation, setHeightAnimation] = useState(new Animated.Value(300));
+  const [widthAnimation, setWidthAnimation] = useState(new Animated.Value(200));
+  const handleAnimation = () => {
+    // @ts-ignore
+    setIsSendToCart(true);
+
+    Animated.timing(rotateAnimation, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start(() => {
+      rotateAnimation.setValue(0);
+      setIsSendToCart(false);
+    });
+    Animated.timing(heightAnimation, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start(()=>{
+      heightAnimation.setValue(300)
+    });
+    Animated.timing(widthAnimation, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start(()=>{
+      widthAnimation.setValue(200)
+    });
+  };
+// const test = async (productImgUrlx)=>{
+//   if(productImgUrlx){
+//     const img = await findImageInCache(`${FileSystem.cacheDirectory}${productImgUrlx.split(/[\\/]/).pop()}`)
+//     console.log("findImageInCache",img)
+//     setProductMealUrlFast(img.img.uri)
+//   }
+// }
+//   useEffect(()=>{
+//     console.log("PWPWPWWP",productImgUrl)
+//     test(productImgUrl)
+//   },[productImgUrl])
+
+  const interpolateRotatingY = rotateAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -Dimensions.get(getScreenOrWindow()).height + 460],
+  });
+  const interpolateRotatingX = rotateAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-100, -20],
+  });
+  const interpolateHeight = heightAnimation.interpolate({ 
+    inputRange: [0, 300], 
+    outputRange: [300, 0]
+  });
+  const interpolateWidth = widthAnimation.interpolate({ 
+    inputRange: [0, 200], 
+    outputRange: [0, 0]
+  // <-- any value larger than your content's height
+  });
+
+  const animatedStyle = {
+    transform: [
+      { translateX: interpolateRotatingX },
+      { translateY: interpolateRotatingY },
+      // { scaleX: interpolateHeight },
+      // { scaleY: interpolateWidth },
+      
+    ],
+  };
+
+  const animatedHeightStyle = {
+    maxHeight: interpolateHeight,
+  }
+  const animatedWidthStyle = {
+    maxWidth: interpolateWidth
+  }
+
+  const renderImage = () => {
+    return(
+      productImgUrl ? 
+      <Animated.Image 
+      source={{ uri: `${productImgUrl}` }}
+
+     style={[isSendToCart && animatedStyle,
+        isSendToCart && animatedHeightStyle,
+        isSendToCart && animatedWidthStyle,
+
+        {zIndex: 999,
+       position: "absolute",
+       bottom: 350,
+       height: 300,
+       width: 200,
+       maxHeight:heightAnimation,
+       maxWidth: widthAnimation,
+       display: isSendToCart ? "flex" : "none",
+       borderRadius:30,
+        }]}/>  : null
+    )
+  }
+
+  async function loadImg(currentUri, cacheKey) {
+    let imgXt = getImgXtension(currentUri);
+
+    if (!imgXt || !imgXt.length) {
+      return;
+    }
+    const cacheFileUri = `${FileSystem.cacheDirectory}${cacheKey}`;
+
+    let imgXistsInCache = await findImageInCache(cacheFileUri);
+    if (imgXistsInCache.exists) {
+      setProductMealUrl(cacheFileUri);
+    } else {
+      let cached = await cacheImage(currentUri, cacheFileUri, () => {});
+
+      if (cached.cached) {
+        setProductMealUrl(cached.path);
+      } else {
+        setProductMealUrl(currentUri);
+      }
+    }
+  }
+  
+  return (
+    <SafeAreaProvider>
+      <StatusBar translucent backgroundColor="transparent" />
+
+      <SafeAreaView
+        edges={["top"]}
+        style={{
+          flex: 0,
+          backgroundColor: topBgColor,
+          marginBottom: 0,
+          height: 0,
+          zIndex:10
+        }}
+      />
+
+      <SafeAreaView
+        edges={["left", "right", "bottom"]}
+        style={{
+          flex: 1,
+          position: "relative",
+          backgroundColor: "transparent",
+          marginTop: -60,
+        }}
+      >
+        <ImageBackground
+          source={require("../../../assets/bg/bg-gmel.jpg")}
+          resizeMode="cover"
+          style={{ height: "100%" }}
+        >
+          <View style={{ flex: 1, paddingTop: 60 }}>
+            <Header />
+            <MainStackNavigator />
+        {renderImage()}
+                   
+          </View>
+        </ImageBackground>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+};
+
+export default AppContainer;

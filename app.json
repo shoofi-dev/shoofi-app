@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "פיצה ג׳מיל",
+    "slug": "Pizza Gmel",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon4.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-screen-gmel.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#FFFFFF"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon4.png",
+          "color": "#ffffff",
+          "sounds": [
+            "./assets/sounds/buffalosound.wav"
+          ]
+        }
+      ]
+    ],
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/635e3b9c-c23e-4347-a1d4-a97b516fb5d9"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sariq.pizza.gmel"
+    },
+    "android": {
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon-creme.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "splash": {
+        "image": "./assets/splash-screen-gmel.png",
+        "backgroundColor": "#FFFFFF",
+        "resizeMode":"cover"
+      },
+      "package": "com.sariq.pizza.gmel",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyD0CSVYW-UxSDEnderEtAB9YDmYYZLu8q8"
+        }
+      },
+      "permissions" : ["CAMERA"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "runtimeVersion": "1.0.0"
+  }
+}
