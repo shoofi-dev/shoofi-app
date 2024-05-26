@@ -99,10 +99,11 @@ const ProductItem = ({
         // elevation: 10,
         // borderWidth:0,
         // backgroundColor:'transparent',
-        backgroundColor:'red', width:"70%", padding:15, alignSelf:'center'
+        backgroundColor:themeStyle.SECONDARY_COLOR, width:"70%", padding:15, alignSelf:'center',
+        
       }}
     >
-              <LinearGradient
+              {/* <LinearGradient
         colors={[
           "rgba(207, 207, 207, 0.9)",
           "rgba(232, 232, 230, 0.8)",
@@ -113,7 +114,7 @@ const ProductItem = ({
         start={{ x: 1, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.background,{borderRadius:30}]}
-      />
+      /> */}
       <TouchableOpacity
         style={[styles.categoryItem, { opacity: isDisabled(item) ? 0.4 : 1 }]}
         delayPressIn={30}

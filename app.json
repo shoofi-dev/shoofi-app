@@ -4,7 +4,7 @@
     "slug": "Pizza Gmel",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon4.png",
+    "icon": "./assets/icon5.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash-screen-gmel.png",
@@ -15,7 +15,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/icon4.png",
+          "icon": "./assets/icon5.png",
           "color": "#ffffff",
           "sounds": [
             "./assets/sounds/buffalosound.wav"

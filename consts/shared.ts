@@ -28,7 +28,7 @@ export const mealsImages = {
   "fanta": require("../assets/drinks/fanta.png"),
   "sprite": require("../assets/drinks/sprite.png"),
   "sprite-zero": require("../assets/drinks/sprite-zero.png"),
-  "pizza": require("../assets/categories/pizza-meal3.jpg"),
+  "pizza": require("../assets/categories/pizza-meal4.png"),
 };
 
 export const extrasImages = {
@@ -41,8 +41,8 @@ export const extrasImages = {
   "gamba": require("../assets/pngs/extras/gamba.png"),
   "tuna": require("../assets/pngs/extras/tuna.png"),
   "flfl": require("../assets/pngs/extras/flfl.png"),
-  "medium": require("../assets/categories/pizza-meal.png"),
-  "large": require("../assets/categories/pizza-meal.png"),
+  "medium": require("../assets/categories/pizza-meal4.png"),
+  "large": require("../assets/categories/pizza-meal4.png"),
 };
 
 

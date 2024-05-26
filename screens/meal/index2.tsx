@@ -240,22 +240,29 @@ const MealScreen = ({ route }) => {
         finalPrice = finalPrice + 5;
       }
 
-      const filterTuna = meal.data?.extras?.halfOne?.value.filter((extra)=> extra != 'tuna');
-      if(meal.data?.extras?.halfOne?.value.length > 3){
-        const extraPay = filterTuna.slice(3);
-        extraPay.map((extra)=>{
-          const currentExtra = storeDataStore.storeData.pizzaExtras.filter((item)=> item.title == extra)[0];
-          finalPrice = finalPrice + currentExtra.price;
-        })
-      };
+      if(meal.data?.extras?.halfOne){
+        const filterTunaHalfOne = meal.data?.extras?.halfOne?.value.filter((extra)=> extra != 'tuna');
+        const extraPayHalfOne = filterTunaHalfOne.slice(meal.data?.extras?.halfOne?.value.length != filterTunaHalfOne.length ? 2 : 3);
+        if(extraPayHalfOne.length > 0){
+          extraPayHalfOne.map((extra)=>{
+            const currentExtra = storeDataStore.storeData.pizzaExtras.filter((item)=> item.title == extra)[0];
+            finalPrice = finalPrice + currentExtra.price;
+          })
+        };
+      }
+  
+      if(meal.data?.extras?.halfTwo){
+        const filterTunaHalfTwo = meal.data?.extras?.halfTwo?.value.filter((extra)=> extra != 'tuna');
+      const extraPayHalfTwo = filterTunaHalfTwo.slice(meal.data?.extras?.halfTwo?.value.length != filterTunaHalfTwo.length ? 2 : 3);
 
-      if(meal.data?.extras?.halfTwo?.value.length > 3){
-        const extraPay = filterTuna.slice(3);
-        extraPay.map((extra)=>{
+      if(extraPayHalfTwo.length > 0){
+        extraPayHalfTwo.map((extra)=>{
           const currentExtra = storeDataStore.storeData.pizzaExtras.filter((item)=> item.title == extra)[0];
           finalPrice = finalPrice + currentExtra.price;
         })
       };
+      }
+    
 
       setMeal({
         ...meal,
@@ -557,13 +564,20 @@ const MealScreen = ({ route }) => {
         style={{
           width: "100%",
           height: 250,
-          backgroundColor: "#F85641",
+          backgroundColor: "#C31A21",
           position: "absolute",
           borderBottomEndRadius: 500,
           borderBottomStartRadius: 500,
           marginTop: "-25%",
         }}
-      ></View>
+      >
+
+<View style={{position:'absolute',zIndex:30}}>
+          <Text style={{fontSize:22}} type="number"> ₪{meal.data.price * meal.data.extras.counter.value}</Text>
+
+          </View>
+      </View>
+      
       <View style={{ zIndex: 10 }}>
         <TouchableOpacity
           onPress={onClose}
@@ -635,7 +649,6 @@ const MealScreen = ({ route }) => {
                 variant={"colors"}
               />
             </View>
-            <Text> {meal.data.price * meal.data.extras.counter.value}</Text>
             <View
               style={{
                 height: "90%",
@@ -931,11 +944,13 @@ const MealScreen = ({ route }) => {
         </KeyboardAvoidingView>
       </ScrollView>
       <View style={styles.buttonContainer}>
+    
         <View
           style={{
             width: "60%",
             alignSelf: "center",
             alignItems: "center",
+            flexDirection:'row'
           }}
         >
           <Button
@@ -948,6 +963,11 @@ const MealScreen = ({ route }) => {
             borderRadious={19}
             disabled={!isValidMeal()}
           />
+          <View style={{marginLeft:10}}>
+          <Text style={{fontSize:22}} type="number"> ₪{meal.data.price * meal.data.extras.counter.value}</Text>
+
+          </View>
+
         </View>
       </View>
       {meal.data.subCategoryId == "1" && (

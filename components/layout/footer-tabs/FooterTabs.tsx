@@ -135,7 +135,7 @@ const MyTabBar = observer(({ state, descriptors, navigation, bcoin }) => {
     <View
       style={{
         flexDirection: "row",
-        //  backgroundColor: "#f8f8f8",
+         backgroundColor: themeStyle.SECONDARY_COLOR,
         justifyContent: "center",
         alignItems: "center",
         //  borderRadius:300,
@@ -159,7 +159,7 @@ const MyTabBar = observer(({ state, descriptors, navigation, bcoin }) => {
         elevation: 5,
       }}
     >
-      <LinearGradient
+      {/* <LinearGradient
         colors={[
           "rgba(248, 247, 247, 1)",
           "rgba(248, 248, 248, 1)",
@@ -172,7 +172,7 @@ const MyTabBar = observer(({ state, descriptors, navigation, bcoin }) => {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={[styles.background]}
-      />
+      /> */}
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -251,31 +251,47 @@ const MyTabBar = observer(({ state, descriptors, navigation, bcoin }) => {
                       width: 70,
                       alignItems: "center",
                       justifyContent: "center",
+                      shadowColor: "black",
+                      shadowOffset: {
+                        width: 0,
+                        height: 2,
+                      },
+                      shadowOpacity: 0.6,
+                      shadowRadius: 3.84,
+                      marginBottom:5, 
+                      borderWidth:0,
+                      elevation: 5,
                     },
                   ]}
                 >
                   {isHomePage && (
-                    <LinearGradient
-                      colors={[
-                        "rgba(198, 202, 207,1)",
-                        "rgba(236, 248, 248,1)",
+                    // <LinearGradient
+                    //   colors={[
+                    //     "rgba(198, 202, 207,1)",
+                    //     "rgba(236, 248, 248,1)",
 
-                        "rgba(255, 255, 255,1)",
-                      ]}
-                      start={{ x: 1, y: 0 }}
-                      end={{ x: 0, y: 0 }}
-                      style={[styles.background, { borderRadius: 50 }]}
-                    />
+                    //     "rgba(255, 255, 255,1)",
+                    //   ]}
+                    //   start={{ x: 1, y: 0 }}
+                    //   end={{ x: 0, y: 0 }}
+                    //   style={[styles.background, { borderRadius: 50 }]}
+                    // />
+                    <View style={{backgroundColor:themeStyle.PRIMARY_COLOR, width:70, height:70,    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,borderRadius: 50}}></View>
                   )}
 
-            
+<Icon icon="home1" size={40} style={{color: themeStyle.WHITE_COLOR}} />
+
 
          
-                    <Image
+                    {/* <Image
                     source={currentRout.icon}
                     style={{height:currentRout.iconSize, width:currentRout.iconSize}}
 
-                  />
+                  /> */}
                 </View>
                 {/* {isBcoin && authStore.isLoggedIn() &&(
                   <View

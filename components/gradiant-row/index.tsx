@@ -291,8 +291,8 @@ export default function GradiantRow({
   if (type === "multiChoice") {
     return (
       <View style={[{}]}>
-        <View style={[styles.textAndPriceContainer, { marginBottom: 10, alignItems:'center', justifyContent:'center', paddingVertical:5 }]}>
-        <LinearGradient
+        <View style={[styles.textAndPriceContainer, { marginBottom: 20, alignItems:'center', justifyContent:'center', paddingVertical:5, backgroundColor:'#FFCB05' }]}>
+        {/* <LinearGradient
           colors={[
             "rgba(207, 207, 207, 0.9)",
             "rgba(246,246,247, 0.9)",
@@ -305,12 +305,12 @@ export default function GradiantRow({
           start={{ x: 1, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.background]}
-        />
+        /> */}
           <Text
             style={{
-              fontSize: fontSize || 20,
+              fontSize: fontSize || 24,
               fontFamily: `${getCurrentLang()}-SemiBold`,
-              color: themeStyle.TEXT_PRIMARY_COLOR,
+              color: '#C31A21',
             }}
           >
             {t(title)}
@@ -321,16 +321,19 @@ export default function GradiantRow({
             width: "100%",
           }}
         >
-          <ScrollView
+          <View
             style={{
               flexDirection: "row",
               width: "100%",
-              height:150,
+              flexWrap:'wrap',
+              alignItems:'center', justifyContent:'center'
                
             }}
-            horizontal
+            
           >
-            {Object.keys(options).map((key) => (
+            {Object.keys(options).map((key) => {
+              console.log(options[key].title,value.indexOf(options[key].title))
+              return(
               <View
                 style={{
                   alignItems: "center",
@@ -338,7 +341,8 @@ export default function GradiantRow({
                   // marginRight: 10,
                   // borderRadius: 20,
                   alignSelf:'center',
-                  paddingLeft:10
+                  flexBasis:"30%",
+                  marginBottom:30
                 }}
               >
                 <CheckBox
@@ -354,12 +358,14 @@ export default function GradiantRow({
                 {/* <View>
                   <Text>{options[key].title}</Text>
                 </View>*/}
-                { (options[key].title == 'tuna' || value.indexOf(options[key].title) > 2) && <View>
+                 <View style={{height:20, paddingTop:5}}>
+                { (options[key].title == 'tuna' || value.indexOf(options[key].title) >= (value.indexOf('tuna')> -1 ? 2:3)) &&
                   <Text type="number">+₪{options[key].price}</Text>
-                </View> }
+               }
+                 </View>
               </View>
-            ))}
-          </ScrollView>
+            )})}
+          </View>
         </View>
       </View>
     );

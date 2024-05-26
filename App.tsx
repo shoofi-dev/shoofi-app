@@ -67,15 +67,15 @@ moment.locale("en");
 // Keep the splash screen visible while we fetch resources
 //SplashScreen.preventAutoHideAsync();
 let customARFonts = {
-  "ar-Black": require(`./assets/fonts/ar/Black.ttf`),
+  "ar-Black": require(`./assets/fonts/ar/Tajawal-Black.ttf`),
   "ar-GS-Black-Bold": require(`./assets/fonts/ar/GESSUniqueBold-Bold.otf`),
   "ar-GS-Black-Light": require(`./assets/fonts/ar/GESSUniqueLight-Light.otf`),
-  "ar-Bold": require(`./assets/fonts/ar/Bold.otf`),
+  "ar-Bold": require(`./assets/fonts/ar/Tajawal-Bold.ttf`),
   "ar-ExtraBold": require(`./assets/fonts/ar/ExtraBold.ttf`),
-  "ar-Light": require(`./assets/fonts/ar/Light.otf`),
+  "ar-Light": require(`./assets/fonts/ar/Tajawal-Light.ttf`),
   "ar-Medium": require(`./assets/fonts/ar/Medium.ttf`),
   "ar-Regular": require(`./assets/fonts/ar/Regular.ttf`),
-  "ar-SemiBold": require(`./assets/fonts/ar/Medium.ttf`),
+  "ar-SemiBold": require(`./assets/fonts/ar/Tajawal-Medium.ttf`),
   "ar-Arslan": require(`./assets/fonts/ar/Arslan.ttf`),
   "ar-American": require(`./assets/fonts/ar/American-Typewriter-Light.ttf`),
   "ar-American-bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
@@ -580,7 +580,7 @@ const App = () => {
         }}
       >
         <ImageBackground
-          source={require("./assets/splash-screen-gmel.png")}
+          source={require("./assets/splash-screen-8.jpg")}
           resizeMode="stretch"
           style={{ height: "100%", backgroundColor: "white" }}
         >

@@ -12,8 +12,8 @@ const Text = ({ children, style,type }: TProps) => {
   if (!style?.color) {
     style = { ...style, color: themeStyle.TEXT_PRIMARY_COLOR };
   }
-  if (!style?.fontFamily && type != 'number') {
-    style = { ...style, fontFamily: getCurrentLang() == 'ar' ? 'ar-GS-Black-Light':  `he-SemiBold` };
+  if (!style?.fontFamily ) {
+    style = { ...style, fontFamily: getCurrentLang() == 'ar' ? 'ar-SemiBold':  `he-SemiBold`, top:2 };
   }
   const customStyles = { ...style };
 

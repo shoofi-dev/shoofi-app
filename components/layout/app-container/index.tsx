@@ -237,7 +237,7 @@ const AppContainer = () => {
         }}
       >
         <ImageBackground
-          source={require("../../../assets/bg/bg-gmel.jpg")}
+          source={require("../../../assets/splash-screen-9.jpg")}
           resizeMode="cover"
           style={{ height: "100%" }}
         >

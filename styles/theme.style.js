@@ -2,9 +2,9 @@ export default {
     FONT_SIZE_SMALL: 12,
     FONT_SIZE_MEDIUM: 14,
     FONT_SIZE_LARGE: 26,
-    PRIMARY_COLOR: '#F85641',
+    PRIMARY_COLOR: '#C31A21',
     ERROR_COLOR: 'red',
-    SECONDARY_COLOR: '#ffe84d',
+    SECONDARY_COLOR: '#FFCB05',
     WHITE_COLOR: 'white',
     WHITE_COLOR_300: '#F9F9F9',
     SUCCESS_COLOR: '#558042',
@@ -18,5 +18,5 @@ export default {
     FONT_WEIGHT_MEDIUM: 600,
     FONT_WEIGHT_HEAVY: 800,
     
-    TEXT_PRIMARY_COLOR: "black"
+    TEXT_PRIMARY_COLOR: "#18317D"
   };

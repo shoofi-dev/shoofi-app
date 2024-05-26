@@ -956,7 +956,7 @@ const CartScreen = ({ route }) => {
                 <Text
                   style={{
                     fontSize: 20,
-                    color: themeStyle.TEXT_PRIMARY_COLOR,
+                    color: themeStyle.WHITE_COLOR,
                   }}
                 >
                   {t("items-count")}
@@ -964,7 +964,7 @@ const CartScreen = ({ route }) => {
                 <Text
                   style={{
                     fontSize: 25,
-                    color: themeStyle.TEXT_PRIMARY_COLOR,
+                    color: themeStyle.WHITE_COLOR,
                     fontFamily: `${getCurrentLang()}-American-bold`,
                   }}
                 >
@@ -1000,7 +1000,7 @@ const CartScreen = ({ route }) => {
                       style={{
                         borderRadius: 20,
                         marginTop: index != 0 ? 15 : 0,
-                        shadowColor: themeStyle.GRAY_600,
+                        shadowColor: "black",
                         shadowOffset: {
                           width: 0,
                           height: 2,
@@ -1031,7 +1031,7 @@ const CartScreen = ({ route }) => {
                             ? animatedStyle
                             : null,
                           {
-                            backgroundColor: themeStyle.WHITE_COLOR,
+                            backgroundColor: themeStyle.SECONDARY_COLOR,
                             borderRadius: 20,
                           },
                         ]}
@@ -1103,12 +1103,16 @@ const CartScreen = ({ route }) => {
                             }}
                           >
                             <View
-                              style={{ width: "100%", flexDirection: "row" }}
+                              style={{
+                                width: "100%",
+                                flexDirection: "row",
+                                paddingTop: 5,
+                              }}
                             >
                               <View
                                 style={{
-                                  width: 130,
-                                  height: 150,
+                                  width: 100,
+                                  height: 90,
                                 }}
                               >
                                 <Image
@@ -1132,124 +1136,190 @@ const CartScreen = ({ route }) => {
                                     marginTop: -5,
                                     flexDirection: "column",
                                     justifyContent: "space-between",
-                                    flexBasis: "45%",
+                                    flexBasis: "62%",
                                   }}
                                 >
-                                  <Text
-                                    style={{ textAlign: "left", fontSize: 18 }}
+                                  <View
+                                    style={{
+                                      borderColor: themeStyle.PRIMARY_COLOR,
+                                      padding: 5,
+                                      alignItems: "center",
+                                      borderTopWidth: 1,
+                                      borderBottomWidth: 1,
+                                    }}
                                   >
-                                    {languageStore.selectedLang === "ar"
-                                      ? product.data.nameAR
-                                      : product.data.nameHE}{" "}
-                                    {product?.data?.extras?.size?.value ===
-                                    "medium"
-                                      ? ""
-                                      : `- ${t(
-                                          product?.data?.extras?.size?.value
-                                        )}`}
-                                  </Text>
-                                  {product?.data?.extras?.halfOne?.value && <View>
                                     <Text
                                       style={{
                                         textAlign: "left",
                                         fontSize: 18,
-                                        marginTop: 10,
-                                      }}
-                                    >
-                                      {t("halfOne")}
-                                    </Text>
-                                  </View>}
-                                  {product?.data?.extras?.halfOne?.value &&
-                                    Object.keys(
-                                      product?.data?.extras?.halfOne?.value
-                                    ).map((key) => {
-                                      return (
-                                        <View>
-                                          <View
-                                            style={{ flexDirection: "row" }}
-                                          >
-                                            <Text
-                                              style={{
-                                                textAlign: "left",
-                                                fontSize: 18,
-                                                marginTop: 10,
-                                              }}
-                                              type="number"
-                                            >
-                                              {`${Number(key) + 1}`}
-                                            </Text>
-                                            <Text
-                                              style={{
-                                                textAlign: "left",
-                                                fontSize: 18,
-                                                marginTop: 10,
-                                              }}
-                                            >
-                                              {" "}
-                                              -{" "}
-                                              {t(
-                                                product.data.extras?.halfOne
-                                                  ?.value[key]
-                                              )}
-                                            </Text>
-                                          </View>
-                                        </View>
-                                      );
-                                    })}
+                                        color: themeStyle.PRIMARY_COLOR,
+                                        fontFamily: `${getCurrentLang()}-Bold`,
 
-{product?.data?.extras?.halfTwo?.value && <View>
-                                    <Text
-                                      style={{
-                                        textAlign: "left",
-                                        fontSize: 18,
-                                        marginTop: 10,
                                       }}
                                     >
-                                      {t("halfTwo")}
+                                      {languageStore.selectedLang === "ar"
+                                        ? product.data.nameAR
+                                        : product.data.nameHE}{" "}
+                                      {product?.data?.extras?.size?.value ===
+                                      "medium"
+                                        ? ""
+                                        : `- ${t(
+                                            product?.data?.extras?.size?.value
+                                          )}`}
                                     </Text>
-                                  </View>}
-                                  {product?.data?.extras?.halfTwo?.value &&
-                                    Object.keys(
-                                      product?.data?.extras?.halfTwo?.value
-                                    ).map((key) => {
-                                      return (
-                                        <View>
-                                          <View
-                                            style={{ flexDirection: "row" }}
+                                  </View>
+
+                                  <View
+                                    style={{
+                                      flexDirection: "row",
+                                      justifyContent: "space-between",
+                                      marginTop: 15,
+                                    }}
+                                  >
+                                    <View>
+                                      {product?.data?.extras?.halfOne?.value
+                                        .length > 0 && (
+                                        <View
+                                          style={{
+                                            borderBottomWidth: 1,
+                                            borderTopWidth: 1,
+                                            borderColor:
+                                              themeStyle.PRIMARY_COLOR,
+                                            paddingVertical: 3,
+                                          }}
+                                        >
+                                          <Text
+                                            style={{
+                                              textAlign: "left",
+                                              fontSize: 18,
+                                              fontFamily: `${getCurrentLang()}-SemiBold`,
+
+                                            }}
                                           >
-                                            <Text
-                                              style={{
-                                                textAlign: "left",
-                                                fontSize: 18,
-                                                marginTop: 10,
-                                              }}
-                                              type="number"
-                                            >
-                                              {`${Number(key) + 1}`}
-                                            </Text>
-                                            <Text
-                                              style={{
-                                                textAlign: "left",
-                                                fontSize: 18,
-                                                marginTop: 10,
-                                              }}
-                                            >
-                                              {" "}
-                                              -{" "}
-                                              {t(
-                                                product.data.extras?.halfTwo
-                                                  ?.value[key]
-                                              )}
-                                            </Text>
-                                          </View>
+                                            {t("halfOne")}
+                                          </Text>
                                         </View>
-                                      );
-                                    })}
-                        
-                           
-                                  <View style={{}}>
-                                    <View style={{ flexDirection: "row", marginTop:25 }}>
-                                      <View style={{ }}>
+                                      )}
+                                      {product?.data?.extras?.halfOne?.value &&
+                                        Object.keys(
+                                          product?.data?.extras?.halfOne?.value
+                                        ).map((key) => {
+                                          return (
+                                            <View>
+                                              <View
+                                                style={{ flexDirection: "row" }}
+                                              >
+                                                <Text
+                                                  style={{
+                                                    textAlign: "left",
+                                                    fontSize: 18,
+                                                    marginTop: 10,
+
+                                                  }}
+                                                  type="number"
+                                                  
+                                                >
+                                                  {`${Number(key) + 1}`}
+                                                </Text>
+                                                <Text
+                                                  style={{
+                                                    textAlign: "left",
+                                                    fontSize: 18,
+                                                    marginTop: 10,
+
+                                                  }}
+                                                >
+                                                  {" "}
+                                                  -{" "}
+                                                  {t(
+                                                    product.data.extras?.halfOne
+                                                      ?.value[key]
+                                                  )}
+                                                </Text>
+                                              </View>
+                                            </View>
+                                          );
+                                        })}
+                                    </View>
+
+                                    <View>
+                                      {product?.data?.extras?.halfTwo?.value
+                                        .length > 0 && (
+                                        <View
+                                          style={{
+                                            borderBottomWidth: 1,
+                                            borderTopWidth: 1,
+                                            borderColor:
+                                              themeStyle.PRIMARY_COLOR,
+                                            paddingVertical: 3,
+                                          }}
+                                        >
+                                          <Text
+                                            style={{
+                                              textAlign: "left",
+                                              fontSize: 18,
+                                              fontFamily: `${getCurrentLang()}-SemiBold`,
+
+                                            }}
+                                          >
+                                            {t("halfTwo")}
+                                          </Text>
+                                        </View>
+                                      )}
+                                      {product?.data?.extras?.halfTwo?.value &&
+                                        Object.keys(
+                                          product?.data?.extras?.halfTwo?.value
+                                        ).map((key) => {
+                                          return (
+                                            <View>
+                                              <View
+                                                style={{ flexDirection: "row" }}
+                                              >
+                                                <Text
+                                                  style={{
+                                                    textAlign: "left",
+                                                    fontSize: 18,
+                                                    marginTop: 10,
+                                                  }}
+                                                  type="number"
+                                                >
+                                                  {`${Number(key) + 1}`}
+                                                </Text>
+                                                <Text
+                                                  style={{
+                                                    textAlign: "left",
+                                                    fontSize: 18,
+                                                    marginTop: 10,
+                                                  }}
+                                                >
+                                                  {" "}
+                                                  -{" "}
+                                                  {t(
+                                                    product.data.extras?.halfTwo
+                                                      ?.value[key]
+                                                  )}
+                                                </Text>
+                                              </View>
+                                            </View>
+                                          );
+                                        })}
+                                    </View>
+                                  </View>
+
+                                  <View
+                                    style={{
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      marginTop: 25,
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        flexDirection: "row",
+                                      }}
+                                    >
+                                      <View style={{}}>
                                         <Counter
                                           value={
                                             product?.data?.extras?.counter
@@ -1265,6 +1335,44 @@ const CartScreen = ({ route }) => {
                                           }}
                                           variant={"colors"}
                                         />
+                                      </View>
+                                    </View>
+                                    <View
+                                      style={{
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        marginLeft: 15,
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <Text
+                                          style={{
+                                            fontSize: 17,
+                                            color:
+                                              themeStyle.TEXT_PRIMARY_COLOR,
+                                            fontFamily: `${getCurrentLang()}-American-bold`,
+                                          }}
+                                        >
+                                          {(getPriceBySize(product) ||
+                                            product.data.price) *
+                                            product?.data?.extras?.counter
+                                              ?.value}
+                                        </Text>
+                                        <Text
+                                          style={{
+                                            fontWeight: "bold",
+                                            fontSize: 17,
+                                            color:
+                                              themeStyle.TEXT_PRIMARY_COLOR,
+                                          }}
+                                        >
+                                          ₪
+                                        </Text>
                                       </View>
                                     </View>
                                   </View>
@@ -1289,43 +1397,6 @@ const CartScreen = ({ route }) => {
                                           );
                                         }
                                       )} */}
-                                </View>
-                                <View
-                                  style={{
-                                    flexDirection: "column",
-                                    justifyContent: "center",
-                                    marginTop: 0,
-                                    flexBasis: "18%",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <View
-                                    style={{
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Text
-                                      style={{
-                                        fontSize: 17,
-                                        color: themeStyle.TEXT_PRIMARY_COLOR,
-                                        fontFamily: `${getCurrentLang()}-American-bold`,
-                                      }}
-                                    >
-                                      {(getPriceBySize(product) ||
-                                        product.data.price) *
-                                        product?.data?.extras?.counter?.value}
-                                    </Text>
-                                    <Text
-                                      style={{
-                                        fontWeight: "bold",
-                                        fontSize: 17,
-                                        color: themeStyle.TEXT_PRIMARY_COLOR,
-                                      }}
-                                    >
-                                      ₪
-                                    </Text>
-                                  </View>
                                 </View>
                               </View>
                               <View
@@ -1741,28 +1812,22 @@ const CartScreen = ({ route }) => {
                     ...styles.togglleCItem,
                     backgroundColor:
                       shippingMethod === SHIPPING_METHODS.shipping
-                        ? theme.PRIMARY_COLOR
+                        ? theme.SECONDARY_COLOR
                         : "transparent",
                     borderTopRightRadius: 50,
                     borderBottomRightRadius: 50,
                   }}
                   icon={() => (
                     <View style={styles.togglleItemContentContainer}>
-                      {shippingMethod === SHIPPING_METHODS.shipping && (
-                        <LinearGradient
-                          colors={["#eaaa5c", "#a77948"]}
-                          start={{ x: 1, y: 0 }}
-                          end={{ x: 0, y: 1 }}
-                          style={[styles.background]}
-                        />
-                      )}
-                      <Image
-                        source={
-                          shippingMethod === SHIPPING_METHODS.shipping
-                            ? icons["deliveryOff"]
-                            : icons["deliveryOn"]
-                        }
-                        style={{ height: 85, width: 40, left: -10 }}
+                      <Icon
+                        icon="delivery-active"
+                        size={25}
+                        style={{
+                          color:
+                            shippingMethod === SHIPPING_METHODS.shipping
+                              ? theme.TEXT_PRIMARY_COLOR
+                              : theme.WHITE_COLOR,
+                        }}
                       />
 
                       <Text
@@ -1771,8 +1836,8 @@ const CartScreen = ({ route }) => {
                           fontWeight: "bold",
                           color:
                             shippingMethod === SHIPPING_METHODS.shipping
-                              ? themeStyle.WHITE_COLOR
-                              : themeStyle.TEXT_PRIMARY_COLOR,
+                              ? themeStyle.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
                           left: -10,
                         }}
                       >
@@ -1787,37 +1852,32 @@ const CartScreen = ({ route }) => {
                     ...styles.togglleCItem,
                     backgroundColor:
                       shippingMethod === SHIPPING_METHODS.takAway
-                        ? theme.PRIMARY_COLOR
+                        ? theme.SECONDARY_COLOR
                         : "transparent",
                     borderTopLeftRadius: 50,
                     borderBottomLeftRadius: 50,
                   }}
                   icon={() => (
                     <View style={styles.togglleItemContentContainer}>
-                      {shippingMethod === SHIPPING_METHODS.takAway && (
-                        <LinearGradient
-                          colors={["#eaaa5c", "#a77948"]}
-                          start={{ x: 1, y: 0 }}
-                          end={{ x: 0, y: 1 }}
-                          style={[styles.background]}
-                        />
-                      )}
-                      <Image
-                        source={
-                          shippingMethod === SHIPPING_METHODS.takAway
-                            ? icons["bagOff"]
-                            : icons["bagOn"]
-                        }
-                        style={{ height: 80, width: 50 }}
+                      <Icon
+                        icon="cart_icon"
+                        size={25}
+                        style={{
+                          color:
+                            shippingMethod === SHIPPING_METHODS.takAway
+                              ? theme.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
+                        }}
                       />
+
                       <Text
                         style={{
                           fontSize: 18,
                           fontWeight: "bold",
                           color:
                             shippingMethod === SHIPPING_METHODS.takAway
-                              ? themeStyle.WHITE_COLOR
-                              : themeStyle.TEXT_PRIMARY_COLOR,
+                              ? themeStyle.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
                         }}
                       >
                         {t("take-away")}
@@ -1886,29 +1946,29 @@ const CartScreen = ({ route }) => {
                     ...styles.togglleCItem,
                     backgroundColor:
                       paymentMthod === PAYMENT_METHODS.cash
-                        ? theme.PRIMARY_COLOR
+                        ? theme.SECONDARY_COLOR
                         : "transparent",
                     borderTopRightRadius: 50,
                     borderBottomRightRadius: 50,
                   }}
                   icon={() => (
                     <View style={styles.togglleItemContentContainer}>
-                      {paymentMthod === PAYMENT_METHODS.cash && (
+                      {/* {paymentMthod === PAYMENT_METHODS.cash && (
                         <LinearGradient
                           colors={["#eaaa5c", "#a77948"]}
                           start={{ x: 1, y: 0 }}
                           end={{ x: 0, y: 1 }}
                           style={[styles.background]}
                         />
-                      )}
+                      )} */}
                       <Icon
                         icon="shekel"
                         size={20}
                         style={{
                           color:
                             paymentMthod === PAYMENT_METHODS.cash
-                              ? themeStyle.WHITE_COLOR
-                              : theme.TEXT_PRIMARY_COLOR,
+                              ? themeStyle.TEXT_PRIMARY_COLOR
+                              : theme.WHITE_COLOR,
                         }}
                       />
                       <Text
@@ -1917,8 +1977,8 @@ const CartScreen = ({ route }) => {
                           fontWeight: "bold",
                           color:
                             paymentMthod === PAYMENT_METHODS.cash
-                              ? themeStyle.WHITE_COLOR
-                              : themeStyle.TEXT_PRIMARY_COLOR,
+                              ? themeStyle.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
                         }}
                       >
                         {" "}
@@ -1940,21 +2000,31 @@ const CartScreen = ({ route }) => {
                   }}
                   icon={() => (
                     <View style={styles.togglleItemContentContainer}>
-                      {paymentMthod === PAYMENT_METHODS.creditCard && (
+                      {/* {paymentMthod === PAYMENT_METHODS.creditCard && (
                         <LinearGradient
                           colors={["#eaaa5c", "#a77948"]}
                           start={{ x: 1, y: 0 }}
                           end={{ x: 0, y: 1 }}
                           style={[styles.background]}
                         />
-                      )}
-                      <Image
+                      )} */}
+                      {/* <Image
                         source={
                           paymentMthod === PAYMENT_METHODS.creditCard
                             ? icons["ccOff"]
                             : icons["ccOn"]
                         }
                         style={{ height: 85, width: 50 }}
+                      /> */}
+                             <Icon
+                        icon="credit_card_icom"
+                        size={25}
+                        style={{
+                          color:
+                          paymentMthod === PAYMENT_METHODS.creditCard
+                              ? theme.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
+                        }}
                       />
                       <Text
                         style={{
@@ -1962,8 +2032,8 @@ const CartScreen = ({ route }) => {
                           fontWeight: "bold",
                           color:
                             paymentMthod === PAYMENT_METHODS.creditCard
-                              ? themeStyle.WHITE_COLOR
-                              : themeStyle.TEXT_PRIMARY_COLOR,
+                              ? themeStyle.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
                         }}
                       >
                         {t("credit-card")}
@@ -1988,7 +2058,7 @@ const CartScreen = ({ route }) => {
                     borderRadius: 15,
                     paddingHorizontal: 10,
                     overflow: "hidden",
-                    shadowColor: "#C19A6B",
+                    shadowColor: "black",
                     shadowOffset: {
                       width: 0,
                       height: 2,
@@ -2104,6 +2174,8 @@ const CartScreen = ({ route }) => {
                     style={{
                       fontFamily: `${getCurrentLang()}-Light`,
                       fontSize: 20,
+                      color: themeStyle.WHITE_COLOR
+
                     }}
                   >
                     {t("order-price")}:
@@ -2114,6 +2186,8 @@ const CartScreen = ({ route }) => {
                     style={{
                       fontSize: 20,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
+                      color: themeStyle.WHITE_COLOR
+
                     }}
                     type="number"
                   >
@@ -2129,6 +2203,7 @@ const CartScreen = ({ route }) => {
                       style={{
                         fontFamily: `${getCurrentLang()}-Light`,
                         fontSize: 20,
+                        color: themeStyle.WHITE_COLOR
                       }}
                     >
                       {t("delivery")}:
@@ -2139,6 +2214,8 @@ const CartScreen = ({ route }) => {
                       style={{
                         fontSize: 20,
                         fontFamily: `${getCurrentLang()}-SemiBold`,
+                        color: themeStyle.WHITE_COLOR
+
                       }}
                       type="number"
                     >
@@ -2157,9 +2234,11 @@ const CartScreen = ({ route }) => {
                   style={{
                     fontFamily: `${getCurrentLang()}-SemiBold`,
                     fontSize: 20,
+                    color: themeStyle.WHITE_COLOR
+
                   }}
                 >
-                  {t("final-price")}
+                  {t("final-price")}:
                 </Text>
               </View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -2167,6 +2246,8 @@ const CartScreen = ({ route }) => {
                   style={{
                     fontSize: 17,
                     fontWeight: "bold",
+                    color: themeStyle.WHITE_COLOR
+
                   }}
                   type="number"
                 >
@@ -2176,6 +2257,8 @@ const CartScreen = ({ route }) => {
                   style={{
                     fontWeight: "bold",
                     fontSize: 17,
+                    color: themeStyle.WHITE_COLOR
+
                   }}
                 >
                   ₪{" "}
@@ -2307,12 +2390,12 @@ const styles = StyleSheet.create({
   togglleContainer: {
     borderRadius: 50,
     marginTop: 30,
-    borderWidth: 1,
+    borderWidth: 2,
     overflow: "hidden",
     borderColor: theme.PRIMARY_COLOR,
     flexDirection: "row",
     width: "100%",
-    shadowColor: "#C19A6B",
+    shadowColor: "black",
     shadowOffset: {
       width: 2,
       height: 2,
@@ -2355,7 +2438,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     minHeight: 200,
     alignSelf: "center",
-    shadowColor: "#C19A6B",
+    shadowColor: "black",
     shadowOffset: {
       width: 0,
       height: 2,

@@ -138,6 +138,8 @@ export default function Button({
             backgroundColor: "transparent",
             borderColor: getBorderColor(),
             width: "100%",
+            justifyContent:'center'
+
           }}
         >
           {icon && iconPosition && iconPosition === "right" && renderIcon()}
@@ -146,10 +148,8 @@ export default function Button({
               marginHorizontal: marginH !== undefined ? marginH : 15,
               fontSize: fontSize,
               color: textColor || theme.WHITE_COLOR,
-              fontFamily: fontFamily || `${getCurrentLang()}-Light`,
               padding: textPadding,
-              textAlign: "center",
-              fontWeight:"Bold"
+              top:3
 
             }}
           >

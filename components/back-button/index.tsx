@@ -42,7 +42,7 @@ export default function BackButton({goTo, onClick}: TProps) {
         <View
           style={{
             borderWidth: 2,
-            borderColor: themeStyle.PRIMARY_COLOR,
+            borderColor: themeStyle.WHITE_COLOR,
             borderRadius: 30,
             width: 35,
             height: 35,
@@ -52,7 +52,7 @@ export default function BackButton({goTo, onClick}: TProps) {
             transform: [{ rotate: "180deg" }],
           }}
         >
-          <Icon icon="arrow-right" size={17} style={{ color:themeStyle.PRIMARY_COLOR, }} />
+          <Icon icon="arrow-right" size={17} style={{ color:themeStyle.WHITE_COLOR, }} />
         </View>
       </TouchableOpacity>
     </View>

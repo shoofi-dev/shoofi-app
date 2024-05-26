@@ -19,8 +19,8 @@ export type TProps = {
   isDisabledCatItem?: any;
 };
 const menuIcons = {
-  "pizza-active": require("../../../../assets/categories/pizza-active.png"),
-  "pizza-inactive": require("../../../../assets/categories/pizza-active.png"),
+  "pizza-active": require("../../../../assets/categories//pizza-meal4.png"),
+  "pizza-inactive": require("../../../../assets/categories/pizza-meal4.png"),
   "drinks-active": require("../../../../assets/categories/drinks-active.png"),
   "moouse-inactive": require("../../../../assets/categories/moouse-inactive.png"),
   "cookies-active": require("../../../../assets/categories/cookies-active.png"),
@@ -62,12 +62,13 @@ const MenuItem = ({
           borderRadius:10,
   
           // marginTop: selectedItem._id === item._id ? 35 : 0,
-          backgroundColor: "#F1F1F1",
+          backgroundColor: themeStyle.SECONDARY_COLOR,
             borderColor: themeStyle.PRIMARY_COLOR,
             
             overflow:'hidden',
             alignItems:'center',
-            justifyContent:'center'
+            justifyContent:'center',
+            padding:10
         }}
         onPress={() => {
           onItemSelect(item);
@@ -117,8 +118,8 @@ const MenuItem = ({
           <Text
             style={{
                 marginTop: 0,
-                color: themeStyle.TEXT_PRIMARY_COLOR,
-                fontSize:16
+                color: themeStyle.SECONDARY_COLOR,
+                fontSize:18
               }}
           >
             {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}

@@ -204,7 +204,7 @@ const CategoryItemsList = ({ productsList, category }) => {
       {category.categoryId === 2 && isProductAnimateDone && (
         <View
           style={{
-            height: "85%",
+            height: "95%",
             shadowColor: "#C19A6B",
             shadowOffset: {
               width: 0,
@@ -215,7 +215,7 @@ const CategoryItemsList = ({ productsList, category }) => {
             elevation: 0,
             borderWidth: 0,
             backgroundColor: "transparent",
-            marginTop:50
+            marginTop:0,
           }}
         >
     

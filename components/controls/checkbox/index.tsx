@@ -16,7 +16,7 @@ export default function CheckBox({
   variant = "default",
   isOneChoice = false,
   isDisabled = false,
-  isActive = false
+  isActive = false,
 }) {
   const { t } = useTranslation();
 
@@ -33,32 +33,55 @@ export default function CheckBox({
     setIsSelected(value);
   }, [value]);
 
-  const sizeTitleAdapter = (title:string) => {
-    switch(title){
-      case 'large':
-        return 'L';
-      case 'medium':
-        return 'S';
+  const sizeTitleAdapter = (title: string) => {
+    switch (title) {
+      case "large":
+        return "L";
+      case "medium":
+        return "S";
       default:
         return null;
     }
-  }
+  };
   if (variant === "button" && isOneChoice) {
     return (
-      <TouchableOpacity style={[styles.container,{
-        borderColor:  isActive ? themeStyle.SUCCESS_COLOR : themeStyle.WHITE_COLOR,
-        borderWidth:3,
-      }]} onPress={() => onChange(title)}>
-                  {isActive && <Icon
+      <TouchableOpacity
+        style={[
+          styles.container,
+          {
+            borderColor: isActive
+              ? themeStyle.SUCCESS_COLOR
+              : themeStyle.WHITE_COLOR,
+            borderWidth: isActive && 3,
+            backgroundColor:themeStyle.SECONDARY_COLOR
+          },
+        ]}
+        onPress={() => onChange(title)}
+      >
+        {isActive && (
+          <Icon
             icon={"checked-green"}
-            style={{ alignSelf:'center', position:'absolute', top:-25,zIndex:20}}
+            style={{
+              alignSelf: "center",
+              position: "absolute",
+              top: -25,
+              zIndex: 20,
+            }}
             size={30}
-          />}
-        <View style={{ 
-
-        }}>
-         
-            {/* // <Button
+          />
+        )}
+        <View
+          style={{
+            width: "100%",
+            alignItems: "center",
+            overflow:'hidden', 
+            flexDirection:'column',
+            justifyContent:'space-between',
+            height:"100%"
+            
+                   }}
+        >
+          {/* // <Button
             //   fontSize={15}
             //   onClickFn={() => onChange(title)}
             //   text={title}
@@ -68,16 +91,36 @@ export default function CheckBox({
             //   isFlexCol
             //   textPadding={0}
             // /> */}
-     <View style={{height:70,width:70, alignItems:'center', justifyContent:'center'}}>
-              <Image
-             source={extrasImages[title]}
-             style={{height: title === 'medium' ? 50 : 60,width: title === 'medium' ? 50 : 60}}
-             resizeMode="cover"
-           />
-         </View>
-            
+          <View
+            style={{
+              height: 70,
+              width: 60,
+              alignItems: "center",
+              justifyContent: "center",
+              shadowColor: themeStyle.GRAY_600,
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 1,
+              shadowRadius: 10,
+              elevation: 20,
+              borderWidth: 0,
+              marginTop:10
+            }}
+          >
+            <Image
+              source={extrasImages[title]}
+              style={{
+                height: title === "medium" ? 50 : 60,
+                width: title === "medium" ? 50 : 60,
     
-            {/* // <Button
+              }}
+              resizeMode="cover"
+            />
+          </View>
+
+          {/* // <Button
             //   fontSize={15}
             //   onClickFn={() => onChange(title)}
             //   text={title}
@@ -87,14 +130,38 @@ export default function CheckBox({
             //   textPadding={0}
             //   isFlexCol
             // /> */}
-     
-               <View style={{alignSelf:'center'}}>
-                  <Text style={{color:isActive? themeStyle.TEXT_PRIMARY_COLOR : themeStyle.TEXT_PRIMARY_COLOR, fontSize:16}}>{t(title)}</Text>
-                </View>
-                {/* <View>
+
+          <View style={{  width: isActive ? "104%" : "100%",paddingVertical:10,backgroundColor:themeStyle.PRIMARY_COLOR, borderBottomEndRadius:20, borderBottomStartRadius:20  }}>
+            {/* <LinearGradient
+              colors={[
+                "rgba(207, 207, 207, 0.9)",
+                "rgba(246,246,247, 0.9)",
+                "rgba(246,246,247, 0.9)",
+                "rgba(246,246,247, 0.9)",
+                "rgba(246,246,247, 0.9)",
+                "rgba(246,246,247, 0.9)",
+                "rgba(207, 207, 207, 0.9)",
+              ]}
+              start={{ x: 1, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[styles.backgroundx]}
+            /> */}
+            <Text
+              style={{
+                color: isActive
+                  ? themeStyle.WHITE_COLOR
+                  : themeStyle.WHITE_COLOR,
+                fontSize: 18,
+                alignSelf: 'center'
+              }}
+            >
+              {t(title)}
+            </Text>
+          </View>
+          {/* <View>
                   <Text type="number">+{options[key].price}</Text>
                 </View> */}
-                  </View>
+        </View>
       </TouchableOpacity>
     );
   }
@@ -119,7 +186,6 @@ export default function CheckBox({
               isFlexCol
               textPadding={0}
             />
-
           ) : (
             <Button
               fontSize={15}
@@ -139,38 +205,43 @@ export default function CheckBox({
 
   if (isOneChoice) {
     return (
-      <View style={{alignItems:"center", opacity: isDisabled ? 0.5 : 1}}>
-      {sizeTitleAdapter(title) && <Text style={{ marginBottom: 10, fontSize:20 }}>{sizeTitleAdapter(title)}</Text>}
-
-      <TouchableOpacity
-        style={{
-          borderWidth: 1,
-          borderRadius: 20,
-          width: 30,
-          height: 30,
-          alignItems: "center",
-          justifyContent: "center",
-          borderColor: themeStyle.PRIMARY_COLOR,
-        }}
-        onPress={() => {
-          onChange(title)
-
-        }}
-        disabled={isDisabled}
-      >
-        {value === title ? (
-          <View style={{ height: 25, width: 25, borderRadius: 30, padding: 5 }}>
-            <LinearGradient
-              colors={["#eaaa5c", "#a77948"]}
-              start={{ x: 1, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={[styles.background]}
-            />
-          </View>
-        ) : (
-          <View></View>
+      <View style={{ alignItems: "center", opacity: isDisabled ? 0.5 : 1 }}>
+        {sizeTitleAdapter(title) && (
+          <Text style={{ marginBottom: 10, fontSize: 20 }}>
+            {sizeTitleAdapter(title)}
+          </Text>
         )}
-      </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            borderWidth: 1,
+            borderRadius: 20,
+            width: 30,
+            height: 30,
+            alignItems: "center",
+            justifyContent: "center",
+            borderColor: themeStyle.PRIMARY_COLOR,
+          }}
+          onPress={() => {
+            onChange(title);
+          }}
+          disabled={isDisabled}
+        >
+          {value === title ? (
+            <View
+              style={{ height: 25, width: 25, borderRadius: 30, padding: 5 }}
+            >
+              <LinearGradient
+                colors={["#eaaa5c", "#a77948"]}
+                start={{ x: 1, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={[styles.background]}
+              />
+            </View>
+          ) : (
+            <View></View>
+          )}
+        </TouchableOpacity>
       </View>
     );
   }
@@ -208,14 +279,13 @@ export default function CheckBox({
 }
 const styles = StyleSheet.create({
   container: {
+    height: 130,
+    width: 110,
+    //  backgroundColor:  false ? themeStyle.SUCCESS_COLOR : themeStyle.WHITE_COLOR,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
 
-    height: 105, width: 105,
-          //  backgroundColor:  false ? themeStyle.SUCCESS_COLOR : themeStyle.WHITE_COLOR,
-          marginRight: 15,
-          borderRadius: 20,
-          alignItems:'center',
-          justifyContent:'center',
-          padding:10,
     shadowColor: themeStyle.GRAY_600,
     shadowOffset: {
       width: 0,
@@ -225,7 +295,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 20,
     borderWidth: 0,
-    backgroundColor:"#FFF5EE",
+    backgroundColor: "#FFF5EE",
   },
   counterValue: {
     display: "flex",
@@ -258,5 +328,15 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     borderRadius: 30,
+  },
+  backgroundx: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    borderBottomEndRadius: 20,
+    borderBottomStartRadius: 20,
+
   },
 });

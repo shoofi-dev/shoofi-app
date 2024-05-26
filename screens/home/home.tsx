@@ -345,7 +345,7 @@ const HomeScreen = ({ navigation }) => {
           {isAnimateReady && (
             <Animated.View entering={FadeInUp.duration(500)}>
               <Image
-                source={require("../../assets/home/logo-and-pizza.png")}
+                source={require("../../assets/home/logo-and-pizza4.png")}
                 style={{ width: "100%", height:"100%", marginTop:"-5%" }}
                 resizeMode="contain"
               />
@@ -489,16 +489,17 @@ const HomeScreen = ({ navigation }) => {
                   width: "100%",
                   paddingHorizontal: 5,
                   marginBottom: 50,
-              justifyContent:'center'
+              justifyContent:'center',
+
                 }}
               >
                 <AnimatesAs.View
                   style={{
-                    width: "100%",
-                    maxWidth: animProfile.current,
+                    width: "70%",
                     alignItems: "center",
                     justifyContent: "center",
-                    height: 50,
+                    height: 60,
+
                   }}
                 >
                   <Button
@@ -509,6 +510,7 @@ const HomeScreen = ({ navigation }) => {
                     // disabled={isLoading}
                     borderWidth={false}
                     isFlexCol
+                    
                   />
                 </AnimatesAs.View>
       

@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 20,
     borderWidth: 0,
-    backgroundColor: "white",
+    backgroundColor: "#FFCB05",
     // backgroundColor: themeStyle.WHITE_COLOR
   },
   headerItem: {
