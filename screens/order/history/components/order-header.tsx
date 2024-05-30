@@ -75,7 +75,5 @@ const styles = StyleSheet.create({
     },
     dateRawText: {
         fontSize: 16,
-        fontFamily: `${getCurrentLang()}-SemiBold`,
-        color: themeStyle.GRAY_700,
       },
   });

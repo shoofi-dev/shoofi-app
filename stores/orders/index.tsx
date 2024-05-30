@@ -176,9 +176,9 @@ class OrdersStore {
   }
 
   
-  updatOrderViewdServer = async (flag: boolean, orderId: string, isAdminAll: boolean) => {
+  updatOrderViewdServer = async (flag: boolean, orderId: string, isAdminAll: boolean, currentTime: any, readyMinutes: number) => {
     const api =  `${ORDER_API.CONTROLLER}/${ORDER_API.UPDATE_ADMIN_ORDERS_VIEWD_API}`
-    const updateData = isAdminAll ? {isViewdAdminAll: flag, isViewd: flag} : {isViewd: flag};
+    const updateData = isAdminAll ? {isViewdAdminAll: flag, isViewd: flag, currentTime, readyMinutes} : {isViewd: flag, currentTime, readyMinutes};
     const body = {
       updateData,
       orderId
@@ -193,8 +193,8 @@ class OrdersStore {
         return response;
       });
   }
-  updatOrderViewd = async (order:any, isAdminAll: boolean) => {
-    this.updatOrderViewdServer(true, order._id, isAdminAll);
+  updatOrderViewd = async (order:any, isAdminAll: boolean, currentTime: any, readyMinutes: number) => {
+    this.updatOrderViewdServer(true, order._id, isAdminAll, currentTime, readyMinutes);
   }
   
   bookDeliveryServer = async (flag: boolean, orderId: string) => {

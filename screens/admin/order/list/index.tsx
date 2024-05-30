@@ -441,11 +441,11 @@ const OrdersListScreen = ({ route }) => {
             {order?.customerDetails?.phone}{" "}
           </Text>
         </View>
-        {/* <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center" }}>
           <View style={{ marginBottom: 10 }}>
             <Text style={styles.dateRawText}>{t("collect-date")}</Text>
           </View>
-          <Text
+          {/* <Text
             style={{
               fontSize: 34,
               fontFamily: `${getCurrentLang()}-Bold`,
@@ -453,7 +453,7 @@ const OrdersListScreen = ({ route }) => {
             }}
           >
             {t(moment(order.orderDate).format("dddd"))}
-          </Text>
+          </Text> */}
           <Text
             style={{
               fontSize: 36,
@@ -464,7 +464,7 @@ const OrdersListScreen = ({ route }) => {
           >
             {moment(order.orderDate).format("HH:mm")}
           </Text>
-          </View> */}
+          </View>
         {/* <Text style={styles.dateText}>
             {moment(order.orderDate).format("DD/MM")}
           </Text> */}
@@ -498,9 +498,7 @@ const OrdersListScreen = ({ route }) => {
                 <View style={{ flexDirection: "row" }}>
                   <Text
                     style={{
-                      fontSize: 28,
-                      fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
+                      fontSize: 24,
                       backgroundColor:
                         oOrder.payment_method === PAYMENT_METHODS.creditCard
                           ? "yellow"
@@ -534,16 +532,15 @@ const OrdersListScreen = ({ route }) => {
               </View>
               {order.orderDate && (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  {/* <View>
+                  <View>
                     <Text style={styles.totalPriceText}>
                       {t("order-sent-date")}:
                     </Text>
-                  </View> */}
+                  </View>
                   <View>
                     <Text style={styles.totalPriceText}>
                       {" "}
-                      {t(moment(order.datetime).format("dddd"))}{" "}
-                      {moment(order.datetime).format("HH:mm DD/MM")}{" "}
+                      {moment(order.datetime).format("HH:mm")}{" "}
                     </Text>
                   </View>
                 </View>
@@ -741,8 +738,7 @@ const OrdersListScreen = ({ route }) => {
               marginTop: index !== 0 ? 15 : 0,
               alignItems: "center",
               paddingHorizontal: 5,
-    
-              
+              flexWrap: "wrap",
             }}
           >
             <View style={{}}>
@@ -766,8 +762,8 @@ const OrdersListScreen = ({ route }) => {
                   </TouchableOpacity>
                 </View>
                 {/* <View style={{ alignItems: "flex-start" }}>
-                  {renderOrderItemsExtras(item.data)}
-                </View> */}
+                    {renderOrderItemsExtras(item.data)}
+                  </View> */}
               </View>
             </View>
             <View
@@ -775,21 +771,23 @@ const OrdersListScreen = ({ route }) => {
                 alignItems: "flex-start",
                 marginLeft: 50,
                 flexDirection: "column",
-                flexBasis:"80%"
+                width:"70%",
               }}
             >
               <View
                 style={{
                   flexDirection: "row",
-                  alignContent: "center",
+                  alignItems: "center",
+                  borderWidth:1,
+                  width:"100%",
+                  justifyContent:'center',
+                  borderColor:themeStyle.TEXT_PRIMARY_COLOR, padding:10
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 24,
-                    color: themeStyle.GRAY_700,
+                    fontSize: 28,
                     textDecorationLine: "underline",
-                    marginBottom: 5,
                   }}
                 >
                   {languageStore.selectedLang === "ar"
@@ -797,158 +795,120 @@ const OrdersListScreen = ({ route }) => {
                     : meal.nameHE}
                 </Text>
               </View>
-              <View>
+            
+              <View style={{flexDirection:'row', justifyContent:'space-between', width:"60%",marginTop:15}}>
+                <View style={{}}>
+                  {item?.halfOne && (
+                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:6, borderColor:themeStyle.TEXT_PRIMARY_COLOR }}>
+                      <Text
+                        style={{
+                          textAlign: "left",
+                          fontSize: 28,
+                         
+                        }}
+                      >
+                        {t("halfOne")}
+                      </Text>
+                    </View>
+                  )}
+                  {item?.halfOne &&
+                    Object.keys(item?.halfOne).map((key) => {
+                      return (
+                        <View style={{marginLeft:10, marginTop:10}}>
+                          <View style={{ flexDirection: "row" }}>
+                            <Text
+                              style={{
+                                textAlign: "left",
+                                fontSize: 24,
+                                marginTop: 10,
+                              }}
+                              type="number"
+                            >
+                              {`${Number(key) + 1}`}
+                            </Text>
+                            <Text
+                              style={{
+                                textAlign: "left",
+                                fontSize: 24,
+                                marginTop: 10,
+                              }}
+                            >
+                              {" "}
+                              - {t(item?.halfOne[key])}
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                </View>
+
+                <View style={{}}>
+                  {item?.halfTwo && (
+                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:6, borderColor:themeStyle.TEXT_PRIMARY_COLOR}}>
+                      <Text
+                        style={{
+                          textAlign: "left",
+                          fontSize: 28,
+                         
+                        }}
+                      >
+                        {t("halfTwo")}
+                      </Text>
+                    </View>
+                  )}
+                  {item?.halfTwo &&
+                    Object.keys(item?.halfTwo).map((key) => {
+                      return (
+                        <View style={{marginLeft:10, marginTop:10}}>
+                          <View style={{ flexDirection: "row" }}>
+                            <Text
+                              style={{
+                                textAlign: "left",
+                                fontSize: 24,
+                                marginTop: 10,
+                              }}
+                              type="number"
+                            >
+                              {`${Number(key) + 1}`}
+                            </Text>
+                            <Text
+                              style={{
+                                textAlign: "left",
+                                fontSize: 24,
+                                marginTop: 10,
+                              }}
+                            >
+                              {" "}
+                              - {t(item?.halfTwo[key])}
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                </View>
+
+              </View>
+              {/* <DashedLine
+              dashLength={5}
+              dashThickness={2}
+              dashGap={10}
+              dashColor={themeStyle.GRAY_600}
+              style={{ marginTop: 15, width:"100%" }}
+            /> */}
+              <View style={{marginTop:15}}>
                 <Text
                   style={{
                     fontSize: 24,
                     fontFamily: `${getCurrentLang()}-SemiBold`,
-                    color: themeStyle.GRAY_700,
                   }}
                 >
                   {t("count")}: {item.qty}
                 </Text>
               </View>
-
-              <View style={{flexDirection:'row', justifyContent:'space-between', width:"60%", marginTop:10, marginBottom:15}}>
-              {item.halfOne && (
-                <View style={{ alignItems: "flex-start", marginTop: 2 }}>
-                  <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:5, marginBottom:15}}>
-                    <Text
-                      style={{
-                        fontSize: 24,
-                        fontFamily: `${getCurrentLang()}-SemiBold`,
-                        color: themeStyle.GRAY_700,
-                      }}
-                    >
-                      {t("halfOne")}
-                    </Text>
-                  </View>
-
-                  {Object.keys(item.halfOne).map((key) => {
-                    return (
-                      <View style={{ flexDirection: "row" }}>
-                        <Text
-                          style={{
-                            fontSize: 24,
-                            fontFamily: `${getCurrentLang()}-SemiBold`,
-                            color: themeStyle.GRAY_700,
-                            marginTop: 2,
-                          }}
-                        >
-                          {key}
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 24,
-                            fontFamily: `${getCurrentLang()}-SemiBold`,
-                            color: themeStyle.GRAY_700,
-                            marginTop: 2,
-                          }}
-                        >
-                          {" "}
-                          - {t(item.halfOne[key])}
-                        </Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              )}
-
-{item.halfTwo && (
-                <View style={{ alignItems: "flex-start", marginTop: 2 }}>
-                  <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:5, marginBottom:15}}>
-                    <Text
-                      style={{
-                        fontSize: 24,
-                        fontFamily: `${getCurrentLang()}-SemiBold`,
-                        color: themeStyle.GRAY_700,
-                      }}
-                    >
-                      {t("halfTwo")}
-                    </Text>
-                  </View>
-
-                  {Object.keys(item.halfTwo).map((key) => {
-                    return (
-                      <View style={{ flexDirection: "row" }}>
-                        <Text
-                          style={{
-                            fontSize: 24,
-                            fontFamily: `${getCurrentLang()}-SemiBold`,
-                            color: themeStyle.GRAY_700,
-                            marginTop: 2,
-                          }}
-                        >
-                          {key}
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 24,
-                            fontFamily: `${getCurrentLang()}-SemiBold`,
-                            color: themeStyle.GRAY_700,
-                            marginTop: 2,
-                          }}
-                        >
-                          {" "}
-                          - {t(item.halfTwo[key])}
-                        </Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              )}
-
-              </View>
-
-              
-              <View style={{ alignItems: "flex-start", marginTop: 2 }}>
-                {item.onTop && (
-                  <Text
-                    style={{
-                      fontSize: 24,
-                      fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
-                      marginTop: 2,
-                    }}
-                  >
-                    {`${t("extraOnTop")}`} - {t(item.onTop)}
-                  </Text>
-                )}
-              </View>
-
-              {item.toName && (
-                <View style={{ marginTop: 2, alignItems: "center" }}>
-                  <Text
-                    style={{
-                      fontSize: 24,
-                      fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
-                    }}
-                  >
-                    {t("toName")}: {item.toName}
-                  </Text>
-                </View>
-              )}
-              {item.toAge && (
-                <View style={{ marginTop: 2, alignItems: "center" }}>
-                  <Text
-                    style={{
-                      fontSize: 24,
-                      fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
-                    }}
-                  >
-                    {t("toAge")}: {item.toAge}
-                  </Text>
-                </View>
-              )}
-
               <View style={{ marginTop: 2, alignItems: "center" }}>
                 <Text
                   style={{
                     fontSize: 24,
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
-                    color: themeStyle.GRAY_700,
                   }}
                 >
                   {t("price")}: ₪
@@ -967,7 +927,6 @@ const OrdersListScreen = ({ route }) => {
                     style={{
                       fontSize: 24,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
                     }}
                   >
                     {t("مواصفات الكعكة")}:
@@ -976,7 +935,6 @@ const OrdersListScreen = ({ route }) => {
                     style={{
                       fontSize: 24,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
                       textAlign: "left",
                       marginVertical: 5,
                     }}
@@ -987,63 +945,6 @@ const OrdersListScreen = ({ route }) => {
               )}
             </View>
 
-            {(item?.clienImage?.uri || item?.suggestedImage) && (
-              <View
-                style={{
-                  marginVertical: 10,
-                  flexGrow: 1,
-                }}
-              >
-                <View style={{ alignItems: "center", marginBottom: 10 }}>
-                  <Text style={{ fontSize: 20 }}>{t("client-image")}</Text>
-                </View>
-                <View
-                  style={{
-                    height: 180,
-                  }}
-                >
-                  {item?.clienImage?.uri && (
-                    <TouchableOpacity
-                      onPress={() =>
-                        handleShowImage(`${cdnUrl}${item?.clienImage?.uri}`)
-                      }
-                    >
-                      <Image
-                        style={{ width: "100%", height: "100%" }}
-                        source={{ uri: `${cdnUrl}${item?.clienImage?.uri}` }}
-                        resizeMode="contain"
-                      />
-                    </TouchableOpacity>
-                  )}
-                  {item?.suggestedImage && (
-                    <TouchableOpacity
-                      onPress={() =>
-                        handleShowImage(`${cdnUrl}${item?.suggestedImage}`)
-                      }
-                    >
-                      <Image
-                        style={{ width: "100%", height: "100%" }}
-                        source={{ uri: `${cdnUrl}${item?.suggestedImage}` }}
-                        resizeMode="contain"
-                      />
-                    </TouchableOpacity>
-                  )}
-                </View>
-                <View style={{ alignItems: "center", marginTop: 10 }}>
-                  <View style={{ width: 150, marginBottom: 20 }}>
-                    <Button
-                      text={t("dowload")}
-                      fontSize={17}
-                      onClickFn={() => downloadImage(item)}
-                      bgColor={themeStyle.PRIMARY_COLOR}
-                      textColor={themeStyle.WHITE_COLOR}
-                      fontFamily={`${getCurrentLang()}-Bold`}
-                      borderRadious={19}
-                    />
-                  </View>
-                </View>
-              </View>
-            )}
           </View>
         </View>
       );
@@ -1670,13 +1571,13 @@ const styles = StyleSheet.create({
   totalPriceText: {
     fontSize: 24,
     fontFamily: `${getCurrentLang()}-SemiBold`,
-    color: themeStyle.GRAY_700,
+    marginBottom:15
   },
   dateText: {
     fontSize: 24,
-    fontFamily: `${getCurrentLang()}-American-bold`,
+    fontFamily: `${getCurrentLang()}-Bold`,
+    marginBottom:15,
 
-    color: themeStyle.GRAY_700,
     textDecorationLine: "underline",
   },
   background: {

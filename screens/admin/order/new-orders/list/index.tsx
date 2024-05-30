@@ -75,6 +75,10 @@ const deliveryTime = [
   {
     label: 40,
     value: 40
+  },
+  {
+    label: 45,
+    value: 45
   }
 ]
 const NewOrdersListScreen = ({ route }) => {
@@ -115,7 +119,16 @@ const NewOrdersListScreen = ({ route }) => {
   const [orderNoteText, setOrderNoteText] = useState("");
   const [showImageDialog, setShowImageDialog] = useState(false);
   const [selectedImageShow, setSelectedImageShow] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedTime, setSelectedTime] = useState({});
+
+  const updateSelectedTime = (orderId,time) => {
+    if(typeof time !== 'object'){
+      console.log("time", time, orderId);
+      setSelectedTime({[orderId]: time});
+    }
+  
+
+  }
 
   const handleShowImage = (uri: any) => {
     setShowImageDialog(true);
@@ -142,11 +155,14 @@ const NewOrdersListScreen = ({ route }) => {
     //   setOrderNoteText('')
     // }
   };
-  const updateViewedOrder = async (order) => {
+  const updateViewedOrder = async (order, readyMinutes) => {
     setIsloading(true);
+    delete selectedTime[order.id];
     await ordersStore.updatOrderViewd(
       order,
-      userDetailsStore.isAdmin(ROLES.all)
+      userDetailsStore.isAdmin(ROLES.all),
+      order.orderDate,
+      readyMinutes
     );
     setIsloading(false);
   };
@@ -405,7 +421,7 @@ const NewOrdersListScreen = ({ route }) => {
           {true && (
             <View>
               {order.orderDate && (
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={{ flexDirection: "row", alignItems: "center"  }}>
                   <View>
                     <Text style={styles.totalPriceText}>
                       {t("order-sent-date")}:
@@ -654,15 +670,17 @@ const NewOrdersListScreen = ({ route }) => {
               <View
                 style={{
                   flexDirection: "row",
-                  alignContent: "center",
+                  alignItems: "center",
+                  borderWidth:1,
+                  width:"100%",
+                  justifyContent:'center',
+                  borderColor:themeStyle.TEXT_PRIMARY_COLOR, padding:10
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 24,
-                    color: themeStyle.GRAY_700,
+                    fontSize: 28,
                     textDecorationLine: "underline",
-                    marginBottom: 5,
                   }}
                 >
                   {languageStore.selectedLang === "ar"
@@ -670,21 +688,11 @@ const NewOrdersListScreen = ({ route }) => {
                     : meal.nameHE}
                 </Text>
               </View>
-              <View>
-                <Text
-                  style={{
-                    fontSize: 24,
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
-                    color: themeStyle.GRAY_700,
-                  }}
-                >
-                  {t("count")}: {item.qty}
-                </Text>
-              </View>
-              <View style={{flexDirection:'row', justifyContent:'space-between', width:"60%"}}>
-                <View style={{marginTop:10}}>
+            
+              <View style={{flexDirection:'row', justifyContent:'space-between', width:"60%",marginTop:15}}>
+                <View style={{}}>
                   {item?.halfOne && (
-                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:5}}>
+                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:6, borderColor:themeStyle.TEXT_PRIMARY_COLOR }}>
                       <Text
                         style={{
                           textAlign: "left",
@@ -727,9 +735,9 @@ const NewOrdersListScreen = ({ route }) => {
                     })}
                 </View>
 
-                <View style={{marginTop:10}}>
+                <View style={{}}>
                   {item?.halfTwo && (
-                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:5}}>
+                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:6, borderColor:themeStyle.TEXT_PRIMARY_COLOR}}>
                       <Text
                         style={{
                           textAlign: "left",
@@ -773,31 +781,27 @@ const NewOrdersListScreen = ({ route }) => {
                 </View>
 
               </View>
-
-              <View style={{ alignItems: "flex-start", marginTop: 2 }}>
-                {item.taste &&
-                  Object.keys(item.taste).map((key) => {
-                    return (
-                      <Text
-                        style={{
-                          fontSize: 24,
-                          fontFamily: `${getCurrentLang()}-SemiBold`,
-                          color: themeStyle.GRAY_700,
-                          marginTop: 2,
-                        }}
-                      >
-                        {`${t("level")} ${key}`} - {t(item.taste[key])}
-                      </Text>
-                    );
-                  })}
-              </View>
-
-              <View style={{ marginTop: 2, alignItems: "center" }}>
+              {/* <DashedLine
+              dashLength={5}
+              dashThickness={2}
+              dashGap={10}
+              dashColor={themeStyle.GRAY_600}
+              style={{ marginTop: 15, width:"100%" }}
+            /> */}
+              <View style={{marginTop:15}}>
                 <Text
                   style={{
                     fontSize: 24,
                     fontFamily: `${getCurrentLang()}-SemiBold`,
-                    color: themeStyle.GRAY_700,
+                  }}
+                >
+                  {t("count")}: {item.qty}
+                </Text>
+              </View>
+              <View style={{ marginTop: 2, alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 24,
                   }}
                 >
                   {t("price")}: ₪
@@ -816,7 +820,6 @@ const NewOrdersListScreen = ({ route }) => {
                     style={{
                       fontSize: 24,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
                     }}
                   >
                     {t("مواصفات الكعكة")}:
@@ -825,7 +828,6 @@ const NewOrdersListScreen = ({ route }) => {
                     style={{
                       fontSize: 24,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
                       textAlign: "left",
                       marginVertical: 5,
                     }}
@@ -836,63 +838,6 @@ const NewOrdersListScreen = ({ route }) => {
               )}
             </View>
 
-            {(item?.clienImage?.uri || item?.suggestedImage) && (
-              <View
-                style={{
-                  marginVertical: 10,
-                  flexGrow: 1,
-                }}
-              >
-                <View style={{ alignItems: "center", marginBottom: 10 }}>
-                  <Text style={{ fontSize: 20 }}>{t("client-image")}</Text>
-                </View>
-                <View
-                  style={{
-                    height: 180,
-                  }}
-                >
-                  {item?.clienImage?.uri && (
-                    <TouchableOpacity
-                      onPress={() =>
-                        handleShowImage(`${cdnUrl}${item?.clienImage?.uri}`)
-                      }
-                    >
-                      <Image
-                        style={{ width: "100%", height: "100%" }}
-                        source={{ uri: `${cdnUrl}${item?.clienImage?.uri}` }}
-                        resizeMode="contain"
-                      />
-                    </TouchableOpacity>
-                  )}
-                  {item?.suggestedImage && (
-                    <TouchableOpacity
-                      onPress={() =>
-                        handleShowImage(`${cdnUrl}${item?.suggestedImage}`)
-                      }
-                    >
-                      <Image
-                        style={{ width: "100%", height: "100%" }}
-                        source={{ uri: `${cdnUrl}${item?.suggestedImage}` }}
-                        resizeMode="contain"
-                      />
-                    </TouchableOpacity>
-                  )}
-                </View>
-                <View style={{ alignItems: "center", marginTop: 10 }}>
-                  <View style={{ width: 150, marginBottom: 20 }}>
-                    <Button
-                      text={t("dowload")}
-                      fontSize={17}
-                      onClickFn={() => downloadImage(item)}
-                      bgColor={themeStyle.PRIMARY_COLOR}
-                      textColor={themeStyle.WHITE_COLOR}
-                      fontFamily={`${getCurrentLang()}-Bold`}
-                      borderRadious={19}
-                    />
-                  </View>
-                </View>
-              </View>
-            )}
           </View>
         </View>
       );
@@ -1032,7 +977,9 @@ const NewOrdersListScreen = ({ route }) => {
           ) : (
             // !isLoading && (
             <View>
-              {ordersList.map((order) => (
+              {ordersList.map((order) => {
+                console.log("selectedTime[order._id]",selectedTime)
+                return(
                 <View style={{ marginBottom: 50 }}>
                   <View
                     style={[
@@ -1200,29 +1147,30 @@ const NewOrdersListScreen = ({ route }) => {
                     {renderOrderTotalRaw(order)}
                     {/*{renderStatus(order)} */}
 
-                    {/* <View style={{ maxWidth: "50%", alignSelf: "center", zIndex:20 }}>
+                     <View style={{ maxWidth: "50%", alignSelf: "center", zIndex:20 }}>
 
                     <DropDown
                   itemsList={deliveryTime}
                   defaultValue={selectedTime}
-                  onChangeFn={(e) => setSelectedTime(e)}
+                  onChangeFn={(e) => {updateSelectedTime(order._id,e)}}
                   placeholder={"ستكون جاهزة خلال"}
                 />      
-                    </View> */}
+                    </View> 
 
                     <View style={{ maxWidth: "50%", alignSelf: "center", marginTop:20 }}>
                       <Button
                         text={t("approve")}
                         fontSize={17}
-                        onClickFn={() => updateViewedOrder(order)}
+                        onClickFn={() => updateViewedOrder(order, selectedTime[order._id])}
                         textColor={themeStyle.TEXT_PRIMARY_COLOR}
                         fontFamily={`${getCurrentLang()}-Bold`}
                         borderRadious={19}
+                        disabled={!selectedTime[order._id]}
                       />
                     </View>
                   </View>
                 </View>
-              ))}
+              )})}
             </View>
           )}
         </View>
@@ -1259,13 +1207,13 @@ const styles = StyleSheet.create({
   totalPriceText: {
     fontSize: 24,
     fontFamily: `${getCurrentLang()}-SemiBold`,
-    color: themeStyle.GRAY_700,
+    marginBottom:15
   },
   dateText: {
     fontSize: 24,
-    fontFamily: `${getCurrentLang()}-American-bold`,
+    fontFamily: `${getCurrentLang()}-Bold`,
+    marginBottom:15,
 
-    color: themeStyle.GRAY_700,
     textDecorationLine: "underline",
   },
   background: {

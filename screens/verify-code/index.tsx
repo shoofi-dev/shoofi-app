@@ -193,27 +193,7 @@ const VerifyCodeScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-
-      <ImageBackground
-        source={require("../../assets/bg/login-bg.jpg")}
-        resizeMode="cover"
-        style={{ height: "100%", width: "100%" }}
-      >
-        <View style={{ marginTop: 90 }}>
-          <Image
-            style={{ alignSelf: "center", width: "70%"}}
-            source={require("../../assets/store-logo.png")}
-            resizeMode="contain"
-          />
-        </View>
-        {/* <View style={{ marginTop: 20 }}>
-        <Image
-          style={{ width: 190, height: 140 }}
-          source={require("../../assets/insert_code.png")}
-        />
-      </View> */}
-        <View style={{ width: "100%" }}>
-          <LinearGradient
+     <LinearGradient
             colors={[
               "rgba(207, 207, 207, 0.4)",
               "rgba(246,246,247, 0.8)",
@@ -227,6 +207,25 @@ const VerifyCodeScreen = ({ route }) => {
             end={{ x: 1, y: 1 }}
             style={[styles.background]}
           />
+      {/* <ImageBackground
+        source={require("../../assets/bg/login-bg.jpg")}
+        resizeMode="cover"
+        style={{ height: "100%", width: "100%" }}
+      > */}
+        <View style={{ marginTop: 90 }}>
+        <Image
+          style={{  alignSelf: "center", width:120, height:120}}
+          source={require("../../assets/icon4.png")}
+        />
+        </View>
+        {/* <View style={{ marginTop: 20 }}>
+        <Image
+          style={{ width: 190, height: 140 }}
+          source={require("../../assets/insert_code.png")}
+        />
+      </View> */}
+        <View style={{ width: "100%" }}>
+     
           <View style={styles.inputsContainer}>
             <Text
               style={{ marginTop: 0, fontSize: 25, color: themeStyle.TEXT_PRIMARY_COLOR, }}
@@ -359,7 +358,7 @@ const VerifyCodeScreen = ({ route }) => {
             </View>
           </View>
         </View>
-      </ImageBackground>
+      {/* </ImageBackground> */}
     </View>
   );
 };
@@ -398,10 +397,10 @@ const styles = StyleSheet.create({
   },
   background: {
     position: "absolute",
-    left: "5%",
-    right: "5%",
-    top: "10%",
-    bottom: "0%",
-    borderRadius: 50,
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    borderRadius: 0,
   },
 });

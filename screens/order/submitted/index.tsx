@@ -12,7 +12,7 @@ import Icon from "../../../components/icon";
 import Text from "../../../components/controls/Text";
 import LottieView from 'lottie-react-native';
 const orderSubmitedAnimation = require('../../../assets/order/animation-order-submitted.json')
-const cakeAnimation = require('../../../assets/order/cake-animation.json')
+const cakeAnimation = require('../../../assets/lottie/pizza-animation.json')
 const OrderSubmittedScreen = ({ route }) => {
   const { t } = useTranslation();
   const { ordersStore,userDetailsStore } = useContext(StoreContext);
@@ -59,7 +59,8 @@ const OrderSubmittedScreen = ({ route }) => {
                 ...styles.textLang,
                 fontFamily: `${getCurrentLang()}-Bold`,
                 marginRight: 10,
-                top: -20
+                top: -20,
+                color:themeStyle.WHITE_COLOR
               }}
             >
               {t("order-succefully-sent")}
@@ -78,7 +79,7 @@ const OrderSubmittedScreen = ({ route }) => {
             <LottieView
             source={cakeAnimation}
             autoPlay
-            loop={false}
+            loop={true}
             
           />
             )}
@@ -86,7 +87,7 @@ const OrderSubmittedScreen = ({ route }) => {
               <LottieView
               source={cakeAnimation}
               autoPlay
-              loop={false}
+              loop={true}
             />
             )}
 

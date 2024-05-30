@@ -1,22 +1,25 @@
 
 
 // import { LinearGradient } from "expo-linear-gradient";
-import { ImageBackground } from "react-native";
+import { ImageBackground, View } from "react-native";
+import themeStyle from "../../../styles/theme.style";
 
 
 export default function DialogBG({children}) {
  
   return (
-    <ImageBackground
-    source={require("../../../assets/bg/bg.jpg")}
-    resizeMode="cover"
-    style={{         alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 30,
-     }}
-  >
+  //   <ImageBackground
+  //   source={require("../../../assets/bg/bg.jpg")}
+  //   resizeMode="cover"
+  //   style={{         alignItems: "center",
+  //   justifyContent: "center",
+  //   paddingVertical: 30,
+  //    }}
+  // >
+  <View style={{backgroundColor:themeStyle.WHITE_COLOR_300,  alignItems: "center",justifyContent: "center",paddingVertical: 30,}}>
     {children}
-    </ImageBackground>
+    </View>
+    // </ImageBackground>
 
         //   <LinearGradient
         //     colors={[

@@ -60,7 +60,7 @@ export default function InputText({
           editable={isEditable}
           onChange={handleOnChange}
           placeholder={placeHolder}
-          placeholderTextColor={themeStyle.BROWN_700}
+          placeholderTextColor={themeStyle.TEXT_PRIMARY_COLOR}
           selectionColor={"black"}
           keyboardType={keyboardType}
           onFocus={onFocus}
@@ -70,15 +70,16 @@ export default function InputText({
             borderWidth: 1,
             borderColor: isError
               ? themeStyle.ERROR_COLOR
-              : themeStyle.PRIMARY_COLOR,
+              : themeStyle.TEXT_PRIMARY_COLOR,
             // borderRadius: 30,
             fontSize: fontSize || 20,
-            color: themeStyle.BROWN_700,
+            color: themeStyle.TEXT_PRIMARY_COLOR,
             fontFamily: `${getCurrentLang()}-SemiBold`,
             width:isFlex ? "60%":"100%",
             marginLeft:0,
             paddingHorizontal:5,
-            backgroundColor:themeStyle.WHITE_COLOR
+            backgroundColor:themeStyle.WHITE_COLOR,
+            paddingTop:5
           }}
         />
       </View>

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { getCurrentLang } from "../../../../translations/i18n";
 import moment from "moment";
 import DashedLine from "react-native-dashed-line";
+import CurrentStatus from "../../current-status/current-status";
 
 const OrderFooter = ({ order }) => {
   const { t } = useTranslation();
@@ -41,8 +42,8 @@ const OrderFooter = ({ order }) => {
                   <View>
                     <Text style={styles.dateText}>
                       {" "}
-                      {t(moment(order.orderDate).format("dddd"))}{" "}
-                      {moment(order.orderDate).format("HH:mm DD/MM")}{" "}
+                      {/* {t(moment(order.orderDate).format("dddd"))}{" "} */}
+                      {moment(order.orderDate).format("HH:mm")}{" "}
                     </Text>
                   </View>
                 </View>
@@ -79,6 +80,7 @@ const OrderFooter = ({ order }) => {
                   style={{ marginTop:10}}
                 />
     {renderOrderTotalRaw(order)}
+    <CurrentStatus order={order}/>
     </View>;
 };
 
@@ -87,14 +89,13 @@ export default OrderFooter;
 const styles = StyleSheet.create({
   totalPriceText: {
     fontSize: 18,
-    fontFamily: `${getCurrentLang()}-SemiBold`,
-    color: themeStyle.GRAY_700,
+    marginBottom:10
   },
   dateText: {
     fontSize: 18,
-    fontFamily: `${getCurrentLang()}-American-bold`,
 
-    color: themeStyle.GRAY_700,
     textDecorationLine: "underline",
+    marginBottom:10
+
   },
 });

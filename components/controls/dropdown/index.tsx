@@ -18,7 +18,7 @@ const DropDown = ({
   onChangeFn,
   placeholder,
   onToggle,
-  dropDownDirection = 'DOWN',
+  dropDownDirection = 'TOP',
   disabled
 }: TProps) => {
   const [open, setOpen] = useState(false);
@@ -48,17 +48,21 @@ const DropDown = ({
         placeholderStyle={{
           textAlign: "left",
           color: themeStyle.TEXT_PRIMARY_COLOR,
+          fontSize:22
         }}
         disabled={disabled}
         labelStyle={{
           textAlign: "left",
           color: themeStyle.TEXT_PRIMARY_COLOR,
+          fontSize:22
 
         }}
         style={{ flexDirection: "row", borderColor: themeStyle.PRIMARY_COLOR, opacity: disabled ? 0.5 : 1 }}
         listItemLabelStyle={{
           textAlign: "left",
           color: themeStyle.TEXT_PRIMARY_COLOR,
+          fontSize:22
+
         }}
         dropDownContainerStyle={{ borderColor: themeStyle.PRIMARY_COLOR,
            backgroundColor: "rgba(254, 254, 254, 1)", maxHeight: "auto"
@@ -67,6 +71,8 @@ const DropDown = ({
         arrowIconStyle={{
           color: themeStyle.PRIMARY_COLOR,
           borderColor: themeStyle.PRIMARY_COLOR,
+          fontSize:22
+
           
         }}
         ListModeType={"FLAT"}

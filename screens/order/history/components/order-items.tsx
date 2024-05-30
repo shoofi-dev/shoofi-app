@@ -9,7 +9,7 @@ import { useContext } from "react";
 import { StoreContext } from "../../../../stores";
 import { isEmpty } from "lodash";
 import DashedLine from "react-native-dashed-line";
-import { cdnUrl } from "../../../../consts/shared";
+import { cdnUrl, mealsImages } from "../../../../consts/shared";
 import sizeTitleAdapter from "../../../../helpers/size-name-adapter";
 import Button from "../../../../components/controls/button/button";
 
@@ -50,13 +50,14 @@ const OrderItems = ({ order }) => {
                 <View
                   style={{
                     flexBasis: "20%",
-                    height: 120,
+                    height: 80,
                     marginVertical: 10,
                   }}
                 >
                   <Image
                     style={{ width: "100%", height: "100%" }}
-                    source={{ uri: `${cdnUrl}${meal.img[0].uri}` }}
+                    source={mealsImages[meal.img]}
+
                   />
                 </View>
                 {/* <View style={{ alignItems: "flex-start" }}>
@@ -80,9 +81,7 @@ const OrderItems = ({ order }) => {
                 <Text
                   style={{
                     fontSize: 18,
-                    color: themeStyle.GRAY_700,
                     textDecorationLine: "underline",
-                    marginBottom: 5,
                   }}
                 >
                   {languageStore.selectedLang === "ar"
@@ -90,24 +89,20 @@ const OrderItems = ({ order }) => {
                     : meal.nameHE}
                 </Text>
               </View>
-              <View>
+              <View style={{marginTop:10}}>
                 <Text
                   style={{
                     fontSize: 18,
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
-                    color: themeStyle.GRAY_700,
                   }}
                 >
                   {t("count")}: {item.qty}
                 </Text>
               </View>
               {item.size == "large" && (
-                <View>
+                <View style={{marginTop:2}}>
                   <Text
                     style={{
                       fontSize: 18,
-                      fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
                     }}
                   >
                     {t("size")}: {sizeTitleAdapter(item.size)}
@@ -121,8 +116,6 @@ const OrderItems = ({ order }) => {
                       <Text
                         style={{
                           fontSize: 18,
-                          fontFamily: `${getCurrentLang()}-SemiBold`,
-                          color: themeStyle.GRAY_700,
                           marginTop: 2,
                         }}
                       >
@@ -136,8 +129,6 @@ const OrderItems = ({ order }) => {
                 <Text
                   style={{
                     fontSize: 18,
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
-                    color: themeStyle.GRAY_700,
                   }}
                 >
                   {t("price")}: ₪
@@ -155,8 +146,6 @@ const OrderItems = ({ order }) => {
                   <Text
                     style={{
                       fontSize: 18,
-                      fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.GRAY_700,
                     }}
                   >
                     {t("مواصفات الكعكة")}:

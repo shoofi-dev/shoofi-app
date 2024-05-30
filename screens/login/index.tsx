@@ -141,27 +141,6 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-
-            <ImageBackground
-          source={require("../../assets/bg/login-bg.jpg")}
-          resizeMode="cover"
-          style={{ height: "100%",width:"100%"}}
-              >
-      <TouchableOpacity onPress={handleLogoPress}  style={{ marginTop: 90 }}>
-        <Image
-          style={{  alignSelf: "center", width:"70%"}}
-          source={require("../../assets/store-logo.png")}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={{borderWidth:1, backgroundColor:'red', zIndex:10, height:"100%", width:"100%"}}>
-
-      <ScrollView style={{ width: "100%" }}>
-      <KeyboardAvoidingView
-        keyboardVerticalOffset={100}
-        behavior="position"
-        style={{ flex: 1 }}
-      >
         <LinearGradient
           colors={[
             "rgba(207, 207, 207, 0.4)",
@@ -176,6 +155,26 @@ const LoginScreen = () => {
           end={{ x: 1, y: 1 }}
           style={[styles.background]}
         />
+            {/* <ImageBackground
+          source={require("../../assets/bg/login-bg.jpg")}
+          resizeMode="cover"
+          style={{ height: "100%",width:"100%"}}
+              > */}
+      <TouchableOpacity onPress={handleLogoPress}  style={{ marginTop: 90 }}>
+        <Image
+          style={{  alignSelf: "center", width:120, height:120}}
+          source={require("../../assets/icon4.png")}
+        />
+      </TouchableOpacity>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={{borderWidth:1, backgroundColor:'red', zIndex:10, height:"100%", width:"100%"}}>
+
+      <ScrollView style={{ width: "100%" }}>
+      <KeyboardAvoidingView
+        keyboardVerticalOffset={100}
+        behavior="position"
+        style={{ flex: 1 }}
+      >
+
 
         <View style={styles.inputsContainer}>
           <Text style={{ fontSize: 26, paddingTop:30,fontWeight: 'bold',  }}>
@@ -221,7 +220,7 @@ const LoginScreen = () => {
       </ScrollView>
       </TouchableWithoutFeedback>
 
-      </ImageBackground>
+      {/* </ImageBackground> */}
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}
         isOpen={isOpenConfirmActiondDialog}
@@ -243,7 +242,7 @@ const styles = StyleSheet.create({
   inputsContainer: {
     width: "100%",
     alignItems: "center",
-    paddingVertical: 90,
+    paddingVertical: 50,
   },
   footerTabs: {
     backgroundColor: "blue",
@@ -253,10 +252,10 @@ const styles = StyleSheet.create({
   },
   background: {
     position: "absolute",
-    left: "5%",
-    right: "5%",
-    top: "10%",
+    left: 0,
+    right: 0,
+    top: 0,
     bottom: "0%",
-    borderRadius: 50,
+    borderRadius: 0,
   },
 });

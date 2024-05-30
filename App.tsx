@@ -291,7 +291,7 @@ const App = () => {
   useEffect(() => {
     if (printOrdersQueue.length > 0) {
       setTimeout(() => {
-        forLoop(printOrdersQueue);
+        //forLoop(printOrdersQueue);
       }, 1000);
     }else{
       setIsPrinting(false);

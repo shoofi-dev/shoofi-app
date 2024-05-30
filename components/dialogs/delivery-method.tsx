@@ -26,7 +26,7 @@ export default function DeliveryMethodDialog({
   isOpen,
   handleAnswer,
   type,
-  selectedOrderDate
+  selectedOrderDate,
 }: TProps) {
   const { t } = useTranslation();
 
@@ -69,7 +69,7 @@ export default function DeliveryMethodDialog({
                   t("approve-takeaway-method")}
                 {type === SHIPPING_METHODS.table && t("approve-table-method")}
               </Text>
-              <View style={{ marginTop: 10 }}>
+              {/* <View style={{ marginTop: 10 }}>
                 <Text
                   style={{
                     fontSize: 20,
@@ -79,8 +79,8 @@ export default function DeliveryMethodDialog({
                 >
                   {t("requested-order-date")}:
                 </Text>
-              </View>
-              <View style={{ marginTop: 5 }}>
+              </View> */}
+              {/* <View style={{ marginTop: 5 }}>
                 <Text
                   style={{
                     fontSize: 20,
@@ -108,7 +108,7 @@ export default function DeliveryMethodDialog({
                   {selectedOrderDate &&
                   moment(selectedOrderDate).format("HH:mm")}
                 </Text>
-              </View>
+              </View> */}
             </Dialog.Content>
             <Dialog.Actions>
               <View
