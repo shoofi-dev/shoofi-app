@@ -291,21 +291,7 @@ export default function GradiantRow({
   if (type === "multiChoice") {
     return (
       <View style={[{}]}>
-        <View style={[styles.textAndPriceContainer, { marginBottom: 20, alignItems:'center', justifyContent:'center', paddingVertical:5, backgroundColor:'#FFCB05' }]}>
-        {/* <LinearGradient
-          colors={[
-            "rgba(207, 207, 207, 0.9)",
-            "rgba(246,246,247, 0.9)",
-            "rgba(246,246,247, 0.9)",
-            "rgba(246,246,247, 0.9)",
-            "rgba(246,246,247, 0.9)",
-            "rgba(246,246,247, 0.9)",
-            "rgba(207, 207, 207, 0.9)",
-          ]}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.background]}
-        /> */}
+        {/* <View style={[styles.textAndPriceContainer, { marginBottom: 20, alignItems:'center', justifyContent:'center', paddingVertical:5, backgroundColor:'#FFCB05' }]}>
           <Text
             style={{
               fontSize: fontSize || 24,
@@ -315,7 +301,7 @@ export default function GradiantRow({
           >
             {t(title)}
           </Text>
-        </View>
+        </View> */}
         <View
           style={{
             width: "100%",

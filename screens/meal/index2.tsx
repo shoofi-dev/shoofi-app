@@ -45,6 +45,7 @@ import OutOfStockDialog from "../../components/dialogs/out-of-stock/out-of-stock
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 import InputText from "../../components/controls/input";
 import AddCustomImagedDialog from "../../components/dialogs/add-custom-image";
+import ToggleControl from "../../components/controls/toggle";
 
 const showCakeNoteList = ["3", "5"];
 
@@ -86,6 +87,7 @@ const MealScreen = ({ route }) => {
   const [customCakeData, setCustomCakeData] = useState(null);
   const [isPickImageDialogOpen, setIsPickImageDialogOpen] = useState(false);
   const [isPickImageDone, setIsPickImageDone] = useState(false);
+  const [selectedPizzaHalf, setSelectedPizzaHalf] = useState("halfOne");
   const [
     isPickImageNotificationDialogOpen,
     setIsPickImageNotificationDialogOpen,
@@ -156,14 +158,14 @@ const MealScreen = ({ route }) => {
       setIsOpenConfirmActiondDialog(true);
       return;
     }
-    DeviceEventEmitter.emit(`add-to-cart-animate`, {
-      imgUrl: `${cdnUrl}${meal.data.img[0].uri}`,
-    });
+    // DeviceEventEmitter.emit(`add-to-cart-animate`, {
+    //   imgUrl: `${cdnUrl}${meal.data.img[0].uri}`,
+    // });
 
     cartStore.addProductToCart(meal);
-    setTimeout(() => {
+    // setTimeout(() => {
       navigation.goBack();
-    }, 1600);
+    // }, 1600);
   };
 
   const onUpdateCartProduct = () => {
@@ -232,37 +234,52 @@ const MealScreen = ({ route }) => {
           .price;
 
       let finalPrice = sizePrice;
- 
-      if(meal.data?.extras?.halfOne?.value.indexOf("tuna") > -1){
+
+      if (meal.data?.extras?.halfOne?.value.indexOf("tuna") > -1) {
         finalPrice = finalPrice + 5;
       }
-      if(meal.data?.extras?.halfTwo?.value.indexOf("tuna") > -1){
+      if (meal.data?.extras?.halfTwo?.value.indexOf("tuna") > -1) {
         finalPrice = finalPrice + 5;
       }
 
-      if(meal.data?.extras?.halfOne){
-        const filterTunaHalfOne = meal.data?.extras?.halfOne?.value.filter((extra)=> extra != 'tuna');
-        const extraPayHalfOne = filterTunaHalfOne.slice(meal.data?.extras?.halfOne?.value.length != filterTunaHalfOne.length ? 2 : 3);
-        if(extraPayHalfOne.length > 0){
-          extraPayHalfOne.map((extra)=>{
-            const currentExtra = storeDataStore.storeData.pizzaExtras.filter((item)=> item.title == extra)[0];
+      if (meal.data?.extras?.halfOne) {
+        const filterTunaHalfOne = meal.data?.extras?.halfOne?.value.filter(
+          (extra) => extra != "tuna"
+        );
+        const extraPayHalfOne = filterTunaHalfOne.slice(
+          meal.data?.extras?.halfOne?.value.length != filterTunaHalfOne.length
+            ? 2
+            : 3
+        );
+        if (extraPayHalfOne.length > 0) {
+          extraPayHalfOne.map((extra) => {
+            const currentExtra = storeDataStore.storeData.pizzaExtras.filter(
+              (item) => item.title == extra
+            )[0];
             finalPrice = finalPrice + currentExtra.price;
-          })
-        };
+          });
+        }
       }
-  
-      if(meal.data?.extras?.halfTwo){
-        const filterTunaHalfTwo = meal.data?.extras?.halfTwo?.value.filter((extra)=> extra != 'tuna');
-      const extraPayHalfTwo = filterTunaHalfTwo.slice(meal.data?.extras?.halfTwo?.value.length != filterTunaHalfTwo.length ? 2 : 3);
 
-      if(extraPayHalfTwo.length > 0){
-        extraPayHalfTwo.map((extra)=>{
-          const currentExtra = storeDataStore.storeData.pizzaExtras.filter((item)=> item.title == extra)[0];
-          finalPrice = finalPrice + currentExtra.price;
-        })
-      };
+      if (meal.data?.extras?.halfTwo) {
+        const filterTunaHalfTwo = meal.data?.extras?.halfTwo?.value.filter(
+          (extra) => extra != "tuna"
+        );
+        const extraPayHalfTwo = filterTunaHalfTwo.slice(
+          meal.data?.extras?.halfTwo?.value.length != filterTunaHalfTwo.length
+            ? 2
+            : 3
+        );
+
+        if (extraPayHalfTwo.length > 0) {
+          extraPayHalfTwo.map((extra) => {
+            const currentExtra = storeDataStore.storeData.pizzaExtras.filter(
+              (item) => item.title == extra
+            )[0];
+            finalPrice = finalPrice + currentExtra.price;
+          });
+        }
       }
-    
 
       setMeal({
         ...meal,
@@ -546,20 +563,20 @@ const MealScreen = ({ route }) => {
   }
   return (
     <View style={{ height: "100%" }}>
-             <LinearGradient
-          colors={[
-            "rgba(207, 207, 207, 0.4)",
-            "rgba(246,246,247, 0.1)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(207, 207, 207, 0.4)",
-          ]}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.background]}
-        />
+      <LinearGradient
+        colors={[
+          "rgba(207, 207, 207, 0.4)",
+          "rgba(246,246,247, 0.1)",
+          "rgba(246,246,247, 0.8)",
+          "rgba(246,246,247, 0.8)",
+          "rgba(246,246,247, 0.8)",
+          "rgba(246,246,247, 0.8)",
+          "rgba(207, 207, 207, 0.4)",
+        ]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.background]}
+      />
       <View
         style={{
           width: "100%",
@@ -571,13 +588,14 @@ const MealScreen = ({ route }) => {
           marginTop: "-25%",
         }}
       >
-
-<View style={{position:'absolute',zIndex:30}}>
-          <Text style={{fontSize:22}} type="number"> ₪{meal.data.price * meal.data.extras.counter.value}</Text>
-
-          </View>
+        <View style={{ position: "absolute", zIndex: 30 }}>
+          <Text style={{ fontSize: 22 }} type="number">
+            {" "}
+            ₪{meal.data.price * meal.data.extras.counter.value}
+          </Text>
+        </View>
       </View>
-      
+
       <View style={{ zIndex: 10 }}>
         <TouchableOpacity
           onPress={onClose}
@@ -600,7 +618,20 @@ const MealScreen = ({ route }) => {
           />
         </TouchableOpacity>
       </View>
-      <View>
+      <View
+        style={{
+          shadowColor: "black",
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.9,
+          shadowRadius: 6,
+          elevation: 0,
+          borderWidth: 0,
+          padding:5
+        }}
+      >
         <Image
           source={mealsImages[meal.data.img]}
           style={{
@@ -612,7 +643,6 @@ const MealScreen = ({ route }) => {
         />
       </View>
       <ScrollView ref={scrollRef} style={{ height: "100%" }}>
-        
         <KeyboardAvoidingView
           keyboardVerticalOffset={100}
           behavior="position"
@@ -694,57 +724,79 @@ const MealScreen = ({ route }) => {
               )} */}
 
               {meal.data?.categoryId == "1" && (
-                <View style={{ }}>
-                  <View style={{ marginTop: 10, width: "100%" }}>
-                    <GradiantRow
-                      onChangeFn={(value) => {
-                        updateMeal(
-                          value,
-                          "size",
-                          meal.data.extras["size"].type
-                        );
-                      }}
-                      type={meal.data.extras["size"].type}
-                      value={meal.data.extras["size"].value}
-                      title={"size"}
-                      options={meal.data.extras["size"].options}
-                    />
-                  </View>
+                <View style={{ marginTop: 20, width: "100%" }}>
+                  <GradiantRow
+                    onChangeFn={(value) => {
+                      updateMeal(value, "size", meal.data.extras["size"].type);
+                    }}
+                    type={meal.data.extras["size"].type}
+                    value={meal.data.extras["size"].value}
+                    title={"size"}
+                    options={meal.data.extras["size"].options}
+                  />
                 </View>
               )}
 
               {meal.data?.categoryId == "1" && (
-                <View style={{  }}>
-                  <View style={{ marginTop: 30, width: "100%", }}>
-                    <GradiantRow
-                      onChangeFn={(value) => {
-                        updateMeal(
-                          value,
-                          "halfOne",
-                          meal.data.extras["halfOne"].type
-                        );
-                      }}
-                      type={meal.data.extras["halfOne"].type}
-                      value={meal.data.extras["halfOne"].value}
-                      title={"halfOne"}
-                      options={storeDataStore.storeData.pizzaExtras}
+                <View style={{ marginTop: 10 }}>
+                  <View style={{ marginHorizontal: 40, marginBottom: 20 }}>
+                    <ToggleControl
+                      value={selectedPizzaHalf}
+                      option1={"halfOne"}
+                      option2={"halfTwo"}
+                      onChange={(value) => setSelectedPizzaHalf(value)}
                     />
-                  </View>
-                  <View style={{ marginTop: 5, width: "100%" }}>
-                    <GradiantRow
-                      onChangeFn={(value) => {
-                        updateMeal(
-                          value,
-                          "halfTwo",
-                          meal.data.extras["halfTwo"].type
-                        );
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        marginTop: 5,
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
-                      type={meal.data.extras["halfTwo"].type}
-                      value={meal.data.extras["halfTwo"].value}
-                      title={"halfTwo"}
-                      options={storeDataStore.storeData.pizzaExtras}
-                    />
+                    >
+                      <Text
+                        style={{ fontSize: 16, marginRight: 3 }}
+                        type="number"
+                      >
+                        3
+                      </Text>
+                      <Text style={{ fontSize: 16 }}>اضافات مجاناً</Text>
+                    </View>
                   </View>
+                  {selectedPizzaHalf == "halfOne" && (
+                    <View style={{ width: "100%" }}>
+                      <GradiantRow
+                        onChangeFn={(value) => {
+                          updateMeal(
+                            value,
+                            "halfOne",
+                            meal.data.extras["halfOne"].type
+                          );
+                        }}
+                        type={meal.data.extras["halfOne"].type}
+                        value={meal.data.extras["halfOne"].value}
+                        title={"halfOne"}
+                        options={storeDataStore.storeData.pizzaExtras}
+                      />
+                    </View>
+                  )}
+                  {selectedPizzaHalf == "halfTwo" && (
+                    <View style={{ width: "100%" }}>
+                      <GradiantRow
+                        onChangeFn={(value) => {
+                          updateMeal(
+                            value,
+                            "halfTwo",
+                            meal.data.extras["halfTwo"].type
+                          );
+                        }}
+                        type={meal.data.extras["halfTwo"].type}
+                        value={meal.data.extras["halfTwo"].value}
+                        title={"halfTwo"}
+                        options={storeDataStore.storeData.pizzaExtras}
+                      />
+                    </View>
+                  )}
                 </View>
               )}
 
@@ -944,13 +996,12 @@ const MealScreen = ({ route }) => {
         </KeyboardAvoidingView>
       </ScrollView>
       <View style={styles.buttonContainer}>
-    
         <View
           style={{
             width: "60%",
             alignSelf: "center",
             alignItems: "center",
-            flexDirection:'row'
+            flexDirection: "row",
           }}
         >
           <Button
@@ -963,11 +1014,12 @@ const MealScreen = ({ route }) => {
             borderRadious={19}
             disabled={!isValidMeal()}
           />
-          <View style={{marginLeft:10}}>
-          <Text style={{fontSize:22}} type="number"> ₪{meal.data.price * meal.data.extras.counter.value}</Text>
-
+          <View style={{ marginLeft: 10 }}>
+            <Text style={{ fontSize: 22 }} type="number">
+              {" "}
+              ₪{meal.data.price * meal.data.extras.counter.value}
+            </Text>
           </View>
-
         </View>
       </View>
       {meal.data.subCategoryId == "1" && (

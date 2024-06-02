@@ -32,6 +32,7 @@ import _useDeviceType from "../../../hooks/use-device-type";
 import { keys } from "mobx";
 import { useTranslation } from "react-i18next";
 import CustomFastImage from "../../../components/custom-fast-image";
+import Icon from "../../../components/icon";
 const loaderGif = require("../../../assets/loder.gif");
 
 
@@ -190,10 +191,40 @@ const CategoryItemsList = ({ productsList, category }) => {
         <TouchableOpacity onPress={()=>onItemSelect(productsList[0])}>
           {category.categoryId === 1 &&(
             <Animated.View
-              style={{ transform: [{ translateY: productsAnim.current }] }}
+              style={{ transform: [{ translateY: productsAnim.current }],  backgroundColor:themeStyle.SECONDARY_COLOR, marginHorizontal:50, paddingVertical:50, borderRadius:30,      
+              
+              shadowColor: themeStyle.SECONDARY_COLOR,
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.9,
+              shadowRadius: 6,
+              elevation: 0,
+              borderWidth: 0,
+           }}
             >
-      
-                        <Image source={mealsImages.pizza} style={{ alignSelf: "center", width:350, height:350, borderRadius:10, marginTop:10 }} />
+              <View style={{backgroundColor:themeStyle.PRIMARY_COLOR,position:'absolute', alignSelf:'center', top:-30,padding:10, borderRadius:20}}>
+              <Icon
+                        icon="shopping-bag-plus"
+                        size={40}
+                        style={{ color:themeStyle.SECONDARY_COLOR,}}/>
+              </View>
+          
+                  <View style={{
+                       shadowColor: 'black',
+                       shadowOffset: {
+                         width: 0,
+                         height: 2,
+                       },
+                       shadowOpacity: 0.9,
+                       shadowRadius: 6,
+                       elevation: 0,
+                       borderWidth: 0,
+                  }}>
+                  <Image source={mealsImages.pizza} style={{ alignSelf: "center", width:250, height:250, borderRadius:10, marginTop:10,  }} />
+
+                  </View>
 
             </Animated.View>
           )}
@@ -248,11 +279,11 @@ const CategoryItemsList = ({ productsList, category }) => {
                   <View
                     key={item._id}
                     style={{
-                      marginTop:
+                      marginBottom:
                         productsList?.length > 1
                           ? index % 2 === 0
-                            ? -15
-                            : 15
+                            ? 40
+                            : 40
                           : 0,
                       flexBasis: "48.5%",
                     }}
@@ -311,7 +342,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row-reverse",
     flexWrap: "wrap",
-    marginTop: 20,
+    marginTop: 30,
     maxWidth: 600,
     justifyContent: "space-between",
     paddingHorizontal: 8,

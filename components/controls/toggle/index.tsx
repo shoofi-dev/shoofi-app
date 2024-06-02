@@ -1,76 +1,103 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
+import { ToggleButton } from "react-native-paper";
+import Icon from "../../icon";
 import themeStyle from "../../../styles/theme.style";
+import { useTranslation } from "react-i18next";
 
-export default function Toggle({ onCounterChange, value, stepValue = 1, minValue = 0, isVertical = false }) {
-  const [couter, setCounter] = useState(value || 0);
-  const onBtnClick = (value) => {
-    if ((couter === 0 && value === -1) || (couter + value < minValue )) {
-      return;
-    }
-    const updatedValue = couter + value;
-    setCounter(updatedValue);
-    onCounterChange(updatedValue);
-  };
-  useEffect(()=>{
-    setCounter(value || 0)
-  },[value]);
+export default function ToggleControl({ onChange, value, option1, option2 }) {
+
+  const { t } = useTranslation();
+
+  
 
   return (
-    // <View style={{...styles.container, flexDirection: isVertical? "column" : "row"}}>
-    //          <ToggleButton.Row
-    //           onValueChange={(value) => setShippingMethod(value)}
-    //           value={shippingMethod}
-    //           style={styles.togglleContainer}
-    //         >
-    //           <ToggleButton
-    //             style={{
-    //               ...styles.togglleCItem,
-    //               backgroundColor:
-    //                 shippingMethod === SHIPPING_METHODS.shipping
-    //                   ? theme.PRIMARY_COLOR
-    //                   : "white",
-    //             }}
-    //             icon={() => (
-    //               <View style={styles.togglleItemContentContainer}>
-    //                 <Icon
-    //                   icon="shipping_icon"
-    //                   size={25}
-    //                   style={{ color: theme.GRAY_700 }}
-    //                 />
-    //                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-    //                   {" "}
-    //                   {t("delivery")}
-    //                 </Text>
-    //               </View>
-    //             )}
-    //             value={SHIPPING_METHODS.shipping}
-    //           />
-    //           <ToggleButton
-    //             style={{
-    //               ...styles.togglleCItem,
-    //               backgroundColor:
-    //                 shippingMethod === SHIPPING_METHODS.takAway
-    //                   ? theme.PRIMARY_COLOR
-    //                   : "white",
-    //             }}
-    //             icon={() => (
-    //               <View style={styles.togglleItemContentContainer}>
-    //                 <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-    //                   {t("take-away")}
-    //                 </Text>
+    <View style={{...styles.container}}>
+   <ToggleButton.Row
+                onValueChange={(value) => onChange(value)}
+                value={value}
+                style={styles.togglleContainer}
+              >
+                <ToggleButton
+                  style={{
+                    ...styles.togglleCItem,
+                    backgroundColor:
+                    value === option1
+                        ? themeStyle.SECONDARY_COLOR
+                        : "transparent",
+                    borderTopRightRadius: 50,
+                    borderBottomRightRadius: 50,
+                  }}
+                  icon={() => (
+                    <View style={styles.togglleItemContentContainer}>
+                      {/* <Icon
+                        icon="delivery-active"
+                        size={25}
+                        style={{
+                          color:
+                            selectedValue === option1
+                              ? themeStyle.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
+                        }}
+                      /> */}
 
-    //                 <Icon
-    //                   icon="cart_burger_icon"
-    //                   size={25}
-    //                   style={{ color: theme.GRAY_700 }}
-    //                 />
-    //               </View>
-    //             )}
-    //             value={SHIPPING_METHODS.takAway}
-    //           />
-    //         </ToggleButton.Row>
-    // </View>
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontWeight: "bold",
+                          color:
+                          value === option1
+                              ? themeStyle.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
+                        }}
+                      >
+                        {t(option1)}
+                      </Text>
+                    </View>
+                  )}
+                  value={option1}
+                />
+                <ToggleButton
+                  style={{
+                    ...styles.togglleCItem,
+                    backgroundColor:
+                    value === option2
+                        ? themeStyle.SECONDARY_COLOR
+                        : "transparent",
+                    borderTopLeftRadius: 50,
+                    borderBottomLeftRadius: 50,
+                  }}
+                  icon={() => (
+                    <View style={styles.togglleItemContentContainer}>
+                      {/* <Icon
+                        icon="cart_icon"
+                        size={25}
+                        style={{
+                          color:
+                            selectedValue === option2
+                              ? themeStyle.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
+                        }}
+                      /> */}
+
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontWeight: "bold",
+                          color:
+                          value === option2
+                              ? themeStyle.TEXT_PRIMARY_COLOR
+                              : themeStyle.WHITE_COLOR,
+                        }}
+                      >
+                        {t(option2)}
+                      </Text>
+                    </View>
+                  )}
+                  value={option2}
+                />
+              </ToggleButton.Row>
+            </View>
   );
 }
 const styles = StyleSheet.create({
@@ -79,22 +106,36 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center"
   },
-  counterValue: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+  togglleContainer: {
+    borderRadius: 50,
+    marginTop: 30,
+    borderWidth: 2,
+    overflow: "hidden",
+    borderColor: themeStyle.PRIMARY_COLOR,
+    flexDirection: "row",
+    width: "100%",
+    shadowColor: "black",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 20,
   },
-  btn: {
-    backgroundColor: themeStyle.PRIMARY_COLOR,
-    width: 30,
-    height: 30,
-    borderRadius: 10,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+  togglleCItem: {
+    borderWidth: 0,
+
+    borderRadius: 50,
+    flex: 1,
+    alignItems: "flex-start",
   },
-  btnText: {
-    fontSize: 20,
-    color: "white",
+  togglleItemContent: {},
+  togglleItemContentContainer: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    height: "100%",
   },
 });

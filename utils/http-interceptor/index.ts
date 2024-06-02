@@ -19,6 +19,9 @@ axiosInstance.interceptors.request.use(
     if (config.headers["Content-Type"] !== "multipart/form-data") {
       config.headers["Content-Type"] = "application/json";
     }
+
+    config.headers["app-name"] = 'pizza-gmel'
+
     return config;
   },
   function (error) {

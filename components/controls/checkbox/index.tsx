@@ -112,8 +112,8 @@ export default function CheckBox({
             <Image
               source={extrasImages[title]}
               style={{
-                height: title === "medium" ? 50 : 60,
-                width: title === "medium" ? 50 : 60,
+                height: title === "medium" ? 60 : 70,
+                width: title === "medium" ? 60 : 70,
     
               }}
               resizeMode="cover"

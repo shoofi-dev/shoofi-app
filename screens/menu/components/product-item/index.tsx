@@ -21,6 +21,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import _useDeviceType from "../../../../hooks/use-device-type";
 import CustomFastImage from "../../../../components/custom-fast-image";
+import Icon from "../../../../components/icon";
 
 
 export type TProps = {
@@ -88,21 +89,13 @@ const ProductItem = ({
     <View
       style={{
         borderRadius: 30,
-        overflow: "hidden",
-        // shadowColor: "#C19A6B",
-        // shadowOffset: {
-        //   width: 0,
-        //   height: 2,
-        // },
-        // shadowOpacity: 0.9,
-        // shadowRadius: 6,
-        // elevation: 10,
-        // borderWidth:0,
+
         // backgroundColor:'transparent',
-        backgroundColor:themeStyle.SECONDARY_COLOR, width:"70%", padding:15, alignSelf:'center',
+        backgroundColor:themeStyle.SECONDARY_COLOR, width:"70%", padding:30, alignSelf:'center',
         
       }}
     >
+     
               {/* <LinearGradient
         colors={[
           "rgba(207, 207, 207, 0.9)",
@@ -124,7 +117,23 @@ const ProductItem = ({
         key={item.id}
         disabled={isDisabled(item)}
       >
-        <View style={{ height: deviceType === devicesType.tablet ? 250 : 120 }}>
+              <View style={{backgroundColor:themeStyle.PRIMARY_COLOR,position:'absolute', alignSelf:'center', top:-55,padding:10, borderRadius:20, zIndex:1}}>
+              <Icon
+                        icon="shopping-bag-plus"
+                        size={25}
+                        style={{ color:themeStyle.SECONDARY_COLOR,}}/>
+              </View>
+        <View style={{ height: deviceType === devicesType.tablet ? 250 : 120, 
+           shadowColor: 'black',
+           shadowOffset: {
+             width: 0,
+             height: 2,
+           },
+           shadowOpacity: 0.9,
+           shadowRadius: 6,
+           elevation: 0,
+           borderWidth: 0,
+        }}>
           {/* <CustomFastImage
             style={{
               height: deviceType === devicesType.tablet ? 350 : 250,
@@ -148,7 +157,7 @@ const ProductItem = ({
           source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
           resizeMode={"cover"}
         > */}
-          <View
+          {/* <View
             style={{
               backgroundColor: "rgba(247,247,247,0.6)",
               alignItems: "center",
@@ -166,7 +175,7 @@ const ProductItem = ({
             >
               {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
             </Text>
-          </View>
+          </View> */}
           {/* <LinearGradient
           colors={["rgba(250, 249, 248,1)", "rgba(250, 249, 248,1)"]}
           start={{ x: 1, y: 0 }}
@@ -362,7 +371,6 @@ const styles = StyleSheet.create({
   },
   categoryItem: {
     width: "95%",
-    overflow: "hidden",
     //height: 280,
     borderRadius: 30,
     // backgroundColor: "rgba(255, 255, 255, 0.7)",
@@ -387,7 +395,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 4,
     height: "100%",
-    shadowColor: "black",
     width: 150,
   },
   background: {

@@ -261,6 +261,7 @@ const MenuScreen = () => {
                 category.categoryId === tmpSelectedCategory?.categoryId
                   ? "flex"
                   : "none",
+                  marginTop:20
             }}
           >
             <CategoryItemsList

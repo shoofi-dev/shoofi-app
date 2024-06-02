@@ -86,16 +86,19 @@ const MenuItem = ({
             styles.iconContainer,
 
             {
-              // backgroundColor:
-              // category?._id === selectedCategory?._id
-              //     ? themeStyle.PRIMARY_COLOR
-              //     : themeStyle.WHITE_COLOR,
+        shadowColor: 'black',
+           shadowOffset: {
+             width: 0,
+             height: 2,
+           },
+           shadowOpacity: 0.9,
+           shadowRadius: 6,
+           elevation: 0,
+           borderWidth: 0,
             },
           ]}
         >
-          {item.categoryId == "8" ? (
-            <Icon icon="special-cake" size={40}  />
-          ) : (
+
             <Image
               style={{
                 width: selectedItem._id === item._id ? "90%" : "90%",
@@ -111,7 +114,7 @@ const MenuItem = ({
                 ]
               }
             />
-          )}
+    
         </View>
       </TouchableOpacity>
         <View style={{ marginTop: 10, width: "140%", alignItems: "center" }}>

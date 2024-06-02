@@ -8,9 +8,9 @@ import themeStyle from "../../styles/theme.style";
 
 export type TProps = {
   goTo?: string;
-  onClick?:any;
-}
-export default function BackButton({goTo, onClick}: TProps) {
+  onClick?: any;
+};
+export default function BackButton({ goTo, onClick }: TProps) {
   const navigation = useNavigation();
 
   const onBtnClick = () => {
@@ -19,18 +19,20 @@ export default function BackButton({goTo, onClick}: TProps) {
     const routes = navigation.getState()?.routes;
     const currentRoute = routes[routes.length - 1]; // -2 because -1 is the current route
     const prevRoute = routes[routes.length - 2]; // -2 because -1 is the current route
-    if ((currentRoute.name === "cart" || currentRoute.name === "profile") && (prevRoute.name === "verify-code" || prevRoute.name === "insert-customer-name")) {
+    if (
+      (currentRoute.name === "cart" || currentRoute.name === "profile") &&
+      (prevRoute.name === "verify-code" ||
+        prevRoute.name === "insert-customer-name")
+    ) {
       navigation.navigate("homeScreen");
       return;
     }
-    if(goTo){
+    if (goTo) {
       navigation.navigate(goTo);
       return;
     }
     navigation.goBack();
   };
-
-
 
   return (
     <View style={styles.container}>
@@ -41,18 +43,19 @@ export default function BackButton({goTo, onClick}: TProps) {
       >
         <View
           style={{
-            borderWidth: 2,
-            borderColor: themeStyle.WHITE_COLOR,
             borderRadius: 30,
             width: 35,
             height: 35,
             alignItems: "center",
             justifyContent: "center",
             marginVertical: 10,
-            transform: [{ rotate: "180deg" }],
           }}
         >
-          <Icon icon="arrow-right" size={17} style={{ color:themeStyle.WHITE_COLOR, }} />
+          <Icon
+            icon={"arrow-left2"}
+            style={{ color: themeStyle.WHITE_COLOR }}
+            size={30}
+          />
         </View>
       </TouchableOpacity>
     </View>

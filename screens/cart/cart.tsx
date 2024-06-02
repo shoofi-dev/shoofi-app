@@ -940,18 +940,7 @@ const CartScreen = ({ route }) => {
         <View style={{ ...styles.container }}>
           <View style={{ paddingHorizontal: 20 }}>
             <View style={styles.backContainer}>
-              <View
-                style={{
-                  width: 35,
-                  height: 35,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginVertical: 10,
-                  marginLeft: 10,
-                }}
-              >
-                <BackButton onClick={onBackClick} />
-              </View>
+   
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text
                   style={{
@@ -970,6 +959,18 @@ const CartScreen = ({ route }) => {
                 >
                   {cartStore.getProductsCount()}{" "}
                 </Text>
+              </View>
+              <View
+                style={{
+                  width: 35,
+                  height: 35,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginVertical: 10,
+                  marginLeft: 10,
+                }}
+              >
+                <BackButton onClick={onBackClick} />
               </View>
             </View>
 
@@ -1113,6 +1114,16 @@ const CartScreen = ({ route }) => {
                                 style={{
                                   width: 100,
                                   height: 90,
+                                  padding:5,
+                                  shadowColor: 'black',
+                                  shadowOffset: {
+                                    width: 0,
+                                    height: 2,
+                                  },
+                                  shadowOpacity: 0.9,
+                                  shadowRadius: 6,
+                                  elevation: 0,
+                                  borderWidth: 0,
                                 }}
                               >
                                 <Image
