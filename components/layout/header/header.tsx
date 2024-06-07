@@ -23,7 +23,7 @@ import Button from "../../controls/button/button";
 import { WS_URL } from "../../../consts/api";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
-const hideHHeaderScreens = ["login", "verify-code", "meal"];
+const hideHHeaderScreens = ["login", "verify-code", "meal", "terms-and-conditions"];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];
 const hideProfile = ["terms-and-conditions"];
@@ -370,17 +370,14 @@ const Header = () => {
                       height: 30,
                       left: -5,
                       overflow: "hidden",
-                      borderColor: "#a77948",
+                      borderColor: 'black',
                       top: -2,
+                      backgroundColor: themeStyle.TEXT_PRIMARY_COLOR,
+                      alignItems:'center'
                     },
                   ]}
                 >
-                  <LinearGradient
-                    colors={["#a77948", "#eaaa5c"]}
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={[styles.background, { borderRadius: 30 }]}
-                  />
+              
                   <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>
                     {ordersStore?.notViewdOrders?.length}
                   </Text>
@@ -496,7 +493,7 @@ const styles = StyleSheet.create({
   cartCount: {
      position: "absolute",
     top: Platform.OS === 'ios' ? 19 : 20,
-    color: themeStyle.BROWN_700,
+    color: themeStyle.TEXT_PRIMARY_COLOR,
     fontSize:15
   },
   buttonContainer: {

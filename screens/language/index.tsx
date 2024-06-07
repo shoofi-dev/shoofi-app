@@ -31,11 +31,11 @@ const LanguageScreen = ({ route }) => {
             "rgba(232, 232, 230, 0.5)",
             "rgba(232, 232, 230, 0.4)",
             "rgba(232, 232, 230, 0.4)",
-            "rgba(207, 207, 207, 1)",
+            "rgba(207, 207, 207, 0.6)",
           ]}
           start={{ x: 1, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={[styles.background,{marginHorizontal:10}]}
+          style={[styles.background]}
         />
       <View style={{ alignItems: "center" }}>
         <View>
@@ -67,7 +67,7 @@ const LanguageScreen = ({ route }) => {
           <TouchableOpacity
             style={{
               backgroundColor:
-              getCurrentLang() === "ar" && themeStyle.WHITE_COLOR,
+              getCurrentLang() === "ar" && themeStyle.SECONDARY_COLOR,
             alignItems: "center",
             justifyContent: "center",
             paddingHorizontal:20,
@@ -80,12 +80,12 @@ const LanguageScreen = ({ route }) => {
               onChangeLanguage("ar");
             }}
           >
-            { getCurrentLang() === "ar" &&<LinearGradient
+            {/* { getCurrentLang() === "ar" &&<LinearGradient
             colors={["#a77948", "#eaaa5c"]}
             start={{ x: 1, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={[styles.background,{borderRadius:20}]}
-          /> } 
+          /> }  */}
             <Text style={{  fontSize: 29,
              color: getCurrentLang() === "ar" ? themeStyle.WHITE_COLOR : themeStyle.PRIMARY_COLOR,
             }}>
@@ -95,7 +95,7 @@ const LanguageScreen = ({ route }) => {
           <TouchableOpacity
             style={{
               backgroundColor:
-                getCurrentLang() === "he" && themeStyle.WHITE_COLOR,
+                getCurrentLang() === "he" && themeStyle.SECONDARY_COLOR,
               alignItems: "center",
               justifyContent: "center",
               paddingHorizontal:20,
@@ -107,12 +107,7 @@ const LanguageScreen = ({ route }) => {
               onChangeLanguage("he");
             }}
           >
-             { getCurrentLang() === "he" &&<LinearGradient
-            colors={["#a77948", "#eaaa5c"]}
-            start={{ x: 1, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={[styles.background,{borderRadius:20}]}
-          /> } 
+        
             <Text style={{ fontFamily: "he-SemiBold", fontSize: 29,             color: getCurrentLang() === "he" ? themeStyle.WHITE_COLOR : themeStyle.PRIMARY_COLOR,
  }}>
             עברית
@@ -127,13 +122,9 @@ export default observer(LanguageScreen);
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    borderRadius: 10,
     width: "100%",
-    borderColor: "rgba(112,112,112,0.1)",
-    height: "80%",
+    height: "100%",
     justifyContent:'center',
-    margin:40,
     alignSelf:'center',
   },
   textLang: {
@@ -145,7 +136,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 0,
-    bottom: 0,
-    borderRadius: 50,
+    bottom: "0%",
+    borderRadius: 0,
   },
 });

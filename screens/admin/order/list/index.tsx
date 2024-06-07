@@ -722,13 +722,13 @@ const OrdersListScreen = ({ route }) => {
       }
 
       return (
-        <View style={{}}>
+        <View style={{ marginTop: 10 }}>
           {index !== 0 && (
             <DashedLine
               dashLength={5}
               dashThickness={1}
-              dashGap={0}
-              dashColor={themeStyle.GRAY_300}
+              dashGap={5}
+              dashColor={themeStyle.TEXT_PRIMARY_COLOR}
               style={{ marginTop: 15 }}
             />
           )}
@@ -736,7 +736,6 @@ const OrdersListScreen = ({ route }) => {
             style={{
               flexDirection: "row",
               marginTop: index !== 0 ? 15 : 0,
-              alignItems: "center",
               paddingHorizontal: 5,
               flexWrap: "wrap",
             }}
@@ -746,7 +745,7 @@ const OrdersListScreen = ({ route }) => {
                 <View
                   style={{
                     flexBasis: "20%",
-                    height: 180,
+                    height: 190,
                     marginVertical: 10,
                   }}
                 >
@@ -771,17 +770,18 @@ const OrdersListScreen = ({ route }) => {
                 alignItems: "flex-start",
                 marginLeft: 50,
                 flexDirection: "column",
-                width:"70%",
+                width: "70%",
               }}
             >
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  borderWidth:1,
-                  width:"100%",
-                  justifyContent:'center',
-                  borderColor:themeStyle.TEXT_PRIMARY_COLOR, padding:10
+                  borderWidth: 1,
+                  width: "100%",
+                  justifyContent: "center",
+                  borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                  padding: 10,
                 }}
               >
                 <Text
@@ -795,98 +795,140 @@ const OrdersListScreen = ({ route }) => {
                     : meal.nameHE}
                 </Text>
               </View>
-            
-              <View style={{flexDirection:'row', justifyContent:'space-between', width:"60%",marginTop:15}}>
-                <View style={{}}>
-                  {item?.halfOne && (
-                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:6, borderColor:themeStyle.TEXT_PRIMARY_COLOR }}>
-                      <Text
-                        style={{
-                          textAlign: "left",
-                          fontSize: 28,
-                         
-                        }}
-                      >
-                        {t("halfOne")}
-                      </Text>
-                    </View>
-                  )}
-                  {item?.halfOne &&
-                    Object.keys(item?.halfOne).map((key) => {
-                      return (
-                        <View style={{marginLeft:10, marginTop:10}}>
-                          <View style={{ flexDirection: "row" }}>
-                            <Text
-                              style={{
-                                textAlign: "left",
-                                fontSize: 24,
-                                marginTop: 10,
-                              }}
-                              type="number"
-                            >
-                              {`${Number(key) + 1}`}
-                            </Text>
-                            <Text
-                              style={{
-                                textAlign: "left",
-                                fontSize: 24,
-                                marginTop: 10,
-                              }}
-                            >
-                              {" "}
-                              - {t(item?.halfOne[key])}
-                            </Text>
-                          </View>
-                        </View>
-                      );
-                    })}
-                </View>
 
-                <View style={{}}>
-                  {item?.halfTwo && (
-                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:6, borderColor:themeStyle.TEXT_PRIMARY_COLOR}}>
-                      <Text
-                        style={{
-                          textAlign: "left",
-                          fontSize: 28,
-                         
-                        }}
-                      >
-                        {t("halfTwo")}
-                      </Text>
-                    </View>
-                  )}
-                  {item?.halfTwo &&
-                    Object.keys(item?.halfTwo).map((key) => {
-                      return (
-                        <View style={{marginLeft:10, marginTop:10}}>
-                          <View style={{ flexDirection: "row" }}>
-                            <Text
-                              style={{
-                                textAlign: "left",
-                                fontSize: 24,
-                                marginTop: 10,
-                              }}
-                              type="number"
-                            >
-                              {`${Number(key) + 1}`}
-                            </Text>
-                            <Text
-                              style={{
-                                textAlign: "left",
-                                fontSize: 24,
-                                marginTop: 10,
-                              }}
-                            >
-                              {" "}
-                              - {t(item?.halfTwo[key])}
-                            </Text>
-                          </View>
+              <View style={{ marginTop: 15 }}>
+                {(item?.halfOne || item?.halfTwo) && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "60%",
+                      marginBottom: 30,
+                    }}
+                  >
+                    <View style={{}}>
+                      {item?.halfOne && (
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            paddingVertical: 6,
+                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              textAlign: "left",
+                              fontSize: 28,
+                            }}
+                          >
+                            {t("halfOne")}
+                          </Text>
                         </View>
-                      );
-                    })}
-                </View>
+                      )}
+                      {item?.halfOne.length > 0 ? (
+                        Object.keys(item?.halfOne).map((key) => {
+                          return (
+                            <View style={{ marginLeft: 10, marginTop: 10 }}>
+                              <View style={{ flexDirection: "row" }}>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 24,
+                                    marginTop: 10,
+                                  }}
+                                  type="number"
+                                >
+                                  {`${Number(key) + 1}`}
+                                </Text>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 24,
+                                    marginTop: 10,
+                                  }}
+                                >
+                                  {" "}
+                                  - {t(item?.halfOne[key])}
+                                </Text>
+                              </View>
+                            </View>
+                          );
+                        })
+                      ) : (
+                        <Text
+                          style={{
+                            textAlign: "left",
+                            fontSize: 24,
+                            marginTop: 12,
+                          }}
+                        >
+                          من غير اضافات
+                        </Text>
+                      )}
+                    </View>
 
+                    <View style={{}}>
+                      {item?.halfTwo && (
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            paddingVertical: 6,
+                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              textAlign: "left",
+                              fontSize: 28,
+                            }}
+                          >
+                            {t("halfTwo")}
+                          </Text>
+                        </View>
+                      )}
+                      {item?.halfTwo.length > 0 ? (
+                        Object.keys(item?.halfTwo).map((key) => {
+                          return (
+                            <View style={{ marginLeft: 10, marginTop: 10 }}>
+                              <View style={{ flexDirection: "row" }}>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 24,
+                                    marginTop: 10,
+                                  }}
+                                  type="number"
+                                >
+                                  {`${Number(key) + 1}`}
+                                </Text>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 24,
+                                    marginTop: 10,
+                                  }}
+                                >
+                                  {" "}
+                                  - {t(item?.halfTwo[key])}
+                                </Text>
+                              </View>
+                            </View>
+                          );
+                        })
+                      ) : (
+                        <Text
+                          style={{
+                            textAlign: "left",
+                            fontSize: 24,
+                            marginTop: 12,
+                          }}
+                        >
+                          من غير اضافات
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                )}
               </View>
               {/* <DashedLine
               dashLength={5}
@@ -895,17 +937,40 @@ const OrdersListScreen = ({ route }) => {
               dashColor={themeStyle.GRAY_600}
               style={{ marginTop: 15, width:"100%" }}
             /> */}
-              <View style={{marginTop:15}}>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <Text
                   style={{
                     fontSize: 24,
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
                   }}
                 >
-                  {t("count")}: {item.qty}
+                  {t("count")} : {item.qty}
+                </Text>
+                <View style={{ marginHorizontal: 15 }}>
+                  <Text
+                    style={{
+                      fontSize: 24,
+                    }}
+                  >
+                    |
+                  </Text>
+                </View>
+
+                <Text
+                  style={{
+                    fontSize: 24,
+                  }}
+                >
+                  {t("price")} : ₪{item.price * item.qty}
                 </Text>
               </View>
-              <View style={{ marginTop: 2, alignItems: "center" }}>
+              {/* <View style={{ marginTop: 2, alignItems: "center" }}>
                 <Text
                   style={{
                     fontSize: 24,
@@ -914,7 +979,7 @@ const OrdersListScreen = ({ route }) => {
                   {t("price")}: ₪
                   {(item.item_id === 3027 ? item.price : item.price) * item.qty}
                 </Text>
-              </View>
+              </View> */}
               {item.note && (
                 <View
                   style={{
@@ -944,7 +1009,6 @@ const OrdersListScreen = ({ route }) => {
                 </View>
               )}
             </View>
-
           </View>
         </View>
       );
@@ -1130,7 +1194,7 @@ const OrdersListScreen = ({ route }) => {
             alignItems: "center",
             position: "absolute",
             justifyContent: "center",
-            backgroundColor: "rgba(232, 232, 230, 0.8)",
+            backgroundColor: "rgba(232, 232, 230, 0.1)",
           }}
         >
           <View>
@@ -1566,7 +1630,7 @@ const styles = StyleSheet.create({
   dateRawText: {
     fontSize: 24,
     fontFamily: `${getCurrentLang()}-SemiBold`,
-    color: themeStyle.GRAY_700,
+    color: themeStyle.TEXT_PRIMARY_COLOR,
   },
   totalPriceText: {
     fontSize: 24,

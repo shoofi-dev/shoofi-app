@@ -29,13 +29,11 @@ const OrderSubmittedScreen = ({ route }) => {
   }, []);
 
   const goToOrderStatus = () => {
-    navigation.navigate("homeScreen");
-
-    // if(userDetailsStore.isAdmin()){
-    //   navigation.navigate("homeScreen");
-    // }else{
-    //   navigation.navigate("orders-status");
-    // }
+    if(userDetailsStore.isAdmin()){
+      navigation.navigate("homeScreen");
+    }else{
+      navigation.navigate("order-history");
+    }
   };
 
   return (
@@ -121,7 +119,7 @@ const OrderSubmittedScreen = ({ route }) => {
               fontSize={20}
               fontFamily={`${getCurrentLang()}-SemiBold`}
               // text={userDetailsStore.isAdmin() ? t("new-order") : t("current-orderds")}
-              text={t("new-order")}
+              text={t("current-orderds")}
             />
           </View>
         </View>

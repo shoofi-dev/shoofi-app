@@ -208,7 +208,7 @@ const DashboardScreen = () => {
           height: 150,
           alignItems: "center",
           justifyContent: "center",
-          shadowColor: "#C19A6B",
+          shadowColor: themeStyle.GRAY_300,
           shadowOffset: {
             width: 0,
             height: 2,
@@ -216,22 +216,11 @@ const DashboardScreen = () => {
           shadowOpacity: 0.5,
           shadowRadius: 6,
           elevation: 20,
+          backgroundColor: themeStyle.SECONDARY_COLOR,
+          borderRadius:20
         }}
       >
-        <LinearGradient
-          colors={
-            item.bgColor || [
-              "rgba(207, 207, 207, 0.6)",
-              "rgba(232, 232, 230, 0.5)",
-              "rgba(232, 232, 230, 0.4)",
-              "rgba(232, 232, 230, 0.4)",
-              "rgba(207, 207, 207, 1)",
-            ]
-          }
-          start={{ x: 1, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.background]}
-        />
+    
         <TouchableOpacity onPress={() => actionHandler(item.key)} style={{}}>
           <View style={styles.rowContainer}>
             <View style={{ alignItems: "center" }}>
@@ -253,8 +242,8 @@ const DashboardScreen = () => {
               <View>
                 <Text
                   style={{
-                    fontSize: 20,
-                    color: "#442213",
+                    fontSize: 24,
+                    color: themeStyle.TEXT_PRIMARY_COLOR,
                     textAlign: "center",
                   }}
                 >

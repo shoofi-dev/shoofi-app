@@ -13,6 +13,8 @@ import { useTranslation } from "react-i18next";
 import Text from "../../components/controls/Text";
 import { temrsText } from "./texts";
 import { ScrollView } from "react-native-gesture-handler";
+import { LinearGradient } from "expo-linear-gradient";
+
 export default function TermsAndConditionsScreen() {
   const { t } = useTranslation();
 
@@ -34,9 +36,23 @@ export default function TermsAndConditionsScreen() {
   return (
     <View>
       <View style={{ height: "100%" }}>
+      <LinearGradient
+          colors={[
+            "rgba(207, 207, 207, 0.4)",
+            "rgba(246,246,247, 0.8)",
+            "rgba(246,246,247, 0.8)",
+            "rgba(246,246,247, 0.8)",
+            "rgba(246,246,247, 0.8)",
+            "rgba(246,246,247, 0.8)",
+            "rgba(207, 207, 207, 0.4)",
+          ]}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.background]}
+        />
         <View style={{ alignItems: "center", marginTop: 20, paddingBottom: 8 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-            Creme Caramel
+            פיצה ג׳מיל
           </Text>
           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
             תנאי שימוש / מדיניות פרטיות
@@ -164,5 +180,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "left",
     fontFamily: "he-Light",
+  },
+  background: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: "0%",
+    borderRadius: 0,
   },
 });

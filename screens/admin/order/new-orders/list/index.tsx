@@ -50,37 +50,37 @@ export const canceledStatuses = ["4", "5"];
 const deliveryTime = [
   {
     label: 10,
-    value: 10
+    value: 10,
   },
   {
     label: 15,
-    value: 15
+    value: 15,
   },
   {
     label: 20,
-    value: 20
+    value: 20,
   },
   {
     label: 25,
-    value: 25
+    value: 25,
   },
   {
     label: 30,
-    value: 30
+    value: 30,
   },
   {
     label: 35,
-    value: 35
+    value: 35,
   },
   {
     label: 40,
-    value: 40
+    value: 40,
   },
   {
     label: 45,
-    value: 45
-  }
-]
+    value: 45,
+  },
+];
 const NewOrdersListScreen = ({ route }) => {
   // const from_date = today.startOf('week');
   // const to_date = today.endOf('week');
@@ -121,14 +121,12 @@ const NewOrdersListScreen = ({ route }) => {
   const [selectedImageShow, setSelectedImageShow] = useState("");
   const [selectedTime, setSelectedTime] = useState({});
 
-  const updateSelectedTime = (orderId,time) => {
-    if(typeof time !== 'object'){
+  const updateSelectedTime = (orderId, time) => {
+    if (typeof time !== "object") {
       console.log("time", time, orderId);
-      setSelectedTime({[orderId]: time});
+      setSelectedTime({ [orderId]: time });
     }
-  
-
-  }
+  };
 
   const handleShowImage = (uri: any) => {
     setShowImageDialog(true);
@@ -421,7 +419,7 @@ const NewOrdersListScreen = ({ route }) => {
           {true && (
             <View>
               {order.orderDate && (
-                <View style={{ flexDirection: "row", alignItems: "center"  }}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <View>
                     <Text style={styles.totalPriceText}>
                       {t("order-sent-date")}:
@@ -615,13 +613,13 @@ const NewOrdersListScreen = ({ route }) => {
       }
 
       return (
-        <View style={{}}>
+        <View style={{ marginTop: 10 }}>
           {index !== 0 && (
             <DashedLine
               dashLength={5}
               dashThickness={1}
-              dashGap={0}
-              dashColor={themeStyle.GRAY_300}
+              dashGap={5}
+              dashColor={themeStyle.TEXT_PRIMARY_COLOR}
               style={{ marginTop: 15 }}
             />
           )}
@@ -629,7 +627,6 @@ const NewOrdersListScreen = ({ route }) => {
             style={{
               flexDirection: "row",
               marginTop: index !== 0 ? 15 : 0,
-              alignItems: "center",
               paddingHorizontal: 5,
               flexWrap: "wrap",
             }}
@@ -639,7 +636,7 @@ const NewOrdersListScreen = ({ route }) => {
                 <View
                   style={{
                     flexBasis: "20%",
-                    height: 180,
+                    height: 190,
                     marginVertical: 10,
                   }}
                 >
@@ -664,17 +661,18 @@ const NewOrdersListScreen = ({ route }) => {
                 alignItems: "flex-start",
                 marginLeft: 50,
                 flexDirection: "column",
-                width:"70%",
+                width: "70%",
               }}
             >
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  borderWidth:1,
-                  width:"100%",
-                  justifyContent:'center',
-                  borderColor:themeStyle.TEXT_PRIMARY_COLOR, padding:10
+                  borderWidth: 1,
+                  width: "100%",
+                  justifyContent: "center",
+                  borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                  padding: 10,
                 }}
               >
                 <Text
@@ -688,98 +686,140 @@ const NewOrdersListScreen = ({ route }) => {
                     : meal.nameHE}
                 </Text>
               </View>
-            
-              <View style={{flexDirection:'row', justifyContent:'space-between', width:"60%",marginTop:15}}>
-                <View style={{}}>
-                  {item?.halfOne && (
-                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:6, borderColor:themeStyle.TEXT_PRIMARY_COLOR }}>
-                      <Text
-                        style={{
-                          textAlign: "left",
-                          fontSize: 28,
-                         
-                        }}
-                      >
-                        {t("halfOne")}
-                      </Text>
-                    </View>
-                  )}
-                  {item?.halfOne &&
-                    Object.keys(item?.halfOne).map((key) => {
-                      return (
-                        <View style={{marginLeft:10, marginTop:10}}>
-                          <View style={{ flexDirection: "row" }}>
-                            <Text
-                              style={{
-                                textAlign: "left",
-                                fontSize: 24,
-                                marginTop: 10,
-                              }}
-                              type="number"
-                            >
-                              {`${Number(key) + 1}`}
-                            </Text>
-                            <Text
-                              style={{
-                                textAlign: "left",
-                                fontSize: 24,
-                                marginTop: 10,
-                              }}
-                            >
-                              {" "}
-                              - {t(item?.halfOne[key])}
-                            </Text>
-                          </View>
-                        </View>
-                      );
-                    })}
-                </View>
 
-                <View style={{}}>
-                  {item?.halfTwo && (
-                    <View style={{borderTopWidth:1, borderBottomWidth:1,paddingVertical:6, borderColor:themeStyle.TEXT_PRIMARY_COLOR}}>
-                      <Text
-                        style={{
-                          textAlign: "left",
-                          fontSize: 28,
-                         
-                        }}
-                      >
-                        {t("halfTwo")}
-                      </Text>
-                    </View>
-                  )}
-                  {item?.halfTwo &&
-                    Object.keys(item?.halfTwo).map((key) => {
-                      return (
-                        <View style={{marginLeft:10, marginTop:10}}>
-                          <View style={{ flexDirection: "row" }}>
-                            <Text
-                              style={{
-                                textAlign: "left",
-                                fontSize: 24,
-                                marginTop: 10,
-                              }}
-                              type="number"
-                            >
-                              {`${Number(key) + 1}`}
-                            </Text>
-                            <Text
-                              style={{
-                                textAlign: "left",
-                                fontSize: 24,
-                                marginTop: 10,
-                              }}
-                            >
-                              {" "}
-                              - {t(item?.halfTwo[key])}
-                            </Text>
-                          </View>
+              <View style={{ marginTop: 15 }}>
+                {(item?.halfOne || item?.halfTwo) && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "60%",
+                      marginBottom: 30,
+                    }}
+                  >
+                    <View style={{}}>
+                      {item?.halfOne && (
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            paddingVertical: 6,
+                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              textAlign: "left",
+                              fontSize: 28,
+                            }}
+                          >
+                            {t("halfOne")}
+                          </Text>
                         </View>
-                      );
-                    })}
-                </View>
+                      )}
+                      {item?.halfOne.length > 0 ? (
+                        Object.keys(item?.halfOne).map((key) => {
+                          return (
+                            <View style={{ marginLeft: 10, marginTop: 10 }}>
+                              <View style={{ flexDirection: "row" }}>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 24,
+                                    marginTop: 10,
+                                  }}
+                                  type="number"
+                                >
+                                  {`${Number(key) + 1}`}
+                                </Text>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 24,
+                                    marginTop: 10,
+                                  }}
+                                >
+                                  {" "}
+                                  - {t(item?.halfOne[key])}
+                                </Text>
+                              </View>
+                            </View>
+                          );
+                        })
+                      ) : (
+                        <Text
+                          style={{
+                            textAlign: "left",
+                            fontSize: 24,
+                            marginTop: 12,
+                          }}
+                        >
+                          من غير اضافات
+                        </Text>
+                      )}
+                    </View>
 
+                    <View style={{}}>
+                      {item?.halfTwo && (
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            paddingVertical: 6,
+                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              textAlign: "left",
+                              fontSize: 28,
+                            }}
+                          >
+                            {t("halfTwo")}
+                          </Text>
+                        </View>
+                      )}
+                      {item?.halfTwo.length > 0 ? (
+                        Object.keys(item?.halfTwo).map((key) => {
+                          return (
+                            <View style={{ marginLeft: 10, marginTop: 10 }}>
+                              <View style={{ flexDirection: "row" }}>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 24,
+                                    marginTop: 10,
+                                  }}
+                                  type="number"
+                                >
+                                  {`${Number(key) + 1}`}
+                                </Text>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 24,
+                                    marginTop: 10,
+                                  }}
+                                >
+                                  {" "}
+                                  - {t(item?.halfTwo[key])}
+                                </Text>
+                              </View>
+                            </View>
+                          );
+                        })
+                      ) : (
+                        <Text
+                          style={{
+                            textAlign: "left",
+                            fontSize: 24,
+                            marginTop: 12,
+                          }}
+                        >
+                          من غير اضافات
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                )}
               </View>
               {/* <DashedLine
               dashLength={5}
@@ -788,17 +828,40 @@ const NewOrdersListScreen = ({ route }) => {
               dashColor={themeStyle.GRAY_600}
               style={{ marginTop: 15, width:"100%" }}
             /> */}
-              <View style={{marginTop:15}}>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <Text
                   style={{
                     fontSize: 24,
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
                   }}
                 >
-                  {t("count")}: {item.qty}
+                  {t("count")} : {item.qty}
+                </Text>
+                <View style={{ marginHorizontal: 15 }}>
+                  <Text
+                    style={{
+                      fontSize: 24,
+                    }}
+                  >
+                    |
+                  </Text>
+                </View>
+
+                <Text
+                  style={{
+                    fontSize: 24,
+                  }}
+                >
+                  {t("price")} : ₪{item.price * item.qty}
                 </Text>
               </View>
-              <View style={{ marginTop: 2, alignItems: "center" }}>
+              {/* <View style={{ marginTop: 2, alignItems: "center" }}>
                 <Text
                   style={{
                     fontSize: 24,
@@ -807,7 +870,7 @@ const NewOrdersListScreen = ({ route }) => {
                   {t("price")}: ₪
                   {(item.item_id === 3027 ? item.price : item.price) * item.qty}
                 </Text>
-              </View>
+              </View> */}
               {item.note && (
                 <View
                   style={{
@@ -837,7 +900,6 @@ const NewOrdersListScreen = ({ route }) => {
                 </View>
               )}
             </View>
-
           </View>
         </View>
       );
@@ -926,7 +988,7 @@ const NewOrdersListScreen = ({ route }) => {
             alignItems: "center",
             position: "absolute",
             justifyContent: "center",
-            backgroundColor: "rgba(232, 232, 230, 0.8)",
+            backgroundColor: "rgba(232, 232, 230, 0.1)",
           }}
         >
           <View>
@@ -978,199 +1040,229 @@ const NewOrdersListScreen = ({ route }) => {
             // !isLoading && (
             <View>
               {ordersList.map((order) => {
-                console.log("selectedTime[order._id]",selectedTime)
-                return(
-                <View style={{ marginBottom: 50 }}>
-                  <View
-                    style={[
-                      styles.orderContainer,
-                      {
-                        shadowColor: getColorTextByStatus(order.status),
-                        shadowOffset: {
-                          width: 0,
-                          height: 0,
+                console.log("selectedTime[order._id]", selectedTime);
+                return (
+                  <View style={{ marginBottom: 50 }}>
+                    <View
+                      style={[
+                        styles.orderContainer,
+                        {
+                          shadowColor: getColorTextByStatus(order.status),
+                          shadowOffset: {
+                            width: 0,
+                            height: 0,
+                          },
+                          shadowOpacity: 1,
+                          shadowRadius: 10.84,
+                          elevation: 30,
+                          borderRadius: 20,
                         },
-                        shadowOpacity: 1,
-                        shadowRadius: 10.84,
-                        elevation: 30,
-                        borderRadius: 20,
-                      },
-                    ]}
-                  >
-                    <LinearGradient
-                      colors={[
-                        "#c1bab3",
-                        "#efebe5",
-                        "#d8d1ca",
-                        "#dcdcd4",
-                        "#ccccc4",
                       ]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={[styles.background, { borderRadius: 20 }]}
-                    />
-                    <View
-                      style={{
-                        backgroundColor: themeStyle.WHITE_COLOR,
-                        height: 40,
-                        borderTopEndRadius: 20,
-                        width: 50,
-                        alignItems: "flex-end",
-                        left: 0,
-                        position: "absolute",
-                        bottom: 0,
-                        zIndex: 10,
-                      }}
                     >
-                      <TouchableOpacity
-                        onPress={() => {
-                          onOrderEdit(order);
-                        }}
-                        style={{ width: 50, height: 40, alignItems: "center" }}
-                      >
-                        <Icon
-                          icon="pencil"
-                          size={24}
-                          style={{
-                            right: 0,
-                            top: 8,
-                            color: themeStyle.PRIMARY_COLOR,
-                          }}
-                        />
-                      </TouchableOpacity>
-                    </View>
-
-               
-                    {renderOrderDateRaw(order)}
-                    {renderOrderItems(order)}
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
+                      <LinearGradient
+                        colors={[
+                          "#c1bab3",
+                          "#efebe5",
+                          "#d8d1ca",
+                          "#dcdcd4",
+                          "#ccccc4",
+                        ]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={[styles.background, { borderRadius: 20 }]}
+                      />
                       <View
                         style={{
-                          marginRight: 10,
-                          width: 200,
-                          justifyContent: "center",
+                          backgroundColor: themeStyle.WHITE_COLOR,
+                          height: 40,
+                          borderTopEndRadius: 20,
+                          width: 50,
+                          alignItems: "flex-end",
+                          left: 0,
+                          position: "absolute",
+                          bottom: 0,
+                          zIndex: 10,
                         }}
                       >
-                        {activeEditNote != order.orderId && (
-                          <Button
-                            text={order?.note ? "تعديل الملاحظة" : "اضف ملاحظة"}
-                            fontSize={17}
-                            onClickFn={() => updateActiveEditNote(order)}
-                            bgColor={themeStyle.ORANGE_COLOR}
-                            textColor={themeStyle.TEXT_PRIMARY_COLOR}
-                            fontFamily={`${getCurrentLang()}-Bold`}
-                            borderRadious={19}
-                          />
-                        )}
-                        {activeEditNote == order.orderId && (
-                          <Button
-                            text={"حفظ الملاحظة"}
-                            fontSize={17}
-                            onClickFn={() => saveOrderNote(order)}
-                            bgColor={themeStyle.ORANGE_COLOR}
-                            textColor={themeStyle.TEXT_PRIMARY_COLOR}
-                            fontFamily={`${getCurrentLang()}-Bold`}
-                            borderRadious={19}
-                          />
-                        )}
-                        {activeEditNote == order.orderId && (
-                          <View style={{ marginTop: 10 }}>
-                            <Button
-                              text={"اغلاق"}
-                              fontSize={17}
-                              onClickFn={() => updateActiveEditNote(null)}
-                              bgColor={themeStyle.ERROR_COLOR}
-                              textColor={themeStyle.TEXT_PRIMARY_COLOR}
-                              fontFamily={`${getCurrentLang()}-Bold`}
-                              borderRadious={19}
-                            />
-                          </View>
-                        )}
-                      </View>
-                      {activeEditNote == null && (
-                        <View style={{ width: "40%", flexDirection: "row" }}>
-                          <Text style={{ fontSize: 24, textAling: "left" }}>
-                            {order.note}
-                          </Text>
-                        </View>
-                      )}
-                      {activeEditNote == order.orderId && (
-                        <View style={{ width: "40%" }}>
-                          <TextInput
-                            onChange={(e) => {
-                              setOrderNoteText(e.nativeEvent.text);
-                              // updateOrderNote(orderId, e.nativeEvent.text);
-                            }}
-                            value={orderNoteText}
-                            placeholderTextColor={themeStyle.GRAY_600}
-                            multiline={true}
-                            selectionColor="black"
-                            underlineColorAndroid="transparent"
-                            numberOfLines={5}
-                            style={{
-                              backgroundColor: "white",
-                              borderWidth: 1,
-                              textAlignVertical: "top",
-                              textAlign: "right",
-                              padding: 10,
-                              height: 80,
-                              width: "100%",
-                              // fontFamily: `${getCurrentLang()}-SemiBold`,
-                            }}
-                          />
-                        </View>
-                      )}
-                      {order.order.receipt_method ==
-                        SHIPPING_METHODS.shipping && (
-                        <View
+                        <TouchableOpacity
+                          onPress={() => {
+                            onOrderEdit(order);
+                          }}
                           style={{
-                            flexDirection: "column",
-                            justifyContent: "flex-end",
-                            width: "30%",
-                            padding: 20,
+                            width: 50,
+                            height: 40,
                             alignItems: "center",
                           }}
                         >
                           <Icon
-                            icon="delivery-active"
-                            size={80}
-                            style={{ color: "#a77948" }}
+                            icon="pencil"
+                            size={24}
+                            style={{
+                              right: 0,
+                              top: 8,
+                              color: themeStyle.PRIMARY_COLOR,
+                            }}
                           />
-                        </View>
-                      )}
-                    </View>
-                    {renderOrderTotalRaw(order)}
-                    {/*{renderStatus(order)} */}
+                        </TouchableOpacity>
+                      </View>
 
-                     <View style={{ maxWidth: "50%", alignSelf: "center", zIndex:20 }}>
-
-                    <DropDown
-                  itemsList={deliveryTime}
-                  defaultValue={selectedTime}
-                  onChangeFn={(e) => {updateSelectedTime(order._id,e)}}
-                  placeholder={"ستكون جاهزة خلال"}
-                />      
-                    </View> 
-
-                    <View style={{ maxWidth: "50%", alignSelf: "center", marginTop:20 }}>
-                      <Button
-                        text={t("approve")}
-                        fontSize={17}
-                        onClickFn={() => updateViewedOrder(order, selectedTime[order._id])}
-                        textColor={themeStyle.TEXT_PRIMARY_COLOR}
-                        fontFamily={`${getCurrentLang()}-Bold`}
-                        borderRadious={19}
-                        disabled={!selectedTime[order._id]}
+                      {renderOrderDateRaw(order)}
+                      {renderOrderItems(order)}
+                      <DashedLine
+                        dashLength={5}
+                        dashThickness={1}
+                        dashGap={0}
+                        dashColor={themeStyle.TEXT_PRIMARY_COLOR}
+                        style={{ marginBottom: 15, marginTop: 15 }}
                       />
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <View
+                          style={{
+                            marginRight: 10,
+                            width: 200,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {activeEditNote != order.orderId && (
+                            <Button
+                              text={
+                                order?.note ? "تعديل الملاحظة" : "اضف ملاحظة"
+                              }
+                              fontSize={17}
+                              onClickFn={() => updateActiveEditNote(order)}
+                              bgColor={themeStyle.ORANGE_COLOR}
+                              textColor={themeStyle.TEXT_PRIMARY_COLOR}
+                              fontFamily={`${getCurrentLang()}-Bold`}
+                              borderRadious={19}
+                            />
+                          )}
+                          {activeEditNote == order.orderId && (
+                            <Button
+                              text={"حفظ الملاحظة"}
+                              fontSize={17}
+                              onClickFn={() => saveOrderNote(order)}
+                              bgColor={themeStyle.ORANGE_COLOR}
+                              textColor={themeStyle.TEXT_PRIMARY_COLOR}
+                              fontFamily={`${getCurrentLang()}-Bold`}
+                              borderRadious={19}
+                            />
+                          )}
+                          {activeEditNote == order.orderId && (
+                            <View style={{ marginTop: 10 }}>
+                              <Button
+                                text={"اغلاق"}
+                                fontSize={17}
+                                onClickFn={() => updateActiveEditNote(null)}
+                                bgColor={themeStyle.ERROR_COLOR}
+                                textColor={themeStyle.TEXT_PRIMARY_COLOR}
+                                fontFamily={`${getCurrentLang()}-Bold`}
+                                borderRadious={19}
+                              />
+                            </View>
+                          )}
+                        </View>
+                        {activeEditNote == null && (
+                          <View style={{ width: "40%", flexDirection: "row" }}>
+                            <Text style={{ fontSize: 24, textAling: "left" }}>
+                              {order.note}
+                            </Text>
+                          </View>
+                        )}
+                        {activeEditNote == order.orderId && (
+                          <View style={{ width: "40%" }}>
+                            <TextInput
+                              onChange={(e) => {
+                                setOrderNoteText(e.nativeEvent.text);
+                                // updateOrderNote(orderId, e.nativeEvent.text);
+                              }}
+                              value={orderNoteText}
+                              placeholderTextColor={themeStyle.GRAY_600}
+                              multiline={true}
+                              selectionColor="black"
+                              underlineColorAndroid="transparent"
+                              numberOfLines={5}
+                              style={{
+                                backgroundColor: "white",
+                                borderWidth: 1,
+                                textAlignVertical: "top",
+                                textAlign: "right",
+                                padding: 10,
+                                height: 80,
+                                width: "100%",
+                                // fontFamily: `${getCurrentLang()}-SemiBold`,
+                              }}
+                            />
+                          </View>
+                        )}
+                        {order.order.receipt_method ==
+                          SHIPPING_METHODS.shipping && (
+                          <View
+                            style={{
+                              flexDirection: "column",
+                              justifyContent: "flex-end",
+                              width: "30%",
+                              alignItems: "center",
+                              position: "absolute",
+                              right: 10,
+                              top: 15,
+                            }}
+                          >
+                            <Icon
+                              icon="delivery-active"
+                              size={80}
+                              style={{ color: "#a77948" }}
+                            />
+                          </View>
+                        )}
+                      </View>
+                      {renderOrderTotalRaw(order)}
+                      {/*{renderStatus(order)} */}
+
+                      <View
+                        style={{
+                          maxWidth: "50%",
+                          alignSelf: "center",
+                          zIndex: 20,
+                        }}
+                      >
+                        <DropDown
+                          itemsList={deliveryTime}
+                          defaultValue={selectedTime}
+                          onChangeFn={(e) => {
+                            updateSelectedTime(order._id, e);
+                          }}
+                          placeholder={"ستكون جاهزة خلال"}
+                        />
+                      </View>
+
+                      <View
+                        style={{
+                          maxWidth: "50%",
+                          alignSelf: "center",
+                          marginTop: 20,
+                        }}
+                      >
+                        <Button
+                          text={t("approve")}
+                          fontSize={17}
+                          onClickFn={() =>
+                            updateViewedOrder(order, selectedTime[order._id])
+                          }
+                          textColor={themeStyle.TEXT_PRIMARY_COLOR}
+                          fontFamily={`${getCurrentLang()}-Bold`}
+                          borderRadious={19}
+                          disabled={!selectedTime[order._id]}
+                        />
+                      </View>
                     </View>
                   </View>
-                </View>
-              )})}
+                );
+              })}
             </View>
           )}
         </View>
@@ -1202,17 +1294,17 @@ const styles = StyleSheet.create({
   dateRawText: {
     fontSize: 24,
     fontFamily: `${getCurrentLang()}-SemiBold`,
-    color: themeStyle.GRAY_700,
+    color: themeStyle.TEXT_PRIMARY_COLOR,
   },
   totalPriceText: {
     fontSize: 24,
     fontFamily: `${getCurrentLang()}-SemiBold`,
-    marginBottom:15
+    marginBottom: 15,
   },
   dateText: {
     fontSize: 24,
     fontFamily: `${getCurrentLang()}-Bold`,
-    marginBottom:15,
+    marginBottom: 15,
 
     textDecorationLine: "underline",
   },
