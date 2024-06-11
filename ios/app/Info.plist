@@ -20,6 +20,12 @@
     <string>1.0.0</string>
     <key>CFBundleSignature</key>
     <string>????</string>
+     <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your photo library</string>
+        <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>We need access to your bluetooth connection to upload data from your device for crash reports.</string>
+        <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>Use this to communicate with the printer</string>
     <key>CFBundleURLTypes</key>
     <array>
       <dict>

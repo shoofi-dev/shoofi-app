@@ -6,10 +6,11 @@ import {
   ActivityIndicator,
   DeviceEventEmitter,
   TextInput,
+  Animated,
 } from "react-native";
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { StoreContext } from "../../../../stores";
 import themeStyle from "../../../../styles/theme.style";
@@ -80,8 +81,63 @@ const OrdersListScreen = ({ route }) => {
   const [selectedImageShow, setSelectedImageShow] = useState("");
   const [refundOrder, setRefundOrder] = useState(null);
   const [activeOrder, setActiveOrder] = useState(null);
+  const [expandedOrders, setExpandedOrders] = useState([]);
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
+
+    const animation = useRef(new Animated.Value(0)).current;
+    const contentHeight = useRef(1);
+    const itemRefs = useRef([]);
+
+    const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
+    const handleAnimation = () => {
+      // @ts-ignore
+      Animated.timing(rotateAnimation, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: false,
+      }).start(() => {
+        rotateAnimation.setValue(0);
+      });
+    };
+    const interpolateRotating = rotateAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 0],
+    });
+
+    const animatedStyle = {
+      color: themeStyle.PRIMARY_COLOR,
+      borderRadius: 20,
+       height: interpolateRotating,
+      opacity:0
+    };
+    const getProductIndexId = (product, index) => {
+      if (product) {
+        return product?._id.toString() + index;
+      }
+    };
+
+    const toggleExpand = (order, index) => {
+      const orderId = getProductIndexId(order, index);
+
+      let isExpanded = false;
+      setExpandedOrders((prevItems) => {
+        if (prevItems.includes(orderId)) {
+          return prevItems.filter((id) => id !== orderId);
+        } else {
+          isExpanded = true;
+          return [...prevItems, orderId];
+        }
+      });
+      handleAnimation();
+    };
+    const viewRef = useRef(null);
+
+    const heightInterpolate = animation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [contentHeight.current, contentHeight.current],
+    });
+  
 
   const handleShowRefundDialog = (order: any) => {
     setShowRefundDialog(true);
@@ -124,7 +180,12 @@ const OrdersListScreen = ({ route }) => {
     setSelectedDay(days[0]);
   };
 
-  const updateActiveEditNote = (order) => {
+  const updateActiveEditNote = (order, index) => {
+    // if (itemRefs[getProductIndexId(order, index)].current) {
+    //   itemRefs[getProductIndexId(order, index)].current.measure((x, y, width, height, pageX, pageY) => {
+    //     console.log('Item height:', height);
+    //   });
+    // }
     setActiveEditNote(order?.orderId);
     if (order?.note) {
       setOrderNoteText(order.note);
@@ -404,45 +465,41 @@ const OrdersListScreen = ({ route }) => {
     return order?.total;
   };
 
-  const renderOrderDateRaw = (order) => {
-    const orderIdSplit = order.orderId.split("-");
-    const idPart1 = orderIdSplit[0];
-    const idPart2 = orderIdSplit[2];
+  const renderOrderDateRaw = (order, index) => {
     return (
+      <View style={{}}>
+             <View style={{alignSelf:'center', top:-10}}>
+        <TouchableOpacity onPress={()=> toggleExpand(order, index)}>
+        <Icon icon="circle-down" size={30} style={{color:themeStyle.TEXT_PRIMARY_COLOR}} />
+
+        </TouchableOpacity>
+      </View>
       <View
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
           marginBottom: 10,
           flexWrap: "wrap",
+          width:"100%"
           // marginTop: 25,
         }}
       >
+
         <View style={{ flexDirection: "row" }}>
-          <View>
-            <Text style={styles.dateRawText}>{t("order-number")}:</Text>
-          </View>
-          <View>
-            <Text style={styles.dateRawText}>
-              {idPart1}-{idPart2}{" "}
-            </Text>
-          </View>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.dateRawText}> שם לקוח:</Text>
+          <Text style={styles.dateRawText}> اسم الزبون:</Text>
           <Text style={styles.dateRawText}>
             {" "}
             {order?.customerDetails?.name}
           </Text>
         </View>
         <View style={{ flexDirection: "row" }}>
-          <Text style={styles.dateRawText}> מספר טלפון:</Text>
-          <Text style={styles.dateRawText}>
+          <Text style={styles.dateRawText}> رقم الهاتف:</Text>
+          <Text style={styles.dateRawText} >
             {order?.customerDetails?.phone}{" "}
           </Text>
         </View>
         <View style={{ alignItems: "center" }}>
-          <View style={{ marginBottom: 10 }}>
+          <View style={{ marginBottom: 0 }}>
             <Text style={styles.dateRawText}>{t("collect-date")}</Text>
           </View>
           {/* <Text
@@ -456,7 +513,7 @@ const OrdersListScreen = ({ route }) => {
           </Text> */}
           <Text
             style={{
-              fontSize: 36,
+              fontSize: 20,
               fontFamily: `${getCurrentLang()}-American-bold`,
 
               color: themeStyle.SUCCESS_COLOR,
@@ -469,10 +526,15 @@ const OrdersListScreen = ({ route }) => {
             {moment(order.orderDate).format("DD/MM")}
           </Text> */}
       </View>
+ 
+      </View>
     );
   };
   const renderOrderTotalRaw = (order) => {
     const oOrder = order.order;
+    const orderIdSplit = order.orderId.split("-");
+    const idPart1 = orderIdSplit[0];
+    const idPart2 = orderIdSplit[2];
     return (
       <View
         style={{
@@ -498,7 +560,7 @@ const OrdersListScreen = ({ route }) => {
                 <View style={{ flexDirection: "row" }}>
                   <Text
                     style={{
-                      fontSize: 24,
+                      fontSize: 20,
                       backgroundColor:
                         oOrder.payment_method === PAYMENT_METHODS.creditCard
                           ? "yellow"
@@ -545,6 +607,16 @@ const OrdersListScreen = ({ route }) => {
                   </View>
                 </View>
               )}
+                      <View style={{ flexDirection: "row" }}>
+          <View>
+            <Text style={styles.dateRawText}>{t("order-number")}:</Text>
+          </View>
+          <View>
+            <Text style={styles.dateRawText}>
+              {idPart1}-{idPart2}{" "}
+            </Text>
+          </View>
+        </View>
               {/* <View style={{ flexDirection: "row" }}>
                 <View>
                   <Text style={styles.totalPriceText}>
@@ -745,7 +817,7 @@ const OrdersListScreen = ({ route }) => {
                 <View
                   style={{
                     flexBasis: "20%",
-                    height: 190,
+                    height: 150,
                     marginVertical: 10,
                   }}
                 >
@@ -786,8 +858,7 @@ const OrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 28,
-                    textDecorationLine: "underline",
+                    fontSize: 20,
                   }}
                 >
                   {languageStore.selectedLang === "ar"
@@ -818,7 +889,7 @@ const OrdersListScreen = ({ route }) => {
                           <Text
                             style={{
                               textAlign: "left",
-                              fontSize: 28,
+                              fontSize: 20,
                             }}
                           >
                             {t("halfOne")}
@@ -828,12 +899,12 @@ const OrdersListScreen = ({ route }) => {
                       {item?.halfOne.length > 0 ? (
                         Object.keys(item?.halfOne).map((key) => {
                           return (
-                            <View style={{ marginLeft: 10, marginTop: 10 }}>
+                            <View style={{  }}>
                               <View style={{ flexDirection: "row" }}>
                                 <Text
                                   style={{
                                     textAlign: "left",
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     marginTop: 10,
                                   }}
                                   type="number"
@@ -843,7 +914,7 @@ const OrdersListScreen = ({ route }) => {
                                 <Text
                                   style={{
                                     textAlign: "left",
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     marginTop: 10,
                                   }}
                                 >
@@ -858,7 +929,7 @@ const OrdersListScreen = ({ route }) => {
                         <Text
                           style={{
                             textAlign: "left",
-                            fontSize: 24,
+                            fontSize: 20,
                             marginTop: 12,
                           }}
                         >
@@ -879,7 +950,7 @@ const OrdersListScreen = ({ route }) => {
                           <Text
                             style={{
                               textAlign: "left",
-                              fontSize: 28,
+                              fontSize: 20,
                             }}
                           >
                             {t("halfTwo")}
@@ -889,12 +960,12 @@ const OrdersListScreen = ({ route }) => {
                       {item?.halfTwo.length > 0 ? (
                         Object.keys(item?.halfTwo).map((key) => {
                           return (
-                            <View style={{ marginLeft: 10, marginTop: 10 }}>
+                            <View style={{  }}>
                               <View style={{ flexDirection: "row" }}>
                                 <Text
                                   style={{
                                     textAlign: "left",
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     marginTop: 10,
                                   }}
                                   type="number"
@@ -904,7 +975,7 @@ const OrdersListScreen = ({ route }) => {
                                 <Text
                                   style={{
                                     textAlign: "left",
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     marginTop: 10,
                                   }}
                                 >
@@ -919,7 +990,7 @@ const OrdersListScreen = ({ route }) => {
                         <Text
                           style={{
                             textAlign: "left",
-                            fontSize: 24,
+                            fontSize: 20,
                             marginTop: 12,
                           }}
                         >
@@ -947,7 +1018,7 @@ const OrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 24,
+                    fontSize: 20,
                   }}
                 >
                   {t("count")} : {item.qty}
@@ -955,7 +1026,7 @@ const OrdersListScreen = ({ route }) => {
                 <View style={{ marginHorizontal: 15 }}>
                   <Text
                     style={{
-                      fontSize: 24,
+                      fontSize: 20,
                     }}
                   >
                     |
@@ -964,7 +1035,7 @@ const OrdersListScreen = ({ route }) => {
 
                 <Text
                   style={{
-                    fontSize: 24,
+                    fontSize: 20,
                   }}
                 >
                   {t("price")} : ₪{item.price * item.qty}
@@ -973,7 +1044,7 @@ const OrdersListScreen = ({ route }) => {
               {/* <View style={{ marginTop: 2, alignItems: "center" }}>
                 <Text
                   style={{
-                    fontSize: 24,
+                    fontSize: 20,
                   }}
                 >
                   {t("price")}: ₪
@@ -990,7 +1061,7 @@ const OrdersListScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 24,
+                      fontSize: 20,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                     }}
                   >
@@ -998,7 +1069,7 @@ const OrdersListScreen = ({ route }) => {
                   </Text>
                   <Text
                     style={{
-                      fontSize: 24,
+                      fontSize: 20,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                       textAlign: "left",
                       marginVertical: 5,
@@ -1203,31 +1274,28 @@ const OrdersListScreen = ({ route }) => {
         </View>
       )}
 
-      <View style={{ flexDirection: "row" }}>
-        <View style={{ marginLeft: 15, zIndex: 1 }}>
-          <BackButton goTo={"homeScreen"} />
-        </View>
+      <View style={{width:'100%', marginTop:15 }}>
+
         <View
           style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            alignItems: "center",
-            top: 19,
-            zIndex: 0,
+            
+            alignSelf:'center',
+            width:"40%",
+            position:'relative'
           }}
         >
           <View
             style={{
               flexDirection: "row",
               alignSelf: "center",
+              alignItems:'center'
             }}
           >
             <Text
               style={{
                 fontSize: 30,
                 fontFamily: `${getCurrentLang()}-SemiBold`,
-                color: themeStyle.GRAY_700,
+                color: themeStyle.WHITE_COLOR,
               }}
             >
               {t("orders-list")}
@@ -1250,8 +1318,11 @@ const OrdersListScreen = ({ route }) => {
             </TouchableOpacity>
           </View>
         </View>
+    
       </View>
-
+      <View style={{ right: 15, zIndex: 1, position:'absolute', top:5}}>
+          <BackButton goTo={"homeScreen"} />
+        </View>
       {/* <ScrollView
         style={{
           height: 120,
@@ -1308,7 +1379,7 @@ const OrdersListScreen = ({ route }) => {
                 </View>
               )}
               <Text
-                style={{ fontSize: 24, fontFamily: `${getCurrentLang()}-Bold` }}
+                style={{ fontSize: 20, fontFamily: `${getCurrentLang()}-Bold` }}
               >
                 {t(day?.dayName)}
               </Text>
@@ -1406,12 +1477,12 @@ const OrdersListScreen = ({ route }) => {
                 height: "100%",
               }}
             >
-              <Text style={{ fontSize: 24 }}>{t("لا يوجد طلبيات")}</Text>
+              <Text style={{ fontSize: 20 }}>{t("لا يوجد طلبيات")}</Text>
             </View>
           ) : (
             // !isLoading && (
             <View>
-              {ordersList.map((order) => (
+              {ordersList.map((order, index) => (
                 <View style={{ marginBottom: 50 }}>
                   <View
                     style={[
@@ -1426,10 +1497,11 @@ const OrdersListScreen = ({ route }) => {
                         shadowRadius: 10.84,
                         elevation: 30,
                         borderRadius: 20,
+                        backgroundColor: themeStyle.SECONDARY_COLOR
                       },
                     ]}
                   >
-                    <LinearGradient
+                    {/* <LinearGradient
                       colors={[
                         "#c1bab3",
                         "#efebe5",
@@ -1440,7 +1512,7 @@ const OrdersListScreen = ({ route }) => {
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 1 }}
                       style={[styles.background, { borderRadius: 20 }]}
-                    />
+                    /> */}
                     {/* <View
                       style={{
                         backgroundColor: themeStyle.WHITE_COLOR,
@@ -1472,8 +1544,17 @@ const OrdersListScreen = ({ route }) => {
                       </TouchableOpacity>
                     </View> */}
 
-                    {renderOrderDateRaw(order)}
+                    {renderOrderDateRaw(order, index)}
+                    <Animated.View   style={[
+                           expandedOrders.indexOf(getProductIndexId(order, index)) > -1
+                            ? animatedStyle
+                            : null]}
+                          ref={itemRefs[getProductIndexId(order, index)]}
+                          >
+
                     {renderOrderItems(order)}
+
+
                     <View
                       style={{
                         flexDirection: "row",
@@ -1491,7 +1572,7 @@ const OrdersListScreen = ({ route }) => {
                           <Button
                             text={order?.note ? "تعديل الملاحظة" : "اضف ملاحظة"}
                             fontSize={17}
-                            onClickFn={() => updateActiveEditNote(order)}
+                            onClickFn={() => updateActiveEditNote(order, index)}
                             bgColor={themeStyle.ORANGE_COLOR}
                             textColor={themeStyle.TEXT_PRIMARY_COLOR}
                             fontFamily={`${getCurrentLang()}-Bold`}
@@ -1525,7 +1606,7 @@ const OrdersListScreen = ({ route }) => {
                       </View>
                       {activeEditNote == null && (
                         <View style={{ width: "40%", flexDirection: "row" }}>
-                          <Text style={{ fontSize: 24, textAlign: "left" }}>
+                          <Text style={{ fontSize: 20, textAlign: "left" }}>
                             {order.note}
                           </Text>
                         </View>
@@ -1584,6 +1665,8 @@ const OrdersListScreen = ({ route }) => {
                     </View>
                     {renderOrderTotalRaw(order)}
                     {/*{renderStatus(order)} */}
+                    </Animated.View>
+
                   </View>
                 </View>
               ))}
@@ -1628,17 +1711,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   dateRawText: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     color: themeStyle.TEXT_PRIMARY_COLOR,
   },
   totalPriceText: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     marginBottom:15
   },
   dateText: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: `${getCurrentLang()}-Bold`,
     marginBottom:15,
 

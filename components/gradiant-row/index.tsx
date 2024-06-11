@@ -259,14 +259,13 @@ export default function GradiantRow({
         </View>
         <View
           style={{
-            width: "55%",
             alignItems: "center",
           }}
         >
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "space-around",
+              justifyContent: "space-evenly",
               width: "100%",
             }}
           >
@@ -318,7 +317,6 @@ export default function GradiantRow({
             
           >
             {Object.keys(options).map((key) => {
-              console.log(options[key].title,value.indexOf(options[key].title))
               return(
               <View
                 style={{
@@ -328,7 +326,7 @@ export default function GradiantRow({
                   // borderRadius: 20,
                   alignSelf:'center',
                   flexBasis:"30%",
-                  marginBottom:30
+                  marginBottom:20
                 }}
               >
                 <CheckBox

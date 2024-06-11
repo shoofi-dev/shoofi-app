@@ -103,10 +103,10 @@ const MealScreen = ({ route }) => {
     if (product) {
       setIsEdit(false);
       // tmpProduct = menuStore.getMealByKey(product.id);
-      tmpProduct.data = product;
+      tmpProduct.data = {...product};
       // for products without constants
       if (isEmpty(tmpProduct)) {
-        tmpProduct.data = product;
+        tmpProduct.data = {...product};
       }
       tmpProduct.others = { count: 1, note: "" };
     }
@@ -114,26 +114,12 @@ const MealScreen = ({ route }) => {
       setIsEdit(true);
       tmpProduct = cartStore.getProductByIndex(index);
     }
-    DeviceEventEmitter.emit(`update-meal-uri`, {
-      imgUrl: `${cdnUrl}${tmpProduct.data.img[0].uri}`,
-      cacheKey: `${cdnUrl}${tmpProduct.data.img[0].uri}`.split(/[\\/]/).pop(),
-    });
-    if (
-      tmpProduct.data.subCategoryId == "1" ||
-      tmpProduct.data.subCategoryId == "6"
-    ) {
-      if (tmpProduct.data.subCategoryId == "1") {
-        setPickImageNotificationDialogText(t("you-can-pick-image"));
-      }
-      if (tmpProduct.data.subCategoryId == "6") {
-        setPickImageNotificationDialogText(t("you-can-add-image-custom-cake"));
-      }
-      setIsPickImageNotificationDialogOpen(true);
-    }
+    // DeviceEventEmitter.emit(`update-meal-uri`, {
+    //   imgUrl: `${cdnUrl}${tmpProduct.data.img[0].uri}`,
+    //   cacheKey: `${cdnUrl}${tmpProduct.data.img[0].uri}`.split(/[\\/]/).pop(),
+    // });
+  
     setMeal(tmpProduct);
-    setTimeout(() => {
-      tasteScorll();
-    }, 1000);
     return () => {
       setMeal(null);
     };
@@ -158,14 +144,14 @@ const MealScreen = ({ route }) => {
       setIsOpenConfirmActiondDialog(true);
       return;
     }
-    // DeviceEventEmitter.emit(`add-to-cart-animate`, {
-    //   imgUrl: `${cdnUrl}${meal.data.img[0].uri}`,
-    // });
+    DeviceEventEmitter.emit(`add-to-cart-animate`, {
+      imgUrl: meal.data.img,
+    });
 
     cartStore.addProductToCart(meal);
-    // setTimeout(() => {
+    setTimeout(() => {
       navigation.goBack();
-    // }, 1600);
+    }, 1000);
   };
 
   const onUpdateCartProduct = () => {
@@ -561,6 +547,7 @@ const MealScreen = ({ route }) => {
   if (!meal) {
     return null;
   }
+
   return (
     <View style={{ height: "100%" }}>
       <LinearGradient
@@ -580,7 +567,7 @@ const MealScreen = ({ route }) => {
       <View
         style={{
           width: "100%",
-          height: 250,
+          height: 200,
           backgroundColor: "#C31A21",
           position: "absolute",
           borderBottomEndRadius: 500,
@@ -588,12 +575,7 @@ const MealScreen = ({ route }) => {
           marginTop: "-25%",
         }}
       >
-        <View style={{ position: "absolute", zIndex: 30 }}>
-          <Text style={{ fontSize: 22 }} type="number">
-            {" "}
-            ₪{meal.data.price * meal.data.extras.counter.value}
-          </Text>
-        </View>
+   
       </View>
 
       <View style={{ zIndex: 10 }}>
@@ -629,15 +611,15 @@ const MealScreen = ({ route }) => {
           shadowRadius: 6,
           elevation: 0,
           borderWidth: 0,
-          padding:5
+          padding:5,
         }}
       >
         <Image
           source={mealsImages[meal.data.img]}
           style={{
             alignSelf: "center",
-            width: 200,
-            height: 200,
+            width: 150,
+            height: 150,
             borderRadius: 100,
           }}
         />
@@ -744,7 +726,7 @@ const MealScreen = ({ route }) => {
                       value={selectedPizzaHalf}
                       option1={"halfOne"}
                       option2={"halfTwo"}
-                      onChange={(value) => setSelectedPizzaHalf(value)}
+                      onChange={(value) => {if(value){setSelectedPizzaHalf(value)}}}
                     />
                     <View
                       style={{
@@ -774,7 +756,7 @@ const MealScreen = ({ route }) => {
                           );
                         }}
                         type={meal.data.extras["halfOne"].type}
-                        value={meal.data.extras["halfOne"].value}
+                        value={[...meal.data.extras["halfOne"].value]}
                         title={"halfOne"}
                         options={storeDataStore.storeData.pizzaExtras}
                       />
@@ -791,7 +773,7 @@ const MealScreen = ({ route }) => {
                           );
                         }}
                         type={meal.data.extras["halfTwo"].type}
-                        value={meal.data.extras["halfTwo"].value}
+                        value={[...meal.data.extras["halfTwo"].value]}
                         title={"halfTwo"}
                         options={storeDataStore.storeData.pizzaExtras}
                       />
@@ -1083,8 +1065,6 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
     // borderRadius: 50,
   },
   backgroundAddCart: {

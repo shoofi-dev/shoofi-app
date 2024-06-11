@@ -123,10 +123,11 @@ const SearchCustomerScreen = () => {
           onChange={(e) => handleInputChange(e)}
           label={t("serch")}
           value={searchQuery}
+          color={themeStyle.SECONDARY_COLOR}
         />
           </View>
           <View style={{borderWidth:1, borderRadius:50, padding:10,flexBasis: 40, alignItems:'center'}}>
-            <Text style={{fontSize:20,fontFamily:`${getCurrentLang()}-Bold`}}>او</Text>
+            <Text style={{fontSize:20,fontFamily:`${getCurrentLang()}-Bold`, color: themeStyle.WHITE_COLOR}}>او</Text>
           </View>
           <View style={{flexBasis: '25%'}}>
           <Button
@@ -144,12 +145,12 @@ const SearchCustomerScreen = () => {
 
         <ScrollView style={{marginTop:40}} keyboardShouldPersistTaps={'handled'}>
           {!isLoading && (!customerList || customerList.length === 0) && searchQuery && <View style={{alignSelf:'center', marginTop:40}}>
-            <Text style={{fontSize:25}}>
+            <Text style={{fontSize:25, color: themeStyle.WHITE_COLOR}}>
               {t('cannot-find-customer')}
             </Text>
           </View> }
           {isLoading && <View style={{alignSelf:'center', marginTop:40}}>
-            <Text style={{fontSize:25}}>
+            <Text style={{fontSize:25, color: themeStyle.WHITE_COLOR}}>
               <ActivityIndicator size="large"/>
             </Text>
           </View> }
@@ -157,14 +158,14 @@ const SearchCustomerScreen = () => {
         {!isLoading && customerList &&
           customerList.map((customer) => {
             return (
-              <View  style={{ flexDirection: "row", borderBottomWidth: 1, padding: 15,justifyContent:'space-between' }}>
+              <View  style={{ flexDirection: "row", borderBottomWidth: 1, padding: 15,justifyContent:'space-between', alignItems:'center', borderColor:themeStyle.SECONDARY_COLOR }}>
              <TouchableOpacity
                style={{flexDirection: "row",}}
                 onPress={()=>handleSelectCustomer(customer)}
               >
-                <Text style={{ fontSize: 25 }}>{customer.fullName}</Text>
-                <Text style={{ fontSize: 25 }}>{"  -  "}</Text>
-                <Text style={{ fontSize: 25 }} type="number">
+                <Text style={{ fontSize: 25, color: themeStyle.WHITE_COLOR }}>{customer.fullName}</Text>
+                <Text style={{ fontSize: 25, color: themeStyle.WHITE_COLOR }}>{"  -  "}</Text>
+                <Text style={{ fontSize: 25, color: themeStyle.WHITE_COLOR }} type="number">
                   {customer.phone}
                 </Text>
               </TouchableOpacity>
@@ -179,7 +180,7 @@ const SearchCustomerScreen = () => {
                         icon="pencil"
                         size={18}
                         style={{
-                          color: themeStyle.ORANGE_COLOR,
+                          color: themeStyle.SECONDARY_COLOR,
                           marginRight: 10,
                         }}
                       />

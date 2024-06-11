@@ -77,7 +77,6 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
     } else {
       tmpActiveTastes = tmpActiveTastes.filter((taste) => taste != name);
     }
-    console.log(tmpActiveTastes);
     await menuStore.updateProductActiveTastes({
       id: product._id,
       activeTastes: tmpActiveTastes,
@@ -111,11 +110,12 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
             style={{
               textAlign: "center",
               fontSize: 28,
-              color: themeStyle.TEXT_PRIMARY_COLOR,
+              color: themeStyle.WHITE_COLOR,
               fontWeight: "bold",
               borderWidth: 1,
               padding: 10,
               borderRadius: 20,
+              
             }}
           >
             {languageStore.selectedLang === "ar"
@@ -171,7 +171,7 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
                   >
                     <View style={{}}>
                       <Text
-                        style={{ textAlign: "left", fontSize: 24 }}
+                        style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}
                         type="number"
                       >
                         {languageStore.selectedLang === "ar"

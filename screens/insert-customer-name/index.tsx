@@ -84,20 +84,20 @@ const InsertCustomerNameScreen = ({route}) => {
 
   return (
     <View style={styles.container}>
-
-      <View style={styles.inputsContainer}>
       <LinearGradient
         colors={[
-          "rgba(207, 207, 207, 0.7)",
-          "rgba(232, 232, 230, 0.7)",
-          "rgba(232, 232, 230, 0.7)",
-          "rgba(232, 232, 230, 0.7)",
-          "rgba(207, 207, 207, 0.7)",
+          "rgba(207, 207, 207, 0.5)",
+          "rgba(232, 232, 230, 0.5)",
+          "rgba(232, 232, 230, 0.5)",
+          "rgba(232, 232, 230, 0.5)",
+          "rgba(207, 207, 207, 0.5)",
         ]}
         start={{ x: 1, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.background]}
       />
+      <View style={styles.inputsContainer}>
+
         <Text style={{ marginTop: 50, fontSize: 25 }}>
           {t("insert-customer-name")}
         </Text>
@@ -163,12 +163,9 @@ const styles = StyleSheet.create({
   },
   background: {
     position: "absolute",
-    width:"100%",
-    height:"100%",
-    // left: "8%",
-    // right: "8%",
-    // top: "8%",
-    // bottom: "30%",
-    borderRadius: 50,
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
 });

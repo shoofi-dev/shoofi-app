@@ -34,14 +34,10 @@ const AboutUsScreen = () => {
   const { t } = useTranslation();
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require("../../assets/bg/login-bg.jpg")}
-        resizeMode="cover"
-        style={{ height: "100%", width: "100%" }}
-      >
-        <View style={{ marginLeft: 20 }}>
-          <BackButton />
-        </View>
+
+<View style={{alignItems:'flex-end', width:'100%', right:10,zIndex:10}}>
+      <BackButton />
+      </View>
 
         <LinearGradient
           colors={[
@@ -63,18 +59,17 @@ const AboutUsScreen = () => {
             <Text style={{ fontSize: 35,textAlign: 'center' }}>{t("about-us")}</Text>
           </View>
           <View style={{marginTop:40}}>
-            <Text style={{ fontSize: 20,textAlign: 'left' }} type="number">{t("about-us-content")}</Text>
+            <Text style={{ fontSize: 18,textAlign: 'left' }} type="number">{t("about-us-content")}</Text>
           </View>
           <View style={{marginTop:40, flexDirection:'row'}}>
-            <Text style={{ fontSize: 20 }}>{t("store-address")}:</Text>
-            <Text style={{ fontSize: 20 }} type="number">{" "}{t("store-address-value")}</Text>
+            <Text style={{ fontSize: 18 }}>{t("store-address")}:</Text>
+            <Text style={{ fontSize: 18 }} type="number">{" "}{t("store-address-value")}</Text>
           </View>
           <View style={{marginTop:20, flexDirection:'row'}}>
-            <Text style={{ fontSize: 20 }}>{t("store-phone-number")}:</Text>
-            <Text style={{ fontSize: 20 }} type="number">{t("store-phone-number-value")}{" "}</Text>
+            <Text style={{ fontSize: 18 }}>{t("store-phone-number")}:</Text>
+            <Text style={{ fontSize: 18 }} type="number">{t("store-phone-number-value")}{" "}</Text>
           </View>
         </View>
-      </ImageBackground>
     </View>
   );
 };
@@ -98,10 +93,9 @@ const styles = StyleSheet.create({
   },
   background: {
     position: "absolute",
-    left: "5%",
-    right: "5%",
-    top: 50,
-    bottom: "5%",
-    borderRadius: 50,
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
 });

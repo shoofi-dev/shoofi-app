@@ -44,8 +44,8 @@ export default function BackButton({ goTo, onClick }: TProps) {
         <View
           style={{
             borderRadius: 30,
-            width: 35,
-            height: 35,
+            width: 30,
+            height: 30,
             alignItems: "center",
             justifyContent: "center",
             marginVertical: 10,
@@ -54,7 +54,7 @@ export default function BackButton({ goTo, onClick }: TProps) {
           <Icon
             icon={"arrow-left2"}
             style={{ color: themeStyle.WHITE_COLOR }}
-            size={30}
+            size={25}
           />
         </View>
       </TouchableOpacity>
@@ -63,7 +63,7 @@ export default function BackButton({ goTo, onClick }: TProps) {
 }
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    
   },
   button: {
     backgroundColor: theme.PRIMARY_COLOR,

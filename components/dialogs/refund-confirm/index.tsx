@@ -70,7 +70,6 @@ export default function ConfirmRefundActiondDialog({
   const hideDialog = (value: boolean) => {
     if(value){
       setIsloading(true);
-      console.log("Number(tmpRefundPrice)",Number(tmpRefundPrice))
       refundTransaction({
         TransactionIdToCancelOrRefund:
         210159002,

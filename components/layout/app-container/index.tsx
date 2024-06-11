@@ -18,6 +18,7 @@ import { useState, useEffect } from "react";
 import { Platform } from "expo-modules-core";
 import * as FileSystem from "expo-file-system";
 import { cacheImage, findImageInCache, getImgXtension } from "../../custom-fast-image";
+import { mealsImages } from "../../../consts/shared";
 
 const yellowBgTopScreens = ["meal", "terms-and-conditions"];
 const yellowBgBottomScreens = ["homeScreen", "menuScreen", "BCOINSScreen"];
@@ -46,17 +47,12 @@ const AppContainer = () => {
 
   const updateMealUri = (data) => {
     // setProductMealUrl(data.imgUrl);
-    loadImg(data.imgUrl,data.cacheKey);
+   //loadImg(data.imgUrl,data.cacheKey);
   };
   const addToCartAnimate = (data) => {
+    setProductMealUrl(data.imgUrl);
     setIsSendToCart(false);
-    setTimeout(() => {
-      handleAnimation();
-      setTimeout(() => {
-        setProductMealUrl('');
-      }, 900);
-    }, 300);
-
+    handleAnimation();
   };
 
   const setTopColor = () => {
@@ -64,7 +60,6 @@ const AppContainer = () => {
       navigation?.getCurrentRoute()?.name === undefined ||
       yellowBgTopScreens.indexOf(navigation?.getCurrentRoute()?.name) > -1
     ) {
-      console.log("aaaa")
       setTopBgColor(themeStyle.PRIMARY_COLOR);
     } else {
       setTopBgColor(themeStyle.PRIMARY_COLOR);
@@ -105,20 +100,6 @@ const AppContainer = () => {
       rotateAnimation.setValue(0);
       setIsSendToCart(false);
     });
-    Animated.timing(heightAnimation, {
-      toValue: 0,
-      duration: 1000,
-      useNativeDriver: false,
-    }).start(()=>{
-      heightAnimation.setValue(300)
-    });
-    Animated.timing(widthAnimation, {
-      toValue: 0,
-      duration: 1000,
-      useNativeDriver: false,
-    }).start(()=>{
-      widthAnimation.setValue(200)
-    });
   };
 // const test = async (productImgUrlx)=>{
 //   if(productImgUrlx){
@@ -132,14 +113,14 @@ const AppContainer = () => {
 //     test(productImgUrl)
 //   },[productImgUrl])
 
-  const interpolateRotatingY = rotateAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -Dimensions.get(getScreenOrWindow()).height + 460],
-  });
-  const interpolateRotatingX = rotateAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-100, -20],
-  });
+const interpolateRotatingY = rotateAnimation.interpolate({
+  inputRange: [0, 1],
+  outputRange: [0, -Dimensions.get(getScreenOrWindow()).height + 140],
+});
+const interpolateRotatingX = rotateAnimation.interpolate({
+  inputRange: [0, 1],
+  outputRange: [-150, -10],
+});
   const interpolateHeight = heightAnimation.interpolate({ 
     inputRange: [0, 300], 
     outputRange: [300, 0]
@@ -168,10 +149,11 @@ const AppContainer = () => {
   }
 
   const renderImage = () => {
+    console.log("productImgUrl",productImgUrl)
     return(
       productImgUrl ? 
       <Animated.Image 
-      source={{ uri: `${productImgUrl}` }}
+      source={mealsImages[productImgUrl]}
 
      style={[isSendToCart && animatedStyle,
         isSendToCart && animatedHeightStyle,
@@ -179,9 +161,9 @@ const AppContainer = () => {
 
         {zIndex: 999,
        position: "absolute",
-       bottom: 350,
-       height: 300,
-       width: 200,
+       bottom: 0,
+       height: 50,
+       width: 50,
        maxHeight:heightAnimation,
        maxWidth: widthAnimation,
        display: isSendToCart ? "flex" : "none",

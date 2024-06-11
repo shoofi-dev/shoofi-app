@@ -83,7 +83,6 @@ const chargeCreditCard = ({ token, totalPrice, orderId, id, email, cvv, phone,us
     // if (email) {
         body.CustomerEmail = 'creme.caramel.app@gmail.com';
     //}
-    console.log("chargeCredibody",body)
     return axios
         .post(
             'https://pci.zcredit.co.il/ZCreditWS/api/Transaction/CommitFullTransaction',

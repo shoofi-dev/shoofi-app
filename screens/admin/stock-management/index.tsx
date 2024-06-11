@@ -13,6 +13,7 @@ import { WS_URL } from "../../../consts/api";
 import StockProductsList from "./products-list";
 import DashedLine from "react-native-dashed-line";
 import Text from "../../../components/controls/Text";
+import themeStyle from "../../../styles/theme.style";
 
 const categoriesToShow = [1, 2, 3, 4, 5, 6, 7];
 
@@ -49,7 +50,6 @@ const StockManagementScreen = ({ route }) => {
   }, [menuStore.categories]);
 
   const onLoadingChange = (value) => {
-    console.log("aa", value)
     if(value){
       setIsLoading(value);
     }else{
@@ -70,6 +70,7 @@ const StockManagementScreen = ({ route }) => {
           textAlign: "center",
           borderWidth: 1,
           padding: 10,
+          color: themeStyle.WHITE_COLOR
         }}
       >
         {t("ادارة المخزون")}

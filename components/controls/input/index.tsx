@@ -18,6 +18,7 @@ type TProps = {
   onBlur?: any;
   isFlex?: boolean;
   fontSize?: number;
+  color?: string;
 };
 export default function InputText({
   onChange,
@@ -33,7 +34,8 @@ export default function InputText({
   onFocus,
   onBlur,
   isFlex,
-  fontSize
+  fontSize,
+  color
 }: TProps) {
   const handleOnChange = (e) => {
     onChange && onChange(e.nativeEvent.text);
@@ -48,7 +50,7 @@ export default function InputText({
             marginBottom: 10,
             fontSize: 20,
             fontFamily: `${getCurrentLang()}-SemiBold`,
-            color:themeStyle.TEXT_PRIMARY_COLOR
+            color: color || themeStyle.TEXT_PRIMARY_COLOR
 
           }}
         >
@@ -60,7 +62,7 @@ export default function InputText({
           editable={isEditable}
           onChange={handleOnChange}
           placeholder={placeHolder}
-          placeholderTextColor={themeStyle.TEXT_PRIMARY_COLOR}
+          placeholderTextColor={color || themeStyle.TEXT_PRIMARY_COLOR}
           selectionColor={"black"}
           keyboardType={keyboardType}
           onFocus={onFocus}
@@ -70,10 +72,10 @@ export default function InputText({
             borderWidth: 1,
             borderColor: isError
               ? themeStyle.ERROR_COLOR
-              : themeStyle.TEXT_PRIMARY_COLOR,
+              : color || themeStyle.TEXT_PRIMARY_COLOR,
             // borderRadius: 30,
             fontSize: fontSize || 20,
-            color: themeStyle.TEXT_PRIMARY_COLOR,
+            color: color || themeStyle.TEXT_PRIMARY_COLOR,
             fontFamily: `${getCurrentLang()}-SemiBold`,
             width:isFlex ? "60%":"100%",
             marginLeft:0,
@@ -98,20 +100,20 @@ export default function InputText({
         label={label}
         theme={{
           colors: {
-            text: themeStyle.BROWN_700,
-            placeholder: themeStyle.BROWN_700,
+            text: color || themeStyle.TEXT_PRIMARY_COLOR,
+            placeholder: color || themeStyle.TEXT_PRIMARY_COLOR,
           },
           
         }}
         
         outlineColor={
-          isError ? themeStyle.ERROR_COLOR : themeStyle.PRIMARY_COLOR
+          isError ? themeStyle.ERROR_COLOR : color || themeStyle.TEXT_PRIMARY_COLOR
         }
         activeUnderlineColor={
-          isError ? themeStyle.ERROR_COLOR : themeStyle.PRIMARY_COLOR
+          isError ? themeStyle.ERROR_COLOR : color || themeStyle.TEXT_PRIMARY_COLOR
         }
         underlineColor={
-          isError ? themeStyle.ERROR_COLOR : themeStyle.PRIMARY_COLOR
+          isError ? themeStyle.ERROR_COLOR : color || themeStyle.TEXT_PRIMARY_COLOR
         }
         style={{
           fontSize: 20,

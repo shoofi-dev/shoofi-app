@@ -229,6 +229,8 @@ class CartStore {
   updateProductCount = (productId, count) => {
     this.cartItems = this.cartItems.map((item, index) => {
       if (item.data._id.toString() + index === productId) {
+        console.log("item.data._id.toString() + index",item.data._id.toString() + index)
+
         // item.data.price = item.data.price + ((count - item.data.extras.counter.value) * (item.data.price / item.data.extras.counter.value));
         item.data.extras.counter.value = count;
       }

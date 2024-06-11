@@ -33,7 +33,6 @@ const InvoicesScreen = ({ route }) => {
 
   const initIvoices = async () => {
     await ordersStore.getCustomerInvoices().then((res) => {
-      console.log("invoices", res);
       setInvoicesList(res);
     });
   };

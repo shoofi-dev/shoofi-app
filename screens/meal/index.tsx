@@ -68,7 +68,6 @@ const gradiantColors =
 const MealScreen = ({ route }) => {
   const { t } = useTranslation();
   const scrollRef = useRef();
-
   const { product, index, category } = route.params;
   const navigation = useNavigation();
   let { cartStore, ordersStore, languageStore, storeDataStore, userDetailsStore } = useContext(StoreContext);
@@ -95,6 +94,7 @@ const MealScreen = ({ route }) => {
 
   useEffect(() => {
     let tmpProduct: any = {};
+
     if (product) {
       setIsEdit(false);
       // tmpProduct = menuStore.getMealByKey(product.id);
@@ -126,6 +126,7 @@ const MealScreen = ({ route }) => {
     setTimeout(() => {
       tasteScorll();
     }, 1000);
+
     return ()=>{
       setMeal(null);
     }

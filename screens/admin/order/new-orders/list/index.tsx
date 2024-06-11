@@ -123,7 +123,6 @@ const NewOrdersListScreen = ({ route }) => {
 
   const updateSelectedTime = (orderId, time) => {
     if (typeof time !== "object") {
-      console.log("time", time, orderId);
       setSelectedTime({ [orderId]: time });
     }
   };
@@ -192,10 +191,6 @@ const NewOrdersListScreen = ({ route }) => {
       getOrders();
     }
   }, [lastJsonMessage]);
-
-  useEffect(() => {
-    console.log("xx");
-  }, []);
 
   useEffect(() => {
     if (ordersStore.notViewdOrders) {
@@ -326,7 +321,6 @@ const NewOrdersListScreen = ({ route }) => {
   };
 
   const printOrder = (order) => {
-    console.log(order);
     DeviceEventEmitter.emit(`PRINT_ORDER`, { ...order });
   };
 
@@ -636,7 +630,7 @@ const NewOrdersListScreen = ({ route }) => {
                 <View
                   style={{
                     flexBasis: "20%",
-                    height: 190,
+                    height: 150,
                     marginVertical: 10,
                   }}
                 >
@@ -677,8 +671,7 @@ const NewOrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 28,
-                    textDecorationLine: "underline",
+                    fontSize: 20,
                   }}
                 >
                   {languageStore.selectedLang === "ar"
@@ -709,7 +702,7 @@ const NewOrdersListScreen = ({ route }) => {
                           <Text
                             style={{
                               textAlign: "left",
-                              fontSize: 28,
+                              fontSize: 20,
                             }}
                           >
                             {t("halfOne")}
@@ -719,12 +712,12 @@ const NewOrdersListScreen = ({ route }) => {
                       {item?.halfOne.length > 0 ? (
                         Object.keys(item?.halfOne).map((key) => {
                           return (
-                            <View style={{ marginLeft: 10, marginTop: 10 }}>
+                            <View style={{ }}>
                               <View style={{ flexDirection: "row" }}>
                                 <Text
                                   style={{
                                     textAlign: "left",
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     marginTop: 10,
                                   }}
                                   type="number"
@@ -734,7 +727,7 @@ const NewOrdersListScreen = ({ route }) => {
                                 <Text
                                   style={{
                                     textAlign: "left",
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     marginTop: 10,
                                   }}
                                 >
@@ -749,8 +742,8 @@ const NewOrdersListScreen = ({ route }) => {
                         <Text
                           style={{
                             textAlign: "left",
-                            fontSize: 24,
-                            marginTop: 12,
+                            fontSize: 20,
+                            marginTop: 10,
                           }}
                         >
                           من غير اضافات
@@ -770,7 +763,7 @@ const NewOrdersListScreen = ({ route }) => {
                           <Text
                             style={{
                               textAlign: "left",
-                              fontSize: 28,
+                              fontSize: 20,
                             }}
                           >
                             {t("halfTwo")}
@@ -780,12 +773,12 @@ const NewOrdersListScreen = ({ route }) => {
                       {item?.halfTwo.length > 0 ? (
                         Object.keys(item?.halfTwo).map((key) => {
                           return (
-                            <View style={{ marginLeft: 10, marginTop: 10 }}>
+                            <View style={{ marginTop: 10 }}>
                               <View style={{ flexDirection: "row" }}>
                                 <Text
                                   style={{
                                     textAlign: "left",
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     marginTop: 10,
                                   }}
                                   type="number"
@@ -795,7 +788,7 @@ const NewOrdersListScreen = ({ route }) => {
                                 <Text
                                   style={{
                                     textAlign: "left",
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     marginTop: 10,
                                   }}
                                 >
@@ -810,8 +803,8 @@ const NewOrdersListScreen = ({ route }) => {
                         <Text
                           style={{
                             textAlign: "left",
-                            fontSize: 24,
-                            marginTop: 12,
+                            fontSize: 20,
+                            marginTop: 10,
                           }}
                         >
                           من غير اضافات
@@ -838,7 +831,7 @@ const NewOrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 24,
+                    fontSize: 20,
                   }}
                 >
                   {t("count")} : {item.qty}
@@ -846,7 +839,7 @@ const NewOrdersListScreen = ({ route }) => {
                 <View style={{ marginHorizontal: 15 }}>
                   <Text
                     style={{
-                      fontSize: 24,
+                      fontSize: 20,
                     }}
                   >
                     |
@@ -855,7 +848,7 @@ const NewOrdersListScreen = ({ route }) => {
 
                 <Text
                   style={{
-                    fontSize: 24,
+                    fontSize: 20,
                   }}
                 >
                   {t("price")} : ₪{item.price * item.qty}
@@ -864,7 +857,7 @@ const NewOrdersListScreen = ({ route }) => {
               {/* <View style={{ marginTop: 2, alignItems: "center" }}>
                 <Text
                   style={{
-                    fontSize: 24,
+                    fontSize: 20,
                   }}
                 >
                   {t("price")}: ₪
@@ -881,7 +874,7 @@ const NewOrdersListScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 24,
+                      fontSize: 20,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                     }}
                   >
@@ -889,7 +882,7 @@ const NewOrdersListScreen = ({ route }) => {
                   </Text>
                   <Text
                     style={{
-                      fontSize: 24,
+                      fontSize: 20,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                       textAlign: "left",
                       marginVertical: 5,
@@ -937,7 +930,6 @@ const NewOrdersListScreen = ({ route }) => {
       const productFromMeu = menuStore.getFromCategoriesMealByKey(
         order.item_id
       );
-      console.log("uri:order?.clienImage?.uri", order?.clienImage?.uri);
       return {
         ...order,
         others: {
@@ -998,32 +990,29 @@ const NewOrdersListScreen = ({ route }) => {
         </View>
       )}
 
-      <View style={{ flexDirection: "row" }}>
-        <View style={{ marginLeft: 15, zIndex: 1 }}>
-          <BackButton />
-        </View>
+<View style={{width:'100%', marginTop:15 }}>
+
         <View
           style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
+      
             alignItems: "center",
-            top: 19,
-            zIndex: 0,
+     
           }}
         >
           <Text
             style={{
               fontSize: 30,
               fontFamily: `${getCurrentLang()}-SemiBold`,
-              color: themeStyle.GRAY_700,
+              color: themeStyle.WHITE_COLOR,
             }}
           >
             {"طلبيات جديدة"}
           </Text>
         </View>
       </View>
-
+      <View style={{ zIndex: 1, position:'absolute', right:15 }}>
+          <BackButton />
+        </View>
       <ScrollView style={styles.container}>
         <View style={{ marginTop: 20, marginBottom: 200 }}>
           {ordersList?.length < 1 && !isLoading ? (
@@ -1034,13 +1023,12 @@ const NewOrdersListScreen = ({ route }) => {
                 height: "100%",
               }}
             >
-              <Text style={{ fontSize: 24 }}>{t("لا يوجد طلبيات")}</Text>
+              <Text style={{ fontSize: 20 }}>{t("لا يوجد طلبيات")}</Text>
             </View>
           ) : (
             // !isLoading && (
             <View>
               {ordersList.map((order) => {
-                console.log("selectedTime[order._id]", selectedTime);
                 return (
                   <View style={{ marginBottom: 50 }}>
                     <View
@@ -1056,10 +1044,12 @@ const NewOrdersListScreen = ({ route }) => {
                           shadowRadius: 10.84,
                           elevation: 30,
                           borderRadius: 20,
+                          backgroundColor: themeStyle.SECONDARY_COLOR
+
                         },
                       ]}
                     >
-                      <LinearGradient
+                      {/* <LinearGradient
                         colors={[
                           "#c1bab3",
                           "#efebe5",
@@ -1070,7 +1060,7 @@ const NewOrdersListScreen = ({ route }) => {
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={[styles.background, { borderRadius: 20 }]}
-                      />
+                      /> */}
                       <View
                         style={{
                           backgroundColor: themeStyle.WHITE_COLOR,
@@ -1168,7 +1158,7 @@ const NewOrdersListScreen = ({ route }) => {
                         </View>
                         {activeEditNote == null && (
                           <View style={{ width: "40%", flexDirection: "row" }}>
-                            <Text style={{ fontSize: 24, textAling: "left" }}>
+                            <Text style={{ fontSize: 20, textAling: "left" }}>
                               {order.note}
                             </Text>
                           </View>
@@ -1292,17 +1282,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   dateRawText: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     color: themeStyle.TEXT_PRIMARY_COLOR,
   },
   totalPriceText: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     marginBottom: 15,
   },
   dateText: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: `${getCurrentLang()}-Bold`,
     marginBottom: 15,
 

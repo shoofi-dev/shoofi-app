@@ -114,6 +114,7 @@ const StoreManagementScreen = ({ route }) => {
             style={{
               fontSize: 30,
               textAlign: "center",
+              color: themeStyle.WHITE_COLOR
             }}
           >
             {t("ادارة المحل")}
@@ -140,7 +141,7 @@ const StoreManagementScreen = ({ route }) => {
               }}
             >
               <View style={{}}>
-                <Text style={{ textAlign: "left", fontSize: 24 }}>
+                <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                   * {t("المحل مفتوح")} :
                 </Text>
               </View>
@@ -156,7 +157,7 @@ const StoreManagementScreen = ({ route }) => {
             dashLength={5}
             dashThickness={1}
             dashGap={5}
-            dashColor={themeStyle.PRIMARY_COLOR}
+            dashColor={themeStyle.SECONDARY_COLOR}
             style={{ marginTop: 15 }}
           />
           <View style={{ marginTop: 30 }}>
@@ -166,7 +167,7 @@ const StoreManagementScreen = ({ route }) => {
               }}
             >
               <View style={{}}>
-                <Text style={{ textAlign: "left", fontSize: 24 }}>
+                <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                   * {t("ساعات العمل")} :
                 </Text>
               </View>
@@ -179,7 +180,7 @@ const StoreManagementScreen = ({ route }) => {
                   }}
                 >
                   <View style={{}}>
-                    <Text style={{ textAlign: "left", fontSize: 24 }}>
+                    <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                       - {t("من الساعة")}
                     </Text>
                   </View>
@@ -194,6 +195,8 @@ const StoreManagementScreen = ({ route }) => {
                       }}
                       minuteInterval={30}
                       locale={"en_IL"}
+           
+                      themeVariant="dark"
                     />
                   </View>
                 </View>
@@ -204,7 +207,7 @@ const StoreManagementScreen = ({ route }) => {
                   }}
                 >
                   <View style={{}}>
-                    <Text style={{ textAlign: "left", fontSize: 24 }}>
+                    <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                       - {t("حتي الساعة")}
                     </Text>
                   </View>
@@ -219,6 +222,8 @@ const StoreManagementScreen = ({ route }) => {
                       }}
                       minuteInterval={30}
                       locale={"en_IL"}
+                      themeVariant="dark"
+
                     />
                   </View>
                 </View>
@@ -229,7 +234,7 @@ const StoreManagementScreen = ({ route }) => {
             dashLength={5}
             dashThickness={1}
             dashGap={5}
-            dashColor={themeStyle.PRIMARY_COLOR}
+            dashColor={themeStyle.SECONDARY_COLOR}
             style={{ marginTop: 15 }}
           />
           <View style={{ marginTop: 30 }}>
@@ -241,7 +246,7 @@ const StoreManagementScreen = ({ route }) => {
               }}
             >
               <View style={{}}>
-                <Text style={{ textAlign: "left", fontSize: 24 }}>
+                <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                   * {t("يمكن الطلب حتي الساعة")} :
                 </Text>
               </View>
@@ -256,6 +261,8 @@ const StoreManagementScreen = ({ route }) => {
                   }}
                   minuteInterval={30}
                   locale={"en_IL"}
+                  themeVariant="dark"
+
                 />
               </View>
             </View>
@@ -264,12 +271,12 @@ const StoreManagementScreen = ({ route }) => {
             dashLength={5}
             dashThickness={1}
             dashGap={5}
-            dashColor={themeStyle.PRIMARY_COLOR}
+            dashColor={themeStyle.SECONDARY_COLOR}
             style={{ marginTop: 15 }}
           />
           <View style={{ marginTop: 30, width: "100%", marginBottom: 20 }}>
             <View style={{ marginBottom: 20 }}>
-              <Text style={{ textAlign: "left", fontSize: 26 }}>
+              <Text style={{ textAlign: "left", fontSize: 26, color: themeStyle.WHITE_COLOR }}>
                 * طريقة الدفع :
               </Text>
             </View>
@@ -282,7 +289,7 @@ const StoreManagementScreen = ({ route }) => {
                 }}
               >
                 <View style={{}}>
-                  <Text style={{ textAlign: "left", fontSize: 24 }}>
+                  <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                     - {t("بطاقة الاعتماد")}
                   </Text>
                 </View>
@@ -300,7 +307,7 @@ const StoreManagementScreen = ({ route }) => {
                 }}
               >
                 <View style={{}}>
-                  <Text style={{ textAlign: "left", fontSize: 24 }}>
+                  <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                     - {t("نقدي")}
                   </Text>
                 </View>
@@ -317,12 +324,12 @@ const StoreManagementScreen = ({ route }) => {
             dashLength={5}
             dashThickness={1}
             dashGap={5}
-            dashColor={themeStyle.PRIMARY_COLOR}
+            dashColor={themeStyle.SECONDARY_COLOR}
             style={{ marginTop: 15 }}
           />
           <View style={{ marginTop: 30, width: "100%", marginBottom: 20 }}>
             <View style={{ marginBottom: 20 }}>
-              <Text style={{ textAlign: "left", fontSize: 26 }}>
+              <Text style={{ textAlign: "left", fontSize: 26, color: themeStyle.WHITE_COLOR }}>
                 * طريقة الاستلام :
               </Text>
             </View>
@@ -335,7 +342,7 @@ const StoreManagementScreen = ({ route }) => {
                 }}
               >
                 <View style={{}}>
-                  <Text style={{ textAlign: "left", fontSize: 24 }}>
+                  <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                     - {t("استلام")}
                   </Text>
                 </View>
@@ -353,7 +360,7 @@ const StoreManagementScreen = ({ route }) => {
                 }}
               >
                 <View style={{}}>
-                  <Text style={{ textAlign: "left", fontSize: 24 }}>
+                  <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                     - {t("ارسالية")}
                   </Text>
                 </View>
@@ -372,12 +379,12 @@ const StoreManagementScreen = ({ route }) => {
             dashLength={5}
             dashThickness={1}
             dashGap={5}
-            dashColor={themeStyle.PRIMARY_COLOR}
+            dashColor={themeStyle.SECONDARY_COLOR}
             style={{ marginTop: 15 }}
           />
           <View style={{ marginTop: 30, width: "100%", marginBottom: 20 }}>
             <View style={{}}>
-              <Text style={{ textAlign: "left", fontSize: 26 }}>
+              <Text style={{ textAlign: "left", fontSize: 26, color: themeStyle.WHITE_COLOR }}>
                 * شركة التوصيل:
               </Text>
             </View>
@@ -390,7 +397,7 @@ const StoreManagementScreen = ({ route }) => {
             }}
           >
             <View style={{}}>
-              <Text style={{ textAlign: "left", fontSize: 24 }}>
+              <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                 - {t("رقم الهاتف")} :
               </Text>
             </View>
@@ -412,7 +419,7 @@ const StoreManagementScreen = ({ route }) => {
             }}
           >
             <View style={{}}>
-              <Text style={{ textAlign: "left", fontSize: 24 }}>
+              <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
                 - {t("سعر الارسالية")} :
               </Text>
             </View>

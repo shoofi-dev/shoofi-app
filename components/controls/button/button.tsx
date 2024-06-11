@@ -79,11 +79,11 @@ export default function Button({
     }
 
     if (bgColor == "white" || bgColor == themeStyle.PRIMARY_COLOR) {
-      return themeStyle.PRIMARY_COLOR;
+      return themeStyle.TEXT_PRIMARY_COLOR;
     }
 
     if (bgColor) {
-      return themeStyle.PRIMARY_COLOR;
+      return themeStyle.TEXT_PRIMARY_COLOR;
     }
   };
   const renderIcon = () => (

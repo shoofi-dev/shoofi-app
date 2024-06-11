@@ -75,8 +75,7 @@ export const MainStackNavigator = () => {
       screenOptions={{
         cardStyle: { backgroundColor: 'transparent' },
         headerMode: false,
-        ...TransitionScreen
-
+        ...TransitionScreen,
       }}
     >
        {/* name: "menuScreen",

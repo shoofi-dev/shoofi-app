@@ -229,20 +229,9 @@ const CartScreen = ({ route }) => {
     setItemsPrice(tmpOrderPrice);
   };
 
-  const isBirthdayCakeInCart = () => {
-    const { birthdayCakesConfig } = storeDataStore.storeData;
-    const isBirthdayInCart =
-      cartStore.isBirthdayCakeInCart(birthdayCakesConfig);
-    if (isBirthdayInCart) {
-      setMinDeltaMinutes(birthdayCakesConfig?.birthdayCakeMinDeltaMin);
-    } else {
-      setMinDeltaMinutes(30);
-    }
-  };
 
   useEffect(() => {
     updateItemsPrice();
-    isBirthdayCakeInCart();
   }, [cartStore.cartItems]);
 
   const getCCData = async () => {
@@ -353,8 +342,6 @@ const CartScreen = ({ route }) => {
     return new Promise(async (resolve) => {
       const addressLocation = await askForLocation(true);
       if (addressLocation) {
-        console.log("xx");
-
         cartStore
           .isValidGeo(
             addressLocation.coords.latitude,
@@ -362,8 +349,6 @@ const CartScreen = ({ route }) => {
           )
           .then((res: any) => {
             if (res.data) {
-              console.log("xx2");
-
               setIsValidAddress(res.data);
               setIsOpenInvalidAddressDialod(!res.data);
               resolve(res.data);
@@ -375,7 +360,6 @@ const CartScreen = ({ route }) => {
       } else {
         setIsOpenLocationIsDisableDialog(true);
         resolve(false);
-        console.log("xx3");
       }
     });
   };
@@ -422,8 +406,6 @@ const CartScreen = ({ route }) => {
 
   const chargeOrder = (chargeData: TPaymentProps, cartData: any) => {
     chargeCreditCard(chargeData, cartData).then((resCharge) => {
-      console.log("chargeCreditCardresCharge", resCharge);
-
       const updateCCData: TUpdateCCPaymentRequest = {
         orderId: chargeData.orderId,
         creditcard_ReferenceNumber: resCharge?.ReferenceNumber,
@@ -439,8 +421,6 @@ const CartScreen = ({ route }) => {
           return;
         }
         if (res?.has_err) {
-          console.log("chargeOrderhas_err", res);
-
           setShowPaymentFailedDialog(true);
           return;
         }
@@ -490,7 +470,6 @@ const CartScreen = ({ route }) => {
     cartStore
       .updateOrderAdmin(order)
       .then((res: TOrderSubmitResponse | any) => {
-        console.log("submitOrder");
         if (res == "sameHashKey") {
           if (paymentMthod === PAYMENT_METHODS.creditCard) {
           }
@@ -545,7 +524,6 @@ const CartScreen = ({ route }) => {
     }
     //cartStore.addOrderToHistory(order,userDetailsStore.userDetails.phone);
     cartStore.submitOrder(order).then((res: TOrderSubmitResponse | any) => {
-      console.log("submitOrder");
       if (res == "sameHashKey") {
         if (paymentMthod === PAYMENT_METHODS.creditCard) {
         }
@@ -952,7 +930,7 @@ const CartScreen = ({ route }) => {
                 </Text>
                 <Text
                   style={{
-                    fontSize: 25,
+                    fontSize: 20,
                     color: themeStyle.WHITE_COLOR,
                     fontFamily: `${getCurrentLang()}-American-bold`,
                   }}
@@ -962,8 +940,8 @@ const CartScreen = ({ route }) => {
               </View>
               <View
                 style={{
-                  width: 35,
-                  height: 35,
+                  width: 30,
+                  height: 30,
                   alignItems: "center",
                   justifyContent: "center",
                   marginVertical: 10,
@@ -1011,6 +989,7 @@ const CartScreen = ({ route }) => {
                         elevation: 5,
                         borderWidth: 0,
                         backgroundColor: "transparent",
+                        
                         opacity: value.current.interpolate({
                           inputRange:
                             index === 0
@@ -1023,6 +1002,7 @@ const CartScreen = ({ route }) => {
                                 ],
                           outputRange: [0, 0, 1, 1],
                           extrapolate: "clamp",
+                          
                         }),
                       }}
                     >
@@ -1108,12 +1088,13 @@ const CartScreen = ({ route }) => {
                                 width: "100%",
                                 flexDirection: "row",
                                 paddingTop: 5,
+                                
                               }}
                             >
                               <View
                                 style={{
-                                  width: 100,
-                                  height: 90,
+                                  width: 80,
+                                  height: 80,
                                   padding:5,
                                   shadowColor: 'black',
                                   shadowOffset: {
@@ -1128,7 +1109,7 @@ const CartScreen = ({ route }) => {
                               >
                                 <Image
                                   style={{
-                                    width: "90%",
+                                    width: "100%",
                                     height: "100%",
                                     marginLeft: 0,
                                     borderRadius: 20,
@@ -1139,7 +1120,9 @@ const CartScreen = ({ route }) => {
                               <View
                                 style={{
                                   flexDirection: "row",
-                                  padding: 15,
+                                  marginLeft:5,
+                                  marginTop:10,
+                                  marginBottom:10,
                                 }}
                               >
                                 <View
@@ -1147,16 +1130,18 @@ const CartScreen = ({ route }) => {
                                     marginTop: -5,
                                     flexDirection: "column",
                                     justifyContent: "space-between",
-                                    flexBasis: "62%",
+                                    flexBasis: "65%",
                                   }}
                                 >
                                   <View
                                     style={{
                                       borderColor: themeStyle.PRIMARY_COLOR,
-                                      padding: 5,
                                       alignItems: "center",
                                       borderTopWidth: 1,
                                       borderBottomWidth: 1,
+                                      justifyContent:'center',
+                                      paddingTop:8,
+                                      paddingBottom:5
                                     }}
                                   >
                                     <Text
@@ -1170,13 +1155,8 @@ const CartScreen = ({ route }) => {
                                     >
                                       {languageStore.selectedLang === "ar"
                                         ? product.data.nameAR
-                                        : product.data.nameHE}{" "}
-                                      {product?.data?.extras?.size?.value ===
-                                      "medium"
-                                        ? ""
-                                        : `- ${t(
-                                            product?.data?.extras?.size?.value
-                                          )}`}
+                                        : product.data.nameHE}
+                                      
                                     </Text>
                                   </View>
 
@@ -1187,9 +1167,8 @@ const CartScreen = ({ route }) => {
                                       marginTop: 15,
                                     }}
                                   >
-                                    <View>
-                                      {product?.data?.extras?.halfOne?.value
-                                        .length > 0 && (
+                                    <View style={{flexBasis:"48%"}}>
+                                      {product?.data?.extras?.halfOne?.value && (
                                         <View
                                           style={{
                                             borderBottomWidth: 1,
@@ -1201,8 +1180,8 @@ const CartScreen = ({ route }) => {
                                         >
                                           <Text
                                             style={{
-                                              textAlign: "left",
-                                              fontSize: 18,
+                                              textAlign: "center",
+                                              fontSize: 16,
                                               fontFamily: `${getCurrentLang()}-SemiBold`,
 
                                             }}
@@ -1211,7 +1190,8 @@ const CartScreen = ({ route }) => {
                                           </Text>
                                         </View>
                                       )}
-                                      {product?.data?.extras?.halfOne?.value &&
+                                      
+                                      {product?.data?.extras?.halfOne?.value.length > 0 ?
                                         Object.keys(
                                           product?.data?.extras?.halfOne?.value
                                         ).map((key) => {
@@ -1223,7 +1203,7 @@ const CartScreen = ({ route }) => {
                                                 <Text
                                                   style={{
                                                     textAlign: "left",
-                                                    fontSize: 18,
+                                                    fontSize: 16,
                                                     marginTop: 10,
 
                                                   }}
@@ -1235,7 +1215,7 @@ const CartScreen = ({ route }) => {
                                                 <Text
                                                   style={{
                                                     textAlign: "left",
-                                                    fontSize: 18,
+                                                    fontSize: 16,
                                                     marginTop: 10,
 
                                                   }}
@@ -1250,12 +1230,21 @@ const CartScreen = ({ route }) => {
                                               </View>
                                             </View>
                                           );
-                                        })}
+                                        }):
+                                        product?.data?.extras?.halfOne?.value && <Text
+                                        style={{
+                                          textAlign: "left",
+                                          fontSize: 16,
+                                          marginTop: 10,
+
+                                        }}
+                                      >
+                                        من غير اضافات
+                                      </Text>}
                                     </View>
 
-                                    <View>
-                                      {product?.data?.extras?.halfTwo?.value
-                                        .length > 0 && (
+                                    <View style={{flexBasis:"48%"}}>
+                                      {product?.data?.extras?.halfTwo?.value && (
                                         <View
                                           style={{
                                             borderBottomWidth: 1,
@@ -1267,8 +1256,8 @@ const CartScreen = ({ route }) => {
                                         >
                                           <Text
                                             style={{
-                                              textAlign: "left",
-                                              fontSize: 18,
+                                              textAlign: "center",
+                                              fontSize: 16,
                                               fontFamily: `${getCurrentLang()}-SemiBold`,
 
                                             }}
@@ -1277,7 +1266,7 @@ const CartScreen = ({ route }) => {
                                           </Text>
                                         </View>
                                       )}
-                                      {product?.data?.extras?.halfTwo?.value &&
+                                      {product?.data?.extras?.halfTwo?.value.length > 0 ?
                                         Object.keys(
                                           product?.data?.extras?.halfTwo?.value
                                         ).map((key) => {
@@ -1289,7 +1278,7 @@ const CartScreen = ({ route }) => {
                                                 <Text
                                                   style={{
                                                     textAlign: "left",
-                                                    fontSize: 18,
+                                                    fontSize: 16,
                                                     marginTop: 10,
                                                   }}
                                                   type="number"
@@ -1299,7 +1288,7 @@ const CartScreen = ({ route }) => {
                                                 <Text
                                                   style={{
                                                     textAlign: "left",
-                                                    fontSize: 18,
+                                                    fontSize: 16,
                                                     marginTop: 10,
                                                   }}
                                                 >
@@ -1313,7 +1302,18 @@ const CartScreen = ({ route }) => {
                                               </View>
                                             </View>
                                           );
-                                        })}
+                                        }
+                                        ) :
+                                        product?.data?.extras?.halfOne?.value &&  <Text
+                                        style={{
+                                          textAlign: "left",
+                                          fontSize: 16,
+                                          marginTop: 10,
+
+                                        }}
+                                      >
+                                        من غير اضافات
+                                      </Text>}
                                     </View>
                                   </View>
 
@@ -1345,6 +1345,7 @@ const CartScreen = ({ route }) => {
                                             );
                                           }}
                                           variant={"colors"}
+                                          size={30}
                                         />
                                       </View>
                                     </View>
@@ -1421,9 +1422,9 @@ const CartScreen = ({ route }) => {
                                   <TouchableOpacity
                                     style={{
                                       backgroundColor: themeStyle.ERROR_COLOR,
-                                      height: 45,
-                                      borderRadius: 20,
-                                      width: 50,
+                                      height: 40,
+                                      borderRadius: 10,
+                                      width: 40,
                                       alignItems: "flex-end",
                                     }}
                                     onPress={() => {
@@ -1442,9 +1443,9 @@ const CartScreen = ({ route }) => {
                                     <Text
                                       style={{
                                         color: themeStyle.WHITE_COLOR,
-                                        right: 23,
-                                        top: 17,
-                                        fontSize: 20,
+                                        right: 20,
+                                        top: 15,
+                                        fontSize: 18,
                                         fontWeight: "900",
                                         fontFamily: `${getCurrentLang()}-GS-Black-Bold`,
                                       }}
@@ -1458,17 +1459,17 @@ const CartScreen = ({ route }) => {
                               <View
                                 style={{
                                   position: "absolute",
-                                  right: -10,
-                                  bottom: -12,
+                                  right: -14,
+                                  bottom: -8,
                                 }}
                               >
                                 <View>
                                   <TouchableOpacity
                                     style={{
                                       backgroundColor: themeStyle.SUCCESS_COLOR,
-                                      height: 45,
-                                      borderRadius: 20,
-                                      width: 50,
+                                      height: 40,
+                                      borderRadius: 10,
+                                      width: 45,
                                       alignItems: "flex-end",
                                     }}
                                     onPress={() => {
@@ -1478,9 +1479,9 @@ const CartScreen = ({ route }) => {
                                   >
                                     <Icon
                                       icon="pencil"
-                                      size={18}
+                                      size={15}
                                       style={{
-                                        right: 20,
+                                        right: 22,
                                         top: 8,
                                         color: themeStyle.WHITE_COLOR,
                                       }}
@@ -1849,7 +1850,7 @@ const CartScreen = ({ route }) => {
                             shippingMethod === SHIPPING_METHODS.shipping
                               ? themeStyle.TEXT_PRIMARY_COLOR
                               : themeStyle.WHITE_COLOR,
-                          left: -10,
+                          left: 3,
                         }}
                       >
                         {t("delivery")}

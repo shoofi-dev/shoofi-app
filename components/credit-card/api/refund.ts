@@ -16,14 +16,12 @@ const refundTransaction = ({TransactionIdToCancelOrRefund, TransactionSum}:any) 
         TransactionIdToCancelOrRefund,
         TransactionSum,
     };
-    console.log("refundTransactionbody",body)
     return axios
         .post(
             'https://pci.zcredit.co.il/ZCreditWS/api/Transaction/RefundTransaction',
             body,
         )
         .then(function (res: any) {
-            console.log("refundRes", res)
             return res;
         });
 }

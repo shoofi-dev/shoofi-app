@@ -11,6 +11,7 @@ import OrderHeader from "./components/order-header";
 import { ScrollView } from "react-native-gesture-handler";
 import OrderFooter from "./components/order-footer";
 import { useTranslation } from "react-i18next";
+import BackButton from "../../../components/back-button";
 
 const OrderHistoryScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -42,6 +43,7 @@ const OrderHistoryScreen = ({ route }) => {
     <View style={{ width: "100%", marginTop: 20 }}>
       <View style={{ alignItems: "center", width: "100%" }}>
         <View style={{ alignItems: "center", width: "100%" }}>
+          <View style={{flexDirection:'row', width:"100%", alignItems:'center', justifyContent:'center'}}>
           <Text
             style={{
               ...styles.textLang,
@@ -50,6 +52,11 @@ const OrderHistoryScreen = ({ route }) => {
           >
             {t("order-list")}
           </Text>
+          <View style={{position:'absolute', right:10}}>
+      <BackButton />
+      </View>
+          </View>
+ 
           {ordersList.length === 0 ? (
             <View style={{ marginTop: 60 }}>
               { isLoading ?           <View
@@ -60,7 +67,7 @@ const OrderHistoryScreen = ({ route }) => {
                     style={{}}
                     color={themeStyle.PRIMARY_COLOR}
                   />
-                </View> : <Text style={{ fontSize: 20 }}>{t("empty-orders")}...</Text>}
+                </View> : <Text style={{ fontSize: 20, color:themeStyle.WHITE_COLOR }}>{t("empty-orders")}...</Text>}
             </View>
           ) : (
             <ScrollView
@@ -136,6 +143,7 @@ const styles = StyleSheet.create({
   textLang: {
     fontSize: 25,
     textAlign: "left",
+    color: themeStyle.WHITE_COLOR
   },
   background: {
     position: "absolute",

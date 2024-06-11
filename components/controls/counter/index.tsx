@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import themeStyle from "../../../styles/theme.style";
 import * as Haptics from "expo-haptics";
 
-export default function Counter({ onCounterChange, value, stepValue = 1, minValue = 0, isVertical = false, variant = null }) {
+export default function Counter({ onCounterChange, value, stepValue = 1, minValue = 0, isVertical = false, variant = null, size = 35 }) {
   const [couter, setCounter] = useState(value || 0);
   const onBtnClick = (value) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -17,7 +17,7 @@ export default function Counter({ onCounterChange, value, stepValue = 1, minValu
   useEffect(()=>{
     setCounter(value || 0)
   },[value]);
-  
+
   if(variant === 'gray'){
     return (
       <View style={{...styles.containerGray, flexDirection: isVertical? "column" : "row"}}>
@@ -53,7 +53,7 @@ export default function Counter({ onCounterChange, value, stepValue = 1, minValu
       <View style={{...styles.containerGray, flexDirection: isVertical? "column" : "row"}}>
         <View>
           <TouchableOpacity
-            style={[styles.btnGray]}
+            style={[styles.btnGray,{width: size, height:size}]}
             onPress={() => {
               onBtnClick(stepValue);
             }}
@@ -62,11 +62,11 @@ export default function Counter({ onCounterChange, value, stepValue = 1, minValu
           </TouchableOpacity>
         </View>
         <View style={styles.counterValue}>
-          <Text style={{ fontSize: 20,color:themeStyle.WHITE_COLOR}}>{couter}</Text>
+          <Text style={{ fontSize: 16,color:themeStyle.WHITE_COLOR}}>{couter}</Text>
         </View>
         <View>
           <TouchableOpacity
-            style={styles.btnGray}
+            style={[styles.btnGray,{width: size, height:size}]}
             onPress={() => {
               onBtnClick(-stepValue);
             }}
@@ -144,8 +144,8 @@ const styles = StyleSheet.create({
   btnGray: {
     backgroundColor: themeStyle.WHITE_COLOR,
 
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -169,12 +169,12 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
   },
   btnTextGreen: {
-    fontSize: 25,
+    fontSize: 22,
     color: themeStyle.SUCCESS_COLOR,
     fontFamily: "Poppins-Regular",
   },
   btnTextRed: {
-    fontSize: 25,
+    fontSize: 22,
     color: themeStyle.ERROR_COLOR,
     fontFamily: "Poppins-Regular",
   },

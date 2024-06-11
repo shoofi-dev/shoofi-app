@@ -5,7 +5,7 @@ import Text from "../../components/controls/Text";
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../stores";
 import { observer } from "mobx-react";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import themeStyle from "../../styles/theme.style";
@@ -18,7 +18,7 @@ const ProfileScreen = () => {
   const { t } = useTranslation();
   const version = Constants.nativeAppVersion;
 
-  const { userDetailsStore, authStore } = useContext(StoreContext);
+  const { userDetailsStore, authStore, storeDataStore } = useContext(StoreContext);
   const navigation = useNavigation();
 
   const [itemsList, setItemsList] = useState([]);
@@ -36,11 +36,11 @@ const ProfileScreen = () => {
           icon: "orders-icon",
           key: "orders",
         },
-        {
-          title: "invoices-list",
-          icon: "file-text2",
-          key: "invoices-list",
-        },
+        // {
+        //   title: "invoices-list",
+        //   icon: "file-text2",
+        //   key: "invoices-list",
+        // },
 
         {
           title: "change-language",
@@ -158,13 +158,13 @@ const ProfileScreen = () => {
                   borderRadius: 30,
                   padding: 10,
                   borderWidth:2,
-                  borderColor: themeStyle.PRIMARY_COLOR
+                  borderColor: themeStyle.TEXT_PRIMARY_COLOR
                 }}
               >
                 <Icon
                   icon={item.icon}
                   size={30}
-                  style={{ color: themeStyle.PRIMARY_COLOR, opacity: 1 }}
+                  style={{ color: themeStyle.TEXT_PRIMARY_COLOR, opacity: 1 }}
                 />
               </View>
               <View>
@@ -174,7 +174,7 @@ const ProfileScreen = () => {
               </View>
               {item.key == "contact-us" && (
                 <View style={{justifyContent:"flex-start", flex:1}}>
-                  <Text type="number" style={{fontSize: 18}}>053-6660444</Text>
+                  <Text type="number" style={{fontSize: 18}}>{storeDataStore.storeData.storePhone}</Text>
                 </View>
               )}
               {item.key == "phone" && (
@@ -207,7 +207,7 @@ const ProfileScreen = () => {
             dashLength={5}
             dashThickness={1}
             dashGap={5}
-            dashColor={themeStyle.PRIMARY_COLOR}
+            dashColor={themeStyle.TEXT_PRIMARY_COLOR}
             style={{ paddingVertical: 15 }}
           />
         )}
@@ -222,7 +222,12 @@ const ProfileScreen = () => {
         height: "100%",
       }}
     >
+      <View style={{alignItems:'flex-end', width:'100%'}}>
       <BackButton />
+      </View>
+
+      <ScrollView>
+
 
       <View style={styles.container}>
         <LinearGradient
@@ -241,7 +246,6 @@ const ProfileScreen = () => {
           <Text
             style={{
               fontSize: 25,
-              textDecorationLine: "underline",
              }}
              type="number"
 
@@ -262,7 +266,7 @@ const ProfileScreen = () => {
       >
         <View style={{}}>
           <Text
-            style={{ textAlign: "center", color: themeStyle.BROWN_700 }}
+            style={{ textAlign: "center", color: themeStyle.WHITE_COLOR }}
             type="number"
           >
             Version - {version}
@@ -282,20 +286,20 @@ const ProfileScreen = () => {
             onPress={() => actionHandler("openTerms")}
             style={{ alignItems: "center", marginBottom: 20 }}
           >
-            <Text style={{ color: themeStyle.GRAY_700 }}>
+            <Text style={{ color: themeStyle.WHITE_COLOR }}>
               {t("open-terms")}
             </Text>
           </TouchableOpacity>
         </View>
         <View style={{ top: -10 }}>
-          <Text>{"  |  "}</Text>
+          <Text style={{ color: themeStyle.WHITE_COLOR}}>{"  |  "}</Text>
         </View>
         <View>
           <TouchableOpacity
             onPress={() => actionHandler("deleteAccount")}
             style={{ alignItems: "center", marginBottom: 20 }}
           >
-            <Text style={{ color: themeStyle.GRAY_700 }}>
+            <Text style={{ color: themeStyle.WHITE_COLOR }}>
               {t("delete-account")}
             </Text>
           </TouchableOpacity>
@@ -340,7 +344,10 @@ const ProfileScreen = () => {
       >
 
       </View> */}
+          </ScrollView>
+
     </View>
+
   );
 };
 

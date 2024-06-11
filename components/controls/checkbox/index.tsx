@@ -131,7 +131,7 @@ export default function CheckBox({
             //   isFlexCol
             // /> */}
 
-          <View style={{  width: isActive ? "104%" : "100%",paddingVertical:10,backgroundColor:themeStyle.PRIMARY_COLOR, borderBottomEndRadius:20, borderBottomStartRadius:20  }}>
+          <View style={{  width: isActive ? "104%" : "100%",paddingVertical:8,backgroundColor:themeStyle.PRIMARY_COLOR, borderBottomEndRadius:20, borderBottomStartRadius:20  }}>
             {/* <LinearGradient
               colors={[
                 "rgba(207, 207, 207, 0.9)",
@@ -263,13 +263,8 @@ export default function CheckBox({
     >
       {title && <Text style={{ marginBottom: 10 }}>{title}</Text>}
       {isSelected ? (
-        <View style={{ height: 25, width: 25, borderRadius: 30, padding: 5 }}>
-          <LinearGradient
-            colors={["#eaaa5c", "#a77948"]}
-            start={{ x: 1, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={[styles.background]}
-          />
+        <View style={{ height: 25, width: 25, borderRadius: 30, padding: 5, backgroundColor:themeStyle.SECONDARY_COLOR }}>
+      
         </View>
       ) : (
         <View></View>
@@ -279,8 +274,8 @@ export default function CheckBox({
 }
 const styles = StyleSheet.create({
   container: {
-    height: 130,
-    width: 110,
+    height: 120,
+    width: 100,
     //  backgroundColor:  false ? themeStyle.SUCCESS_COLOR : themeStyle.WHITE_COLOR,
     borderRadius: 20,
     alignItems: "center",
