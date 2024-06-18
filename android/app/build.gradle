@@ -233,10 +233,10 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file('pizza_gmel_release_keystore.keystore')
+            storePassword 'Paris2023!'
+            keyAlias 'pizza_gmel_release_keystore'
+            keyPassword 'Paris2023!'
         }
     }
     buildTypes {

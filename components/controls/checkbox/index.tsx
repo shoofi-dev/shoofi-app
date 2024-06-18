@@ -52,7 +52,7 @@ export default function CheckBox({
             borderColor: isActive
               ? themeStyle.SUCCESS_COLOR
               : themeStyle.WHITE_COLOR,
-            borderWidth: isActive && 3,
+            borderWidth: isActive ? 3 : 0,
             backgroundColor:themeStyle.SECONDARY_COLOR
           },
         ]}

@@ -177,12 +177,12 @@ const CategoryItemsList = ({ productsList, category }) => {
 
   const filterBirthdayProducts = filterBirthday();
   return (
-    <View style={{ height: "90%", marginTop:"10%" }}>
+    <View style={{  marginTop:"10%" }}>
       {category.categoryId == 1 &&  (
         <TouchableOpacity onPress={()=>onItemSelect(productsList[0])}>
           {category.categoryId === 1 &&(
             <Animated.View
-              style={{ transform: [{ translateY: productsAnim.current }],  backgroundColor:themeStyle.SECONDARY_COLOR, marginHorizontal:50, paddingVertical:50, borderRadius:30,      
+              style={{ transform: [{ translateY: productsAnim.current }],  backgroundColor:themeStyle.SECONDARY_COLOR, marginHorizontal:50,  borderRadius:30, paddingVertical:50,      
               
               shadowColor: themeStyle.SECONDARY_COLOR,
               shadowOffset: {
@@ -213,7 +213,7 @@ const CategoryItemsList = ({ productsList, category }) => {
                        elevation: 0,
                        borderWidth: 0,
                   }}>
-                  <Image source={mealsImages.pizza} style={{ alignSelf: "center", width:250, height:250, borderRadius:10, marginTop:10,  }} />
+                  <Image source={mealsImages.pizza} style={{ alignSelf: "center", width:150, height:150, borderRadius:10, marginTop:10 }} />
 
                   </View>
 
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F6F4",
     paddingVertical: 60,
     borderColor: "rgba(0, 0, 0, 0.1)",
-    borderWidth: 1,
+    borderWidth: 0,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

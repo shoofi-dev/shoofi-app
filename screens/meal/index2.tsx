@@ -566,13 +566,13 @@ const MealScreen = ({ route }) => {
       />
       <View
         style={{
-          width: "100%",
-          height: 200,
+          width: Dimensions.get("window").width + 70,
+          height: Dimensions.get("window").width + 70,
           backgroundColor: "#C31A21",
           position: "absolute",
-          borderBottomEndRadius: 500,
-          borderBottomStartRadius: 500,
-          marginTop: "-25%",
+          borderRadius:Dimensions.get("window").width / 1.9,
+          marginTop: (Dimensions.get("window").width/2 * -1) - 140,
+          alignSelf:'center'
         }}
       >
    
@@ -1058,6 +1058,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 30,
     elevation: 0,
+    borderWidth: 0,
+
   },
   background: {
     position: "absolute",
