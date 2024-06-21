@@ -149,7 +149,6 @@ const interpolateRotatingX = rotateAnimation.interpolate({
   }
 
   const renderImage = () => {
-    console.log("productImgUrl",productImgUrl)
     return(
       productImgUrl ? 
       <Animated.Image 

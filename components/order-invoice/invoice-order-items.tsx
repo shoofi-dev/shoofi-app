@@ -40,26 +40,154 @@ const InvoiceOrderItems = ({ orderItems }) => {
             </View>
 
             <View style={{ marginHorizontal: 8 }}>
-              {order.size && order.size == "large" && (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
-                      {i18n.t("size")}
-                    </Text>
-                  </View>
-                  <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
-                      {i18n.t(order.size)}
-                    </Text>
-                  </View>
-                </View>
-              )}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: 15,
+                }}
+              >
+                <View style={{ flexBasis: "48%" }}>
+                  {order?.halfOne && (
+                    <View
+                      style={{
+                        borderBottomWidth: 1,
+                        borderTopWidth: 1,
+                        paddingVertical: 3,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          fontSize: 40,
+                          fontFamily: `${getCurrentLang()}-SemiBold`,
+                        }}
+                      >
+                        {i18n.t("halfOne")}
+                      </Text>
+                    </View>
+                  )}
 
+                  {order?.halfOne?.length > 0
+                    ? Object.keys(order?.halfOne).map((key) => {
+                        return (
+                          <View>
+                            <View style={{ flexDirection: "row" }}>
+                              <Text
+                                style={{
+                                  textAlign: "left",
+                                  fontSize: 40,
+                                  marginTop: 10,
+                                }}
+                              >
+                                {`${Number(key) + 1}`}
+                              </Text>
+                              <Text
+                                style={{
+                                  textAlign: "left",
+                                  fontSize: 40,
+                                  marginTop: 10,
+                                }}
+                              >
+                                {" "}
+                                - {i18n.t(order?.halfOne[key])}
+                              </Text>
+                            </View>
+                          </View>
+                        );
+                      })
+                    : order?.halfOne && (
+                        <Text
+                          style={{
+                            textAlign: "left",
+                            fontSize: 40,
+                            marginTop: 10,
+                          }}
+                        >
+                          من غير اضافات
+                        </Text>
+                      )}
+                </View>
+
+                <View style={{ flexBasis: "48%" }}>
+                  {order?.halfTwo && (
+                    <View
+                      style={{
+                        borderBottomWidth: 1,
+                        borderTopWidth: 1,
+                        paddingVertical: 3,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          fontSize: 40,
+                          fontFamily: `${getCurrentLang()}-SemiBold`,
+                        }}
+                      >
+                        {i18n.t("halfTwo")}
+                      </Text>
+                    </View>
+                  )}
+                  {order?.halfTwo?.length > 0
+                    ? Object.keys(order?.halfTwo).map((key) => {
+                        return (
+                          <View>
+                            <View style={{ flexDirection: "row" }}>
+                              <Text
+                                style={{
+                                  textAlign: "left",
+                                  fontSize: 40,
+                                  marginTop: 10,
+                                }}
+                              >
+                                {`${Number(key) + 1}`}
+                              </Text>
+                              <Text
+                                style={{
+                                  textAlign: "left",
+                                  fontSize: 40,
+                                  marginTop: 10,
+                                }}
+                              >
+                                {" "}
+                                - {i18n.t(order?.halfTwo[key])}
+                              </Text>
+                            </View>
+                          </View>
+                        );
+                      })
+                    : order?.halfOne && (
+                        <Text
+                          style={{
+                            textAlign: "left",
+                            fontSize: 40,
+                            marginTop: 10,
+                          }}
+                        >
+                          من غير اضافات
+                        </Text>
+                      )}
+                </View>
+              </View>
+              {order.item_id === '657da8cb418e0056e070a006' &&   <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop:10
+                }}
+              >
+                <View>
+                  <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    {i18n.t("size")}
+                  </Text>
+                </View>
+                <View>
+                  <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    {i18n.t(order.size)}
+                  </Text>
+                </View>
+              </View>}
               {order.toName && (
                 <View
                   style={{
@@ -99,29 +227,6 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   </View>
                 </View>
               )}
-
-              {order.taste &&
-                Object.values(order.taste).map((taste, index) => {
-                  return (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <View style={{}}>
-                        <Text style={{ fontSize: 40, textAlign: "left" }}>
-                          {i18n.t("taste")} {index + 1}
-                        </Text>
-                      </View>
-                      <View>
-                        <Text style={{ fontSize: 40, textAlign: "left" }}>
-                          {i18n.t(taste)}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
 
               {order.onTop && (
                 <View

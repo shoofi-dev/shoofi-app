@@ -42,7 +42,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
               alignSelf: "center",
               resizeMode: "contain",
             }}
-            source={require("../../assets/output-onlinepngtools.png")}
+            source={require("../../assets/icon4.png")}
           />
         </View>
         <View style={{ marginTop: 0 }}>
@@ -78,15 +78,15 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
               alignItems: "center",
             }}
           >
-            <Text style={{ fontSize: 90, textAlign: "center" }}>
+            {/* <Text style={{ fontSize: 90, textAlign: "center" }}>
               {i18n.t(moment(invoiceOrder.orderDate).format("dddd"))}
-            </Text>
+            </Text> */}
             <Text style={{ fontSize: 90, textAlign: "center" }}>
               {moment(invoiceOrder.orderDate).format("HH:mm")}
             </Text>
           </View>
         </View>
-
+{/* 
         <View
           style={{
             marginTop: 10,
@@ -100,7 +100,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
           <Text style={{ fontSize: 90, textAlign: "center" }}>
             {moment(invoiceOrder.orderDate).format("DD/MM")}
           </Text>
-        </View>
+        </View> */}
        {invoiceOrder.order?.payment_method && invoiceOrder?.ccPaymentRefData?.data?.StatusCode == 1 && <View
           style={{
             marginTop: 10,

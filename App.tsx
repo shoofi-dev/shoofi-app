@@ -206,7 +206,10 @@ const App = () => {
   }, [userDetailsStore.userDetails]);
 
   const listenToNewOrder = async () => {
-    if (lastJsonMessage && lastJsonMessage.type === "new order" || lastJsonMessage && lastJsonMessage.type === "order viewed updated") {
+    if (
+      (lastJsonMessage && lastJsonMessage.type === "new order") ||
+      (lastJsonMessage && lastJsonMessage.type === "order viewed updated")
+    ) {
       await ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
     }
     if (
@@ -218,7 +221,10 @@ const App = () => {
       if (userDetailsStore.isAdmin(ROLES.all) && !isPrinting) {
         printNotPrinted();
       }
-      if (!storeDataStore.repeatNotificationInterval && lastJsonMessage.type !== "print not printed") {
+      if (
+        !storeDataStore.repeatNotificationInterval &&
+        lastJsonMessage.type !== "print not printed"
+      ) {
         repeatNotification();
       }
     }
@@ -235,6 +241,14 @@ const App = () => {
         format: "png",
       });
       SPs.push(result);
+      const invoiceRefName = invoicesRef.current[queue[i].orderId + "name"];
+      const resultName = await captureRef(invoiceRefName, {
+        result: "data-uri",
+        width: pixels,
+        quality: 1,
+        format: "png",
+      });
+      SPs.push(resultName);
     }
     return SPs;
   };
@@ -250,21 +264,21 @@ const App = () => {
 
   const printNotPrinted = async () => {
     setIsPrinting(true);
-    try{
+    try {
       ordersStore
-      .getOrders(true, ["1","2","3","4","5"], null, true)
-      .then(async (res) => {
-        const notPrintedOrderds = res;
-        if (notPrintedOrderds?.length > 0) {
-          setPrintOrdersQueue(notPrintedOrderds);
-        } else {
+        .getOrders(true, ["1", "2", "3", "4", "5"], null, true)
+        .then(async (res) => {
+          const notPrintedOrderds = res;
+          if (notPrintedOrderds?.length > 0) {
+            setPrintOrdersQueue(notPrintedOrderds);
+          } else {
+            setIsPrinting(false);
+          }
+        })
+        .catch((err) => {
           setIsPrinting(false);
-        }
-      })
-      .catch((err) => {
-        setIsPrinting(false);
-      });
-    }catch{
+        });
+    } catch {
       setIsPrinting(false);
     }
   };
@@ -291,13 +305,12 @@ const App = () => {
   useEffect(() => {
     if (printOrdersQueue.length > 0) {
       setTimeout(() => {
-        //forLoop(printOrdersQueue);
+        forLoop(printOrdersQueue);
       }, 1000);
-    }else{
+    } else {
       setIsPrinting(false);
     }
   }, [printOrdersQueue]);
-
 
   useEffect(() => {
     listenToNewOrder();
@@ -305,10 +318,13 @@ const App = () => {
 
   const initPrinter = async () => {
     await EscPosPrinter.init({
-      target: "BT:00:01:90:56:EB:70",
+      target: "TCP:192.168.0.107",
       seriesName: getPrinterSeriesByName("TM-m30"),
       language: "EPOS2_LANG_EN",
-    });
+    })
+      .then(() => console.log("Init success!"))
+      .catch((e) => console.log("Init error:", e.message));
+
     const printing = new EscPosPrinter.printing();
     setPrinter(printing);
   };
@@ -321,8 +337,8 @@ const App = () => {
       authStore.isLoggedIn() &&
       userDetailsStore.isAdmin() &&
       appIsReady
-    ){
-      if(userDetailsStore.isAdmin(ROLES.all) && !isPrinting){
+    ) {
+      if (userDetailsStore.isAdmin(ROLES.all) && !isPrinting) {
         initPrinter();
         printNotPrinted();
       }
@@ -338,30 +354,38 @@ const App = () => {
         authStore.isLoggedIn() &&
         userDetailsStore.isAdmin() &&
         appIsReady
-      ){
-        if(userDetailsStore.isAdmin(ROLES.all) && !isPrinting){
-          // initPrinter();
+      ) {
+        if (userDetailsStore.isAdmin(ROLES.all) && !isPrinting) {
+          initPrinter();
           printNotPrinted();
         }
         ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
-      }    }, 60 * 1000);
+      }
+    }, 60 * 1000);
     return () => clearInterval(interval);
   }, [appIsReady, userDetailsStore.userDetails?.phone, currentAppState]);
 
-  useEffect(()=>{
-    if(currentAppState === "active" &&
-        userDetailsStore.isAdmin() &&
-        appIsReady){
-          if(ordersStore.notViewdOrders?.length > 0){
-            if (!storeDataStore.repeatNotificationInterval) {
-              repeatNotification();
-            }
-          }else{
-            clearInterval(storeDataStore.repeatNotificationInterval);
-            storeDataStore.setRepeatNotificationInterval(null);
-          }
+  useEffect(() => {
+    if (
+      currentAppState === "active" &&
+      userDetailsStore.isAdmin() &&
+      appIsReady
+    ) {
+      if (ordersStore.notViewdOrders?.length > 0) {
+        if (!storeDataStore.repeatNotificationInterval) {
+          repeatNotification();
+        }
+      } else {
+        clearInterval(storeDataStore.repeatNotificationInterval);
+        storeDataStore.setRepeatNotificationInterval(null);
+      }
     }
-  }, [ordersStore.notViewdOrders, appIsReady, userDetailsStore.userDetails?.phone, currentAppState]);
+  }, [
+    ordersStore.notViewdOrders,
+    appIsReady,
+    userDetailsStore.userDetails?.phone,
+    currentAppState,
+  ]);
 
   useEffect(() => {
     if (!I18nManager.isRTL) {
@@ -527,7 +551,6 @@ const App = () => {
   useEffect(() => {
     prepare();
   }, []);
-
 
   useEffect(() => {
     const ExpDatePicjkerChange = DeviceEventEmitter.addListener(
@@ -706,8 +729,25 @@ const App = () => {
                   key={invoice.orderId}
                 >
                   <View
-                    // ref={invoiceRef}
+                    ref={(el) =>
+                      (invoicesRef.current[invoice.orderId + "name"] = el)
+                    }
+                    style={{
+                      width: "100%",
 
+                      flexDirection: "row",
+                      zIndex: 10,
+                      height: 50,
+                      alignItems: "center",
+                      borderWidth: 1,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ alignSelf: "center", fontSize: 40 }}>
+                      {invoice.customerDetails.name}
+                    </Text>
+                  </View>
+                  <View
                     ref={(el) => (invoicesRef.current[invoice.orderId] = el)}
                     style={{
                       width: "100%",
