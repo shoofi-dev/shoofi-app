@@ -14,7 +14,6 @@ import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { cdnUrl } from "../../../consts/shared";
 import CheckBox from "../../../components/controls/checkbox";
-import MultipleImagePicker from "@baronha/react-native-multiple-image-picker";
 import DashedLine from "react-native-dashed-line";
 import EditTranslationsDialog from "../../../components/dialogs/translations/edit-translations";
 

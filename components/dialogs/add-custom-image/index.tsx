@@ -8,7 +8,6 @@ import {
   } from "react-native";
   import { Dialog, Portal, Provider } from "react-native-paper";
   import Text from "../../controls/Text";
-  import MultipleImagePicker from "@baronha/react-native-multiple-image-picker";
   import { launchCamera, launchImageLibrary } from "react-native-image-picker";
   
   /* styles */
@@ -58,7 +57,6 @@ import {
 
   
     const onImageSelect = async () => {
-      // const result = await MultipleImagePicker.openPicker({});
       const result = await launchImageLibrary({ mediaType: "photo" });
       setImageList(result.assets[0]);
       // setImageList(result);

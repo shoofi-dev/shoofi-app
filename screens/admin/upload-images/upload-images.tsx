@@ -14,7 +14,6 @@ import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { cdnUrl } from "../../../consts/shared";
 import CheckBox from "../../../components/controls/checkbox";
-import MultipleImagePicker from '@baronha/react-native-multiple-image-picker';
 
 
 const UploadImagesScreen = ({ route }) => {
@@ -41,8 +40,7 @@ const UploadImagesScreen = ({ route }) => {
   }, []);
 
   const onImageSelect = async () => {
-    const result = await MultipleImagePicker.openPicker({ thumbnailHeight:600, thumbnailWidth:300 });
-    setImageList(result);
+    // setImageList(result);
   };
 
   const handleInputChange = (value: any) => {
