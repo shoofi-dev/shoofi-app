@@ -7,7 +7,7 @@
     "icon": "./assets/icon5.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash-screen-8.jpg",
+      "image": "./assets/splash-screen-8.png",
       "resizeMode": "cover",
       "backgroundColor": "#FFFFFF"
     },
@@ -42,7 +42,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "splash": {
-        "image": "./assets/splash-screen-8.jpg",
+        "image": "./assets/splash-screen-8.png",
         "backgroundColor": "#FFFFFF",
         "resizeMode":"cover"
       },

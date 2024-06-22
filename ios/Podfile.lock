@@ -363,9 +363,6 @@ PODS:
     - React-Core
   - react-native-month-year-picker (1.9.0):
     - React
-  - react-native-multiple-image-picker (0.4.13):
-    - React-Core
-    - TLPhotoPicker (= 2.1.4)
   - react-native-netinfo (9.3.0):
     - React-Core
   - react-native-restart (0.0.24):
@@ -486,7 +483,6 @@ PODS:
     - React-RCTImage
   - RNSVG (12.5.1):
     - React-Core
-  - TLPhotoPicker (2.1.4)
   - UMAppLoader (3.1.0)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
@@ -549,7 +545,6 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-month-year-picker (from `../node_modules/react-native-month-year-picker`)
-  - "react-native-multiple-image-picker (from `../node_modules/@baronha/react-native-multiple-image-picker`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -582,7 +577,6 @@ SPEC REPOS:
     - ASN1Decoder
     - fmt
     - lottie-ios
-    - TLPhotoPicker
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -690,8 +684,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-maps"
   react-native-month-year-picker:
     :path: "../node_modules/react-native-month-year-picker"
-  react-native-multiple-image-picker:
-    :path: "../node_modules/@baronha/react-native-multiple-image-picker"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-restart:
@@ -801,7 +793,6 @@ SPEC CHECKSUMS:
   react-native-image-picker: 3269f75c251cdcd61ab51b911dd30d6fff8c6169
   react-native-maps: 8b8bfada2c86205a7f5a07dd1f92f29b33ea83aa
   react-native-month-year-picker: 948797e981ca502427024a34b17f545eb321bbff
-  react-native-multiple-image-picker: ba2725d577e1da7fa83ce1b12a81d84107556240
   react-native-netinfo: 129bd99f607a2dc5bb096168f3e5c150fd1f1c95
   react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
@@ -826,7 +817,6 @@ SPEC CHECKSUMS:
   RNReanimated: 2cf7451318bb9cc430abeec8d67693f9cf4e039c
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
-  TLPhotoPicker: f486e8499e1c3f464d0e886697635e25a72a52b8
   UMAppLoader: 6185e8c45922f187002b85afae097961c4781df4
   Yoga: 7a4d48cfb35dfa542151e615fa73c1a0d88caf21
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
