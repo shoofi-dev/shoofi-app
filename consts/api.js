@@ -77,6 +77,7 @@ export const STORE_API = {
     CONTROLLER: "Stores",
     GET_STORE_API : "store",
     UPDATE_STORE_API : "store/update",
+    IS_UPDATE_VERSION_STORE_API : "store/is-should-update",
 };
 export const TRANSLATIONS_API = {
     CONTROLLER: "translations",

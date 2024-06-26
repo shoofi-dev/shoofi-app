@@ -38,6 +38,23 @@ class StoreDataStore {
       return res[0];
     })
   };
+  
+  isUpdateAppVersionFromServer = async () => {
+    return axiosInstance
+      .get(`${STORE_API.IS_UPDATE_VERSION_STORE_API}`)
+      .then(function (response) {
+        const res = response;
+        return res;
+      }).catch((error) => {
+        console.log(error);
+      })
+  };
+
+  isUpdateAppVersion = () => {
+    return this.isUpdateAppVersionFromServer().then((res:any) => {
+      return res
+    })
+  };
 
   updateStoreDataFromServer = async (storeData) => {
     const body = storeData;

@@ -2384,6 +2384,7 @@ const CartScreen = ({ route }) => {
       <StoreIsCloseDialog
         handleAnswer={handleStoreIsCloseAnswer}
         isOpen={showStoreIsCloseDialog}
+        text={t("store-is-close")}
       />
       <PickTimeDialog
         handleAnswer={handleTimeSelectedAnswer}

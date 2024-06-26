@@ -462,7 +462,7 @@ const App = () => {
   };
 
   const handleUpdateVersionDialogAnswer = () => {
-    Linking.openURL("https://onelink.to/zky772");
+    Linking.openURL("https://sari-apps-lcibm.ondigitalocean.app/api/store/download-app");
   };
 
   async function prepare() {
@@ -502,6 +502,12 @@ const App = () => {
               return `${cdnUrl}${slide}`;
             }
           );
+          
+          const isShouldUpdateVersion = await storeDataStore.isUpdateAppVersion();
+          if(isShouldUpdateVersion){
+             setIsOpenUpdateVersionDialog(true);
+            return;
+          }
 
           const imageAssets = await cacheImages(tempHomeSlides);
           if (authStore.isLoggedIn()) {
@@ -695,6 +701,10 @@ const App = () => {
           </View>
           <GeneralServerErrorDialog />
           <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />
+          <UpdateVersion
+            isOpen={isOpenUpdateVersionDialog}
+            handleAnswer={handleUpdateVersionDialogAnswer}
+          />
         </ImageBackground>
       </View>
     );

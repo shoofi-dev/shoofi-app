@@ -10,6 +10,7 @@ import Button from "../../components/controls/button/button";
 import themeStyle from "../../styles/theme.style";
 import { useTranslation } from "react-i18next";
 import { ExclamationMarkLottie } from "../lottie/exclamation-mark-animation";
+import i18n from "../../translations/i18n";
 
 type TProps = {
   isOpen: boolean;
@@ -22,7 +23,6 @@ export default function UpdateVersionDialog({
   handleAnswer,
   errorMessage,
 }: TProps) {
-  const { t } = useTranslation();
   const [visible, setVisible] = useState(isOpen);
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function UpdateVersionDialog({
                 fontWeight: "bold",
               }}
             >
-              {t("update-application")}
+              {i18n.t("update-application")}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
@@ -76,7 +76,7 @@ export default function UpdateVersionDialog({
             >
               <Button
                 onClickFn={() => hideDialog(true)}
-                text={t("ok")}
+                text={i18n.t("update-app")}
                 textColor={themeStyle.WHITE_COLOR}
                 fontSize={16}
               />

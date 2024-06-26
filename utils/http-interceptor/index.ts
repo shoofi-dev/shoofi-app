@@ -3,6 +3,7 @@ import { BASE_URL } from "../../consts/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fromBase64 } from "../../helpers/convert-base64";
 import { DeviceEventEmitter } from "react-native";
+import Constants from "expo-constants";
 
 const general_errors_codes = ["-400", "-6", "-7", "-10", "-11", "-401"];
 const TOKEN_NOT_VALID = -12;
@@ -20,6 +21,9 @@ axiosInstance.interceptors.request.use(
       config.headers["Content-Type"] = "application/json";
     }
 
+    const version = Constants.nativeAppVersion;
+    config.headers["app-version"] = version;
+    
     config.headers["app-name"] = 'pizza-gmel'
 
     return config;
