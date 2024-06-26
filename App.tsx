@@ -329,7 +329,7 @@ const App = () => {
 
   const initPrinter = async () => {
     await EscPosPrinter.init({
-      target: "TCP:192.168.0.107",
+      target: storeDataStore.storeData.printerTarget,
       seriesName: getPrinterSeriesByName("TM-m30"),
       language: "EPOS2_LANG_EN",
     })
