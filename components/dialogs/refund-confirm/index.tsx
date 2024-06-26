@@ -72,7 +72,7 @@ export default function ConfirmRefundActiondDialog({
       setIsloading(true);
       refundTransaction({
         TransactionIdToCancelOrRefund:
-        210159002,
+        order?.ccPaymentRefData?.data?.ReferenceNumber,
         TransactionSum: Number(tmpRefundPrice),
       }).then(async (res) => {
         await ordersStore.addOrderRefund({...res.data, created: moment().format(), amount: Number(tmpRefundPrice)}, order);
