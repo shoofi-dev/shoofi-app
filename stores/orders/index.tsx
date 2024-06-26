@@ -17,25 +17,25 @@ class OrdersStore {
     makeAutoObservable(this);
   }
 
-  getOrdersFromServer = async (isAdmin?: boolean, statusList?,ordersDate?,isNotPrinted?, pageNumber?) => {
+  getOrdersFromServer = async (isAdmin?: boolean, statusList?,ordersDate?,isNotPrinted?, pageNumber?,isNotViewd?) => {
     const api = isAdmin
       ? `${ORDER_API.CONTROLLER}/${ORDER_API.GET_ADMIN_ORDERS_API}`
       : `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.GET_CUSTOMER_ORDERS_API}`;
     return axiosInstance
       .post(
         api,
-        {statusList, ordersDate, isNotPrinted, pageNumber}
+        {statusList, ordersDate, isNotPrinted, pageNumber, isNotViewd}
       )
       .then(function (response: any) {
         return response;
       });
   };
 
-  getOrders = (isAdmin?: boolean, statusList?,ordersDate?, isNotPrinted?, pageNumber?, isOrdersPage?) => {
+  getOrders = (isAdmin?: boolean, statusList?,ordersDate?, isNotPrinted?, pageNumber?, isOrdersPage?, isNotViewd?) => {
     if(isOrdersPage){
       this.totalOrderItems = null;
     }
-    return this.getOrdersFromServer(isAdmin, statusList, ordersDate,isNotPrinted, pageNumber).then((res) => {
+    return this.getOrdersFromServer(isAdmin, statusList, ordersDate,isNotPrinted, pageNumber, isNotViewd).then((res) => {
       // const orderedList = orderBy(res.orders, ["created_at"], ["desc"]);
       const tmpOrders = res.data || res;
       runInAction(() => {

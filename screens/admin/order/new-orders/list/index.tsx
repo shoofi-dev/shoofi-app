@@ -41,6 +41,7 @@ import ShowImageDialog from "../../../../../components/dialogs/show-image/show-i
 import { useNavigation } from "@react-navigation/native";
 import { adminCustomerStore } from "../../../../../stores/admin-customer";
 import DropDown from "../../../../../components/controls/dropdown";
+import isShowSize from "../../../../../helpers/is-show-size";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -821,7 +822,23 @@ const NewOrdersListScreen = ({ route }) => {
               dashColor={themeStyle.GRAY_600}
               style={{ marginTop: 15, width:"100%" }}
             /> */}
-
+             { isShowSize(item.item_id) && <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 20,
+                  }}
+                >
+                  {t("size")} : {t(item.size)}
+                </Text>
+              </View>
+ }
               <View
                 style={{
                   flexDirection: "row",
@@ -1243,7 +1260,7 @@ const NewOrdersListScreen = ({ route }) => {
                           onClickFn={() =>
                             updateViewedOrder(order, selectedTime[order._id])
                           }
-                          textColor={themeStyle.TEXT_PRIMARY_COLOR}
+                          textColor={themeStyle.WHITE_COLOR}
                           fontFamily={`${getCurrentLang()}-Bold`}
                           borderRadious={19}
                           disabled={!selectedTime[order._id]}

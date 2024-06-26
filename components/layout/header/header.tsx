@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
   },
   cartCount: {
      position: "absolute",
-    top: Platform.OS === 'ios' ? 19 : 20,
+    top: Platform.OS === 'ios' ? 19 : 17,
     color: themeStyle.TEXT_PRIMARY_COLOR,
     fontSize:15
   },

@@ -59,7 +59,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
           <View
             style={{
               marginTop: 5,
-              borderWidth: 1,
+              borderWidth: 5,
               borderRadius: 30,
               padding: 5,
             }}
@@ -117,7 +117,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
         </View>
         }
 
-        <View style={{ borderWidth: 1, marginTop: 15, padding: 10 }}>
+        <View style={{ borderWidth: 5, marginTop: 15, padding: 10 }}>
           <View
             style={{
               flexDirection: "row",
@@ -208,7 +208,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            borderWidth: 1,
+            borderWidth: 5,
             padding: 10,
           }}
         >

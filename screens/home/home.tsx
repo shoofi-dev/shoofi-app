@@ -291,6 +291,11 @@ const HomeScreen = ({ navigation }) => {
         display: isHideScreen ? "none" : "flex",
       }}
     >
+            <ImageBackground
+          source={require("../../assets/home/home-bg1.png")}
+          resizeMode="stretch"
+          style={{ height: "100%",width:"100%"}}
+              > 
       <View
         style={{
           alignItems: "center",
@@ -341,7 +346,7 @@ const HomeScreen = ({ navigation }) => {
             )}
           </TouchableOpacity>
         )} */}
-        <View style={{ width: "100%", }}>
+        {/* <View style={{ width: "100%", }}>
           {isAnimateReady && (
             <Animated.View entering={FadeInUp.duration(500)}>
               <Image
@@ -351,7 +356,7 @@ const HomeScreen = ({ navigation }) => {
               />
             </Animated.View>
           )}
-        </View>
+        </View> */}
 
         {/* <View style={{marginTop:15}}>
           <Text
@@ -532,6 +537,7 @@ const HomeScreen = ({ navigation }) => {
         isOpen={isOpenStoreErrorMsgDialog}
         text={storeErrorText}
       />
+      </ImageBackground>
     </View>
   );
 };

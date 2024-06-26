@@ -36,7 +36,7 @@ const OrderFooter = ({ order }) => {
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <View>
                     <Text style={styles.totalPriceText}>
-                      {t("collect-date-client")}:
+                      {t("collect-date")}:
                     </Text>
                   </View>
                   <View>

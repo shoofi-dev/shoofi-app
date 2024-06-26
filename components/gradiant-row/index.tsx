@@ -325,8 +325,8 @@ export default function GradiantRow({
                   // marginRight: 10,
                   // borderRadius: 20,
                   alignSelf:'center',
-                  flexBasis:"30%",
-                  marginBottom:20
+                  flexBasis:"33%",
+                  marginBottom:40
                 }}
               >
                 <CheckBox

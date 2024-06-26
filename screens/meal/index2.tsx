@@ -10,6 +10,7 @@ import {
   Dimensions,
   Platform,
 } from "react-native";
+import { orderBy } from "lodash";
 import Text from "../../components/controls/Text";
 import BirthdayImagesList from "../../components/birthday-images-list";
 import { useNavigation } from "@react-navigation/native";
@@ -78,6 +79,7 @@ const MealScreen = ({ route }) => {
     languageStore,
     storeDataStore,
     userDetailsStore,
+    authStore
   } = useContext(StoreContext);
   const [meal, setMeal] = useState(null);
   const [clientImage, setClientImage] = useState();
@@ -544,6 +546,16 @@ const MealScreen = ({ route }) => {
     }
   };
 
+  const handleCartClick = () => {
+    if (authStore.isLoggedIn()) {
+      if (cartStore.getProductsCount() > 0) {
+        navigation.navigate("cart");
+      }
+    } else {
+      navigation.navigate("login");
+    }
+  };
+
   if (!meal) {
     return null;
   }
@@ -600,6 +612,26 @@ const MealScreen = ({ route }) => {
           />
         </TouchableOpacity>
       </View>
+      <View style={{ zIndex: 10 }}>
+      <TouchableOpacity
+            style={[{
+              zIndex: 1,
+              position: "absolute",
+              left: 10,
+              width: 40,
+              padding: 0,
+              alignItems: "center",
+              height: 40,
+              justifyContent: "center",
+              top: 10,
+            }]}
+            onPress={handleCartClick}
+        >
+          <Icon icon="cart_icon" size={30} style={{ color: themeStyle.WHITE_COLOR }} />
+          <Text style={styles.cartCount}>{cartStore.getProductsCount()}</Text>
+        </TouchableOpacity>
+        </View>
+
       <View
         style={{
           shadowColor: "black",
@@ -758,7 +790,7 @@ const MealScreen = ({ route }) => {
                         type={meal.data.extras["halfOne"].type}
                         value={[...meal.data.extras["halfOne"].value]}
                         title={"halfOne"}
-                        options={storeDataStore.storeData.pizzaExtras}
+                        options={orderBy(storeDataStore.storeData.pizzaExtras, ["order"], ["asc"])}
                       />
                     </View>
                   )}
@@ -775,7 +807,7 @@ const MealScreen = ({ route }) => {
                         type={meal.data.extras["halfTwo"].type}
                         value={[...meal.data.extras["halfTwo"].value]}
                         title={"halfTwo"}
-                        options={storeDataStore.storeData.pizzaExtras}
+                        options={orderBy(storeDataStore.storeData.pizzaExtras, ["order"], ["asc"])}
                       />
                     </View>
                   )}
@@ -1105,4 +1137,10 @@ const styles = StyleSheet.create({
     padding: 8,
     textAlign: "center",
   },
+  cartCount: {
+    position: "absolute",
+   marginTop: Platform.OS === 'ios' ? 18 : 12,
+   color: themeStyle.WHITE_COLOR,
+   fontSize:15
+ },
 });

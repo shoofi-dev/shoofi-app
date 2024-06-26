@@ -46,6 +46,7 @@ import _useAppCurrentState from "../../../../hooks/use-app-current-state";
 import refundTransaction from "../../../../components/credit-card/api/refund";
 import ConfirmRefundActiondDialog from "../../../../components/dialogs/refund-confirm";
 import ConfirmActiondDialog from "../../../../components/dialogs/confirm-action";
+import isShowSize from "../../../../helpers/is-show-size";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -85,59 +86,58 @@ const OrdersListScreen = ({ route }) => {
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
 
-    const animation = useRef(new Animated.Value(0)).current;
-    const contentHeight = useRef(1);
-    const itemRefs = useRef([]);
+  const animation = useRef(new Animated.Value(0)).current;
+  const contentHeight = useRef(1);
+  const itemRefs = useRef([]);
 
-    const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
-    const handleAnimation = () => {
-      // @ts-ignore
-      Animated.timing(rotateAnimation, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: false,
-      }).start(() => {
-        rotateAnimation.setValue(0);
-      });
-    };
-    const interpolateRotating = rotateAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [1, 0],
+  const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
+  const handleAnimation = () => {
+    // @ts-ignore
+    Animated.timing(rotateAnimation, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start(() => {
+      rotateAnimation.setValue(0);
     });
+  };
+  const interpolateRotating = rotateAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
 
-    const animatedStyle = {
-      color: themeStyle.PRIMARY_COLOR,
-      borderRadius: 20,
-       height: interpolateRotating,
-      opacity:0
-    };
-    const getProductIndexId = (product, index) => {
-      if (product) {
-        return product?._id.toString() + index;
+  const animatedStyle = {
+    color: themeStyle.PRIMARY_COLOR,
+    borderRadius: 20,
+    height: interpolateRotating,
+    opacity: 0,
+  };
+  const getProductIndexId = (product, index) => {
+    if (product) {
+      return product?._id.toString() + index;
+    }
+  };
+
+  const toggleExpand = (order, index) => {
+    const orderId = getProductIndexId(order, index);
+
+    let isExpanded = false;
+    setExpandedOrders((prevItems) => {
+      if (prevItems.includes(orderId)) {
+        return prevItems.filter((id) => id !== orderId);
+      } else {
+        isExpanded = true;
+        return [...prevItems, orderId];
       }
-    };
-
-    const toggleExpand = (order, index) => {
-      const orderId = getProductIndexId(order, index);
-
-      let isExpanded = false;
-      setExpandedOrders((prevItems) => {
-        if (prevItems.includes(orderId)) {
-          return prevItems.filter((id) => id !== orderId);
-        } else {
-          isExpanded = true;
-          return [...prevItems, orderId];
-        }
-      });
-      handleAnimation();
-    };
-    const viewRef = useRef(null);
-
-    const heightInterpolate = animation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [contentHeight.current, contentHeight.current],
     });
-  
+    handleAnimation();
+  };
+  const viewRef = useRef(null);
+
+  const heightInterpolate = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [contentHeight.current, contentHeight.current],
+  });
 
   const handleShowRefundDialog = (order: any) => {
     setShowRefundDialog(true);
@@ -468,41 +468,43 @@ const OrdersListScreen = ({ route }) => {
   const renderOrderDateRaw = (order, index) => {
     return (
       <View style={{}}>
-             <View style={{alignSelf:'center', top:-10}}>
-        <TouchableOpacity onPress={()=> toggleExpand(order, index)}>
-        <Icon icon="circle-down" size={30} style={{color:themeStyle.TEXT_PRIMARY_COLOR}} />
-
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: 10,
-          flexWrap: "wrap",
-          width:"100%"
-          // marginTop: 25,
-        }}
-      >
-
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.dateRawText}> اسم الزبون:</Text>
-          <Text style={styles.dateRawText}>
-            {" "}
-            {order?.customerDetails?.name}
-          </Text>
+        <View style={{ alignSelf: "center", top: -10 }}>
+          <TouchableOpacity onPress={() => toggleExpand(order, index)}>
+            <Icon
+              icon="circle-down"
+              size={30}
+              style={{ color: themeStyle.TEXT_PRIMARY_COLOR }}
+            />
+          </TouchableOpacity>
         </View>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.dateRawText}> رقم الهاتف:</Text>
-          <Text style={styles.dateRawText} >
-            {order?.customerDetails?.phone}{" "}
-          </Text>
-        </View>
-        <View style={{ alignItems: "center" }}>
-          <View style={{ marginBottom: 0 }}>
-            <Text style={styles.dateRawText}>{t("collect-date")}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 10,
+            flexWrap: "wrap",
+            width: "100%",
+            // marginTop: 25,
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.dateRawText}> اسم الزبون:</Text>
+            <Text style={styles.dateRawText}>
+              {" "}
+              {order?.customerDetails?.name}
+            </Text>
           </View>
-          {/* <Text
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.dateRawText}> رقم الهاتف:</Text>
+            <Text style={styles.dateRawText}>
+              {order?.customerDetails?.phone}{" "}
+            </Text>
+          </View>
+          <View style={{ alignItems: "center" }}>
+            <View style={{ marginBottom: 0 }}>
+              <Text style={styles.dateRawText}>{t("collect-date")}</Text>
+            </View>
+            {/* <Text
             style={{
               fontSize: 34,
               fontFamily: `${getCurrentLang()}-Bold`,
@@ -511,22 +513,21 @@ const OrdersListScreen = ({ route }) => {
           >
             {t(moment(order.orderDate).format("dddd"))}
           </Text> */}
-          <Text
-            style={{
-              fontSize: 20,
-              fontFamily: `${getCurrentLang()}-American-bold`,
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: `${getCurrentLang()}-American-bold`,
 
-              color: themeStyle.SUCCESS_COLOR,
-            }}
-          >
-            {moment(order.orderDate).format("HH:mm")}
-          </Text>
+                color: themeStyle.SUCCESS_COLOR,
+              }}
+            >
+              {moment(order.orderDate).format("HH:mm")}
+            </Text>
           </View>
-        {/* <Text style={styles.dateText}>
+          {/* <Text style={styles.dateText}>
             {moment(order.orderDate).format("DD/MM")}
           </Text> */}
-      </View>
- 
+        </View>
       </View>
     );
   };
@@ -607,16 +608,16 @@ const OrdersListScreen = ({ route }) => {
                   </View>
                 </View>
               )}
-                      <View style={{ flexDirection: "row" }}>
-          <View>
-            <Text style={styles.dateRawText}>{t("order-number")}:</Text>
-          </View>
-          <View>
-            <Text style={styles.dateRawText}>
-              {idPart1}-{idPart2}{" "}
-            </Text>
-          </View>
-        </View>
+              <View style={{ flexDirection: "row" }}>
+                <View>
+                  <Text style={styles.dateRawText}>{t("order-number")}:</Text>
+                </View>
+                <View>
+                  <Text style={styles.dateRawText}>
+                    {idPart1}-{idPart2}{" "}
+                  </Text>
+                </View>
+              </View>
               {/* <View style={{ flexDirection: "row" }}>
                 <View>
                   <Text style={styles.totalPriceText}>
@@ -899,7 +900,7 @@ const OrdersListScreen = ({ route }) => {
                       {item?.halfOne.length > 0 ? (
                         Object.keys(item?.halfOne).map((key) => {
                           return (
-                            <View style={{  }}>
+                            <View style={{}}>
                               <View style={{ flexDirection: "row" }}>
                                 <Text
                                   style={{
@@ -960,7 +961,7 @@ const OrdersListScreen = ({ route }) => {
                       {item?.halfTwo.length > 0 ? (
                         Object.keys(item?.halfTwo).map((key) => {
                           return (
-                            <View style={{  }}>
+                            <View style={{}}>
                               <View style={{ flexDirection: "row" }}>
                                 <Text
                                   style={{
@@ -1008,6 +1009,25 @@ const OrdersListScreen = ({ route }) => {
               dashColor={themeStyle.GRAY_600}
               style={{ marginTop: 15, width:"100%" }}
             /> */}
+
+              {isShowSize(item.item_id) && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 20,
+                    }}
+                  >
+                    {t("size")} : {t(item.size)}
+                  </Text>
+                </View>
+              )}
 
               <View
                 style={{
@@ -1274,21 +1294,19 @@ const OrdersListScreen = ({ route }) => {
         </View>
       )}
 
-      <View style={{width:'100%', marginTop:15 }}>
-
+      <View style={{ width: "100%", marginTop: 15 }}>
         <View
           style={{
-            
-            alignSelf:'center',
-            width:"40%",
-            position:'relative'
+            alignSelf: "center",
+            width: "40%",
+            position: "relative",
           }}
         >
           <View
             style={{
               flexDirection: "row",
               alignSelf: "center",
-              alignItems:'center'
+              alignItems: "center",
             }}
           >
             <Text
@@ -1318,11 +1336,10 @@ const OrdersListScreen = ({ route }) => {
             </TouchableOpacity>
           </View>
         </View>
-    
       </View>
-      <View style={{ right: 15, zIndex: 1, position:'absolute', top:5}}>
-          <BackButton goTo={"homeScreen"} />
-        </View>
+      <View style={{ right: 15, zIndex: 1, position: "absolute", top: 5 }}>
+        <BackButton goTo={"homeScreen"} />
+      </View>
       {/* <ScrollView
         style={{
           height: 120,
@@ -1497,7 +1514,7 @@ const OrdersListScreen = ({ route }) => {
                         shadowRadius: 10.84,
                         elevation: 30,
                         borderRadius: 20,
-                        backgroundColor: themeStyle.SECONDARY_COLOR
+                        backgroundColor: themeStyle.SECONDARY_COLOR,
                       },
                     ]}
                   >
@@ -1545,128 +1562,133 @@ const OrdersListScreen = ({ route }) => {
                     </View> */}
 
                     {renderOrderDateRaw(order, index)}
-                    <Animated.View   style={[
-                           expandedOrders.indexOf(getProductIndexId(order, index)) > -1
-                            ? animatedStyle
-                            : null]}
-                          ref={itemRefs[getProductIndexId(order, index)]}
-                          >
-
-                    {renderOrderItems(order)}
-
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
+                    <Animated.View
+                      style={[
+                        expandedOrders.indexOf(
+                          getProductIndexId(order, index)
+                        ) > -1
+                          ? animatedStyle
+                          : null,
+                      ]}
+                      ref={itemRefs[getProductIndexId(order, index)]}
                     >
+                      {renderOrderItems(order)}
+
                       <View
                         style={{
-                          marginRight: 10,
-                          width: 200,
-                          justifyContent: "center",
+                          flexDirection: "row",
+                          alignItems: "center",
                         }}
                       >
-                        {activeEditNote != order.orderId && (
-                          <Button
-                            text={order?.note ? "تعديل الملاحظة" : "اضف ملاحظة"}
-                            fontSize={17}
-                            onClickFn={() => updateActiveEditNote(order, index)}
-                            bgColor={themeStyle.ORANGE_COLOR}
-                            textColor={themeStyle.TEXT_PRIMARY_COLOR}
-                            fontFamily={`${getCurrentLang()}-Bold`}
-                            borderRadious={19}
-                          />
-                        )}
-                        {activeEditNote == order.orderId && (
-                          <Button
-                            text={"حفظ الملاحظة"}
-                            fontSize={17}
-                            onClickFn={() => saveOrderNote(order)}
-                            bgColor={themeStyle.ORANGE_COLOR}
-                            textColor={themeStyle.TEXT_PRIMARY_COLOR}
-                            fontFamily={`${getCurrentLang()}-Bold`}
-                            borderRadious={19}
-                          />
-                        )}
-                        {activeEditNote == order.orderId && (
-                          <View style={{ marginTop: 10 }}>
+                        <View
+                          style={{
+                            marginRight: 10,
+                            width: 200,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {activeEditNote != order.orderId && (
                             <Button
-                              text={"اغلاق"}
+                              text={
+                                order?.note ? "تعديل الملاحظة" : "اضف ملاحظة"
+                              }
                               fontSize={17}
-                              onClickFn={() => updateActiveEditNote(null)}
-                              bgColor={themeStyle.ERROR_COLOR}
+                              onClickFn={() =>
+                                updateActiveEditNote(order, index)
+                              }
+                              bgColor={themeStyle.ORANGE_COLOR}
                               textColor={themeStyle.TEXT_PRIMARY_COLOR}
+                              fontFamily={`${getCurrentLang()}-Bold`}
+                              borderRadious={19}
+                            />
+                          )}
+                          {activeEditNote == order.orderId && (
+                            <Button
+                              text={"حفظ الملاحظة"}
+                              fontSize={17}
+                              onClickFn={() => saveOrderNote(order)}
+                              bgColor={themeStyle.ORANGE_COLOR}
+                              textColor={themeStyle.TEXT_PRIMARY_COLOR}
+                              fontFamily={`${getCurrentLang()}-Bold`}
+                              borderRadious={19}
+                            />
+                          )}
+                          {activeEditNote == order.orderId && (
+                            <View style={{ marginTop: 10 }}>
+                              <Button
+                                text={"اغلاق"}
+                                fontSize={17}
+                                onClickFn={() => updateActiveEditNote(null)}
+                                bgColor={themeStyle.ERROR_COLOR}
+                                textColor={themeStyle.TEXT_PRIMARY_COLOR}
+                                fontFamily={`${getCurrentLang()}-Bold`}
+                                borderRadious={19}
+                              />
+                            </View>
+                          )}
+                        </View>
+                        {activeEditNote == null && (
+                          <View style={{ width: "40%", flexDirection: "row" }}>
+                            <Text style={{ fontSize: 20, textAlign: "left" }}>
+                              {order.note}
+                            </Text>
+                          </View>
+                        )}
+                        {activeEditNote == order.orderId && (
+                          <View style={{ width: "40%" }}>
+                            <TextInput
+                              onChange={(e) => {
+                                setOrderNoteText(e.nativeEvent.text);
+                                // updateOrderNote(orderId, e.nativeEvent.text);
+                              }}
+                              value={orderNoteText}
+                              placeholderTextColor={themeStyle.GRAY_600}
+                              multiline={true}
+                              selectionColor="black"
+                              underlineColorAndroid="transparent"
+                              numberOfLines={5}
+                              style={{
+                                backgroundColor: "white",
+                                borderWidth: 1,
+                                textAlignVertical: "top",
+                                textAlign: "right",
+                                padding: 10,
+                                height: 80,
+                                width: "100%",
+                                // fontFamily: `${getCurrentLang()}-SemiBold`,
+                              }}
+                            />
+                          </View>
+                        )}
+                        {order.order.receipt_method ==
+                          SHIPPING_METHODS.shipping && (
+                          <View
+                            style={{
+                              flexDirection: "column",
+                              justifyContent: "flex-end",
+                              width: "30%",
+                              padding: 20,
+                              alignItems: "center",
+                            }}
+                          >
+                            <Icon
+                              icon="delivery-active"
+                              size={80}
+                              style={{ color: "#a77948" }}
+                            />
+                            <Button
+                              text={"הזמן שליח"}
+                              fontSize={17}
+                              onClickFn={() => bookDelivery(order)}
                               fontFamily={`${getCurrentLang()}-Bold`}
                               borderRadious={19}
                             />
                           </View>
                         )}
                       </View>
-                      {activeEditNote == null && (
-                        <View style={{ width: "40%", flexDirection: "row" }}>
-                          <Text style={{ fontSize: 20, textAlign: "left" }}>
-                            {order.note}
-                          </Text>
-                        </View>
-                      )}
-                      {activeEditNote == order.orderId && (
-                        <View style={{ width: "40%" }}>
-                          <TextInput
-                            onChange={(e) => {
-                              setOrderNoteText(e.nativeEvent.text);
-                              // updateOrderNote(orderId, e.nativeEvent.text);
-                            }}
-                            value={orderNoteText}
-                            placeholderTextColor={themeStyle.GRAY_600}
-                            multiline={true}
-                            selectionColor="black"
-                            underlineColorAndroid="transparent"
-                            numberOfLines={5}
-                            style={{
-                              backgroundColor: "white",
-                              borderWidth: 1,
-                              textAlignVertical: "top",
-                              textAlign: "right",
-                              padding: 10,
-                              height: 80,
-                              width: "100%",
-                              // fontFamily: `${getCurrentLang()}-SemiBold`,
-                            }}
-                          />
-                        </View>
-                      )}
-                      {order.order.receipt_method ==
-                        SHIPPING_METHODS.shipping && (
-                        <View
-                          style={{
-                            flexDirection: "column",
-                            justifyContent: "flex-end",
-                            width: "30%",
-                            padding: 20,
-                            alignItems: "center",
-                          }}
-                        >
-                          <Icon
-                            icon="delivery-active"
-                            size={80}
-                            style={{ color: "#a77948" }}
-                          />
-                          <Button
-                            text={"הזמן שליח"}
-                            fontSize={17}
-                            onClickFn={() => bookDelivery(order)}
-                            fontFamily={`${getCurrentLang()}-Bold`}
-                            borderRadious={19}
-                          />
-                        </View>
-                      )}
-                    </View>
-                    {renderOrderTotalRaw(order)}
-                    {/*{renderStatus(order)} */}
+                      {renderOrderTotalRaw(order)}
+                      {/*{renderStatus(order)} */}
                     </Animated.View>
-
                   </View>
                 </View>
               ))}
@@ -1718,12 +1740,12 @@ const styles = StyleSheet.create({
   totalPriceText: {
     fontSize: 20,
     fontFamily: `${getCurrentLang()}-SemiBold`,
-    marginBottom:15
+    marginBottom: 15,
   },
   dateText: {
     fontSize: 20,
     fontFamily: `${getCurrentLang()}-Bold`,
-    marginBottom:15,
+    marginBottom: 15,
 
     textDecorationLine: "underline",
   },

@@ -214,7 +214,7 @@ const App = () => {
     }
     if (
       lastJsonMessage &&
-      (lastJsonMessage.type === "new order" ||
+      (lastJsonMessage.type === "order viewed updated" ||
         lastJsonMessage.type === "print not printed") &&
       userDetailsStore.isAdmin()
     ) {
@@ -233,14 +233,6 @@ const App = () => {
   const getInvoiceSP = async (queue) => {
     const SPs = [];
     for (let i = 0; i < queue.length; i++) {
-      const invoiceRef = invoicesRef.current[queue[i].orderId];
-      const result = await captureRef(invoiceRef, {
-        result: "data-uri",
-        width: pixels,
-        quality: 1,
-        format: "png",
-      });
-      SPs.push(result);
       const invoiceRefName = invoicesRef.current[queue[i].orderId + "name"];
       const resultName = await captureRef(invoiceRefName, {
         result: "data-uri",
@@ -249,6 +241,15 @@ const App = () => {
         format: "png",
       });
       SPs.push(resultName);
+
+      const invoiceRef = invoicesRef.current[queue[i].orderId];
+      const result = await captureRef(invoiceRef, {
+        result: "data-uri",
+        width: pixels,
+        quality: 1,
+        format: "png",
+      });
+      SPs.push(result);
     }
     return SPs;
   };
@@ -266,7 +267,15 @@ const App = () => {
     setIsPrinting(true);
     try {
       ordersStore
-        .getOrders(true, ["1", "2", "3", "4", "5"], null, true)
+        .getOrders(
+          true,
+          ["1", "2", "3", "4", "5"],
+          null,
+          true,
+          null,
+          null,
+          true
+        )
         .then(async (res) => {
           const notPrintedOrderds = res;
           if (notPrintedOrderds?.length > 0) {
@@ -737,16 +746,17 @@ const App = () => {
 
                       flexDirection: "row",
                       zIndex: 10,
-                      height: 50,
                       alignItems: "center",
-                      borderWidth: 1,
+                      borderWidth: 5,
                       justifyContent: "center",
+                      borderColor: "black",
                     }}
                   >
-                    <Text style={{ alignSelf: "center", fontSize: 40 }}>
+                    <Text style={{ alignSelf: "center", fontSize: 100 }}>
                       {invoice.customerDetails.name}
                     </Text>
                   </View>
+                  <View style={{ height: 20 }}></View>
                   <View
                     ref={(el) => (invoicesRef.current[invoice.orderId] = el)}
                     style={{
@@ -762,6 +772,7 @@ const App = () => {
                 </ScrollView>
               );
             })}
+
           <ExpiryDate />
           <GeneralServerErrorDialog />
           <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />

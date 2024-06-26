@@ -8,6 +8,7 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import i18n, { getCurrentLang } from "../../translations/i18n";
 import DashedLine from "react-native-dashed-line";
+import isShowSize from "../../helpers/is-show-size";
 
 const InvoiceOrderItems = ({ orderItems }) => {
   return (
@@ -51,8 +52,8 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   {order?.halfOne && (
                     <View
                       style={{
-                        borderBottomWidth: 1,
-                        borderTopWidth: 1,
+                        borderBottomWidth: 5,
+                        borderTopWidth: 5,
                         paddingVertical: 3,
                       }}
                     >
@@ -113,8 +114,8 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   {order?.halfTwo && (
                     <View
                       style={{
-                        borderBottomWidth: 1,
-                        borderTopWidth: 1,
+                        borderBottomWidth: 5,
+                        borderTopWidth: 5,
                         paddingVertical: 3,
                       }}
                     >
@@ -170,7 +171,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                       )}
                 </View>
               </View>
-              {order.item_id === '657da8cb418e0056e070a006' &&   <View
+              {isShowSize(order.item_id) &&   <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",

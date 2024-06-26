@@ -12,6 +12,7 @@ import DashedLine from "react-native-dashed-line";
 import { cdnUrl, mealsImages } from "../../../../consts/shared";
 import sizeTitleAdapter from "../../../../helpers/size-name-adapter";
 import Button from "../../../../components/controls/button/button";
+import isShowSize from "../../../../helpers/is-show-size";
 
 const OrderItems = ({ order }) => {
   const { t } = useTranslation();
@@ -57,7 +58,6 @@ const OrderItems = ({ order }) => {
                   <Image
                     style={{ width: "100%", height: "100%" }}
                     source={mealsImages[meal.img]}
-
                   />
                 </View>
                 {/* <View style={{ alignItems: "flex-start" }}>
@@ -89,7 +89,18 @@ const OrderItems = ({ order }) => {
                     : meal.nameHE}
                 </Text>
               </View>
-              <View style={{marginTop:10}}>
+              {isShowSize(item.item_id) && (
+                <View style={{ marginTop: 10 }}>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                    }}
+                  >
+                    {t("size")} : {t(item.size)}
+                  </Text>
+                </View>
+              )}
+              <View style={{ marginTop: 10 }}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -99,7 +110,7 @@ const OrderItems = ({ order }) => {
                 </Text>
               </View>
               {item.size == "large" && (
-                <View style={{marginTop:2}}>
+                <View style={{ marginTop: 2 }}>
                   <Text
                     style={{
                       fontSize: 18,

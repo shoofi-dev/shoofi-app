@@ -49,11 +49,11 @@ export default function CheckBox({
         style={[
           styles.container,
           {
-            borderColor: isActive
-              ? themeStyle.SUCCESS_COLOR
-              : themeStyle.WHITE_COLOR,
-            borderWidth: isActive ? 3 : 0,
-            backgroundColor:themeStyle.SECONDARY_COLOR
+            // borderColor: isActive
+            //   ? themeStyle.SUCCESS_COLOR
+            //   : themeStyle.WHITE_COLOR,
+            // borderWidth: isActive ? 3 : 0,
+            backgroundColor:themeStyle.SECONDARY_COLOR,
           },
         ]}
         onPress={() => onChange(title)}
@@ -97,16 +97,16 @@ export default function CheckBox({
               width: 60,
               alignItems: "center",
               justifyContent: "center",
-              shadowColor: themeStyle.GRAY_600,
+              shadowColor: 'black',
               shadowOffset: {
                 width: 0,
                 height: 2,
               },
               shadowOpacity: 1,
-              shadowRadius: 10,
-              elevation: 20,
+              shadowRadius: 5,
+              elevation: 40,
               borderWidth: 0,
-              marginTop:10
+              marginTop:10,
             }}
           >
             <Image
@@ -131,7 +131,7 @@ export default function CheckBox({
             //   isFlexCol
             // /> */}
 
-          <View style={{  width: isActive ? "104%" : "100%",paddingVertical:8,backgroundColor:themeStyle.PRIMARY_COLOR, borderBottomEndRadius:20, borderBottomStartRadius:20  }}>
+          <View style={{  width: isActive ? "100%" : "100%",paddingVertical:8,backgroundColor: isActive ? themeStyle.SUCCESS_COLOR : themeStyle.PRIMARY_COLOR, borderBottomEndRadius:20, borderBottomStartRadius:20  }}>
             {/* <LinearGradient
               colors={[
                 "rgba(207, 207, 207, 0.9)",
@@ -151,7 +151,6 @@ export default function CheckBox({
                 color: isActive
                   ? themeStyle.WHITE_COLOR
                   : themeStyle.WHITE_COLOR,
-                fontSize: 18,
                 alignSelf: 'center'
               }}
             >
@@ -275,20 +274,20 @@ export default function CheckBox({
 const styles = StyleSheet.create({
   container: {
     height: 120,
-    width: 100,
+    width: 110,
     //  backgroundColor:  false ? themeStyle.SUCCESS_COLOR : themeStyle.WHITE_COLOR,
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
 
-    shadowColor: themeStyle.GRAY_600,
+    shadowColor: 'black',
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.9,
-    shadowRadius: 6,
-    elevation: 20,
+    shadowRadius: 10,
+    elevation: 40,
     borderWidth: 0,
     backgroundColor: "#FFF5EE",
   },

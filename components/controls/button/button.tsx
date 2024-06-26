@@ -112,7 +112,7 @@ export default function Button({
           borderWidth:getBorderWitdth(),
           opacity: disabled && 0.3,
           alignItems: "center",
-          padding: isFlexCol ? 0 : 10,
+          padding: isFlexCol ? 0 : 0,
           height: isFlexCol ? "100%" : "auto",
         }}
         disabled={disabled}
@@ -120,14 +120,14 @@ export default function Button({
           onBtnClick();
         }}
       >
-        {!bgColor && (
+        {/* {!bgColor && (
           <LinearGradient
             colors={isOposetGradiant ? ["#eaaa5c", "#a77948"] : ["#EBA33E", "#D75F30","#EBA33E"]}
             start={{ x: 1, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={[styles.background,{borderRadius:borderRadious !== undefined ? borderRadious : 30}]}
           />
-        )}
+        )} */}
         <View
           style={{
             height: isFlexCol ? "100%" : "auto",
@@ -135,10 +135,11 @@ export default function Button({
             alignItems: "center",
             ...styles.button,
             borderRadius: borderRadious !== undefined ? borderRadious : 30,
-            backgroundColor: "transparent",
+            backgroundColor: !bgColor ? themeStyle.PRIMARY_COLOR : bgColor,
             borderColor: getBorderColor(),
             width: "100%",
-            justifyContent:'center'
+            justifyContent:'center',
+            padding:10
 
           }}
         >

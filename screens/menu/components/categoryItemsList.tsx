@@ -20,7 +20,13 @@ import themeStyle from "../../../styles/theme.style";
 import { getCurrentLang } from "../../../translations/i18n";
 import * as Haptics from "expo-haptics";
 import Button from "../../../components/controls/button/button";
-import { ROLES, cdnUrl, devicesType, mealsImages } from "../../../consts/shared";
+import {
+  ORDER_TYPE,
+  ROLES,
+  cdnUrl,
+  devicesType,
+  mealsImages,
+} from "../../../consts/shared";
 import ProductItem from "./product-item/index";
 import ProductCarousleItem from "./product-item/carousle";
 import AddProductItem from "./product-item/add";
@@ -35,7 +41,6 @@ import CustomFastImage from "../../../components/custom-fast-image";
 import Icon from "../../../components/icon";
 const loaderGif = require("../../../assets/loder.gif");
 
-
 const CategoryItemsList = ({ productsList, category }) => {
   const { t } = useTranslation();
 
@@ -43,7 +48,7 @@ const CategoryItemsList = ({ productsList, category }) => {
   const scrollRef = useRef();
   const { deviceType } = _useDeviceType();
 
-  const { userDetailsStore, menuStore, languageStore } =
+  const { userDetailsStore, menuStore, languageStore, ordersStore, storeDataStore } =
     useContext(StoreContext);
   const [selectedItem, setSelectedItem] = useState();
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
@@ -59,7 +64,7 @@ const CategoryItemsList = ({ productsList, category }) => {
   const onItemSelect = (item) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setSelectedItem(item);
-    navigation.navigate("meal", { product: {...item}, category });
+    navigation.navigate("meal", { product: { ...item }, category });
   };
   const onAddProduct = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -102,7 +107,6 @@ const CategoryItemsList = ({ productsList, category }) => {
     setSelectedSubCategory(undefined);
     setTmpSelectedCategory(undefined);
   };
-
 
   useEffect(() => {
     if (selectedCats.indexOf(selectedSubCategory) > -1) {
@@ -171,55 +175,122 @@ const CategoryItemsList = ({ productsList, category }) => {
     });
   };
 
+  const isDisabled = (item) => {
+    return !isInStore(item);
+  };
+  const isInStore = (item) => {
+    if (
+      (ordersStore.orderType == ORDER_TYPE.now && !item.isInStore) ||
+      (storeDataStore.storeData.isInStoreOrderLaterCats.indexOf(
+        item?.categoryId
+      ) > -1 &&
+        !item.isInStore)
+    ) {
+      return false;
+    }
+    return true;
+  };
+
   useEffect(() => {
     productsAnimate();
   }, []);
 
   const filterBirthdayProducts = filterBirthday();
   return (
-    <View style={{  marginTop:"10%" }}>
-      {category.categoryId == 1 &&  (
-        <TouchableOpacity onPress={()=>onItemSelect(productsList[0])}>
-          {category.categoryId === 1 &&(
+    <View style={{ marginTop: "10%" }}>
+      {category.categoryId == 1 && (
+        <TouchableOpacity onPress={() => onItemSelect(productsList[0])} disabled={isDisabled(productsList[0])}>
             <Animated.View
-              style={{ transform: [{ translateY: productsAnim.current }],  backgroundColor:themeStyle.SECONDARY_COLOR, marginHorizontal:50,  borderRadius:30, paddingVertical:50,      
-              
-              shadowColor: themeStyle.SECONDARY_COLOR,
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.9,
-              shadowRadius: 6,
-              elevation: 0,
-              borderWidth: 0,
-           }}
+              style={{
+                transform: [{ translateY: productsAnim.current }],
+                backgroundColor: themeStyle.SECONDARY_COLOR,
+                marginHorizontal: 50,
+                borderRadius: 30,
+                paddingVertical: 50,
+                marginTop: 30,
+
+                shadowColor: themeStyle.SECONDARY_COLOR,
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.9,
+                shadowRadius: 6,
+                elevation: 0,
+                borderWidth: 0,
+                opacity: !isInStore(productsList[0]) ? 0.4 : 1 
+              }}
             >
-              <View style={{backgroundColor:themeStyle.PRIMARY_COLOR,position:'absolute', alignSelf:'center', top:-30,padding:10, borderRadius:20}}>
-              <Icon
-                        icon="shopping-bag-plus"
-                        size={40}
-                        style={{ color:themeStyle.SECONDARY_COLOR,}}/>
+              <View
+                style={{
+                  backgroundColor: themeStyle.PRIMARY_COLOR,
+                  position: "absolute",
+                  alignSelf: "center",
+                  top: -30,
+                  padding: 10,
+                  borderRadius: 20,
+
+                  shadowColor: themeStyle.PRIMARY_COLOR,
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.9,
+                  shadowRadius: 6,
+                  elevation: 0,
+                  borderWidth: 0,
+                  marginTop: 0,
+                }}
+              >
+                <Icon
+                  icon="shopping-bag-plus"
+                  size={40}
+                  style={{ color: themeStyle.SECONDARY_COLOR }}
+                />
               </View>
-          
-                  <View style={{
-                       shadowColor: 'black',
-                       shadowOffset: {
-                         width: 0,
-                         height: 2,
-                       },
-                       shadowOpacity: 0.9,
-                       shadowRadius: 6,
-                       elevation: 0,
-                       borderWidth: 0,
-                  }}>
-                  <Image source={mealsImages.pizza} style={{ alignSelf: "center", width:150, height:150, borderRadius:10, marginTop:10 }} />
 
-                  </View>
-
+              <View
+                style={{
+                  shadowColor: "black",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.9,
+                  shadowRadius: 6,
+                  elevation: 0,
+                  borderWidth: 0,
+                }}
+              >
+                <Image
+                  source={mealsImages.pizza}
+                  style={{
+                    alignSelf: "center",
+                    width: 150,
+                    height: 150,
+                    borderRadius: 10,
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  backgroundColor: themeStyle.PRIMARY_COLOR,
+                  bottom: 0,
+                  position: "absolute",
+                  width: "100%",
+                  padding: 10,
+                  borderBottomEndRadius: 20,
+                  borderBottomStartRadius: 20,
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: themeStyle.WHITE_COLOR, fontSize: 18 }}>
+                  {languageStore.selectedLang === "ar"
+                    ? productsList[0].nameAR
+                    : productsList[0].nameHE}
+                </Text>
+              </View>
             </Animated.View>
-          )}
-
         </TouchableOpacity>
       )}
 
@@ -237,10 +308,9 @@ const CategoryItemsList = ({ productsList, category }) => {
             elevation: 0,
             borderWidth: 0,
             backgroundColor: "transparent",
-            marginTop:0,
+            marginTop: 0,
           }}
         >
-    
           {/* {(tmpSelectedCategory == undefined || tmpSelectedCategoryProg) && (
             <View style={{ width: "20%", alignSelf: "center", marginTop: 100 }}>
               <Image source={loaderGif} style={{ alignSelf: "center" }} />
@@ -248,7 +318,7 @@ const CategoryItemsList = ({ productsList, category }) => {
           )} */}
           <ScrollView
             ref={scrollRef}
-            style={{ height: "100%", marginBottom: 20 }}
+            style={{ height: "100%", marginBottom: 50 }}
             onMomentumScrollEnd={onScrollEnd}
             onScrollEndDrag={onScrollEnd}
             onMomentumScrollBegin={onScrollEnd}
@@ -257,8 +327,6 @@ const CategoryItemsList = ({ productsList, category }) => {
               {userDetailsStore.isAdmin(ROLES.all) && (
                 <View
                   style={{
-                    marginTop:
-                      productsList?.length > 1 ? (1 % 2 === 0 ? -50 : 50) : 0,
                     flexBasis: "48.5%",
                   }}
                 >
@@ -273,10 +341,11 @@ const CategoryItemsList = ({ productsList, category }) => {
                       marginBottom:
                         productsList?.length > 1
                           ? index % 2 === 0
-                            ? 40
-                            : 40
+                            ? 70
+                            : 70
                           : 0,
                       flexBasis: "48.5%",
+                      height: 180,
                     }}
                   >
                     <ProductItem
@@ -289,30 +358,6 @@ const CategoryItemsList = ({ productsList, category }) => {
                 );
               })}
             </View>
-            {category.categoryId === 5 &&
-              filterBirthdayProducts.length >= pageNumber * 5 && (
-                <View
-                  style={{ flexDirection: "row", justifyContent: "center" }}
-                >
-                  <ActivityIndicator
-                    size="large"
-                    style={{}}
-                    color={themeStyle.PRIMARY_COLOR}
-                  />
-                </View>
-              )}
-            {category.categoryId === 6 &&
-              productsList.length >= pageNumber * 5 && (
-                <View
-                  style={{ flexDirection: "row", justifyContent: "center" }}
-                >
-                  <ActivityIndicator
-                    size="large"
-                    style={{}}
-                    color={themeStyle.PRIMARY_COLOR}
-                  />
-                </View>
-              )}
           </ScrollView>
         </View>
       )}
@@ -333,7 +378,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row-reverse",
     flexWrap: "wrap",
-    marginTop: 30,
+    marginTop: 40,
     maxWidth: 600,
     justifyContent: "space-between",
     paddingHorizontal: 8,

@@ -63,6 +63,7 @@ import { ToggleButton } from "react-native-paper";
 import { transparent } from "react-native-paper/lib/typescript/styles/colors";
 import PickTimeDialog from "../../components/dialogs/pick-time";
 import moment from "moment";
+import isShowSize from "../../helpers/is-show-size";
 const barcodeString = "https://onelink.to/zky772";
 
 type TShippingMethod = {
@@ -228,7 +229,6 @@ const CartScreen = ({ route }) => {
     });
     setItemsPrice(tmpOrderPrice);
   };
-
 
   useEffect(() => {
     updateItemsPrice();
@@ -918,7 +918,6 @@ const CartScreen = ({ route }) => {
         <View style={{ ...styles.container }}>
           <View style={{ paddingHorizontal: 20 }}>
             <View style={styles.backContainer}>
-   
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text
                   style={{
@@ -989,7 +988,7 @@ const CartScreen = ({ route }) => {
                         elevation: 5,
                         borderWidth: 0,
                         backgroundColor: "transparent",
-                        
+
                         opacity: value.current.interpolate({
                           inputRange:
                             index === 0
@@ -1002,7 +1001,6 @@ const CartScreen = ({ route }) => {
                                 ],
                           outputRange: [0, 0, 1, 1],
                           extrapolate: "clamp",
-                          
                         }),
                       }}
                     >
@@ -1088,15 +1086,14 @@ const CartScreen = ({ route }) => {
                                 width: "100%",
                                 flexDirection: "row",
                                 paddingTop: 5,
-                                
                               }}
                             >
                               <View
                                 style={{
                                   width: 80,
                                   height: 80,
-                                  padding:5,
-                                  shadowColor: 'black',
+                                  padding: 5,
+                                  shadowColor: "black",
                                   shadowOffset: {
                                     width: 0,
                                     height: 2,
@@ -1120,9 +1117,9 @@ const CartScreen = ({ route }) => {
                               <View
                                 style={{
                                   flexDirection: "row",
-                                  marginLeft:5,
-                                  marginTop:10,
-                                  marginBottom:10,
+                                  marginLeft: 5,
+                                  marginTop: 10,
+                                  marginBottom: 10,
                                 }}
                               >
                                 <View
@@ -1139,9 +1136,9 @@ const CartScreen = ({ route }) => {
                                       alignItems: "center",
                                       borderTopWidth: 1,
                                       borderBottomWidth: 1,
-                                      justifyContent:'center',
-                                      paddingTop:8,
-                                      paddingBottom:5
+                                      justifyContent: "center",
+                                      paddingTop: 8,
+                                      paddingBottom: 5,
                                     }}
                                   >
                                     <Text
@@ -1150,13 +1147,11 @@ const CartScreen = ({ route }) => {
                                         fontSize: 18,
                                         color: themeStyle.PRIMARY_COLOR,
                                         fontFamily: `${getCurrentLang()}-Bold`,
-
                                       }}
                                     >
                                       {languageStore.selectedLang === "ar"
                                         ? product.data.nameAR
                                         : product.data.nameHE}
-                                      
                                     </Text>
                                   </View>
 
@@ -1167,8 +1162,9 @@ const CartScreen = ({ route }) => {
                                       marginTop: 15,
                                     }}
                                   >
-                                    <View style={{flexBasis:"48%"}}>
-                                      {product?.data?.extras?.halfOne?.value && (
+                                    <View style={{ flexBasis: "48%" }}>
+                                      {product?.data?.extras?.halfOne
+                                        ?.value && (
                                         <View
                                           style={{
                                             borderBottomWidth: 1,
@@ -1183,68 +1179,71 @@ const CartScreen = ({ route }) => {
                                               textAlign: "center",
                                               fontSize: 16,
                                               fontFamily: `${getCurrentLang()}-SemiBold`,
-
                                             }}
                                           >
                                             {t("halfOne")}
                                           </Text>
                                         </View>
                                       )}
-                                      
-                                      {product?.data?.extras?.halfOne?.value.length > 0 ?
-                                        Object.keys(
-                                          product?.data?.extras?.halfOne?.value
-                                        ).map((key) => {
-                                          return (
-                                            <View>
-                                              <View
-                                                style={{ flexDirection: "row" }}
-                                              >
-                                                <Text
-                                                  style={{
-                                                    textAlign: "left",
-                                                    fontSize: 16,
-                                                    marginTop: 10,
 
-                                                  }}
-                                                  type="number"
-                                                  
-                                                >
-                                                  {`${Number(key) + 1}`}
-                                                </Text>
-                                                <Text
+                                      {product?.data?.extras?.halfOne?.value
+                                        .length > 0
+                                        ? Object.keys(
+                                            product?.data?.extras?.halfOne
+                                              ?.value
+                                          ).map((key) => {
+                                            return (
+                                              <View>
+                                                <View
                                                   style={{
-                                                    textAlign: "left",
-                                                    fontSize: 16,
-                                                    marginTop: 10,
-
+                                                    flexDirection: "row",
                                                   }}
                                                 >
-                                                  {" "}
-                                                  -{" "}
-                                                  {t(
-                                                    product.data.extras?.halfOne
-                                                      ?.value[key]
-                                                  )}
-                                                </Text>
+                                                  <Text
+                                                    style={{
+                                                      textAlign: "left",
+                                                      fontSize: 16,
+                                                      marginTop: 10,
+                                                    }}
+                                                    type="number"
+                                                  >
+                                                    {`${Number(key) + 1}`}
+                                                  </Text>
+                                                  <Text
+                                                    style={{
+                                                      textAlign: "left",
+                                                      fontSize: 16,
+                                                      marginTop: 10,
+                                                    }}
+                                                  >
+                                                    {" "}
+                                                    -{" "}
+                                                    {t(
+                                                      product.data.extras
+                                                        ?.halfOne?.value[key]
+                                                    )}
+                                                  </Text>
+                                                </View>
                                               </View>
-                                            </View>
-                                          );
-                                        }):
-                                        product?.data?.extras?.halfOne?.value && <Text
-                                        style={{
-                                          textAlign: "left",
-                                          fontSize: 16,
-                                          marginTop: 10,
-
-                                        }}
-                                      >
-                                        من غير اضافات
-                                      </Text>}
+                                            );
+                                          })
+                                        : product?.data?.extras?.halfOne
+                                            ?.value && (
+                                            <Text
+                                              style={{
+                                                textAlign: "left",
+                                                fontSize: 16,
+                                                marginTop: 10,
+                                              }}
+                                            >
+                                              من غير اضافات
+                                            </Text>
+                                          )}
                                     </View>
 
-                                    <View style={{flexBasis:"48%"}}>
-                                      {product?.data?.extras?.halfTwo?.value && (
+                                    <View style={{ flexBasis: "48%" }}>
+                                      {product?.data?.extras?.halfTwo
+                                        ?.value && (
                                         <View
                                           style={{
                                             borderBottomWidth: 1,
@@ -1259,63 +1258,84 @@ const CartScreen = ({ route }) => {
                                               textAlign: "center",
                                               fontSize: 16,
                                               fontFamily: `${getCurrentLang()}-SemiBold`,
-
                                             }}
                                           >
                                             {t("halfTwo")}
                                           </Text>
                                         </View>
                                       )}
-                                      {product?.data?.extras?.halfTwo?.value.length > 0 ?
-                                        Object.keys(
-                                          product?.data?.extras?.halfTwo?.value
-                                        ).map((key) => {
-                                          return (
-                                            <View>
-                                              <View
-                                                style={{ flexDirection: "row" }}
-                                              >
-                                                <Text
+                                      {product?.data?.extras?.halfTwo?.value
+                                        .length > 0
+                                        ? Object.keys(
+                                            product?.data?.extras?.halfTwo
+                                              ?.value
+                                          ).map((key) => {
+                                            return (
+                                              <View>
+                                                <View
                                                   style={{
-                                                    textAlign: "left",
-                                                    fontSize: 16,
-                                                    marginTop: 10,
-                                                  }}
-                                                  type="number"
-                                                >
-                                                  {`${Number(key) + 1}`}
-                                                </Text>
-                                                <Text
-                                                  style={{
-                                                    textAlign: "left",
-                                                    fontSize: 16,
-                                                    marginTop: 10,
+                                                    flexDirection: "row",
                                                   }}
                                                 >
-                                                  {" "}
-                                                  -{" "}
-                                                  {t(
-                                                    product.data.extras?.halfTwo
-                                                      ?.value[key]
-                                                  )}
-                                                </Text>
+                                                  <Text
+                                                    style={{
+                                                      textAlign: "left",
+                                                      fontSize: 16,
+                                                      marginTop: 10,
+                                                    }}
+                                                    type="number"
+                                                  >
+                                                    {`${Number(key) + 1}`}
+                                                  </Text>
+                                                  <Text
+                                                    style={{
+                                                      textAlign: "left",
+                                                      fontSize: 16,
+                                                      marginTop: 10,
+                                                    }}
+                                                  >
+                                                    {" "}
+                                                    -{" "}
+                                                    {t(
+                                                      product.data.extras
+                                                        ?.halfTwo?.value[key]
+                                                    )}
+                                                  </Text>
+                                                </View>
                                               </View>
-                                            </View>
-                                          );
-                                        }
-                                        ) :
-                                        product?.data?.extras?.halfOne?.value &&  <Text
-                                        style={{
-                                          textAlign: "left",
-                                          fontSize: 16,
-                                          marginTop: 10,
-
-                                        }}
-                                      >
-                                        من غير اضافات
-                                      </Text>}
+                                            );
+                                          })
+                                        : product?.data?.extras?.halfOne
+                                            ?.value && (
+                                            <Text
+                                              style={{
+                                                textAlign: "left",
+                                                fontSize: 16,
+                                                marginTop: 10,
+                                              }}
+                                            >
+                                              من غير اضافات
+                                            </Text>
+                                          )}
                                     </View>
                                   </View>
+                                  {isShowSize(product?.data?._id) && <View
+                                    style={{
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      marginTop: 25,
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        fontSize: 18,
+                                      }}
+                                    >
+                                      {t("size")} :{" "}
+                                      {t(product?.data?.extras?.size?.value)}
+                                    </Text>
+                                  </View>}
 
                                   <View
                                     style={{
@@ -1365,10 +1385,11 @@ const CartScreen = ({ route }) => {
                                         <Text
                                           style={{
                                             fontSize: 17,
+                                            fontWeight: "bold",
                                             color:
                                               themeStyle.TEXT_PRIMARY_COLOR,
-                                            fontFamily: `${getCurrentLang()}-American-bold`,
                                           }}
+                                          type="number"
                                         >
                                           {(getPriceBySize(product) ||
                                             product.data.price) *
@@ -2028,12 +2049,12 @@ const CartScreen = ({ route }) => {
                         }
                         style={{ height: 85, width: 50 }}
                       /> */}
-                             <Icon
+                      <Icon
                         icon="credit_card_icom"
                         size={25}
                         style={{
                           color:
-                          paymentMthod === PAYMENT_METHODS.creditCard
+                            paymentMthod === PAYMENT_METHODS.creditCard
                               ? theme.TEXT_PRIMARY_COLOR
                               : themeStyle.WHITE_COLOR,
                         }}
@@ -2186,8 +2207,7 @@ const CartScreen = ({ route }) => {
                     style={{
                       fontFamily: `${getCurrentLang()}-Light`,
                       fontSize: 20,
-                      color: themeStyle.WHITE_COLOR
-
+                      color: themeStyle.WHITE_COLOR,
                     }}
                   >
                     {t("order-price")}:
@@ -2198,8 +2218,7 @@ const CartScreen = ({ route }) => {
                     style={{
                       fontSize: 20,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.WHITE_COLOR
-
+                      color: themeStyle.WHITE_COLOR,
                     }}
                     type="number"
                   >
@@ -2215,7 +2234,7 @@ const CartScreen = ({ route }) => {
                       style={{
                         fontFamily: `${getCurrentLang()}-Light`,
                         fontSize: 20,
-                        color: themeStyle.WHITE_COLOR
+                        color: themeStyle.WHITE_COLOR,
                       }}
                     >
                       {t("delivery")}:
@@ -2226,8 +2245,7 @@ const CartScreen = ({ route }) => {
                       style={{
                         fontSize: 20,
                         fontFamily: `${getCurrentLang()}-SemiBold`,
-                        color: themeStyle.WHITE_COLOR
-
+                        color: themeStyle.WHITE_COLOR,
                       }}
                       type="number"
                     >
@@ -2246,8 +2264,7 @@ const CartScreen = ({ route }) => {
                   style={{
                     fontFamily: `${getCurrentLang()}-SemiBold`,
                     fontSize: 20,
-                    color: themeStyle.WHITE_COLOR
-
+                    color: themeStyle.WHITE_COLOR,
                   }}
                 >
                   {t("final-price")}:
@@ -2258,8 +2275,7 @@ const CartScreen = ({ route }) => {
                   style={{
                     fontSize: 17,
                     fontWeight: "bold",
-                    color: themeStyle.WHITE_COLOR
-
+                    color: themeStyle.WHITE_COLOR,
                   }}
                   type="number"
                 >
@@ -2269,11 +2285,10 @@ const CartScreen = ({ route }) => {
                   style={{
                     fontWeight: "bold",
                     fontSize: 17,
-                    color: themeStyle.WHITE_COLOR
-
+                    color: themeStyle.WHITE_COLOR,
                   }}
                 >
-                  ₪{" "}
+                  ₪
                 </Text>
               </View>
             </View>

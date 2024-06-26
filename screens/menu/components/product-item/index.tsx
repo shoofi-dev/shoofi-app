@@ -48,7 +48,7 @@ const ProductItem = ({
   const { deviceType } = _useDeviceType();
 
   const isDisabled = (item) => {
-    return !userDetailsStore.isAdmin() && item.count == 0;
+    return !isInStore(item);
   };
   const isInStore = (item) => {
     if (
@@ -89,11 +89,10 @@ const ProductItem = ({
     <View
       style={{
         borderRadius: 30,
-
-        // backgroundColor:'transparent',
-        backgroundColor:themeStyle.SECONDARY_COLOR, width:"70%", padding:30, alignSelf:'center',
-        
+        backgroundColor:themeStyle.SECONDARY_COLOR, width:"70%",  alignSelf:'center',
+       opacity: !isInStore(item) ? 0.4 : 1 
       }}
+
     >
      
               {/* <LinearGradient
@@ -109,7 +108,7 @@ const ProductItem = ({
         style={[styles.background,{borderRadius:30}]}
       /> */}
       <TouchableOpacity
-        style={[styles.categoryItem, { opacity: isDisabled(item) ? 0.4 : 1 }]}
+        style={[styles.categoryItem, { opacity: isDisabled(item) ? 0.4 : 1, height:"100%"}]}
         delayPressIn={30}
         onPress={() => {
           onAddToCart(item);
@@ -117,7 +116,9 @@ const ProductItem = ({
         key={item.id}
         disabled={isDisabled(item)}
       >
-              <View style={{backgroundColor:themeStyle.PRIMARY_COLOR,position:'absolute', alignSelf:'center', top:-55,padding:10, borderRadius:20, zIndex:1}}>
+              <View style={{backgroundColor:themeStyle.PRIMARY_COLOR,position:'absolute', alignSelf:'center', top:-35,padding:10, borderRadius:20, zIndex:1,
+                
+              }}>
               <Icon
                         icon="shopping-bag-plus"
                         size={25}
@@ -149,7 +150,7 @@ const ProductItem = ({
           /> */}
           <Image
             source={mealsImages[item.img]}
-            style={{ alignSelf: "center", height: "100%", width:"100%" }}
+            style={{  height: "100%", width:"100%",marginTop:15 }}
             resizeMode="cover"
           />
 
@@ -249,7 +250,7 @@ const ProductItem = ({
             </View>
           )} */}
           </View>
-          {!isInStore(item) && (
+          {/* {!isInStore(item) && (
             <View
               style={{ position: "absolute", bottom: "50%", width: "100%" }}
             >
@@ -276,7 +277,7 @@ const ProductItem = ({
                 {getOutOfStockMessage(item)}
               </Text>
             </View>
-          )}
+          )} */}
           {userDetailsStore.isAdmin() && (
             <View
               style={{
@@ -351,8 +352,13 @@ const ProductItem = ({
               </Text>
             </View>
           )} */}
+            
         </View>
+        <View style={{backgroundColor:themeStyle.PRIMARY_COLOR, bottom:0, position:'absolute', width:"100%", padding:10, borderBottomEndRadius:20, borderBottomStartRadius:20, alignItems:'center'}}>
+                    <Text style={{color:themeStyle.WHITE_COLOR, fontSize:18}}>{languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}</Text>
+                  </View>
       </TouchableOpacity>
+      
     </View>
   );
 };
@@ -370,7 +376,7 @@ const styles = StyleSheet.create({
     // height:"100%"
   },
   categoryItem: {
-    width: "95%",
+    width: "100%",
     //height: 280,
     borderRadius: 30,
     // backgroundColor: "rgba(255, 255, 255, 0.7)",

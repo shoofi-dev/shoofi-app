@@ -77,12 +77,12 @@ const OrderHistoryScreen = ({ route }) => {
               onMomentumScrollBegin={onScrollEnd}
             >
               <View style={{ marginBottom: 130 }}>
-                {ordersList?.slice(0, pageNumber * 5)?.reverse()?.map((order) => (
+                {ordersList?.slice(0, pageNumber * 5)?.map((order) => (
                   <View
                     style={[
                       styles.orderContainer,
                       {
-                        shadowColor: themeStyle.PRIMARY_COLOR,
+                        shadowColor: 'black',
                         shadowOffset: {
                           width: 0,
                           height: 0,
@@ -91,10 +91,11 @@ const OrderHistoryScreen = ({ route }) => {
                         shadowRadius: 10.84,
                         elevation: 30,
                         borderRadius: 20,
+                        backgroundColor: themeStyle.SECONDARY_COLOR
                       },
                     ]}
                   >
-                    <LinearGradient
+                    {/* <LinearGradient
                       colors={[
                         "#c1bab3",
                         "#efebe5",
@@ -105,7 +106,7 @@ const OrderHistoryScreen = ({ route }) => {
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 1 }}
                       style={[styles.background, { borderRadius: 20 }]}
-                    />
+                    /> */}
                     <OrderHeader order={order} />
                     <OrderItems order={order} />
                     <OrderFooter order={order} />
