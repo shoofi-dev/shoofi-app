@@ -253,6 +253,10 @@ const CartScreen = ({ route }) => {
     } else {
       isValidation && setIsloadingLocation(true);
       const permissionRes = await requestPermission();
+      if(permissionRes.status == 'denied'){
+        setIsOpenLocationIsDisableDialog(true);
+        return;
+      }
       const res = await Location.hasServicesEnabledAsync();
       if (res) {
         let tempLocation = await Location.getCurrentPositionAsync({
@@ -546,7 +550,9 @@ const CartScreen = ({ route }) => {
     if (value) {
       Platform.OS === "android"
         ? Linking.sendIntent("android.settings.LOCATION_SOURCE_SETTINGS")
-        : Linking.openURL("App-Prefs:Privacy&path=LOCATION");
+        : Linking.openURL("App-Prefs:com.sariq.pizza.gmel");
+        setIsOpenLocationIsDisableDialog(false);
+        setShippingMethod(SHIPPING_METHODS.takAway);
     } else {
       setIsOpenLocationIsDisableDialog(false);
       setShippingMethod(SHIPPING_METHODS.takAway);
