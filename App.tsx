@@ -9,6 +9,7 @@ import EscPosPrinter, {
 import * as Font from "expo-font";
 import Constants from "expo-constants";
 import RNRestart from "react-native-restart";
+import LottieView from "lottie-react-native";
 import {
   View,
   I18nManager,
@@ -24,6 +25,7 @@ import RootNavigator from "./navigation";
 import NetInfo from "@react-native-community/netinfo";
 import "moment-timezone";
 import ErrorBoundary from "react-native-error-boundary";
+const appLoaderAnimation = require("./assets/lottie/loader-animation.json");
 
 moment.tz.setDefault("Asia/Jerusalem");
 
@@ -622,6 +624,25 @@ const App = () => {
           resizeMode="stretch"
           style={{ height: "100%", backgroundColor: "white" }}
         >
+          <View             style={{
+   
+              position: "absolute",
+              alignSelf: "center",
+              top: "70%",
+              zIndex:10
+            }}>
+          <LottieView
+            source={appLoaderAnimation}
+            autoPlay
+            style={{
+              width: 120,
+              height: 120,
+       
+            }}
+            loop={true}
+          />
+          </View>
+ 
           <View
             style={{
               bottom: 50,
