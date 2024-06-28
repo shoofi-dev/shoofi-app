@@ -39,7 +39,7 @@ const CurrentStatus = ({ order }) => {
         }}
       >
         <View style={{ alignItems: "center", position:'relative' }}>
-          <View style={[styles.statusCircle,{backgroundColor: inProgressStatuses.indexOf(order.status) > -1 && order.isViewd ? themeStyle.SUCCESS_COLOR: 'transparent' }]}></View>
+          <View style={[styles.statusCircle,{backgroundColor: (inProgressStatuses.indexOf(order.status) > -1 || readyStatuses.indexOf(order.status) > -1) && order.isViewd ? themeStyle.SUCCESS_COLOR: 'transparent' }]}></View>
           <View style={{position:'absolute', width:100, bottom:-25}}>
           <Text style={{ fontSize: 20, alignSelf:'center' }}>{t('in-progress')}</Text>
           </View>
@@ -54,7 +54,7 @@ const CurrentStatus = ({ order }) => {
         />
 
         <View style={{ alignItems: "center", position:'relative' }}>
-          <View style={[styles.statusCircle,{backgroundColor: inProgressStatuses.indexOf(order.status) > -1 && order.isViewd ? themeStyle.SUCCESS_COLOR: 'transparent' }]}></View>
+          <View style={[styles.statusCircle,{backgroundColor: readyStatuses.indexOf(order.status) > -1 && order.isViewd ? themeStyle.SUCCESS_COLOR: 'transparent' }]}></View>
           <View style={{position:'absolute', width:100, bottom:-25}}>
             <Text style={{ fontSize: 20, alignSelf:'center' }}>{t('ready')}</Text>
           </View>

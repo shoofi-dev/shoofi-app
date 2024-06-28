@@ -16,13 +16,17 @@ import themeStyle from "../../../../styles/theme.style";
 import { getCurrentLang } from "../../../../translations/i18n";
 import * as Haptics from "expo-haptics";
 import Button from "../../../../components/controls/button/button";
-import { cdnUrl, ORDER_TYPE, devicesType, mealsImages } from "../../../../consts/shared";
+import {
+  cdnUrl,
+  ORDER_TYPE,
+  devicesType,
+  mealsImages,
+} from "../../../../consts/shared";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import _useDeviceType from "../../../../hooks/use-device-type";
 import CustomFastImage from "../../../../components/custom-fast-image";
 import Icon from "../../../../components/icon";
-
 
 export type TProps = {
   item: any;
@@ -89,13 +93,13 @@ const ProductItem = ({
     <View
       style={{
         borderRadius: 30,
-        backgroundColor:themeStyle.SECONDARY_COLOR, width:"70%",  alignSelf:'center',
-       opacity: !isInStore(item) ? 0.4 : 1 
+        backgroundColor: themeStyle.SECONDARY_COLOR,
+        width: "70%",
+        alignSelf: "center",
+        opacity: !isInStore(item) ? 0.4 : 1,
       }}
-
     >
-     
-              {/* <LinearGradient
+      {/* <LinearGradient
         colors={[
           "rgba(207, 207, 207, 0.9)",
           "rgba(232, 232, 230, 0.8)",
@@ -108,7 +112,10 @@ const ProductItem = ({
         style={[styles.background,{borderRadius:30}]}
       /> */}
       <TouchableOpacity
-        style={[styles.categoryItem, { opacity: isDisabled(item) ? 0.4 : 1, height:"100%"}]}
+        style={[
+          styles.categoryItem,
+          { opacity: isDisabled(item) ? 0.4 : 1, height: "100%" },
+        ]}
         delayPressIn={30}
         onPress={() => {
           onAddToCart(item);
@@ -116,25 +123,37 @@ const ProductItem = ({
         key={item.id}
         disabled={isDisabled(item)}
       >
-              <View style={{backgroundColor:themeStyle.PRIMARY_COLOR,position:'absolute', alignSelf:'center', top:-35,padding:10, borderRadius:20, zIndex:1,
-                
-              }}>
-              <Icon
-                        icon="shopping-bag-plus"
-                        size={25}
-                        style={{ color:themeStyle.SECONDARY_COLOR,}}/>
-              </View>
-        <View style={{ height: deviceType === devicesType.tablet ? 250 : 120, 
-           shadowColor: 'black',
-           shadowOffset: {
-             width: 0,
-             height: 2,
-           },
-           shadowOpacity: 0.9,
-           shadowRadius: 6,
-           elevation: 0,
-           borderWidth: 0,
-        }}>
+        <View
+          style={{
+            backgroundColor: themeStyle.PRIMARY_COLOR,
+            position: "absolute",
+            alignSelf: "center",
+            top: -35,
+            padding: 10,
+            borderRadius: 20,
+            zIndex: 1,
+          }}
+        >
+          <Icon
+            icon="shopping-bag-plus"
+            size={25}
+            style={{ color: themeStyle.SECONDARY_COLOR }}
+          />
+        </View>
+        <View
+          style={{
+            height: deviceType === devicesType.tablet ? 120 : 120,
+            shadowColor: "black",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.9,
+            shadowRadius: 6,
+            elevation: 0,
+            borderWidth: 0,
+          }}
+        >
           {/* <CustomFastImage
             style={{
               height: deviceType === devicesType.tablet ? 350 : 250,
@@ -150,7 +169,7 @@ const ProductItem = ({
           /> */}
           <Image
             source={mealsImages[item.img]}
-            style={{  height: "100%", width:"100%",marginTop:15 }}
+            style={{ height: "100%", width: "100%", marginTop: 15 }}
             resizeMode="cover"
           />
 
@@ -352,13 +371,24 @@ const ProductItem = ({
               </Text>
             </View>
           )} */}
-            
         </View>
-        <View style={{backgroundColor:themeStyle.PRIMARY_COLOR, bottom:0, position:'absolute', width:"100%", padding:10, borderBottomEndRadius:20, borderBottomStartRadius:20, alignItems:'center'}}>
-                    <Text style={{color:themeStyle.WHITE_COLOR, fontSize:18}}>{languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}</Text>
-                  </View>
+        <View
+          style={{
+            backgroundColor: themeStyle.PRIMARY_COLOR,
+            bottom: 0,
+            position: "absolute",
+            width: "100%",
+            padding: 10,
+            borderBottomEndRadius: 20,
+            borderBottomStartRadius: 20,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: themeStyle.WHITE_COLOR, fontSize: 18 }}>
+            {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
+          </Text>
+        </View>
       </TouchableOpacity>
-      
     </View>
   );
 };
