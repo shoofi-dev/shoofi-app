@@ -11,6 +11,9 @@ export const WS_URL = "wss://sari-apps-lcibm.ondigitalocean.app";
 // export const BASE_URL = "http://192.168.0.105:1111/api";
 // export const WS_URL = "ws://192.168.0.105:1111";
 
+// export const BASE_URL = "http://192.168.68.70:1111/api";
+// export const WS_URL = "ws://192.168.68.70:1111";
+
 export const AUTH_API = {
     CONTROLLER: "Authenticator",
     AUTHINTICATE_API : "Authenticate",
@@ -32,6 +35,7 @@ export const CUSTOMER_API = {
     VERIFY_API : "validateAuthCode",
     GET_CUSTOMER_ORDERS_API: "orders",
     UPDATE_CUSTOMER_NAME_API : "update-name",
+    UPDATE_CUSTOMER_NOTIFIVATION_TOKEN : "update-notification-token",
     GET_USER_DETAILS: "details",
     SEARCH_CUSTOMER_DETAILS: "search-customer",
     LOGOUT_API: "logout",

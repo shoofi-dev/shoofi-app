@@ -47,7 +47,7 @@ import { adminCustomerStore } from "./stores/admin-customer";
 import { errorHandlerStore } from "./stores/error-handler";
 import InterntConnectionDialog from "./components/dialogs/internet-connection";
 import UpdateVersion from "./components/dialogs/update-app-version";
-import { SITE_URL, WS_URL } from "./consts/api";
+import { CUSTOMER_API, SITE_URL, WS_URL } from "./consts/api";
 import themeStyle from "./styles/theme.style";
 import { isLatestGreaterThanCurrent } from "./helpers/check-version";
 import moment from "moment";
@@ -62,6 +62,7 @@ import { testPrint } from "./helpers/printer/print";
 import { ROLES, cdnUrl } from "./consts/shared";
 import _useAppCurrentState from "./hooks/use-app-current-state";
 import OrderInvoiceCMP from "./components/order-invoice";
+import { axiosInstance } from "./utils/http-interceptor";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -185,9 +186,18 @@ const App = () => {
   }, [storeDataStore.repeatNotificationInterval]);
 
   useEffect(() => {
-    if (userDetailsStore.isAdmin()) {
-      registerForPushNotificationsAsync().then((token) =>
-        setExpoPushToken(token)
+    if (userDetailsStore.isAdmin() || authStore.isLoggedIn()) {
+      registerForPushNotificationsAsync().then((token) => {
+        axiosInstance
+        .post(
+          `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.UPDATE_CUSTOMER_NOTIFIVATION_TOKEN}`,
+          {notificationToken: token}
+        )
+        .then(function (response) {
+          return setExpoPushToken(token)
+        })
+        .catch(function (error) {});
+      }
       );
 
       notificationListener.current =
@@ -328,8 +338,9 @@ const App = () => {
   }, [lastJsonMessage, userDetailsStore.userDetails]);
 
   const initPrinter = async () => {
+    console.log("storeDataStore.storeData.printerTarget",storeDataStore.storeData.printerTarget)
     await EscPosPrinter.init({
-      target: storeDataStore.storeData.printerTarget,
+      target: 'TCP:192.168.0.107',
       seriesName: getPrinterSeriesByName("TM-m30"),
       language: "EPOS2_LANG_EN",
     })
