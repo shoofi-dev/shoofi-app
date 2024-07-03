@@ -107,6 +107,7 @@ const StoreManagementScreen = ({ route }) => {
           alignItems: "center",
           justifyContent: "center",
           padding: 15,
+          borderColor: themeStyle.WHITE_COLOR
         }}
       >
         <View>
@@ -230,7 +231,7 @@ const StoreManagementScreen = ({ route }) => {
               </View>
             </View>
           </View>
-          <DashedLine
+          {/* <DashedLine
             dashLength={5}
             dashThickness={1}
             dashGap={5}
@@ -266,7 +267,7 @@ const StoreManagementScreen = ({ route }) => {
                 />
               </View>
             </View>
-          </View>
+          </View> */}
           <DashedLine
             dashLength={5}
             dashThickness={1}

@@ -182,7 +182,7 @@ const OrderDayItem = ({ data }: TProps) => {
           />
         </View>
       )}
-      <View  style={{  alignSelf: "center", marginVertical: 10, flexDirection:'row', justifyContent:'space-around', width:"100%" }}>
+      {/* <View  style={{  alignSelf: "center", marginVertical: 10, flexDirection:'row', justifyContent:'space-around', width:"100%" }}>
       <View
         style={{flexBasis:"30%"   }}
       >
@@ -211,7 +211,7 @@ const OrderDayItem = ({ data }: TProps) => {
           textColor={themeStyle.WHITE_COLOR}
         />
       </View>
-      </View>
+      </View> */}
 
       <ScrollView>
         <View>
@@ -270,7 +270,7 @@ const OrderDayItem = ({ data }: TProps) => {
                         );
                       })}
                     </View>
-                    <View style={{ flexDirection: "row", marginTop: 15 }}>
+                    {/* <View style={{ flexDirection: "row", marginTop: 15 }}>
                       {!dayHours[key]?.isDisabled && (
                         <View style={{ left: 0, width: 100 }}>
                           <Button
@@ -300,7 +300,7 @@ const OrderDayItem = ({ data }: TProps) => {
                           />
                         </View>
                       )}
-                    </View>
+                    </View> */}
                   </View>
                 </View>
               </View>

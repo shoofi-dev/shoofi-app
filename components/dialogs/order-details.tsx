@@ -44,7 +44,6 @@ export default function OrderDetailsdDialog({
             },
           }}
           style={{
-       
           }}
           visible={visible}
           dismissable={false}
@@ -58,10 +57,17 @@ export default function OrderDetailsdDialog({
             />
           </Dialog.Title> */}
           <Dialog.Content>
-              <TouchableOpacity onPress={()=>hideDialog(true)} style={{top: -10}}>
-                  <Text style={{fontSize: 20}}>X</Text>
+     
+        
+              <View style={{ margin:30}}>
+              <View style={{}}>
+              <TouchableOpacity onPress={()=>hideDialog(true)} style={{top: -10, marginBottom:10,right:10}}>
+                  <Text style={{fontSize: 40}}>X</Text>
               </TouchableOpacity>
-          <OrderItem order={order} />
+              </View>
+            <OrderItem order={order} />
+            </View>
+        
           </Dialog.Content>
           </DialogBG>
         </Dialog>

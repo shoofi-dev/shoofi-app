@@ -11,7 +11,7 @@ import { isEmpty } from "lodash";
 import Icon from "../../../../components/icon";
 import Text from "../../../../components/controls/Text";
 import DashedLine from "react-native-dashed-line";
-import { cdnUrl } from "../../../../consts/shared";
+import { cdnUrl, mealsImages, PAYMENT_METHODS, SHIPPING_METHODS } from "../../../../consts/shared";
 import BackButton from "../../../../components/back-button";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -21,6 +21,7 @@ import useWebSocket from "react-use-websocket";
 import { WS_URL } from "../../../../consts/api";
 import { schedulePushNotification } from "../../../../utils/notification";
 import { orderBy } from "lodash";
+import isShowSize from "../../../../helpers/is-show-size";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -47,7 +48,7 @@ const OrderItem = ({ order }: {order: any}) => {
 // }
 // console.log(days)
   const { t } = useTranslation();
-  const { menuStore, ordersStore, authStore, userDetailsStore,languageStore } = useContext(
+  const { menuStore, ordersStore, authStore, storeDataStore,languageStore } = useContext(
     StoreContext
   );
 
@@ -122,51 +123,89 @@ const updateOrderStatus = (order) => {
   //testPrint(order);
 }
 
+const getOrderTotalPrice = (order) => {
+  const oOrder = order.order;
+  if (
+    oOrder.payment_method == PAYMENT_METHODS.cash &&
+    oOrder.receipt_method == SHIPPING_METHODS.shipping
+  ) {
+    return order?.total - storeDataStore?.storeData?.delivery_price;
+  }
+  return order?.total;
+};
+
+const gerRefundAmount = (order: any) => {
+  let totalRefundAmount = null;
+  order?.refundData?.forEach((refund) => {
+    if (!refund.HasError && refund.amount) {
+      totalRefundAmount = totalRefundAmount + refund.amount;
+    }
+  });
+  return totalRefundAmount;
+};
+
   const renderOrderDateRaw = (order) => {
-    const orderIdSplit = order.orderId.split("-");
-    const idPart1 = orderIdSplit[0];
-    const idPart2 = orderIdSplit[2];
     return (
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: 10,
-        }}
-      >
-        <View style={{ flexDirection: "row" }}>
-          <View>
-            <Text style={styles.dateRawText}>{t("order-number")}:</Text>
-          </View>
-          <View>
+      <View style={{}}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 10,
+            flexWrap: "wrap",
+            width: "100%",
+            // marginTop: 25,
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.dateRawText}> اسم الزبون:</Text>
             <Text style={styles.dateRawText}>
-              {idPart1}-{idPart2}{" "}
+              {" "}
+              {order?.customerDetails?.name}
             </Text>
           </View>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.dateRawText}> שם לקוח:</Text>
-          <Text style={styles.dateRawText}>
-            {" "}
-            {order?.customerDetails?.name}
-          </Text>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.dateRawText}> מספר טלפון:</Text>
-          <Text style={styles.dateRawText}>
-            {order?.customerDetails?.phone}{" "}
-          </Text>
-        </View>
-        <View style={{}}>
-          <Text style={styles.dateRawText}>
-            {moment(order.created).format("HH:mm DD/MM/YYYY")}
-          </Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.dateRawText}> رقم الهاتف:</Text>
+            <Text style={styles.dateRawText}>
+              {order?.customerDetails?.phone}{" "}
+            </Text>
+          </View>
+          <View style={{ alignItems: "center" }}>
+            <View style={{ marginBottom: 0 }}>
+              <Text style={styles.dateRawText}>{t("collect-date")}</Text>
+            </View>
+            {/* <Text
+            style={{
+              fontSize: 34,
+              fontFamily: `${getCurrentLang()}-Bold`,
+              color: themeStyle.ERROR_COLOR,
+            }}
+          >
+            {t(moment(order.orderDate).format("dddd"))}
+          </Text> */}
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: `${getCurrentLang()}-American-bold`,
+
+                color: themeStyle.SUCCESS_COLOR,
+              }}
+            >
+              {moment(order.orderDate).format("HH:mm")}
+            </Text>
+          </View>
+          {/* <Text style={styles.dateText}>
+            {moment(order.orderDate).format("DD/MM")}
+          </Text> */}
         </View>
       </View>
     );
   };
   const renderOrderTotalRaw = (order) => {
     const oOrder = order.order;
+    const orderIdSplit = order.orderId.split("-");
+    const idPart1 = orderIdSplit[0];
+    const idPart2 = orderIdSplit[2];
     return (
       <View
         style={{
@@ -182,45 +221,90 @@ const updateOrderStatus = (order) => {
         <View
           style={{
             justifyContent: "space-between",
+            flexBasis: "35%",
+            marginBottom: 25,
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View>
-              <Text style={styles.totalPriceText}>
-                {t(oOrder.payment_method?.toLowerCase())} |{" "}
-                {t(oOrder.receipt_method?.toLowerCase())}
-              </Text>
+          {true && (
+            <View style={{}}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={{ flexDirection: "row" }}>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      backgroundColor:
+                        oOrder.payment_method === PAYMENT_METHODS.creditCard
+                          ? "yellow"
+                          : "transparent",
+                    }}
+                  >
+                    {t(oOrder.payment_method?.toLowerCase())}{" "}
+                    {oOrder.payment_method === PAYMENT_METHODS.creditCard &&
+                      " - مدفوع"}
+                  </Text>
+                  <Text style={styles.totalPriceText}> | </Text>
+                  <Text style={styles.totalPriceText}>
+                    {t(oOrder.receipt_method?.toLowerCase())}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: "row" }}>
+                <View>
+                  <Text style={styles.totalPriceText}>{t("final-price")}:</Text>
+                </View>
+                <View>
+                  <Text style={styles.totalPriceText}>
+                    ₪{getOrderTotalPrice(order)}{" "}
+                  </Text>
+                  {order?.refundData && (
+                    <Text style={styles.totalPriceText}>
+                      -₪{gerRefundAmount(order)}{" "}
+                    </Text>
+                  )}
+                </View>
+              </View>
+              {order.orderDate && (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View>
+                    <Text style={styles.totalPriceText}>
+                      {t("order-sent-date")}:
+                    </Text>
+                  </View>
+                  <View>
+                    <Text style={styles.totalPriceText}>
+                      {" "}
+                      {moment(order.datetime).format("HH:mm")}{" "}
+                    </Text>
+                  </View>
+                </View>
+              )}
+              <View style={{ flexDirection: "row" }}>
+                <View>
+                  <Text style={styles.dateRawText}>{t("order-number")}:</Text>
+                </View>
+                <View>
+                  <Text style={styles.dateRawText}>
+                    {idPart1}-{idPart2}{" "}
+                  </Text>
+                </View>
+              </View>
+              {/* <View style={{ flexDirection: "row" }}>
+                <View>
+                  <Text style={styles.totalPriceText}>
+                    {t("order-status")}:
+                  </Text>
+                </View>
+                <View>
+                  <Text style={styles.totalPriceText}>
+                    {" "}
+                    {t(getStatusTextByStatus(order.status))}{" "}
+                  </Text>
+                </View>
+              </View> */}
             </View>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <View>
-              <Text style={styles.totalPriceText}>{t("final-price")}:</Text>
-            </View>
-            <View>
-              <Text style={styles.totalPriceText}>₪{order.total} </Text>
-            </View>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <View>
-              <Text style={styles.totalPriceText}>{t("order-status")}:</Text>
-            </View>
-            <View>
-              <Text style={styles.totalPriceText}> {getStatusTextByStatus(order.status)} </Text>
-            </View>
-          </View>
+          )}
         </View>
-        <View style={{justifyContent:"center"}}>
-        <Button
-            text={getNextStatusTextByStatus(order.status)}
-            fontSize={17}
-            onClickFn={()=>updateOrderStatus(order)}
-            bgColor={getNextColorTextByStatus(order.status)}
-            textColor={"#442213"}
-            fontFamily={`${getCurrentLang()}-Bold`}
-            borderRadious={19}
-          />
-  
-        </View>
+
       </View>
     );
   };
@@ -272,96 +356,312 @@ const updateOrderStatus = (order) => {
       if (isEmpty(meal)) {
         return;
       }
+
       return (
-        <View>
+        <View style={{ marginTop: 10 }}>
           {index !== 0 && (
             <DashedLine
               dashLength={5}
               dashThickness={1}
-              dashGap={0}
-              dashColor={themeStyle.GRAY_300}
+              dashGap={5}
+              dashColor={themeStyle.TEXT_PRIMARY_COLOR}
+              style={{ marginTop: 15 }}
             />
           )}
           <View
             style={{
               flexDirection: "row",
-              marginTop: 15,
-              justifyContent: "space-between",
-              alignItems: "center",
+              marginTop: index !== 0 ? 15 : 0,
               paddingHorizontal: 5,
+              flexWrap: "wrap",
             }}
           >
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignContent: "center",
-                  marginLeft: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 15,
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
-                    color: themeStyle.GRAY_700,
-                  }}
-                >
-                  {languageStore.selectedLang === 'ar' ? meal.nameAR : meal.nameHE}
-
-                </Text>
-              </View>
+            <View style={{}}>
               <View style={{ flexDirection: "row" }}>
                 <View
                   style={{
                     flexBasis: "20%",
-                    height: 100,
+                    height: 160,
                     marginVertical: 10,
-                    alignItems: "center",
                   }}
                 >
-                  <Image
-                    style={{ width: "100%", height: "100%" }}
-                    source={{ uri: `${cdnUrl}${meal.img[0].uri}` }}
-                    resizeMode="contain"
-                  />
+         
+                    <Image
+                      style={{ width: "100%", height: "100%" }}
+                      source={mealsImages[meal.img]}
+                    />
                 </View>
                 {/* <View style={{ alignItems: "flex-start" }}>
-                  {renderOrderItemsExtras(item.data)}
-                </View> */}
+                    {renderOrderItemsExtras(item.data)}
+                  </View> */}
               </View>
             </View>
-            <View style={{ alignItems: "center" }}>
-              <View>
+            <View
+              style={{
+                alignItems: "flex-start",
+                marginLeft: 50,
+                flexDirection: "column",
+                width: "70%",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  borderWidth: 1,
+                  width: "100%",
+                  justifyContent: "center",
+                  borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                  padding: 10,
+                }}
+              >
                 <Text
                   style={{
-                    fontSize: 15,
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
-                    color: themeStyle.GRAY_700,
+                    fontSize: 20,
                   }}
                 >
-                  {t("count")}: {item.qty}
+                  {languageStore.selectedLang === "ar"
+                    ? meal.nameAR
+                    : meal.nameHE}
                 </Text>
               </View>
-              <View style={{ marginTop: 2, alignItems: "center" }}>
-                <Text
+
+              <View style={{ marginTop: 15 }}>
+                {(item?.halfOne || item?.halfTwo) && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      width: "60%",
+                      marginBottom: 30,
+                    }}
+                  >
+                    <View style={{}}>
+                      {item?.halfOne && (
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            paddingVertical: 6,
+                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              textAlign: "left",
+                              fontSize: 20,
+                            }}
+                          >
+                            {t("halfOne")}
+                          </Text>
+                        </View>
+                      )}
+                      {item?.halfOne.length > 0 ? (
+                        Object.keys(item?.halfOne).map((key) => {
+                          return (
+                            <View style={{}}>
+                              <View style={{ flexDirection: "row" }}>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 20,
+                                    marginTop: 10,
+                                  }}
+                                  type="number"
+                                >
+                                  {`${Number(key) + 1}`}
+                                </Text>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 20,
+                                    marginTop: 10,
+                                  }}
+                                >
+                                  {" "}
+                                  - {t(item?.halfOne[key])}
+                                </Text>
+                              </View>
+                            </View>
+                          );
+                        })
+                      ) : (
+                        <Text
+                          style={{
+                            textAlign: "left",
+                            fontSize: 20,
+                            marginTop: 12,
+                          }}
+                        >
+                          من غير اضافات
+                        </Text>
+                      )}
+                    </View>
+
+                    <View style={{}}>
+                      {item?.halfTwo && (
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            paddingVertical: 6,
+                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              textAlign: "left",
+                              fontSize: 20,
+                            }}
+                          >
+                            {t("halfTwo")}
+                          </Text>
+                        </View>
+                      )}
+                      {item?.halfTwo.length > 0 ? (
+                        Object.keys(item?.halfTwo).map((key) => {
+                          return (
+                            <View style={{}}>
+                              <View style={{ flexDirection: "row" }}>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 20,
+                                    marginTop: 10,
+                                  }}
+                                  type="number"
+                                >
+                                  {`${Number(key) + 1}`}
+                                </Text>
+                                <Text
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 20,
+                                    marginTop: 10,
+                                  }}
+                                >
+                                  {" "}
+                                  - {t(item?.halfTwo[key])}
+                                </Text>
+                              </View>
+                            </View>
+                          );
+                        })
+                      ) : (
+                        <Text
+                          style={{
+                            textAlign: "left",
+                            fontSize: 20,
+                            marginTop: 12,
+                          }}
+                        >
+                          من غير اضافات
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                )}
+              </View>
+              {/* <DashedLine
+              dashLength={5}
+              dashThickness={2}
+              dashGap={10}
+              dashColor={themeStyle.GRAY_600}
+              style={{ marginTop: 15, width:"100%" }}
+            /> */}
+
+              {isShowSize(item.item_id) && (
+                <View
                   style={{
-                    fontSize: 15,
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
-                    color: themeStyle.GRAY_700,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 10,
                   }}
                 >
-                  ₪
+                  <Text
+                    style={{
+                      fontSize: 20,
+                    }}
+                  >
+                    {t("size")} : {t(item.size)}
+                  </Text>
+                </View>
+              )}
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 20,
+                  }}
+                >
+                  {t("count")} : {item.qty}
+                </Text>
+                <View style={{ marginHorizontal: 15 }}>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                    }}
+                  >
+                    |
+                  </Text>
+                </View>
+
+                <Text
+                  style={{
+                    fontSize: 20,
+                  }}
+                >
+                  {t("price")} : ₪{item.price * item.qty}
+                </Text>
+              </View>
+              {/* <View style={{ marginTop: 2, alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                  }}
+                >
+                  {t("price")}: ₪
                   {(item.item_id === 3027 ? item.price : item.price) * item.qty}
                 </Text>
-              </View>
+              </View> */}
+              {item.note && (
+                <View
+                  style={{
+                    marginTop: 2,
+                    alignItems: "flex-start",
+                    width: "100%",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontFamily: `${getCurrentLang()}-SemiBold`,
+                    }}
+                  >
+                    {t("مواصفات الكعكة")}:
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontFamily: `${getCurrentLang()}-SemiBold`,
+                      textAlign: "left",
+                      marginVertical: 5,
+                    }}
+                  >
+                    {item.note}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
-          {/* <View>{renderOrderNote(item?.notes)}</View> */}
         </View>
       );
-    });
-  };
-
+  })};
   const getTextByShippingMethod = (method) => {
     switch (method) {
       case "TAKEAWAY":
@@ -445,35 +745,25 @@ const updateOrderStatus = (order) => {
   };
 
   return (
-    <ScrollView>
             <View
-              style={[
-                styles.orderContainer,
-                { 
-                  shadowColor: getColorTextByStatus(order.status),
-                  shadowOffset: {
-                    width: 0,
-                    height: 3,
-                  },
-                  shadowOpacity: 1,
-                  shadowRadius: 3.84,
-                  elevation: 30,
-                  borderRadius: 20,
-                },
-              ]}
+           style={[
+            styles.orderContainer,
+            {
+              shadowColor: getColorTextByStatus(order.status),
+              shadowOffset: {
+                width: 0,
+                height: 0,
+              },
+              shadowOpacity: 1,
+              shadowRadius: 10.84,
+              elevation: 30,
+              borderRadius: 20,
+              backgroundColor: themeStyle.SECONDARY_COLOR,
+            
+            },
+          ]}
             >
-                              <LinearGradient
-                          colors={[
-                            "#c1bab3",
-                            "#efebe5",
-                            "#d8d1ca",
-                            "#dcdcd4",
-                            "#ccccc4",
-                          ]}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
-                          style={[styles.background, { borderRadius: 20 }]}
-                        />
+          
               {renderOrderDateRaw(order)}
               {renderOrderItems(order)}
               {renderOrderTotalRaw(order)}
@@ -481,31 +771,40 @@ const updateOrderStatus = (order) => {
             </View>
     
 
-    </ScrollView>
   );
 };
 export default observer(OrderItem);
 
 const styles = StyleSheet.create({
   container: {
-  
+    width: "100%",
+    height: "100%",
   },
   orderContainer: {
     backgroundColor: themeStyle.WHITE_COLOR,
     borderRadius: 10,
+    marginBottom: 15,
+    marginHorizontal: 20,
     paddingTop: 15,
     paddingHorizontal: 10,
     paddingBottom: 20,
   },
   dateRawText: {
-    fontSize: 17,
+    fontSize: 20,
     fontFamily: `${getCurrentLang()}-SemiBold`,
-    color: themeStyle.GRAY_700,
+    color: themeStyle.TEXT_PRIMARY_COLOR,
   },
   totalPriceText: {
-    fontSize: 15,
+    fontSize: 20,
     fontFamily: `${getCurrentLang()}-SemiBold`,
-    color: themeStyle.GRAY_700,
+    marginBottom: 15,
+  },
+  dateText: {
+    fontSize: 20,
+    fontFamily: `${getCurrentLang()}-Bold`,
+    marginBottom: 15,
+
+    textDecorationLine: "underline",
   },
   background: {
     position: "absolute",
@@ -513,6 +812,5 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    
   },
 });

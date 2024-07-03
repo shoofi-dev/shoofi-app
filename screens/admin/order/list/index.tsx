@@ -335,27 +335,27 @@ const OrdersListScreen = ({ route }) => {
   };
   const getNextStatusTextByStatus = (order: any) => {
     if (inProgressStatuses.indexOf(order.status) > -1) {
-      return "מוכנה";
+      return "جاهزة";
     }
     if (deliveryStatuses.indexOf(order.status) > -1) {
-      return "נשלח";
+      return "ارسل";
     }
     if (readyStatuses.indexOf(order.status) > -1) {
-      return "ביטול";
+      return "الغاء";
     }
     if (canceledStatuses.indexOf(order.status) > -1) {
-      return "בוטלה";
+      return "الغيت";
     }
   };
   const getPrevStatusTextByStatus = (status: string) => {
     if (readyStatuses.indexOf(status) > -1) {
-      return "החזר למצב הכנה";
+      return "ارجع للتتجهيز";
     }
     if (deliveryStatuses.indexOf(status) > -1) {
-      return "החזר למצב הכנה";
+      return "ارجع للتتجهيز";
     }
     if (canceledStatuses.indexOf(status) > -1) {
-      return "החזר למצב הכנה";
+      return "ارجع للتتجهيز";
     }
   };
   const getColorTextByStatus = (status: string) => {
@@ -399,10 +399,10 @@ const OrdersListScreen = ({ route }) => {
   };
 
   const updateOrderStatus = (order) => {
-    if (["1", "3"].indexOf(order?.status) > -1) {
-      setIsOpenConfirmActiondDialog(true);
-      setActiveOrder(order);
-    } else {
+    // if (["1", "3"].indexOf(order?.status) > -1) {
+    //   setIsOpenConfirmActiondDialog(true);
+    //   setActiveOrder(order);
+    // } else {
       setIsloading(true);
       ordersStore.updateOrderStatus(order).then((res) => {
         setOrdersList([]);
@@ -411,7 +411,7 @@ const OrdersListScreen = ({ route }) => {
         setActiveOrder(null);
         setIsloading(false);
       });
-    }
+    // }
   };
 
   const handleConfirmActionAnswer = (answer: boolean) => {
@@ -661,7 +661,7 @@ const OrdersListScreen = ({ route }) => {
             </View>
             <View style={{ flexBasis: "45%" }}>
               <Button
-                text={"הדפסה"}
+                text={"طباعة"}
                 fontSize={17}
                 onClickFn={() => printOrder(order)}
                 bgColor={themeStyle.GRAY_700}
@@ -1677,7 +1677,7 @@ const OrdersListScreen = ({ route }) => {
                               style={{ color: "#a77948" }}
                             />
                             <Button
-                              text={"הזמן שליח"}
+                              text={"اطلب ارسالية"}
                               fontSize={17}
                               onClickFn={() => bookDelivery(order)}
                               fontFamily={`${getCurrentLang()}-Bold`}

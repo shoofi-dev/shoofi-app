@@ -52,7 +52,9 @@
           "apiKey": "AIzaSyD0CSVYW-UxSDEnderEtAB9YDmYYZLu8q8"
         }
       },
-      "permissions" : ["CAMERA"]
+      "permissions" : ["CAMERA"],
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true
     },
     "web": {
       "favicon": "./assets/favicon.png"

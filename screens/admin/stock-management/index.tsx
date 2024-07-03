@@ -70,7 +70,8 @@ const StockManagementScreen = ({ route }) => {
           textAlign: "center",
           borderWidth: 1,
           padding: 10,
-          color: themeStyle.WHITE_COLOR
+          color: themeStyle.WHITE_COLOR,
+          borderColor: themeStyle.WHITE_COLOR
         }}
       >
         {t("ادارة المخزون")}
