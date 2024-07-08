@@ -2032,7 +2032,7 @@ const CartScreen = ({ route }) => {
                     ...styles.togglleCItem,
                     backgroundColor:
                       paymentMthod === PAYMENT_METHODS.creditCard
-                        ? theme.PRIMARY_COLOR
+                        ? theme.SECONDARY_COLOR
                         : "transparent",
                     borderTopLeftRadius: 50,
                     borderBottomLeftRadius: 50,

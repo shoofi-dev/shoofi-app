@@ -74,7 +74,7 @@ const chargeCreditCard = ({ token, totalPrice, orderId, id, email, cvv, phone,us
             "FaxNum": "",
             "TaxRate": "17",
             "Comment": "",
-            "ReceipientEmail": 'creme.caramel.app@gmail.com',
+            "ReceipientEmail": storeDataStore.storeData.email,
             "EmailDocumentToReceipient": true,
             "ReturnDocumentInResponse": "",
             "Items": itemsList
