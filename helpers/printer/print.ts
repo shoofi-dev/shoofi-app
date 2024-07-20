@@ -50,7 +50,7 @@ const printOrder = async (orders, status) => {
           .image(
             { uri: order },
             {
-              width: 550,
+              width: 500,
               height: 1000,
             }
           )

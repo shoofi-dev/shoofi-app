@@ -4,7 +4,7 @@ import EscPosPrinter, {
   
   export async function testPrint2() {
       await EscPosPrinter.init({
-        target: "BT:00:01:90:56:EB:70",
+        target: 'BT:00:01:90:60:E0:77',
         seriesName: getPrinterSeriesByName("TM-m30"),
         language: "EPOS2_LANG_EN",
       });

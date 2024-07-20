@@ -340,8 +340,8 @@ const App = () => {
   const initPrinter = async () => {
     console.log("storeDataStore.storeData.printerTarget",storeDataStore.storeData.printerTarget)
     await EscPosPrinter.init({
-      target: 'TCP:192.168.0.107',
-      seriesName: getPrinterSeriesByName("TM-m30"),
+      target: storeDataStore.storeData.printerTarget,
+      seriesName: getPrinterSeriesByName("EPOS2_TM_M50"),
       language: "EPOS2_LANG_EN",
     })
       .then(() => console.log("Init success!"))
@@ -814,7 +814,6 @@ const App = () => {
                 </ScrollView>
               );
             })}
-
           <ExpiryDate />
           <GeneralServerErrorDialog />
           <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />

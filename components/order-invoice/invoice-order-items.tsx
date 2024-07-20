@@ -26,7 +26,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
               <View style={{ flexBasis: "50%" }}>
-                <Text style={{ fontSize: 45, textAlign: "left" }}>
+                <Text style={{ fontSize: 65, textAlign: "left" }}>
                   {`X${order.qty} ` +
                     `${
                       getCurrentLang() === "ar" ? order.nameAR : order.nameHE
@@ -34,7 +34,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                 </Text>
               </View>
               <View>
-                <Text style={{ fontSize: 45, textAlign: "left" }}>
+                <Text style={{ fontSize: 65, textAlign: "left" }}>
                   {`₪${order.price * order.qty}`}
                 </Text>
               </View>
@@ -60,7 +60,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                       <Text
                         style={{
                           textAlign: "center",
-                          fontSize: 40,
+                          fontSize: 65,
                           fontFamily: `${getCurrentLang()}-SemiBold`,
                         }}
                       >
@@ -77,7 +77,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                               <Text
                                 style={{
                                   textAlign: "left",
-                                  fontSize: 40,
+                                  fontSize: 65,
                                   marginTop: 10,
                                 }}
                               >
@@ -86,7 +86,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                               <Text
                                 style={{
                                   textAlign: "left",
-                                  fontSize: 40,
+                                  fontSize: 65,
                                   marginTop: 10,
                                 }}
                               >
@@ -101,7 +101,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                         <Text
                           style={{
                             textAlign: "left",
-                            fontSize: 40,
+                            fontSize: 65,
                             marginTop: 10,
                           }}
                         >
@@ -122,7 +122,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                       <Text
                         style={{
                           textAlign: "center",
-                          fontSize: 40,
+                          fontSize: 65,
                           fontFamily: `${getCurrentLang()}-SemiBold`,
                         }}
                       >
@@ -138,7 +138,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                               <Text
                                 style={{
                                   textAlign: "left",
-                                  fontSize: 40,
+                                  fontSize: 65,
                                   marginTop: 10,
                                 }}
                               >
@@ -147,7 +147,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                               <Text
                                 style={{
                                   textAlign: "left",
-                                  fontSize: 40,
+                                  fontSize: 65,
                                   marginTop: 10,
                                 }}
                               >
@@ -162,7 +162,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                         <Text
                           style={{
                             textAlign: "left",
-                            fontSize: 40,
+                            fontSize: 65,
                             marginTop: 10,
                           }}
                         >
@@ -179,12 +179,12 @@ const InvoiceOrderItems = ({ orderItems }) => {
                 }}
               >
                 <View>
-                  <Text style={{ fontSize: 40, textAlign: "left" }}>
+                  <Text style={{ fontSize: 65, textAlign: "left" }}>
                     {i18n.t("size")}
                   </Text>
                 </View>
                 <View>
-                  <Text style={{ fontSize: 40, textAlign: "left" }}>
+                  <Text style={{ fontSize: 65, textAlign: "left" }}>
                     {i18n.t(order.size)}
                   </Text>
                 </View>
@@ -197,12 +197,12 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   }}
                 >
                   <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    <Text style={{ fontSize: 65, textAlign: "left" }}>
                       {i18n.t("name")}
                     </Text>
                   </View>
                   <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    <Text style={{ fontSize: 65, textAlign: "left" }}>
                       {i18n.t(order.toName)}
                     </Text>
                   </View>
@@ -217,12 +217,12 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   }}
                 >
                   <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    <Text style={{ fontSize: 65, textAlign: "left" }}>
                       {i18n.t("age")}
                     </Text>
                   </View>
                   <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    <Text style={{ fontSize: 65, textAlign: "left" }}>
                       {i18n.t(order.toAge)}
                     </Text>
                   </View>
@@ -237,12 +237,12 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   }}
                 >
                   <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    <Text style={{ fontSize: 65, textAlign: "left" }}>
                       {i18n.t("extraOnTop")}
                     </Text>
                   </View>
                   <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    <Text style={{ fontSize: 65, textAlign: "left" }}>
                       {i18n.t(order.onTop)}
                     </Text>
                   </View>
@@ -256,7 +256,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   }}
                 >
                   <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    <Text style={{ fontSize: 65, textAlign: "left" }}>
                       + {i18n.t("image")}
                     </Text>
                   </View>
@@ -272,12 +272,12 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   }}
                 >
                   <View style={{}}>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    <Text style={{ fontSize: 65, textAlign: "left" }}>
                       {"مواصفات الكعكة"}:
                     </Text>
                   </View>
                   <View>
-                    <Text style={{ fontSize: 40, textAlign: "left" }}>
+                    <Text style={{ fontSize: 65, textAlign: "left" }}>
                       {order.note}
                     </Text>
                   </View>
