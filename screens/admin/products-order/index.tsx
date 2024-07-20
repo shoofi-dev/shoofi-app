@@ -152,17 +152,6 @@ const ProductOrderScreen = ({ route }) => {
               fontSize={24}
             />
           </View>}
-      {selectedCategory.categoryId === 5 && !selectedSubCategory && (
-        <View
-          style={{
-            width:"50%",
-            height:"100%",
-            alignSelf:"center"
-          }}
-        >
-          <BirthdayCakes onChange={handleSubCategoryChange} categoryId={selectedCategory.categoryId} selectedSubCategory={selectedSubCategory} />
-        </View>
-      )}
       <View
         style={{
           alignItems: "center",

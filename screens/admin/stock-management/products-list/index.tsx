@@ -133,12 +133,6 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
               fontSize={24}
             />
           </View>}
-          {category.categoryId == "5" && !selectedSubCategory && (
-              <View style={{ marginBottom: 15, width:400,opacity: !selectedSubCategory ? 1 : 0, height:  !selectedSubCategory ? "100%" : 0}}>
-                <BirthdayCakes onChange={handleSubCategoryChange} categoryId={category.categoryId} selectedSubCategory={selectedSubCategory}/>
-              </View>
-            )}
-
 
             <View style={{ width: 200, marginBottom: 15, alignSelf: "center" }}>
               <Button

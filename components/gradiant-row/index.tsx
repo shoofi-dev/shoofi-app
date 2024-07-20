@@ -32,12 +32,6 @@ type TProps = {
   categoryId?: any;
 };
 
-const mkhbozeOnTopIcons = {
-  okhmaniot: require(`../../assets/pngs/mkhboze/okhmaniot.png`),
-  tot: require(`../../assets/pngs/mkhboze/tot.png`),
-  rebatHalav: require(`../../assets/pngs/mkhboze/rebatHalav.png`),
-};
-
 export default function GradiantRow({
   onChangeFn,
   icon,
@@ -140,96 +134,6 @@ export default function GradiantRow({
           }}
         >
           <ImagePicker handleImageSelect={onChange} />
-        </View>
-      </View>
-    );
-  }
-  if (type === "oneChoiceOnTop") {
-    return (
-      <View
-        style={[
-          styles.gradiantRow,
-          { alignItems: "center", justifyContent: "center" },
-        ]}
-      >
-        {/* <View
-          style={[
-            styles.textAndPriceContainer,
-            { marginLeft: 20, width: "18%" },
-          ]}
-        >
-          <Text
-            style={{
-              fontSize: fontSize || 20,
-              fontFamily: `${getCurrentLang()}-SemiBold`,
-              color: themeStyle.BROWN_700,
-              left: -30,
-            }}
-          >
-            {t(title)} :
-          </Text>
-        </View> */}
-        <View
-          style={{
-            width: "100%",
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              width: "80%",
-            }}
-          >
-            {Object.keys(tasteList).map((key) => (
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 5,
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Image
-                    source={
-                      mkhbozeOnTopIcons[Object.values(tasteList)[key].value]
-                    }
-                    style={{ width: 70, height: 50 }}
-                  />
-                  <View style={{ flexDirection: "column" }}>
-                    <View style={{ flexDirection: "row" }}>
-                      <Text style={{ fontSize: 18 }}>
-                        {t(Object.values(tasteList)[key].value)}
-                      </Text>
-                    </View>
-
-                    <View style={{ flexDirection: "row" }}>
-                      <Text style={{ fontSize: 12 }} type="number">
-                        +₪{price}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <CheckBox
-                    onChange={() => {
-                      onTopChange(Object.values(tasteList)[key].value);
-                    }}
-                    value={value}
-                    title={Object.values(tasteList)[key].value}
-                    isOneChoice
-                    // isDisabled={options[key].count === 0}
-                  />
-                </View>
-              </View>
-            ))}
-          </View>
         </View>
       </View>
     );

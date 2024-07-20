@@ -39,7 +39,6 @@ import { keys } from "mobx";
 import { useTranslation } from "react-i18next";
 import CustomFastImage from "../../../components/custom-fast-image";
 import Icon from "../../../components/icon";
-const loaderGif = require("../../../assets/loder.gif");
 
 const CategoryItemsList = ({ productsList, category }) => {
   const { t } = useTranslation();

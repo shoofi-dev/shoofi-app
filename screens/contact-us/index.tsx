@@ -33,11 +33,7 @@ const ContactUs = () => {
   const { t } = useTranslation();
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require("../../assets/bg/login-bg.jpg")}
-        resizeMode="cover"
-        style={{ height: "100%", width: "100%" }}
-      >
+
         <LinearGradient
           colors={[
             "rgba(207, 207, 207, 0.4)",
@@ -58,7 +54,6 @@ const ContactUs = () => {
             <Text style={{ fontSize: 28 }}>{t("contact-us")}</Text>
           </View>
         </View>
-      </ImageBackground>
     </View>
   );
 };

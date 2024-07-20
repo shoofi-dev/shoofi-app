@@ -14,7 +14,6 @@ import { useContext } from "react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
 import { LinearGradient } from "expo-linear-gradient";
-const loaderGif = require("../../assets/loder.gif");
 
 /* components */
 import CategoryItemsList from "./components/categoryItemsList";

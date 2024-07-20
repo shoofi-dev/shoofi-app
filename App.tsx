@@ -485,23 +485,6 @@ const App = () => {
       // Pre-load fonts, make any API calls you need to do here
       await Font.loadAsync(customARFonts);
       setIsFontReady(true);
-      const imageAssets2 = cacheImages([
-        require("./assets/store-logo.png"),
-        require("./assets/categories/long-cake-active.png"),
-        require("./assets/categories/long-cake-inactive.png"),
-        require("./assets/categories/moouse-active.png"),
-        require("./assets/categories/moouse-inactive.png"),
-        require("./assets/categories/cookies-active.png"),
-        require("./assets/categories/cookies-inactive.png"),
-        require("./assets/categories/birthday-active.png"),
-        require("./assets/categories/birthday-inactive.png"),
-        require("./assets/categories/design-active.png"),
-        require("./assets/categories/design-inactive.png"),
-        require("./assets/categories/desserts-active.png"),
-        require("./assets/categories/desserts-inactive.png"),
-        require("./assets/categories/shmareem-active.png"),
-        require("./assets/categories/shmareem-inactive.png"),
-      ]);
 
       const fetchMenu = menuStore.getMenu();
       //const fetchHomeSlides = menuStore.getSlides();

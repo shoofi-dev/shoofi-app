@@ -22,17 +22,6 @@ const menuIcons = {
   "pizza-active": require("../../../../assets/categories//pizza-meal4.png"),
   "pizza-inactive": require("../../../../assets/categories/pizza-meal4.png"),
   "drinks-active": require("../../../../assets/categories/drinks-active.png"),
-  "moouse-inactive": require("../../../../assets/categories/moouse-inactive.png"),
-  "cookies-active": require("../../../../assets/categories/cookies-active.png"),
-  "cookies-inactive": require("../../../../assets/categories/cookies-inactive.png"),
-  "birthday-active": require("../../../../assets/categories/birthday-active.png"),
-  "birthday-inactive": require("../../../../assets/categories/birthday-inactive.png"),
-  "design-active": require("../../../../assets/categories/design-active.png"),
-  "design-inactive": require("../../../../assets/categories/design-inactive.png"),
-  "desserts-active": require("../../../../assets/categories/desserts-active.png"),
-  "desserts-inactive": require("../../../../assets/categories/desserts-inactive.png"),
-  "shmareem-active": require("../../../../assets/categories/shmareem-active.png"),
-  "shmareem-inactive": require("../../../../assets/categories/shmareem-inactive.png"),
 };
 const MenuItem = ({
   item,
