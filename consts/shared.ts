@@ -29,6 +29,10 @@ export const mealsImages = {
   "sprite": require("../assets/drinks/sprite.png"),
   "sprite-zero": require("../assets/drinks/sprite-zero.png"),
   "pizza": require("../assets/categories/pizza-meal4.png"),
+  "shrab-anb": require("../assets/drinks/shrab-anb.png"),
+  "shrab-lmon": require("../assets/drinks/shrab-lmon.png"),
+  "shrab-tot": require("../assets/drinks/shrab-tot.png"),
+  "shrab-mkhlt": require("../assets/drinks/shrab-mkhlt.png"),
 };
 
 export const extrasImages = {

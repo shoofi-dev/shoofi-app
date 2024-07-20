@@ -158,17 +158,17 @@ const ProfileScreen = () => {
                   borderRadius: 30,
                   padding: 10,
                   borderWidth:2,
-                  borderColor: themeStyle.TEXT_PRIMARY_COLOR
+                  borderColor: themeStyle.WHITE_COLOR
                 }}
               >
                 <Icon
                   icon={item.icon}
                   size={30}
-                  style={{ color: themeStyle.TEXT_PRIMARY_COLOR, opacity: 1 }}
+                  style={{ color: themeStyle.WHITE_COLOR, opacity: 1 }}
                 />
               </View>
               <View>
-                <Text style={{ fontSize: 18 }}>
+                <Text style={{ fontSize: 18, color: themeStyle.WHITE_COLOR }}>
                   {t(item.title)}
                 </Text>
               </View>
@@ -236,7 +236,7 @@ const ProfileScreen = () => {
             "rgba(232, 232, 230, 0.5)",
             "rgba(232, 232, 230, 0.4)",
             "rgba(232, 232, 230, 0.4)",
-            "rgba(207, 207, 207, 1)",
+            "rgba(207, 207, 207, 0.6)",
           ]}
           start={{ x: 1, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -246,6 +246,7 @@ const ProfileScreen = () => {
           <Text
             style={{
               fontSize: 25,
+              color:themeStyle.WHITE_COLOR
              }}
              type="number"
 

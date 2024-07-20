@@ -163,9 +163,9 @@ const OrdersListScreen = ({ route }) => {
 
   const getNext7Days = () => {
     let days = [];
-    let daysRequired = 17;
+    let daysRequired = 14;
     for (let i = 0; i < daysRequired; i++) {
-      let day = moment().add(i, "days");
+      let day = moment().add(i * -1, "days");
       days.push({
         dayId: i,
         dayLetter: day.format("dddd"),
@@ -1340,7 +1340,7 @@ const OrdersListScreen = ({ route }) => {
       <View style={{ right: 15, zIndex: 1, position: "absolute", top: 5 }}>
         <BackButton goTo={"homeScreen"} />
       </View>
-      {/* <ScrollView
+      <ScrollView
         style={{
           height: 120,
           marginLeft: 10,
@@ -1411,7 +1411,7 @@ const OrdersListScreen = ({ route }) => {
             </TouchableOpacity>
           );
         })}
-      </ScrollView> */}
+      </ScrollView>
       <View
         style={{
           flexDirection: "row",
@@ -1494,7 +1494,7 @@ const OrdersListScreen = ({ route }) => {
                 height: "100%",
               }}
             >
-              <Text style={{ fontSize: 20 }}>{t("لا يوجد طلبيات")}</Text>
+              <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>{t("لا يوجد طلبيات")}</Text>
             </View>
           ) : (
             // !isLoading && (
