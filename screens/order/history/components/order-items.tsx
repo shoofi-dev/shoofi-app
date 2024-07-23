@@ -41,7 +41,6 @@ const OrderItems = ({ order }) => {
             style={{
               flexDirection: "row",
               marginTop: index !== 0 ? 15 : 0,
-              alignItems: "center",
               paddingHorizontal: 5,
               flexWrap: "wrap",
             }}
@@ -51,7 +50,7 @@ const OrderItems = ({ order }) => {
                 <View
                   style={{
                     flexBasis: "20%",
-                    height: 80,
+                    height: 70,
                     marginVertical: 10,
                   }}
                 >
@@ -68,7 +67,7 @@ const OrderItems = ({ order }) => {
             <View
               style={{
                 alignItems: "flex-start",
-                marginLeft: 50,
+                marginLeft: 10,
                 flexDirection: "column",
               }}
             >

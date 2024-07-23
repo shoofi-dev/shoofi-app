@@ -21,12 +21,23 @@ const OrderHistoryScreen = ({ route }) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(true);
+  const getOrders = () =>{
     ordersStore.getCustomerOrders().then((res) => {
       setOrdersList(res || []);
       setIsLoading(false);
     });
+  }
+
+  useEffect(() => {
+    setIsLoading(true);
+      getOrders();
+      setTimeout(() => {
+        getOrders();
+      }, 15 * 1000);
+      const interval = setInterval(() => {
+        getOrders();
+      }, 60 * 1000);
+      return () => clearInterval(interval);
   }, []);
 
   const onScrollEnd = ({ nativeEvent }) => {

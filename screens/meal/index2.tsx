@@ -774,7 +774,7 @@ const MealScreen = ({ route }) => {
                       >
                         3
                       </Text>
-                      <Text style={{ fontSize: 16 }}>اضافات مجاناً</Text>
+                      <Text style={{ fontSize: 16 }}>{t('extra-free')}</Text>
                     </View>
                   </View>
                   {selectedPizzaHalf == "halfOne" && (

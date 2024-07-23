@@ -36,9 +36,9 @@
       "bundleIdentifier": "com.sariq.pizza.gmel"
     },
     "android": {
-      "versionCode": 2,
+      "versionCode": 4,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon5.png",
+        "foregroundImage": "./assets/adaptive-icon-gmel.png",
         "backgroundColor": "#FFFFFF"
       },
       "splash": {

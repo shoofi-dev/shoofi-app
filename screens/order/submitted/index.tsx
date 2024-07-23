@@ -109,7 +109,7 @@ const OrderSubmittedScreen = ({ route }) => {
             </Text>
           </View>
         </View>
-        <View style={{ width: "80%", marginTop: 80 }}>
+        <View style={{ width: "80%", bottom:0, position:'absolute' }}>
           <View>
             <Button
               onClickFn={() => {

@@ -42,8 +42,7 @@ const OrderFooter = ({ order }) => {
                   <View>
                     <Text style={styles.dateText}>
                       {" "}
-                      {/* {t(moment(order.orderDate).format("dddd"))}{" "} */}
-                      {moment(order.orderDate).format("HH:mm")}{" "}
+                      {moment(order.orderDate).isSame(order.datetime) ? t('waiting-for-approve') : moment(order.orderDate).format("HH:mm")}{" "}
                     </Text>
                   </View>
                 </View>
@@ -94,7 +93,6 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
 
-    textDecorationLine: "underline",
     marginBottom:10
 
   },

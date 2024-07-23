@@ -40,8 +40,8 @@ const CurrentStatus = ({ order }) => {
       >
         <View style={{ alignItems: "center", position:'relative' }}>
           <View style={[styles.statusCircle,{backgroundColor: (inProgressStatuses.indexOf(order.status) > -1 || readyStatuses.indexOf(order.status) > -1) && order.isViewd ? themeStyle.SUCCESS_COLOR: 'transparent' }]}></View>
-          <View style={{position:'absolute', width:100, bottom:-25}}>
-          <Text style={{ fontSize: 20, alignSelf:'center' }}>{t('in-progress')}</Text>
+          <View style={{position:'absolute', width:200, bottom:-25}}>
+          <Text style={{ fontSize: 18, alignSelf:'center' }}>{t('in-progress')}</Text>
           </View>
         </View>
 
@@ -50,13 +50,13 @@ const CurrentStatus = ({ order }) => {
           dashThickness={2}
           dashGap={0}
           dashColor={themeStyle.TEXT_PRIMARY_COLOR}
-          style={{ width: 90, alignSelf: "center", marginTop:0 }}
+          style={{ width: 95, alignSelf: "center", marginTop:0 }}
         />
 
-        <View style={{ alignItems: "center", position:'relative' }}>
+        <View style={{ alignItems: "center", position:'relative',left:2 }}>
           <View style={[styles.statusCircle,{backgroundColor: readyStatuses.indexOf(order.status) > -1 && order.isViewd ? themeStyle.SUCCESS_COLOR: 'transparent' }]}></View>
-          <View style={{position:'absolute', width:100, bottom:-25}}>
-            <Text style={{ fontSize: 20, alignSelf:'center' }}>{t('ready')}</Text>
+          <View style={{position:'absolute', width:200, bottom:-25}}>
+            <Text style={{ fontSize: 18, alignSelf:'center' }}>{t('ready')}</Text>
           </View>
         </View>
       </View>
