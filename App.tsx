@@ -171,7 +171,7 @@ const App = () => {
           orderId: 1,
         },
       });
-    }, 10000);
+    }, 60 * 1000);
     storeDataStore.setRepeatNotificationInterval(tmpRepeatNotificationInterval);
   };
 
@@ -242,9 +242,15 @@ const App = () => {
     }
   };
 
+  const getPizzaCount = (order) =>{
+    const items = order?.order?.items?.filter((item)=> item.nameHE == 'פיצה');
+    return items;
+  }
+
   const getInvoiceSP = async (queue) => {
     const SPs = [];
     for (let i = 0; i < queue.length; i++) {
+      const pizzaCount = getPizzaCount(queue[i])?.length;
       const invoiceRefName = invoicesRef.current[queue[i].orderId + "name"];
       const resultName = await captureRef(invoiceRefName, {
         result: "data-uri",
@@ -252,7 +258,9 @@ const App = () => {
         quality: 1,
         format: "png",
       });
-      SPs.push(resultName);
+      for (let i = 0; i < pizzaCount; i++) {
+        SPs.push(resultName);
+      }
 
       const invoiceRef = invoicesRef.current[queue[i].orderId];
       const result = await captureRef(invoiceRef, {

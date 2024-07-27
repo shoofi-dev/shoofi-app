@@ -25,6 +25,22 @@ const CurrentStatus = ({ order }) => {
     }
 };
 
+const getColorByStatus = (order) => {
+  if(order.isViewd){
+    if (inProgressStatuses.indexOf(order.status) > -1) {
+      return themeStyle.SUCCESS_COLOR;
+    }
+    if (readyStatuses.indexOf(order.status) > -1) {
+      return themeStyle.SUCCESS_COLOR;
+    }
+    if (canceledStatuses.indexOf(order.status) > -1) {
+      return themeStyle.ERROR_COLOR;
+    }
+  }
+  return 'transparent'
+
+}
+
   const renderOrderTotalRaw = (order) => {
     const oOrder = order.order;
     return (
@@ -54,9 +70,10 @@ const CurrentStatus = ({ order }) => {
         />
 
         <View style={{ alignItems: "center", position:'relative',left:2 }}>
-          <View style={[styles.statusCircle,{backgroundColor: readyStatuses.indexOf(order.status) > -1 && order.isViewd ? themeStyle.SUCCESS_COLOR: 'transparent' }]}></View>
+          <View style={[styles.statusCircle,{backgroundColor: getColorByStatus(order) }]}></View>
           <View style={{position:'absolute', width:200, bottom:-25}}>
-            <Text style={{ fontSize: 18, alignSelf:'center' }}>{t('ready')}</Text>
+          {readyStatuses.indexOf(order.status) > -1 && <Text style={{ fontSize: 18, alignSelf:'center' }}>{t('ready')}</Text>}
+            {canceledStatuses.indexOf(order.status) > -1 && <Text style={{ fontSize: 18, alignSelf:'center' }}>{t('canceled')}</Text>}
           </View>
         </View>
       </View>

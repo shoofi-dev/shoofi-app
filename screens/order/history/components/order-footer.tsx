@@ -93,7 +93,8 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
 
-    marginBottom:10
+    marginBottom:10,
+    color: themeStyle.SUCCESS_COLOR
 
   },
 });

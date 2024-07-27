@@ -14,7 +14,7 @@ export async function schedulePushNotification(data: any) {
     await Notifications.scheduleNotificationAsync({
         content: {
             title: "פיצה ג׳מיל",
-            body: 'התקבלה הזמנה חדשה',
+            body: 'طلبية جديدة',
             data: data,
             sound: 'buffalosound.wav',
             vibrate: [10]
@@ -31,6 +31,7 @@ export async function registerForPushNotificationsAsync() {
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
             lightColor: '#FF231F7C',
+            sound: 'buffalosound.wav',
         });
     }
 

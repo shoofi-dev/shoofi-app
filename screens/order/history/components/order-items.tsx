@@ -50,7 +50,7 @@ const OrderItems = ({ order }) => {
                 <View
                   style={{
                     flexBasis: "20%",
-                    height: 70,
+                    height: 80,
                     marginVertical: 10,
                   }}
                 >

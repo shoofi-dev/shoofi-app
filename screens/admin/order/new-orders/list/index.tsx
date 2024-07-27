@@ -159,7 +159,7 @@ const NewOrdersListScreen = ({ route }) => {
     await ordersStore.updatOrderViewd(
       order,
       userDetailsStore.isAdmin(ROLES.all),
-      order.orderDate,
+      new Date(),
       readyMinutes
     );
     setIsloading(false);
