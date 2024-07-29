@@ -162,7 +162,7 @@ const HomeScreen = ({ navigation }) => {
       return {
         ar: res["invalid_message_ar"],
         he: res["invalid_message_he"],
-        isOpen: res.alwaysOpen || userDetailsStore.isAdmin(), // || res.isOpen,
+        isOpen: res.alwaysOpen || userDetailsStore.isAdmin() || res.isOpen,
         isBusy: false,
       };
     });

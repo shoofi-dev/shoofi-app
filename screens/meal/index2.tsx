@@ -223,6 +223,10 @@ const MealScreen = ({ route }) => {
 
       let finalPrice = sizePrice;
 
+      if (meal.data?.extras?.halfOne?.value?.length > 0 || meal.data?.extras?.halfTwo?.value?.length > 0) {
+        finalPrice = finalPrice + 5;
+      }
+
       if (meal.data?.extras?.halfOne?.value.indexOf("tuna") > -1) {
         finalPrice = finalPrice + 5;
       }
@@ -760,7 +764,7 @@ const MealScreen = ({ route }) => {
                       option2={"halfTwo"}
                       onChange={(value) => {if(value){setSelectedPizzaHalf(value)}}}
                     />
-                    <View
+                    {/* <View
                       style={{
                         flexDirection: "row",
                         marginTop: 5,
@@ -775,7 +779,7 @@ const MealScreen = ({ route }) => {
                         3
                       </Text>
                       <Text style={{ fontSize: 16 }}>{t('extra-free')}</Text>
-                    </View>
+                    </View> */}
                   </View>
                   {selectedPizzaHalf == "halfOne" && (
                     <View style={{ width: "100%" }}>

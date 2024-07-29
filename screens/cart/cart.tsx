@@ -2211,8 +2211,8 @@ const CartScreen = ({ route }) => {
                 <View>
                   <Text
                     style={{
-                      fontFamily: `${getCurrentLang()}-Light`,
-                      fontSize: 20,
+                      fontFamily: `${getCurrentLang()}-SemiBold`,
+                      fontSize: 18,
                       color: themeStyle.WHITE_COLOR,
                     }}
                   >
@@ -2222,7 +2222,7 @@ const CartScreen = ({ route }) => {
                 <View>
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: 18,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                       color: themeStyle.WHITE_COLOR,
                     }}
@@ -2238,8 +2238,8 @@ const CartScreen = ({ route }) => {
                   <View>
                     <Text
                       style={{
-                        fontFamily: `${getCurrentLang()}-Light`,
-                        fontSize: 20,
+                        fontFamily: `${getCurrentLang()}-SemiBold`,
+                        fontSize: 18,
                         color: themeStyle.WHITE_COLOR,
                       }}
                     >
@@ -2249,7 +2249,7 @@ const CartScreen = ({ route }) => {
                   <View>
                     <Text
                       style={{
-                        fontSize: 20,
+                        fontSize: 18,
                         fontFamily: `${getCurrentLang()}-SemiBold`,
                         color: themeStyle.WHITE_COLOR,
                       }}

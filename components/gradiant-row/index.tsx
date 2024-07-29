@@ -247,7 +247,7 @@ export default function GradiantRow({
                   <Text>{options[key].title}</Text>
                 </View>*/}
                  <View style={{height:20, paddingTop:5}}>
-                { (options[key].title == 'tuna' || value.indexOf(options[key].title) >= (value.indexOf('tuna')> -1 ? 2:3)) &&
+                { (value.indexOf(options[key].title) >= (value.indexOf('tuna')> -1 ? 2:3)) &&
                   <Text type="number">+₪{options[key].price}</Text>
                }
                  </View>

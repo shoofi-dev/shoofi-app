@@ -1676,13 +1676,13 @@ const OrdersListScreen = ({ route }) => {
                               size={80}
                               style={{ color: "#a77948" }}
                             />
-                            <Button
+                            {/* <Button
                               text={"اطلب ارسالية"}
                               fontSize={17}
                               onClickFn={() => bookDelivery(order)}
                               fontFamily={`${getCurrentLang()}-Bold`}
                               borderRadious={19}
-                            />
+                            /> */}
                           </View>
                         )}
                       </View>
