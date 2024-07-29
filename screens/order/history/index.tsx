@@ -38,7 +38,7 @@ const OrderHistoryScreen = ({ route }) => {
       }, 15 * 1000);
       const interval = setInterval(() => {
         getOrders();
-      }, 60 * 1000);
+      }, 30 * 1000);
       return () => clearInterval(interval);
   }, []);
 
