@@ -1118,6 +1118,7 @@ const CartScreen = ({ route }) => {
                                     borderRadius: 20,
                                   }}
                                   source={mealsImages[product.data.img]}
+                                  resizeMode="contain"
                                 />
                               </View>
                               <View

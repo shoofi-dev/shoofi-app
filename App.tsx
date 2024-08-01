@@ -525,9 +525,6 @@ const App = () => {
                 setIsExtraLoadFinished(true);
               }, 2400);
             });
-            const imageAssets3 = await cacheImages2(
-              menuStore.categoriesImages["1"]
-            );
           } else {
             const data = await AsyncStorage.getItem("@storage_terms_accepted");
             userDetailsStore.setIsAcceptedTerms(JSON.parse(data));

@@ -153,7 +153,7 @@ const interpolateRotatingX = rotateAnimation.interpolate({
       productImgUrl ? 
       <Animated.Image 
       source={mealsImages[productImgUrl]}
-
+resizeMode="contain"
      style={[isSendToCart && animatedStyle,
         isSendToCart && animatedHeightStyle,
         isSendToCart && animatedWidthStyle,

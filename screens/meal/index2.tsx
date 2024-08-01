@@ -658,6 +658,7 @@ const MealScreen = ({ route }) => {
             height: 150,
             borderRadius: 100,
           }}
+          resizeMode="contain"
         />
       </View>
       <ScrollView ref={scrollRef} style={{ height: "100%" }}>

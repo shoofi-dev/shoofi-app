@@ -830,6 +830,7 @@ const OrdersListScreen = ({ route }) => {
                     <Image
                       style={{ width: "100%", height: "100%" }}
                       source={mealsImages[meal.img]}
+                      resizeMode="contain"
                     />
                   </TouchableOpacity>
                 </View>

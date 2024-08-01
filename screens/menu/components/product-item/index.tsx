@@ -152,6 +152,7 @@ const ProductItem = ({
             shadowRadius: 6,
             elevation: 0,
             borderWidth: 0,
+            alignItems:'center', justifyContent:'center'
           }}
         >
           {/* <CustomFastImage
@@ -169,8 +170,8 @@ const ProductItem = ({
           /> */}
           <Image
             source={mealsImages[item.img]}
-            style={{ height: "100%", width: "100%", marginTop: 15 }}
-            resizeMode="cover"
+            style={{ height: "100%", width: "100%",alignSelf:'center', marginTop:40}}
+            resizeMode="contain"
           />
 
           {/* <ImageBackground

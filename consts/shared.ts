@@ -14,7 +14,7 @@ export const ORDER_TYPE = {
 
 export const bcoindId = 3027;
 
-export const cdnUrl = 'https://creme-caramel-images.fra1.cdn.digitaloceanspaces.com/';
+export const cdnUrl = 'https://xxx/';
 
 export const devicesType = {
   tablet: 2
@@ -25,11 +25,14 @@ export const pizzaId = '657da8cb418e0056e070a006';
 export const mealsImages = {
   "cola-zero": require("../assets/drinks/cola-zero.png"),
   "cola": require("../assets/drinks/cola.png"),
+  "orange": require("../assets/drinks/orange.png"),
+  "anb": require("../assets/drinks/anb.png"),
+  "soda": require("../assets/drinks/soda.png"),
+  "fresh-lemon": require("../assets/drinks/fresh-lemon.png"),
+  "fresh-tot": require("../assets/drinks/fresh-tot.png"),
   "water": require("../assets/drinks/water.png"),
-  "neste": require("../assets/drinks/neste.png"),
   "fanta": require("../assets/drinks/fanta.png"),
   "sprite": require("../assets/drinks/sprite.png"),
-  "sprite-zero": require("../assets/drinks/sprite-zero.png"),
   "pizza": require("../assets/categories/pizza-meal4.png"),
   "shrab-anb": require("../assets/drinks/shrab-anb.png"),
   "shrab-lmon": require("../assets/drinks/shrab-lmon.png"),
