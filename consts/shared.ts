@@ -20,6 +20,8 @@ export const devicesType = {
   tablet: 2
 }
 
+export const pizzaId = '657da8cb418e0056e070a006';
+
 export const mealsImages = {
   "cola-zero": require("../assets/drinks/cola-zero.png"),
   "cola": require("../assets/drinks/cola.png"),

@@ -21,7 +21,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
       />
       {orderItems.map((order, index) => {
         return (
-          <View style={{}}>
+          <View style={{marginTop:10}}>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >

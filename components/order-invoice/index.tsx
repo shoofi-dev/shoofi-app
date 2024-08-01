@@ -10,7 +10,7 @@ import i18n from "../../translations/i18n";
 import InvoiceOrderItems from "./invoice-order-items";
 import { PAYMENT_METHODS, SHIPPING_METHODS } from "../../consts/shared";
 import { StoreContext } from "../../stores";
-// import SvgQRCode from 'react-native-qrcode-svg';
+import getPizzaCount from "../../helpers/get-pizza-count";
 
 const OrderInvoiceCMP = ({ invoiceOrder }) => {
 
@@ -181,6 +181,27 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
             </View>
           </View> */}
         </View>
+
+        <View style={{ borderWidth: 5, marginTop: 15, padding: 10 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <View>
+              <Text style={{ fontSize: 45, textAlign: "center" }}>
+                {i18n.t("pizza-count")}
+              </Text>
+            </View>
+            <View style={{}}>
+              <Text style={{ fontSize: 45, textAlign: "center" }}>
+                {getPizzaCount(invoiceOrder?.order?.items)}
+              </Text>
+            </View>
+          </View>
+          </View>
 
         <View
           style={{

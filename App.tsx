@@ -63,6 +63,7 @@ import { ROLES, cdnUrl } from "./consts/shared";
 import _useAppCurrentState from "./hooks/use-app-current-state";
 import OrderInvoiceCMP from "./components/order-invoice";
 import { axiosInstance } from "./utils/http-interceptor";
+import getPizzaCount from "./helpers/get-pizza-count";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -242,15 +243,10 @@ const App = () => {
     }
   };
 
-  const getPizzaCount = (order) =>{
-    const items = order?.order?.items?.filter((item)=> item.nameHE == 'פיצה');
-    return items;
-  }
-
   const getInvoiceSP = async (queue) => {
     const SPs = [];
     for (let i = 0; i < queue.length; i++) {
-      const pizzaCount = getPizzaCount(queue[i])?.length;
+      const pizzaCount = getPizzaCount(queue[i]);
       const invoiceRefName = invoicesRef.current[queue[i].orderId + "name"];
       const resultName = await captureRef(invoiceRefName, {
         result: "data-uri",
