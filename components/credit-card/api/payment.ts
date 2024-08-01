@@ -63,25 +63,25 @@ const chargeCreditCard = ({ token, totalPrice, orderId, id, email, cvv, phone,us
         HolderID: id?.toString(),
         CVV: cvv,
         PhoneNumber: phone,
-        "ZCreditInvoiceReceipt": {
-            "Type": "0",
-            "RecepientName": `${userName} - ${phone}`,
-            "RecepientCompanyID": "",
-            "Address": "",
-            "City": "",
-            "ZipCode": "",
-            "PhoneNum": phone,
-            "FaxNum": "",
-            "TaxRate": "17",
-            "Comment": "",
-            "ReceipientEmail": storeDataStore.storeData.email,
-            "EmailDocumentToReceipient": true,
-            "ReturnDocumentInResponse": "",
-            "Items": itemsList
-        }
+        // "ZCreditInvoiceReceipt": {
+        //     "Type": "0",
+        //     "RecepientName": `${userName} - ${phone}`,
+        //     "RecepientCompanyID": "",
+        //     "Address": "",
+        //     "City": "",
+        //     "ZipCode": "",
+        //     "PhoneNum": phone,
+        //     "FaxNum": "",
+        //     "TaxRate": "17",
+        //     "Comment": "",
+        //     "ReceipientEmail": storeDataStore.storeData.email,
+        //     "EmailDocumentToReceipient": true,
+        //     "ReturnDocumentInResponse": "",
+        //     "Items": itemsList
+        // }
     };
     // if (email) {
-        body.CustomerEmail = 'creme.caramel.app@gmail.com';
+        body.CustomerEmail = 'pizza.gmel.app@gmail.com';
     //}
     return axios
         .post(

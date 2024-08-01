@@ -701,7 +701,7 @@ const OrdersListScreen = ({ route }) => {
                 <View>
                   <View style={{}}>
                     <Button
-                      text={"החזר תשלום"}
+                      text={"ارجع المبلغ"}
                       fontSize={17}
                       onClickFn={() => refundPayment(order)}
                       textColor={themeStyle.WHITE_COLOR}
