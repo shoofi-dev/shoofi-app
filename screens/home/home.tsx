@@ -508,7 +508,7 @@ const HomeScreen = ({ navigation }) => {
                   }}
                 >
                   <Button
-                    text={isAnimationDone && t("new-order")}
+                    text={t("new-order")}
                     fontSize={24}
                     onClickFn={() => onOrderTypeSelect(ORDER_TYPE.now)}
                     // isLoading={isLoading}

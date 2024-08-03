@@ -31,7 +31,6 @@ export async function registerForPushNotificationsAsync() {
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
             lightColor: '#FF231F7C',
-            sound: 'buffalosound.wav',
         });
     }
 
@@ -42,10 +41,10 @@ export async function registerForPushNotificationsAsync() {
             const { status } = await Notifications.requestPermissionsAsync();
             finalStatus = status;
         }
-        if (finalStatus !== 'granted') {
-            // alert('Failed to get push token for push notification!');
-            return;
-        }
+        // if (finalStatus !== 'granted') {
+        //     // alert('Failed to get push token for push notification!');
+        //     return;
+        // }
         token = (await Notifications.getExpoPushTokenAsync({projectId:'5ba01fc0-6005-4e0a-b5b1-4e16e5aecc76'})).data;
     } else {
        // alert('Must use physical device for Push Notifications');

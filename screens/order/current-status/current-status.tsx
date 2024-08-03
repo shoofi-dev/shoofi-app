@@ -69,13 +69,19 @@ const getColorByStatus = (order) => {
           style={{ width: 95, alignSelf: "center", marginTop:0 }}
         />
 
-        <View style={{ alignItems: "center", position:'relative',left:2 }}>
-          <View style={[styles.statusCircle,{backgroundColor: getColorByStatus(order) }]}></View>
+        {readyStatuses.indexOf(order.status) == -1 && <View style={{ alignItems: "center", position:'relative',left:2 }}>
+          <View style={[styles.statusCircle,{backgroundColor: readyStatuses.indexOf(order.status) > -1 && order.isViewd ? themeStyle.SUCCESS_COLOR: 'transparent' }]}></View>
           <View style={{position:'absolute', width:200, bottom:-25}}>
-          {readyStatuses.indexOf(order.status) > -1 && <Text style={{ fontSize: 18, alignSelf:'center' }}>{t('ready')}</Text>}
-            {canceledStatuses.indexOf(order.status) > -1 && <Text style={{ fontSize: 18, alignSelf:'center' }}>{t('canceled')}</Text>}
+          <Text style={{ fontSize: 18, alignSelf:'center' }}>{t('ready')}</Text>
           </View>
-        </View>
+        </View>}
+
+        {canceledStatuses.indexOf(order.status) > -1 && <View style={{ alignItems: "center", position:'relative',left:2 }}>
+          <View style={[styles.statusCircle,{backgroundColor: canceledStatuses.indexOf(order.status) > -1 && order.isViewd ? themeStyle.ERROR_COLOR: 'transparent' }]}></View>
+          <View style={{position:'absolute', width:200, bottom:-25}}>
+             <Text style={{ fontSize: 18, alignSelf:'center' }}>{t('canceled')}</Text>
+          </View>
+        </View>}
       </View>
     );
   };

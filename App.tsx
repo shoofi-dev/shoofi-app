@@ -497,19 +497,19 @@ const App = () => {
 
       Promise.all([fetchMenu, fetchStoreDataStore, fetchTranslations]).then(
         async (responses) => {
-          const tempHomeSlides = storeDataStore.storeData.home_sliders.map(
-            (slide) => {
-              return `${cdnUrl}${slide}`;
-            }
-          );
+          // const tempHomeSlides = storeDataStore.storeData.home_sliders.map(
+          //   (slide) => {
+          //     return `${cdnUrl}${slide}`;
+          //   }
+          // );
           
-          const isShouldUpdateVersion = await storeDataStore.isUpdateAppVersion();
-          if(isShouldUpdateVersion){
-             setIsOpenUpdateVersionDialog(true);
-            return;
-          }
+          // const isShouldUpdateVersion = await storeDataStore.isUpdateAppVersion();
+          // if(isShouldUpdateVersion){
+          //    setIsOpenUpdateVersionDialog(true);
+          //   return;
+          // }
 
-          const imageAssets = await cacheImages(tempHomeSlides);
+          // const imageAssets = await cacheImages(tempHomeSlides);
           if (authStore.isLoggedIn()) {
             const fetchUserDetails = userDetailsStore.getUserDetails();
             //const fetchOrders = ordersStore.getOrders(userDetailsStore.isAdmin());
