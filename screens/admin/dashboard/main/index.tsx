@@ -45,6 +45,12 @@ const DashboardScreen = () => {
           role: undefined,
         },
         {
+          title: "book-delivery",
+          icon: "delivery-active",
+          key: "book-delivery",
+          role: undefined,
+        },
+        {
           title: "new-order",
           icon: "shopping-bag-plus",
           key: "new-order",
@@ -132,6 +138,9 @@ const DashboardScreen = () => {
       case "orders":
         onGoToOrdersList();
         break;
+      case "book-delivery":
+        onGoToBookDelivery();
+        break;
       case "calander":
         onGoToCalander();
         break;
@@ -195,6 +204,9 @@ const DashboardScreen = () => {
   };
   const onGoToCalander = () => {
     navigation.navigate("admin-calander");
+  };
+  const onGoToBookDelivery = () => {
+    navigation.navigate("book-delivery");
   };
 
   const renderItems = () => {

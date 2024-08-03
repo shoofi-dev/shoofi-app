@@ -16,23 +16,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toBase64 } from "../../helpers/convert-base64";
 import Text from "../../components/controls/Text";
 import { LinearGradient } from "expo-linear-gradient";
-import { ROLES } from "../../consts/shared";
+import { arabicNumbers, reg_arNumbers, ROLES } from "../../consts/shared";
 import { ScrollView } from "react-native-gesture-handler";
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 
-const reg_arNumbers = /^[\u0660-\u0669]{10}$/;
-const arabicNumbers = [
-  /٠/g,
-  /١/g,
-  /٢/g,
-  /٣/g,
-  /٤/g,
-  /٥/g,
-  /٦/g,
-  /٧/g,
-  /٨/g,
-  /٩/g,
-];
+
 
 const LoginScreen = () => {
   const { t } = useTranslation();

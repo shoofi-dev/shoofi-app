@@ -217,6 +217,25 @@ class OrdersStore {
     this.bookDeliveryServer(true, order._id)
   }
 
+  bookCustomDeliveryServer = async (deliveryData:any) => {
+    const api =  `${ORDER_API.CONTROLLER}/${ORDER_API.CREATE_ADMIN_ORDERS_BOOK_CUSTOM_DELIVERY_API}`
+    const body = {
+      deliveryData
+    };
+    return axiosInstance
+      .post(
+        api,
+        body
+      )
+      .then(function (response: any) {
+        // const res = JSON.parse(fromBase64(response.data));
+        return response;
+      });
+  }
+  bookCustomDelivery= async (deliveryData:any) => {
+    return this.bookCustomDeliveryServer(deliveryData)
+  }
+
   updateOrderToPrevStatus = async (order:any) => {
     switch(order.status){
       case "2":

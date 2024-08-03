@@ -25,6 +25,7 @@ import {
   ROLES,
   SHIPPING_METHODS,
   cdnUrl,
+  deliveryTime,
   mealsImages,
 } from "../../../../../consts/shared";
 import BackButton from "../../../../../components/back-button";
@@ -48,40 +49,7 @@ export const inProgressStatuses = ["1"];
 export const deliveryStatuses = ["3"];
 export const readyStatuses = ["2"];
 export const canceledStatuses = ["4", "5"];
-const deliveryTime = [
-  {
-    label: 10,
-    value: 10,
-  },
-  {
-    label: 15,
-    value: 15,
-  },
-  {
-    label: 20,
-    value: 20,
-  },
-  {
-    label: 25,
-    value: 25,
-  },
-  {
-    label: 30,
-    value: 30,
-  },
-  {
-    label: 35,
-    value: 35,
-  },
-  {
-    label: 40,
-    value: 40,
-  },
-  {
-    label: 45,
-    value: 45,
-  },
-];
+
 const NewOrdersListScreen = ({ route }) => {
   // const from_date = today.startOf('week');
   // const to_date = today.endOf('week');

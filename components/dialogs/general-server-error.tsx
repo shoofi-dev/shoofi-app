@@ -80,6 +80,7 @@ export default function GeneralServerErrorDialog() {
                 text={i18n.t("retry")}
                 textColor={themeStyle.WHITE_COLOR}
                 fontSize={16}
+                bgColor={themeStyle.SUCCESS_COLOR}
               />
             </View>
           </Dialog.Actions>

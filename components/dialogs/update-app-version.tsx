@@ -79,6 +79,8 @@ export default function UpdateVersionDialog({
                 text={i18n.t("update-app")}
                 textColor={themeStyle.WHITE_COLOR}
                 fontSize={16}
+                bgColor={themeStyle.SUCCESS_COLOR}
+
               />
             </View>
           </Dialog.Actions>

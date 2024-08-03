@@ -69,6 +69,7 @@ export const ORDER_API = {
     UPDATE_ADMIN_ORDERS_API: "update",
     UPDATE_ADMIN_ORDERS_VIEWD_API: "update/viewd",
     UPDATE_ADMIN_ORDERS_BOOK_DELIVERY_API: "book-delivery",
+    CREATE_ADMIN_ORDERS_BOOK_CUSTOM_DELIVERY_API: "book-custom-delivery",
     UPDATE_ALL_ADMIN_ORDERS_API: "update/all",
     PRINTED_ADMIN_ORDERS_API: "printed",
     GET_ORDERS_API : "getorders",

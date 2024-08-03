@@ -75,6 +75,8 @@ export default function InvalidAddressdDialog({
                 text={t("ok")}
                 textColor={themeStyle.WHITE_COLOR}
                 fontSize={16}
+                bgColor={themeStyle.SUCCESS_COLOR}
+
               />
             </View>
           </Dialog.Actions>

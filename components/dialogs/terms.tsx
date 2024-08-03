@@ -62,6 +62,8 @@ export default function TremsDialog({ isOpen, handleAnswer }: TProps) {
                 onClickFn={hideDialog}
                 text={t('מאשר')}
                 fontSize={20}
+                bgColor={themeStyle.SUCCESS_COLOR}
+
               />
             </View>
           </Dialog.Actions>

@@ -75,6 +75,8 @@ export default function InterntConnectionDialog({
                 text={i18n.t("ok")}
                 textColor={themeStyle.WHITE_COLOR}
                 fontSize={16}
+                bgColor={themeStyle.SUCCESS_COLOR}
+
               />
             </View>
           </Dialog.Actions>

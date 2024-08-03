@@ -73,6 +73,8 @@ export default function StoreIsCloseDialog({ isOpen, handleAnswer, text }: TProp
                 text={t("ok")}
                 textColor={themeStyle.WHITE_COLOR}
                 fontSize={16}
+                bgColor={themeStyle.SUCCESS_COLOR}
+
               />
             </View>
           </Dialog.Actions>
