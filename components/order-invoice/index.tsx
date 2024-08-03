@@ -24,8 +24,8 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
   };
 
   const getOrderTotalPrice = (order) => {
-    const oOrder = order.order;
-    if(oOrder.payment_method == PAYMENT_METHODS.cash && oOrder.receipt_method == SHIPPING_METHODS.shipping){
+    const oOrder = order?.order;
+    if(oOrder.receipt_method == SHIPPING_METHODS.shipping){
       return order?.total - storeDataStore?.storeData?.delivery_price;
     }
     return order?.total;

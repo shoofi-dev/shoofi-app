@@ -12,6 +12,7 @@ import InputText from "../../controls/input";
 import refundTransaction from "../../credit-card/api/refund";
 import { StoreContext } from "../../../stores";
 import moment from "moment";
+import { SHIPPING_METHODS } from "../../../consts/shared";
 
 type TProps = {
   isOpen: boolean;
@@ -26,7 +27,7 @@ export default function ConfirmRefundActiondDialog({
 }: TProps) {
   const { t } = useTranslation();
 
-  const {ordersStore} = useContext(StoreContext);
+  const { ordersStore, storeDataStore } = useContext(StoreContext);
 
   const [visible, setVisible] = useState(isOpen);
   const [tmpRefundPrice, setTmpRefundPrice] = useState(null);
@@ -41,7 +42,10 @@ export default function ConfirmRefundActiondDialog({
   }, [isOpen]);
 
   useEffect(() => {
-    setTmpRefundPrice(order?.total);
+    if (!order) {
+      return;
+    }
+    setTmpRefundPrice(getOrderTotalPrice(order));
     setIsValidPrice(true);
     setErrMessage(null);
     setCodeNumber(null);
@@ -60,35 +64,50 @@ export default function ConfirmRefundActiondDialog({
 
   const onCodeChange = (value) => {
     setCodeNumber(value);
-    if(value == 1234){
+    if (value == 1234) {
       setIsValidCode(true);
-    }else{
+    } else {
       setIsValidCode(false);
     }
-  }
+  };
 
   const hideDialog = (value: boolean) => {
-    if(value){
+    if (value) {
       setIsloading(true);
       refundTransaction({
         TransactionIdToCancelOrRefund:
-        order?.ccPaymentRefData?.data?.ReferenceNumber,
+          order?.ccPaymentRefData?.data?.ReferenceNumber,
         TransactionSum: Number(tmpRefundPrice),
       }).then(async (res) => {
-        await ordersStore.addOrderRefund({...res.data, created: moment().format(), amount: Number(tmpRefundPrice)}, order);
+        await ordersStore.addOrderRefund(
+          {
+            ...res.data,
+            created: moment().format(),
+            amount: Number(tmpRefundPrice),
+          },
+          order
+        );
         if (res.data.HasError) {
           setErrMessage(res.data.ReturnMessage);
-  
         } else {
           handleAnswer && handleAnswer(value);
           setVisible(false);
         }
         setIsloading(false);
       });
-    }else{
+    } else {
       handleAnswer && handleAnswer(value);
       setVisible(false);
     }
+  };
+
+  const getOrderTotalPrice = (order) => {
+    const oOrder = order?.order;
+    console.log("oOrder", oOrder);
+    if (oOrder.receipt_method == SHIPPING_METHODS.shipping) {
+      return order?.total - storeDataStore?.storeData?.delivery_price;
+    }
+    return order?.total;
   };
 
   return (
@@ -128,7 +147,6 @@ export default function ConfirmRefundActiondDialog({
                   fontSize: 30,
                   textAlign: "center",
                   fontWeight: "bold",
-           
                 }}
               >
                 {t("בצוע החזר כספי")}
@@ -151,7 +169,7 @@ export default function ConfirmRefundActiondDialog({
                     textAlign: "center",
                     fontWeight: "bold",
                     color: themeStyle.ERROR_COLOR,
-                    marginTop:5
+                    marginTop: 5,
                   }}
                 >
                   {t("הסכום חייב להיות קטן מהמחיר הכולל וגדול מאפס")}
@@ -164,16 +182,16 @@ export default function ConfirmRefundActiondDialog({
                     textAlign: "center",
                     fontWeight: "bold",
                     color: themeStyle.ERROR_COLOR,
-                    marginTop:5
+                    marginTop: 5,
                   }}
                   type="number"
                 >
                   {errMessage}
                 </Text>
               )}
-                        <View style={{ width: 200, alignSelf: "center",marginTop:20 }}>
+              <View style={{ width: 200, alignSelf: "center", marginTop: 20 }}>
                 <InputText
-                  label={t("הכנס קוד")}
+                  label={t("ادخل الكود")}
                   onChange={onCodeChange}
                   value={codeNumber?.toString()}
                   keyboardType="numeric"
@@ -196,6 +214,7 @@ export default function ConfirmRefundActiondDialog({
                     textColor={themeStyle.WHITE_COLOR}
                     fontSize={18}
                     disabled={!isValidPrice || !isValidCode}
+                    bgColor={themeStyle.SUCCESS_COLOR}
                   />
                 </View>
                 <View style={{ flexBasis: "49%" }}>

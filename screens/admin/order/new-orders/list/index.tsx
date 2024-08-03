@@ -163,6 +163,9 @@ const NewOrdersListScreen = ({ route }) => {
       readyMinutes
     );
     setIsloading(false);
+    if(ordersList?.length === 1){
+      navigation.navigate("admin-orders");  
+    }
   };
 
   const saveOrderNote = (order) => {
@@ -350,15 +353,15 @@ const NewOrdersListScreen = ({ route }) => {
           </View>
         </View>
         <View style={{ flexDirection: "row" }}>
-          <Text style={styles.dateRawText}> שם לקוח:</Text>
-          <Text style={styles.dateRawText}>
+        <Text style={styles.dateRawText}> اسم الزبون:</Text>
+        <Text style={styles.dateRawText}>
             {" "}
             {order?.customerDetails?.name}
           </Text>
         </View>
         <View style={{ flexDirection: "row" }}>
-          <Text style={styles.dateRawText}> מספר טלפון:</Text>
-          <Text style={styles.dateRawText}>
+        <Text style={styles.dateRawText}> رقم الهاتف:</Text>
+        <Text style={styles.dateRawText}>
             {order?.customerDetails?.phone}{" "}
           </Text>
         </View>
@@ -1041,7 +1044,7 @@ const NewOrdersListScreen = ({ route }) => {
                 height: "100%",
               }}
             >
-              <Text style={{ fontSize: 20 }}>{t("لا يوجد طلبيات")}</Text>
+              <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>{t("لا يوجد طلبيات")}</Text>
             </View>
           ) : (
             // !isLoading && (

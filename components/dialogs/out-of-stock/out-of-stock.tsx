@@ -87,6 +87,7 @@ import DialogBG from "../dialog-bg";
                     text={t(positiveText)}
                     textColor={themeStyle.WHITE_COLOR}
                     fontSize={20}
+                    bgColor={themeStyle.SUCCESS_COLOR}
                   />
                 </View>
                 <View style={{ flexBasis: "49%" }}>

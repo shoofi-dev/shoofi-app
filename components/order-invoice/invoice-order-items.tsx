@@ -13,19 +13,19 @@ import isShowSize from "../../helpers/is-show-size";
 const InvoiceOrderItems = ({ orderItems }) => {
   return (
     <View style={{ width: "100%", paddingBottom: 15 }}>
-      <DashedLine
+      {/* <DashedLine
         dashLength={10}
         dashThickness={5}
-        dashGap={10}
+        dashGap={0}
         style={{ marginBottom: 15 }}
-      />
+      /> */}
       {orderItems.map((order, index) => {
         return (
-          <View style={{marginTop:10}}>
+          <View style={{marginTop:20, borderWidth:5}}>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <View style={{ flexBasis: "50%" }}>
+              <View style={{ flexBasis: "30%" }}>
                 <Text style={{ fontSize: 65, textAlign: "left" }}>
                   {`X${order.qty} ` +
                     `${
@@ -33,6 +33,23 @@ const InvoiceOrderItems = ({ orderItems }) => {
                     }`}
                 </Text>
               </View>
+              {isShowSize(order.item_id) &&   <View
+                style={{
+                  flexBasis: "50%",
+                  flexDirection:'row'
+                }}
+              >
+                <View>
+                  <Text style={{ fontSize: 65, textAlign: "left" }}>
+                    {i18n.t("size")}:
+                  </Text>
+                </View>
+                <View>
+                  <Text style={{ fontSize: 65, textAlign: "left" }}>
+                    {i18n.t(order.size)}
+                  </Text>
+                </View>
+              </View>}
               <View>
                 <Text style={{ fontSize: 65, textAlign: "left" }}>
                   {`₪${order.price * order.qty}`}
@@ -40,7 +57,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
               </View>
             </View>
 
-            <View style={{ marginHorizontal: 8 }}>
+            <View style={{ marginHorizontal: 8, marginTop:10 }}>
               <View
                 style={{
                   flexDirection: "row",
@@ -171,7 +188,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                       )}
                 </View>
               </View>
-              {isShowSize(order.item_id) &&   <View
+              {/* {isShowSize(order.item_id) &&   <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
@@ -188,7 +205,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                     {i18n.t(order.size)}
                   </Text>
                 </View>
-              </View>}
+              </View>} */}
               {order.toName && (
                 <View
                   style={{
@@ -284,23 +301,23 @@ const InvoiceOrderItems = ({ orderItems }) => {
                 </View>
               )}
             </View>
-            {orderItems?.length - 1 != index && (
+            {/* {orderItems?.length - 1 != index && (
               <DashedLine
                 dashLength={10}
                 dashThickness={5}
                 dashGap={10}
                 style={{ marginVertical: 15 }}
               />
-            )}
+            )} */}
           </View>
         );
       })}
-      <DashedLine
+      {/* <DashedLine
         dashLength={10}
         dashThickness={5}
-        dashGap={10}
+        dashGap={0}
         style={{ marginTop: 15 }}
-      />
+      /> */}
     </View>
   );
 };

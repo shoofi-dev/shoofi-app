@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import Button from "../../components/controls/button/button";
 import themeStyle from "../../styles/theme.style";
 import { useTranslation } from "react-i18next";
-import { SHIPPING_METHODS } from "../../consts/shared";
+import { PAYMENT_METHODS, SHIPPING_METHODS } from "../../consts/shared";
 import { ExclamationMarkLottie } from "../lottie/exclamation-mark-animation";
 import DialogBG from "./dialog-bg";
 import moment from "moment";
@@ -20,6 +20,7 @@ type TProps = {
   type: string;
   selectedOrderDate: any;
   handleAnswer?: any;
+  paymentMthod: string;
 };
 
 export default function DeliveryMethodDialog({
@@ -27,6 +28,7 @@ export default function DeliveryMethodDialog({
   handleAnswer,
   type,
   selectedOrderDate,
+  paymentMthod
 }: TProps) {
   const { t } = useTranslation();
 
@@ -56,20 +58,52 @@ export default function DeliveryMethodDialog({
               <ExclamationMarkLottie />
             </Dialog.Title>
             <Dialog.Content>
-              <Text
+         
+                {type === SHIPPING_METHODS.shipping && (
+                  <View style={{}}>
+                {paymentMthod === PAYMENT_METHODS.creditCard && <View style={{marginBottom:10}}>
+                  <Text style={{
+                  fontSize: 16,
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  color:themeStyle.ERROR_COLOR
+                }}>
+                  
+                  *{t("delivery-method-note")}
+                  </Text>
+                  </View>}
+                  <View>
+                  <Text style={{
+                  fontSize: 16,
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}>
+                  
+                  {t("approve-delivery-method")}
+                  </Text>
+                  </View>
+              
+                </View>)}
+
+
+          
+                {type === SHIPPING_METHODS.takAway && <Text
                 style={{
                   fontSize: 16,
                   textAlign: "center",
                   fontWeight: "bold",
                 }}
               >
-                {type === SHIPPING_METHODS.shipping &&
-                  t("approve-delivery-method")}
-                {type === SHIPPING_METHODS.takAway &&
-                  t("approve-takeaway-method")}
-                {type === SHIPPING_METHODS.table && t("approve-table-method")}
-              </Text>
-              {/* <View style={{ marginTop: 10 }}>
+                 {t("approve-takeaway-method")}</Text>}
+
+                {type === SHIPPING_METHODS.table && <Text
+                style={{
+                  fontSize: 16,
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >{t("approve-table-method")}</Text>}
+                              {/* <View style={{ marginTop: 10 }}>
                 <Text
                   style={{
                     fontSize: 20,
@@ -124,6 +158,7 @@ export default function DeliveryMethodDialog({
                     text={t("agree")}
                     textColor={themeStyle.WHITE_COLOR}
                     fontSize={16}
+                    bgColor={themeStyle.SUCCESS_COLOR}
                   />
                 </View>
                 <View style={{ flexBasis: "49%" }}>

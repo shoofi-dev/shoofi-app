@@ -444,7 +444,7 @@ const CartScreen = ({ route }) => {
       const chargeData: TPaymentProps = {
         token: ccData.ccToken,
         id: ccData.id,
-        totalPrice: totalPrice,
+        totalPrice: itemsPrice,
         orderId: orderData.response.orderId,
         email: ccData?.email,
         cvv: ccData?.cvv,
@@ -2087,6 +2087,8 @@ const CartScreen = ({ route }) => {
 
             {paymentMthod === PAYMENT_METHODS.creditCard &&
               ccData?.last4Digits && (
+                <View>
+              
                 <View
                   style={{
                     flexDirection: "row",
@@ -2158,6 +2160,16 @@ const CartScreen = ({ route }) => {
                     />
                   </View>
                 </View>
+                {shippingMethod === SHIPPING_METHODS.shipping && <View style={{marginTop:10, paddingHorizontal:20, flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                <Text    style={{
+                        fontSize: 18,
+                        color: themeStyle.WHITE_COLOR,
+                        textAlign: "left",
+                      }} >*{t("delivery-method-note")}.</Text>
+                  </View>}
+       
+
+</View>
               )}
           </View>
           {/* {true && (
@@ -2379,6 +2391,7 @@ const CartScreen = ({ route }) => {
         isOpen={isOpenShippingMethodDialog}
         type={shippingMethod}
         selectedOrderDate={selectedOrderDate}
+        paymentMthod={paymentMthod}
       />
       <LocationIsDisabledDialog
         handleAnswer={handleLocationIsDiabledAnswer}

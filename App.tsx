@@ -244,9 +244,9 @@ const App = () => {
   };
 
   const getInvoiceSP = async (queue) => {
-    const SPs = [];
+    const SPs = [];      
     for (let i = 0; i < queue.length; i++) {
-      const pizzaCount = getPizzaCount(queue[i]);
+      const pizzaCount = getPizzaCount(queue[i]?.order?.items);
       const invoiceRefName = invoicesRef.current[queue[i].orderId + "name"];
       const resultName = await captureRef(invoiceRefName, {
         result: "data-uri",
@@ -254,7 +254,7 @@ const App = () => {
         quality: 1,
         format: "png",
       });
-      for (let i = 0; i < pizzaCount; i++) {
+       for (let i = 0; i < pizzaCount; i++) {
         SPs.push(resultName);
       }
 

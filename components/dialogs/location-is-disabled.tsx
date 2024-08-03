@@ -75,6 +75,7 @@ export default function LocationIsDisabledDialog({
                   text={t("settings")}
                   textColor={themeStyle.WHITE_COLOR}
                   fontSize={16}
+                  bgColor={themeStyle.SUCCESS_COLOR}
                 />
               </View>
               <View style={{ flexBasis: "49%" }}>

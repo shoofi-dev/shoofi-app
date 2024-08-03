@@ -176,6 +176,7 @@ export default function EditTranslationsDialog({
                   text={t("save")}
                   textColor={themeStyle.WHITE_COLOR}
                   fontSize={16}
+                  bgColor={themeStyle.SUCCESS_COLOR}
                 />
               </View>
               <View style={{ flexBasis: "49%" }}>

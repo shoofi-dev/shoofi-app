@@ -254,6 +254,7 @@ const CalanderContainerUser = ({ handleSelectedDate, userDate, minDeltaMinutes }
               textColor={themeStyle.WHITE_COLOR}
               fontSize={16}
               disabled={!selectedHour || isDisabledHour}
+              bgColor={themeStyle.SUCCESS_COLOR}
             />
           </View>
           <View style={{ flexBasis: "49%" }}>

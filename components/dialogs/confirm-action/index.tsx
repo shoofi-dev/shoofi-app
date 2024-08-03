@@ -85,6 +85,7 @@ export default function ConfirmActiondDialog({
                   text={t(positiveText)}
                   textColor={themeStyle.WHITE_COLOR}
                   fontSize={18}
+                  bgColor={themeStyle.SUCCESS_COLOR}
                 />
               </View>
               {negativeText && (
