@@ -59,7 +59,7 @@ import {
   schedulePushNotification,
 } from "./utils/notification";
 import { testPrint } from "./helpers/printer/print";
-import { ROLES, cdnUrl } from "./consts/shared";
+import { ROLES, SHIPPING_METHODS, cdnUrl } from "./consts/shared";
 import _useAppCurrentState from "./hooks/use-app-current-state";
 import OrderInvoiceCMP from "./components/order-invoice";
 import { axiosInstance } from "./utils/http-interceptor";
@@ -172,7 +172,7 @@ const App = () => {
           orderId: 1,
         },
       });
-    }, 60 * 1000);
+    }, 10000);
     storeDataStore.setRepeatNotificationInterval(tmpRepeatNotificationInterval);
   };
 
@@ -190,16 +190,15 @@ const App = () => {
     if (userDetailsStore.isAdmin() || authStore.isLoggedIn()) {
       registerForPushNotificationsAsync().then((token) => {
         axiosInstance
-        .post(
-          `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.UPDATE_CUSTOMER_NOTIFIVATION_TOKEN}`,
-          {notificationToken: token}
-        )
-        .then(function (response) {
-          return setExpoPushToken(token)
-        })
-        .catch(function (error) {});
-      }
-      );
+          .post(
+            `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.UPDATE_CUSTOMER_NOTIFIVATION_TOKEN}`,
+            { notificationToken: token }
+          )
+          .then(function (response) {
+            return setExpoPushToken(token);
+          })
+          .catch(function (error) {});
+      });
 
       notificationListener.current =
         Notifications.addNotificationReceivedListener((notification) => {
@@ -244,7 +243,7 @@ const App = () => {
   };
 
   const getInvoiceSP = async (queue) => {
-    const SPs = [];      
+    const SPs = [];
     for (let i = 0; i < queue.length; i++) {
       const pizzaCount = getPizzaCount(queue[i]?.order?.items);
       const invoiceRefName = invoicesRef.current[queue[i].orderId + "name"];
@@ -254,7 +253,7 @@ const App = () => {
         quality: 1,
         format: "png",
       });
-       for (let i = 0; i < pizzaCount; i++) {
+      for (let i = 0; i < pizzaCount; i++) {
         SPs.push(resultName);
       }
 
@@ -342,7 +341,10 @@ const App = () => {
   }, [lastJsonMessage, userDetailsStore.userDetails]);
 
   const initPrinter = async () => {
-    console.log("storeDataStore.storeData.printerTarget",storeDataStore.storeData.printerTarget)
+    console.log(
+      "storeDataStore.storeData.printerTarget",
+      storeDataStore.storeData.printerTarget
+    );
     await EscPosPrinter.init({
       target: storeDataStore.storeData.printerTarget,
       seriesName: getPrinterSeriesByName("EPOS2_TM_M50"),
@@ -479,7 +481,9 @@ const App = () => {
   };
 
   const handleUpdateVersionDialogAnswer = () => {
-    Linking.openURL("https://sari-apps-lcibm.ondigitalocean.app/api/store/download-app");
+    Linking.openURL(
+      "https://sari-apps-lcibm.ondigitalocean.app/api/store/download-app"
+    );
   };
 
   async function prepare() {
@@ -502,7 +506,7 @@ const App = () => {
           //     return `${cdnUrl}${slide}`;
           //   }
           // );
-          
+
           // const isShouldUpdateVersion = await storeDataStore.isUpdateAppVersion();
           // if(isShouldUpdateVersion){
           //    setIsOpenUpdateVersionDialog(true);
@@ -605,6 +609,14 @@ const App = () => {
     return <View></View>;
   };
 
+  const getOrderTotalPrice = (order) => {
+    const oOrder = order?.order;
+    if (oOrder.receipt_method == SHIPPING_METHODS.shipping) {
+      return order?.total - storeDataStore?.storeData?.delivery_price;
+    }
+    return order?.total;
+  };
+
   const loadingPage = () => {
     const version = Constants.nativeAppVersion;
     return (
@@ -619,25 +631,25 @@ const App = () => {
           resizeMode="stretch"
           style={{ height: "100%", backgroundColor: "white" }}
         >
-          <View             style={{
-   
+          <View
+            style={{
               position: "absolute",
               alignSelf: "center",
               top: "70%",
-              zIndex:10
-            }}>
-          <LottieView
-            source={appLoaderAnimation}
-            autoPlay
-            style={{
-              width: 120,
-              height: 120,
-       
+              zIndex: 10,
             }}
-            loop={true}
-          />
+          >
+            <LottieView
+              source={appLoaderAnimation}
+              autoPlay
+              style={{
+                width: 120,
+                height: 120,
+              }}
+              loop={true}
+            />
           </View>
- 
+
           <View
             style={{
               bottom: 50,
@@ -770,17 +782,48 @@ const App = () => {
                     style={{
                       width: "100%",
 
-                      flexDirection: "row",
                       zIndex: 10,
                       alignItems: "center",
-                      borderWidth: 5,
                       justifyContent: "center",
                       borderColor: "black",
                     }}
                   >
-                    <Text style={{ alignSelf: "center", fontSize: 100 }}>
-                      {invoice.customerDetails.name}
-                    </Text>
+                    <View
+                      style={{
+                        marginBottom:15,
+                        borderWidth: 5,
+                        width: "100%",
+
+                      }}
+                    >
+                      <Text style={{ alignSelf: "center", fontSize: 100 }}>
+                        {invoice.customerDetails.name}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        borderWidth: 5,
+                        marginBottom:15,
+                        width: "100%",
+
+                      }}
+                    >
+                      <Text style={{ alignSelf: "center", fontSize: 100 }}>
+                        السعر: {getOrderTotalPrice(invoice)}
+                      </Text>
+                    </View>
+
+                    <View
+                      style={{
+                        borderWidth: 5,
+                        width: "100%",
+
+                      }}
+                    >
+                      <Text style={{ alignSelf: "center", fontSize: 100 }}>
+                        {i18n.t(invoice.order.receipt_method)}
+                      </Text>
+                    </View>
                   </View>
                   <View style={{ height: 20 }}></View>
                   <View

@@ -2,7 +2,7 @@
   "expo": {
     "name": "פיצה ג׳מיל",
     "slug": "Pizza Gmel",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon5.png",
     "userInterfaceStyle": "light",
@@ -31,12 +31,12 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "1.0.1",
+      "buildNumber": "1.0.2",
       "supportsTablet": true,
       "bundleIdentifier": "com.sariq.pizza.gmel"
     },
     "android": {
-      "versionCode": 7,
+      "versionCode": 8,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-gmel.png",
         "backgroundColor": "#FFFFFF"
@@ -59,6 +59,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "runtimeVersion": "1.0.1"
+    "runtimeVersion": "1.0.2"
   }
 }

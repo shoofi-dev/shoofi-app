@@ -133,7 +133,7 @@ const StoreManagementScreen = ({ route }) => {
 
       <ScrollView style={{ marginTop: 25, width: "100%", marginBottom: 40 }}>
         <View style={{ width: "100%" }}>
-          <View style={{ marginTop: 30 }}>
+          {/* <View style={{ marginTop: 30 }}>
             <View
               style={{
                 flexDirection: "row",
@@ -150,6 +150,27 @@ const StoreManagementScreen = ({ route }) => {
                 <CheckBox
                   onChange={(e) => handleInputChange(e, "alwaysOpen")}
                   value={storeData.alwaysOpen}
+                />
+              </View>
+            </View>
+          </View> */}
+                   <View style={{ marginTop: 30 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                marginBottom: 20,
+                alignItems: "center",
+              }}
+            >
+              <View style={{}}>
+                <Text style={{ textAlign: "left", fontSize: 24, color: themeStyle.WHITE_COLOR }}>
+                  * {t("المحل مفتوح")} :
+                </Text>
+              </View>
+              <View style={{ marginLeft: 20 }}>
+                <CheckBox
+                  onChange={(e) => handleInputChange(!e, "isStoreClose")}
+                  value={!storeData.isStoreClose}
                 />
               </View>
             </View>
