@@ -65,7 +65,15 @@ export default function BookDeliveryScreen() {
         '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
         '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9'
     };
-    return numStr.split('').map(char => arabicIndicToArabic[char]).join('');
+
+    // Check if the string contains any Arabic-Indic numerals
+    const containsArabicIndic = /[٠-٩]/.test(numStr);
+    
+    if (containsArabicIndic) {
+        return numStr.split('').map(char => arabicIndicToArabic[char] || char).join('');
+    } else {
+        return numStr; // Return the original string if no Arabic-Indic numerals are found
+    }
 }
 
   const isFormValid = () => {
