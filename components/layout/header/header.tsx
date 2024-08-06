@@ -459,7 +459,7 @@ const Header = () => {
           style={{
             ...styles.headerItem,
             flexDirection: "row",
-            left: 150,
+            left: 250,
             position: "absolute",
             top: 15,
           }}
