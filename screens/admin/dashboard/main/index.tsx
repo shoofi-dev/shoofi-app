@@ -45,11 +45,17 @@ const DashboardScreen = () => {
           role: undefined,
         },
         {
-          title: "book-delivery",
+          title: "قائمة الارساليات",
           icon: "delivery-active",
-          key: "book-delivery",
+          key: "delivery-list",
           role: undefined,
         },
+        // {
+        //   title: "book-delivery",
+        //   icon: "delivery-active",
+        //   key: "book-delivery",
+        //   role: undefined,
+        // },
         {
           title: "new-order",
           icon: "shopping-bag-plus",
@@ -140,6 +146,8 @@ const DashboardScreen = () => {
         break;
       case "book-delivery":
         onGoToBookDelivery();
+      case "delivery-list":
+        onGoToDeliveryList();
         break;
       case "calander":
         onGoToCalander();
@@ -207,6 +215,9 @@ const DashboardScreen = () => {
   };
   const onGoToBookDelivery = () => {
     navigation.navigate("book-delivery");
+  };
+  const onGoToDeliveryList = () => {
+    navigation.navigate("custom-delivery-list");
   };
 
   const renderItems = () => {

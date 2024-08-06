@@ -236,6 +236,43 @@ class OrdersStore {
     return this.bookCustomDeliveryServer(deliveryData)
   }
 
+  updateCustomDeliveryServer = async (deliveryData:any) => {
+    const api =  `${ORDER_API.CONTROLLER}/${ORDER_API.UPDATE_ADMIN_ORDERS_BOOK_CUSTOM_DELIVERY_API}`
+    const body = {
+      deliveryData
+    };
+    return axiosInstance
+      .post(
+        api,
+        body
+      )
+      .then(function (response: any) {
+        // const res = JSON.parse(fromBase64(response.data));
+        return response;
+      });
+  }
+  updateCustomDelivery= async (deliveryData:any) => {
+    return this.updateCustomDeliveryServer(deliveryData)
+  }
+
+  getCustomDeliveryListServer = async (isAll) => {
+    const body = {
+      isAll
+    }
+    const api =  `${ORDER_API.CONTROLLER}/${ORDER_API.GET_ADMIN_ORDERS_BOOK_CUSTOM_DELIVERY_API}`
+    return axiosInstance
+      .post(
+        api,
+        body
+      )
+      .then(function (response: any) {
+        return response;
+      });
+  }
+  getCustomDeliveryList= async (isAll) => {
+    return this.getCustomDeliveryListServer(isAll);
+  }
+
   updateOrderToPrevStatus = async (order:any) => {
     switch(order.status){
       case "2":

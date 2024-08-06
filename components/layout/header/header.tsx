@@ -250,6 +250,10 @@ const Header = () => {
     [ReadyState.UNINSTANTIATED]: themeStyle.ERROR_COLOR,
   }[readyState];
 
+  const onGoToNewDelivery = () =>{
+    navigation.navigate("book-delivery");
+  }
+
   return (
     <View style={{ ...styles.container }}>
       {/* <LinearGradient
@@ -449,6 +453,24 @@ const Header = () => {
             onClickFn={handleMenuClick}
             /> */}
         </View>
+      )}
+           {userDetailsStore.isAdmin() && (
+        <TouchableOpacity
+          style={{
+            ...styles.headerItem,
+            flexDirection: "row",
+            left: 150,
+            position: "absolute",
+            top: 15,
+          }}
+          onPress={onGoToNewDelivery}
+        >
+          <Icon
+            icon="delivery-active"
+            size={40}
+            style={{ color: themeStyle.TEXT_PRIMARY_COLOR }}
+          />
+        </TouchableOpacity>
       )}
      <Animated.View style={[styles.headerItem, animatedStyle]}>
         <TouchableOpacity

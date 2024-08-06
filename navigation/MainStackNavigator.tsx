@@ -29,6 +29,7 @@ import StockManagementScreen from "../screens/admin/stock-management";
 import StoreManagementScreen from "../screens/admin/store-managment";
 import ProductOrderScreen from "../screens/admin/products-order";
 import BookDeliveryScreen from "../screens/book-delivery";
+import CustomDeliveryListScreen from "../screens/book-delivery/list";
 
 const Stack = createStackNavigator();
 const TransitionScreen = {
@@ -111,6 +112,7 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="store-management" component={StoreManagementScreen} />
       <Stack.Screen name="products-order" component={ProductOrderScreen} />
       <Stack.Screen name="book-delivery" component={BookDeliveryScreen} />
+      <Stack.Screen name="custom-delivery-list" component={CustomDeliveryListScreen} />
       <Stack.Screen 
         name="order-submitted"
         component={OrderSubmittedScreen}

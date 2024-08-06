@@ -5,8 +5,8 @@ export const BASE_URL = "https://sari-apps-lcibm.ondigitalocean.app/api";
 export const WS_URL = "wss://sari-apps-lcibm.ondigitalocean.app";
 
 //DEV
-//  export const BASE_URL = "http://10.0.0.12:1111/api";
-//  export const WS_URL = "ws://10.0.0.12:1111";
+//  export const BASE_URL = "http://10.0.0.11:1111/api";
+//  export const WS_URL = "ws://10.0.0.11:1111";
 
 // export const BASE_URL = "http://192.168.0.104:1111/api";
 // export const WS_URL = "ws://192.168.0.104:1111";
@@ -70,6 +70,8 @@ export const ORDER_API = {
     UPDATE_ADMIN_ORDERS_VIEWD_API: "update/viewd",
     UPDATE_ADMIN_ORDERS_BOOK_DELIVERY_API: "book-delivery",
     CREATE_ADMIN_ORDERS_BOOK_CUSTOM_DELIVERY_API: "book-custom-delivery",
+    UPDATE_ADMIN_ORDERS_BOOK_CUSTOM_DELIVERY_API: "update-custom-delivery",
+    GET_ADMIN_ORDERS_BOOK_CUSTOM_DELIVERY_API: "get-custom-delivery",
     UPDATE_ALL_ADMIN_ORDERS_API: "update/all",
     PRINTED_ADMIN_ORDERS_API: "printed",
     GET_ORDERS_API : "getorders",

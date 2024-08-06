@@ -166,13 +166,19 @@ const App = () => {
   }[readyState];
 
   const repeatNotification = () => {
+      schedulePushNotification({
+        data: {
+          orderId: 1,
+        },
+      });
+      
     const tmpRepeatNotificationInterval = setInterval(() => {
       schedulePushNotification({
         data: {
           orderId: 1,
         },
       });
-    }, 10000);
+    }, 30000);
     storeDataStore.setRepeatNotificationInterval(tmpRepeatNotificationInterval);
   };
 
