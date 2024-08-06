@@ -44,19 +44,39 @@ export default function CustomDeliveryListScreen() {
     navigation.navigate("admin-orders");
   };
 
-  const updateDeliveryStatus = async (delivery) => {
-    await ordersStore.updateCustomDelivery(delivery);
+  const handleDeliverySent = async (delivery) => {
+    const updateData = {
+      ...delivery,
+      isDelivered: true
+    }
+    await ordersStore.updateCustomDelivery(updateData);
     getDeliveryList();
   };
+
+  const handleDeliveryCanceled = async (delivery) => {
+    const updateData = {
+      ...delivery,
+      isCanceled: true
+    }
+    await ordersStore.updateCustomDelivery(updateData);
+    getDeliveryList();
+  };
+  const getBGColorByStatus = (item) =>{
+    if(item.isDelivered && !item.isCanceled){
+      return themeStyle.SUCCESS_COLOR;
+    }
+    if(item.isCanceled){
+      return themeStyle.ERROR_COLOR;
+    }
+    return "transparent";
+  }
 
   const renderItem = ({ item }) => (
     <View
       style={[
         styles.row,
         {
-          backgroundColor: item.isDelivered
-            ? themeStyle.SUCCESS_COLOR
-            : "transparent",
+          backgroundColor: getBGColorByStatus(item)
         },
       ]}
     >
@@ -86,7 +106,7 @@ export default function CustomDeliveryListScreen() {
             text={t("approve")}
             fontSize={20}
             onClickFn={() => {
-              updateDeliveryStatus(item);
+              handleDeliverySent(item);
             }}
             textColor={themeStyle.WHITE_COLOR}
             fontFamily={`${getCurrentLang()}-Bold`}
@@ -94,6 +114,20 @@ export default function CustomDeliveryListScreen() {
             bgColor={themeStyle.SUCCESS_COLOR}
           />
         )}
+           {item.isDelivered && !item.isCanceled && (
+          <Button
+            text={t("cancel")}
+            fontSize={20}
+            onClickFn={() => {
+              handleDeliveryCanceled(item);
+            }}
+            textColor={themeStyle.WHITE_COLOR}
+            fontFamily={`${getCurrentLang()}-Bold`}
+            borderRadious={19}
+            bgColor={themeStyle.ERROR_COLOR}
+          />
+        )}
+        {item.isCanceled && <Text style={{fontSize: 20, alignSelf: 'center', color:themeStyle.WHITE_COLOR}}>الغيت</Text>}
       </View>
     </View>
   );

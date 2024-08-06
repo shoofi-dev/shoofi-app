@@ -236,10 +236,10 @@ class OrdersStore {
     return this.bookCustomDeliveryServer(deliveryData)
   }
 
-  updateCustomDeliveryServer = async (deliveryData:any) => {
+  updateCustomDeliveryServer = async (updateData:any) => {
     const api =  `${ORDER_API.CONTROLLER}/${ORDER_API.UPDATE_ADMIN_ORDERS_BOOK_CUSTOM_DELIVERY_API}`
     const body = {
-      deliveryData
+      updateData
     };
     return axiosInstance
       .post(
@@ -251,8 +251,8 @@ class OrdersStore {
         return response;
       });
   }
-  updateCustomDelivery= async (deliveryData:any) => {
-    return this.updateCustomDeliveryServer(deliveryData)
+  updateCustomDelivery= async (updateData:any) => {
+    return this.updateCustomDeliveryServer(updateData)
   }
 
   getCustomDeliveryListServer = async (isAll) => {
