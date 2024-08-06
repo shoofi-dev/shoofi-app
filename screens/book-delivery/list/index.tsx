@@ -61,16 +61,16 @@ export default function CustomDeliveryListScreen() {
       ]}
     >
       <View style={styles.cellData}>
-        <Text style={styles.cellData}>{item.fullName}</Text>
+        <Text style={styles.cellData}>{item?.fullName}</Text>
       </View>
       <View style={styles.cellData}>
-        <Text style={styles.cellData}>{item.phone}</Text>
+        <Text style={styles.cellData}>{item?.phone}</Text>
       </View>
       <View style={styles.cellData}>
-        <Text style={styles.cellData}>{item.price}</Text>
+        <Text style={styles.cellData}>{item?.price}</Text>
       </View>
       <View style={styles.cellData}>
-        <Text style={styles.cellData}>{item.deliveryDeltaMinutes}</Text>
+        <Text style={styles.cellData}>{item?.deliveryDeltaMinutes}</Text>
       </View>
 
       <View

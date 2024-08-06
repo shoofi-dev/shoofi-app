@@ -29,10 +29,7 @@ export default function BookDeliveryScreen() {
     for (var i = 0; i <  deliveryData["phone"].length; i++) {
       convertedPhoneValue = convertedPhoneValue.replace(arabicNumbers[i], i);
     }
-    let convertedPriceValue =  deliveryData["price"];
-    for (var i = 0; i <  deliveryData["price"].length; i++) {
-      convertedPriceValue = convertedPriceValue.replace(arabicNumbers[i], i);
-    }
+    let convertedPriceValue =  convertFromArabicIndic(deliveryData["price"]);
     await ordersStore.bookCustomDelivery({...deliveryData, phone: convertedPhoneValue, price: convertedPriceValue });
     navigation.navigate("admin-orders");
   };
@@ -57,19 +54,27 @@ export default function BookDeliveryScreen() {
   };
 
   const isValidPrice = () => {
-    let convertedValue =  deliveryData["price"];
-    for (var i = 0; i <  deliveryData["price"].length; i++) {
-      convertedValue = convertedValue.replace(arabicNumbers[i], i);
-    }
+    let convertedValue =  convertFromArabicIndic(deliveryData["price"]);
     return (
      convertedValue > 0
     );
   }
 
+  function convertFromArabicIndic(numStr) {
+    const arabicIndicToArabic = {
+        '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
+        '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9'
+    };
+    return numStr.split('').map(char => arabicIndicToArabic[char]).join('');
+}
+
   const isFormValid = () => {
-    if(deliveryData["fullName"] && deliveryData["phone"] && deliveryData["price"] && deliveryData["time"]){
-      if(isValidName() && isValidNumber() && isValidPrice())
-      return true;
+    if(deliveryData["phone"] && deliveryData["price"] && deliveryData["time"]){
+      if(isValidNumber() && isValidPrice()){
+        return true;
+      }else{
+        return false;
+      }
     }else{
       return false;
     }
