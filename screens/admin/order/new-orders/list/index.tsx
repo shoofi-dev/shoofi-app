@@ -1050,7 +1050,7 @@ const NewOrdersListScreen = ({ route }) => {
                         end={{ x: 1, y: 1 }}
                         style={[styles.background, { borderRadius: 20 }]}
                       /> */}
-                      <View
+                      {/* <View
                         style={{
                           backgroundColor: themeStyle.WHITE_COLOR,
                           height: 40,
@@ -1083,7 +1083,7 @@ const NewOrdersListScreen = ({ route }) => {
                             }}
                           />
                         </TouchableOpacity>
-                      </View>
+                      </View> */}
 
                       {renderOrderDateRaw(order)}
                       {renderOrderItems(order)}
@@ -1201,7 +1201,7 @@ const NewOrdersListScreen = ({ route }) => {
                       </View>
                       {renderOrderTotalRaw(order)}
                       {/*{renderStatus(order)} */}
-
+{/* 
                       <View
                         style={{
                           maxWidth: "50%",
@@ -1217,7 +1217,71 @@ const NewOrdersListScreen = ({ route }) => {
                           }}
                           placeholder={"ستكون جاهزة خلال"}
                         />
-                      </View>
+                      </View> */}
+
+                      <View
+          style={{
+            marginVertical: 40,
+            // alignItems: "flex-start",
+            width: "100%",
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 22 }}>ستكون جاهزة خلال</Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: 30,
+              // alignItems: "flex-start",
+              flexDirection: "row",
+              width: "100%",
+
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {deliveryTime.map((time) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => updateSelectedTime(order._id, time.value)}
+                  style={{
+                    width: 60,
+                    borderWidth: 1,
+                    height: 60,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 20,
+                    borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                    backgroundColor:
+                    selectedTime[order._id] === time.label
+                        ? themeStyle.SUCCESS_COLOR
+                        : "transparent",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 22,
+                      color:
+                      selectedTime[order._id] == time.value
+                          ? themeStyle.WHITE_COLOR
+                          : themeStyle.TEXT_PRIMARY_COLOR,
+                    }}
+                  >
+                    {time.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
 
                       <View
                         style={{
@@ -1228,7 +1292,7 @@ const NewOrdersListScreen = ({ route }) => {
                       >
                         <Button
                           text={t("approve")}
-                          fontSize={17}
+                          fontSize={22}
                           onClickFn={() =>
                             updateViewedOrder(order, selectedTime[order._id])
                           }

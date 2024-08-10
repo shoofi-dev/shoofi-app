@@ -787,7 +787,6 @@ const App = () => {
                     }
                     style={{
                       width: "100%",
-
                       zIndex: 10,
                       alignItems: "center",
                       justifyContent: "center",
@@ -815,7 +814,7 @@ const App = () => {
                       }}
                     >
                       <Text style={{ alignSelf: "center", fontSize: 100 }}>
-                        السعر: {getOrderTotalPrice(invoice)}
+                        السعر: {getOrderTotalPrice(invoice)}{invoice.order?.payment_method && invoice?.ccPaymentRefData?.data?.StatusCode == 1 &&  ' - א'}
                       </Text>
                     </View>
 
@@ -839,7 +838,7 @@ const App = () => {
 
                       flexDirection: "row",
                       zIndex: 10,
-                      height: "100%",
+                      height: "80%",
                     }}
                   >
                     <OrderInvoiceCMP invoiceOrder={invoice} />

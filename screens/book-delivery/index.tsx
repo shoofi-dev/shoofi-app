@@ -13,7 +13,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { getCurrentLang } from "../../translations/i18n";
 import InputText from "../../components/controls/input";
 import DropDown from "../../components/controls/dropdown";
-import { arabicNumbers, deliveryTime, reg_arNumbers } from "../../consts/shared";
+import {
+  arabicNumbers,
+  deliveryTime,
+  reg_arNumbers,
+} from "../../consts/shared";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function BookDeliveryScreen() {
   const { t } = useTranslation();
@@ -23,14 +28,17 @@ export default function BookDeliveryScreen() {
 
   const [deliveryData, setDeliveryData] = useState({});
 
-
   const bookDelivery = async () => {
-    let convertedPhoneValue =  deliveryData["phone"];
-    for (var i = 0; i <  deliveryData["phone"].length; i++) {
+    let convertedPhoneValue = deliveryData["phone"];
+    for (var i = 0; i < deliveryData["phone"].length; i++) {
       convertedPhoneValue = convertedPhoneValue.replace(arabicNumbers[i], i);
     }
-    let convertedPriceValue =  convertFromArabicIndic(deliveryData["price"]);
-    await ordersStore.bookCustomDelivery({...deliveryData, phone: convertedPhoneValue, price: convertedPriceValue });
+    let convertedPriceValue = convertFromArabicIndic(deliveryData["price"]);
+    await ordersStore.bookCustomDelivery({
+      ...deliveryData,
+      phone: convertedPhoneValue,
+      price: convertedPriceValue,
+    });
     navigation.navigate("admin-orders");
   };
 
@@ -54,39 +62,52 @@ export default function BookDeliveryScreen() {
   };
 
   const isValidPrice = () => {
-    let convertedValue =  convertFromArabicIndic(deliveryData["price"]);
-    return (
-     convertedValue > 0
-    );
-  }
+    let convertedValue = convertFromArabicIndic(deliveryData["price"]);
+    return convertedValue > 0;
+  };
 
   function convertFromArabicIndic(numStr) {
     const arabicIndicToArabic = {
-        '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
-        '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9'
+      "٠": "0",
+      "١": "1",
+      "٢": "2",
+      "٣": "3",
+      "٤": "4",
+      "٥": "5",
+      "٦": "6",
+      "٧": "7",
+      "٨": "8",
+      "٩": "9",
     };
 
     // Check if the string contains any Arabic-Indic numerals
     const containsArabicIndic = /[٠-٩]/.test(numStr);
-    
-    if (containsArabicIndic) {
-        return numStr.split('').map(char => arabicIndicToArabic[char] || char).join('');
-    } else {
-        return numStr; // Return the original string if no Arabic-Indic numerals are found
-    }
-}
 
-  const isFormValid = () => {
-    if(deliveryData["phone"] && deliveryData["price"] && deliveryData["time"]){
-      if(isValidNumber() && isValidPrice()){
-        return true;
-      }else{
-        return false;
-      }
-    }else{
-      return false;
+    if (containsArabicIndic) {
+      return numStr
+        .split("")
+        .map((char) => arabicIndicToArabic[char] || char)
+        .join("");
+    } else {
+      return numStr; // Return the original string if no Arabic-Indic numerals are found
     }
   }
+
+  const isFormValid = () => {
+    if (
+      deliveryData["phone"] &&
+      deliveryData["price"] &&
+      deliveryData["time"]
+    ) {
+      if (isValidNumber() && isValidPrice()) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  };
 
   return (
     <View style={{ height: "100%" }}>
@@ -131,7 +152,10 @@ export default function BookDeliveryScreen() {
             alignItems: "flex-start",
           }}
         >
-          <InputText onChange={(e) => handleInputChange(e, "fullName")} label={t("name")} />
+          <InputText
+            onChange={(e) => handleInputChange(e, "fullName")}
+            label={t("name")}
+          />
         </View>
         <View
           style={{
@@ -161,20 +185,69 @@ export default function BookDeliveryScreen() {
             label={t("price")}
           />
         </View>
+
         <View
           style={{
-            width: "90%",
-            paddingHorizontal: 50,
             marginTop: 50,
-            alignItems: "flex-start",
+            // alignItems: "flex-start",
+            width: "100%",
           }}
         >
-          <DropDown
-            itemsList={deliveryTime}
-            defaultValue={null}
-            onChangeFn={(e) => handleInputChange(e, "time")}
-            placeholder={"ستكون جاهزة خلال"}
-          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 22 }}>ستكون جاهزة خلال</Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: 30,
+              // alignItems: "flex-start",
+              flexDirection: "row",
+              width: "100%",
+
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {deliveryTime.map((time) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => handleInputChange(time.value, "time")}
+                  style={{
+                    width: 60,
+                    borderWidth: 1,
+                    height: 60,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 20,
+                    borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                    backgroundColor:
+                      deliveryData.time === time.value
+                        ? themeStyle.SUCCESS_COLOR
+                        : "transparent",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 22,
+                      color:
+                        deliveryData.time === time.value
+                          ? themeStyle.WHITE_COLOR
+                          : themeStyle.TEXT_PRIMARY_COLOR,
+                    }}
+                  >
+                    {time.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
         <View
           style={{

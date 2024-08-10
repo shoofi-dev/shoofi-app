@@ -18,6 +18,7 @@ import {
   reg_arNumbers,
 } from "../../../consts/shared";
 import CheckBox from "../../../components/controls/checkbox";
+import moment from "moment";
 
 export default function CustomDeliveryListScreen() {
   const { t } = useTranslation();
@@ -89,8 +90,8 @@ export default function CustomDeliveryListScreen() {
       <View style={styles.cellData}>
         <Text style={styles.cellData}>{item?.price}</Text>
       </View>
-      <View style={styles.cellData}>
-        <Text style={styles.cellData}>{item?.deliveryDeltaMinutes}</Text>
+      <View style={[styles.cellData,{flex:1.2}]}>
+        <Text style={styles.cellData}>{item?.deliveryDeltaMinutes} - {moment(item?.created).format('DD/MM')}</Text>
       </View>
 
       <View
@@ -101,7 +102,7 @@ export default function CustomDeliveryListScreen() {
           alignSelf: "center",
         }}
       >
-        {!item.isDelivered && (
+        {!item.isDelivered && !item.isCanceled && (
           <Button
             text={t("approve")}
             fontSize={20}
@@ -114,7 +115,17 @@ export default function CustomDeliveryListScreen() {
             bgColor={themeStyle.SUCCESS_COLOR}
           />
         )}
-           {item.isDelivered && !item.isCanceled && (
+
+      </View>
+      <View
+        style={{
+          flex: 1,
+          padding: 8,
+          borderColor: "#ccc",
+          alignSelf: "center",
+        }}
+      >
+           { !item.isDelivered && !item.isCanceled && (
           <Button
             text={t("cancel")}
             fontSize={20}
@@ -152,8 +163,36 @@ export default function CustomDeliveryListScreen() {
             <Text style={styles.cell}>الاسم</Text>
             <Text style={styles.cell}>رقم الهاتف</Text>
             <Text style={styles.cell}>السعر</Text>
-            <Text style={styles.cell}>الوقت</Text>
-            <Text style={styles.cell}> </Text>
+            <Text  style={{
+                  flex: 1.2,
+                  textAlign: "center",
+                  padding: 8,
+                  borderWidth: 1,
+                  borderColor: "#ccc",
+                  fontSize: 22,
+                  color: themeStyle.WHITE_COLOR,
+                  alignSelf: "center",
+            }}>الوقت</Text>
+            <Text style={{
+                  flex: 1,
+                  textAlign: "center",
+                  padding: 8,
+                  borderWidth: 0,
+                  borderColor: "#ccc",
+                  fontSize: 22,
+                  color: themeStyle.WHITE_COLOR,
+                  alignSelf: "center",
+            }}> </Text>
+            <Text  style={{
+                  flex: 1,
+                  textAlign: "center",
+                  padding: 8,
+                  borderWidth: 0,
+                  borderColor: "#ccc",
+                  fontSize: 22,
+                  color: themeStyle.WHITE_COLOR,
+                  alignSelf: "center",
+            }}> </Text>
           </View>
           <FlatList
             data={deliveryList}
