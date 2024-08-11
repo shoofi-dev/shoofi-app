@@ -8,6 +8,7 @@ export const inProgressStatuses = ["SENT", "APPROVED"];
 
 class OrdersStore {
   ordersList = null;
+  statusCount = null;
   totalOrderItems = 0;
   orderType = null;
   editOrderData = null;
@@ -41,6 +42,7 @@ class OrdersStore {
       runInAction(() => {
         if(!isNotPrinted){
           this.ordersList = tmpOrders?.ordersList;
+          this.statusCount = tmpOrders?.statusCount;
           this.totalOrderItems = res.totalItems;
         }
       });

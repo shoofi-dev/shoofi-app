@@ -286,6 +286,20 @@ const OrdersListScreen = ({ route }) => {
     }
   }, [ordersStore.ordersList]);
 
+  const getStatusCountById = (id) => {
+    if (ordersStore.statusCount) {
+      const result = ordersStore.statusCount.find((item) => {
+        return item._id == id;
+      });
+      console.log(result)
+      if(result){
+        return result?.count || 0;
+      }
+      return 0;
+    }
+  };
+
+
   useEffect(() => {
     // const orderdList = getUpdatedOrderList();
     // setOrdersList(orderdList);
@@ -403,14 +417,14 @@ const OrdersListScreen = ({ route }) => {
     //   setIsOpenConfirmActiondDialog(true);
     //   setActiveOrder(order);
     // } else {
-      setIsloading(true);
-      ordersStore.updateOrderStatus(order).then((res) => {
-        setOrdersList([]);
-        getOrders(1);
-        setPageNumber(1);
-        setActiveOrder(null);
-        setIsloading(false);
-      });
+    setIsloading(true);
+    ordersStore.updateOrderStatus(order).then((res) => {
+      setOrdersList([]);
+      getOrders(1);
+      setPageNumber(1);
+      setActiveOrder(null);
+      setIsloading(false);
+    });
     // }
   };
 
@@ -456,9 +470,7 @@ const OrdersListScreen = ({ route }) => {
 
   const getOrderTotalPrice = (order) => {
     const oOrder = order.order;
-    if (
-      oOrder.receipt_method == SHIPPING_METHODS.shipping
-    ) {
+    if (oOrder.receipt_method == SHIPPING_METHODS.shipping) {
       return order?.total - storeDataStore?.storeData?.delivery_price;
     }
     return order?.total;
@@ -1370,7 +1382,7 @@ const OrdersListScreen = ({ route }) => {
               }}
               onPress={() => handleSelectDay(day)}
             >
-              {selectedDay?.dayId == day.dayId && (
+              {/* {selectedDay?.dayId == day.dayId && (
                 <View
                   style={{
                     position: "absolute",
@@ -1394,7 +1406,7 @@ const OrdersListScreen = ({ route }) => {
                     {ordersStore?.totalOrderItems}
                   </Text>
                 </View>
-              )}
+              )} */}
               <Text
                 style={{ fontSize: 20, fontFamily: `${getCurrentLang()}-Bold` }}
               >
@@ -1422,21 +1434,53 @@ const OrdersListScreen = ({ route }) => {
         }}
       >
         <View style={{ width: 150 }}>
-          <Button
-            text={t("in-progress")}
-            fontSize={17}
-            onClickFn={() => handleSelectedStatus("1")}
-            bgColor={selectedStatus === "1" ? "" : themeStyle.WHITE_COLOR}
-            textColor={
-              selectedStatus === "1"
-                ? themeStyle.WHITE_COLOR
-                : themeStyle.TEXT_PRIMARY_COLOR
-            }
-            fontFamily={`${getCurrentLang()}-Bold`}
-            borderRadious={19}
-          />
+          <View>
+            <View
+              style={{
+                position: "absolute",
+                backgroundColor: themeStyle.SECONDARY_COLOR,
+                height: 30,
+                width: 30,
+                zIndex: 10,
+                top: -10,
+                borderRadius: 20,
+                alignItems:'center',
+                justifyContent:'center'
+              }}
+            >
+              <Text style={{fontSize: 20,}}>{getStatusCountById("1")}</Text>
+            </View>
+            <Button
+              text={t("in-progress")}
+              fontSize={17}
+              onClickFn={() => handleSelectedStatus("1")}
+              bgColor={selectedStatus === "1" ? "" : themeStyle.WHITE_COLOR}
+              textColor={
+                selectedStatus === "1"
+                  ? themeStyle.WHITE_COLOR
+                  : themeStyle.TEXT_PRIMARY_COLOR
+              }
+              fontFamily={`${getCurrentLang()}-Bold`}
+              borderRadious={19}
+            />
+          </View>
         </View>
         <View style={{ width: 150 }}>
+        <View
+              style={{
+                position: "absolute",
+                backgroundColor: themeStyle.SECONDARY_COLOR,
+                height: 30,
+                width: 30,
+                zIndex: 10,
+                top: -10,
+                borderRadius: 20,
+                alignItems:'center',
+                justifyContent:'center'
+              }}
+            >
+              <Text style={{fontSize: 20,}}>{getStatusCountById("3")}</Text>
+            </View>
           <Button
             text={t("ارسالية")}
             fontSize={17}
@@ -1452,6 +1496,21 @@ const OrdersListScreen = ({ route }) => {
           />
         </View>
         <View style={{ width: 150 }}>
+        <View
+              style={{
+                position: "absolute",
+                backgroundColor: themeStyle.SECONDARY_COLOR,
+                height: 30,
+                width: 30,
+                zIndex: 10,
+                top: -10,
+                borderRadius: 20,
+                alignItems:'center',
+                justifyContent:'center'
+              }}
+            >
+              <Text style={{fontSize: 20,}}>{getStatusCountById("2")}</Text>
+            </View>
           <Button
             text={t("ready")}
             fontSize={17}
@@ -1468,6 +1527,21 @@ const OrdersListScreen = ({ route }) => {
         </View>
 
         <View style={{ width: 150 }}>
+        <View
+              style={{
+                position: "absolute",
+                backgroundColor: themeStyle.SECONDARY_COLOR,
+                height: 30,
+                width: 30,
+                zIndex: 10,
+                top: -10,
+                borderRadius: 20,
+                alignItems:'center',
+                justifyContent:'center'
+              }}
+            >
+              <Text style={{fontSize: 20,}}>{getStatusCountById("4")}</Text>
+            </View>
           <Button
             text={t("canceled")}
             fontSize={17}
@@ -1494,7 +1568,9 @@ const OrdersListScreen = ({ route }) => {
                 height: "100%",
               }}
             >
-              <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>{t("لا يوجد طلبيات")}</Text>
+              <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>
+                {t("لا يوجد طلبيات")}
+              </Text>
             </View>
           ) : (
             // !isLoading && (
