@@ -2,7 +2,7 @@ import { View, StyleSheet, Keyboard } from "react-native";
 
 /* styles */
 import theme from "../../styles/theme.style";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Button from "../../components/controls/button/button";
 import themeStyle from "../../styles/theme.style";
 import { useNavigation } from "@react-navigation/native";
@@ -27,6 +27,12 @@ export default function BookDeliveryScreen() {
   const navigation = useNavigation();
 
   const [deliveryData, setDeliveryData] = useState({});
+
+
+  useEffect(()=>{
+    setDeliveryData({});
+    return () => setDeliveryData({});
+  },[])
 
   const bookDelivery = async () => {
     let convertedPhoneValue = deliveryData["phone"];

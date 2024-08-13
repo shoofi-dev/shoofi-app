@@ -259,7 +259,10 @@ const OrdersListScreen = ({ route }) => {
 
   useEffect(() => {
     getNext7Days();
-    //getOrders();
+    const interval = setInterval(() => {
+      getOrders(1);
+    }, 30 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const getUpdatedOrderList = () => {
@@ -291,7 +294,6 @@ const OrdersListScreen = ({ route }) => {
       const result = ordersStore.statusCount.find((item) => {
         return item._id == id;
       });
-      console.log(result)
       if(result){
         return result?.count || 0;
       }
