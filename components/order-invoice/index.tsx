@@ -234,12 +234,12 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
           }}
         >
           <View>
-            <Text style={{ fontSize: 45, textAlign: "left" }}>
+            <Text style={{ fontSize: 65, textAlign: "left" }}>
               {i18n.t("final-price")}
             </Text>
           </View>
           <View style={{}}>
-            <Text style={{ fontSize: 45, textAlign: "center" }}>
+            <Text style={{ fontSize: 65, textAlign: "center" }}>
               {`₪${getOrderTotalPrice(invoiceOrder)}`}
             </Text>
           </View>

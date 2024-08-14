@@ -27,6 +27,7 @@ export default function BookDeliveryScreen() {
   const navigation = useNavigation();
 
   const [deliveryData, setDeliveryData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
 
   useEffect(()=>{
@@ -35,6 +36,7 @@ export default function BookDeliveryScreen() {
   },[])
 
   const bookDelivery = async () => {
+    setIsLoading(true);
     let convertedPhoneValue = deliveryData["phone"];
     for (var i = 0; i < deliveryData["phone"].length; i++) {
       convertedPhoneValue = convertedPhoneValue.replace(arabicNumbers[i], i);
@@ -45,6 +47,7 @@ export default function BookDeliveryScreen() {
       phone: convertedPhoneValue,
       price: convertedPriceValue,
     });
+    setIsLoading(false);
     navigation.navigate("admin-orders");
   };
 
@@ -270,7 +273,8 @@ export default function BookDeliveryScreen() {
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
             bgColor={themeStyle.SUCCESS_COLOR}
-            disabled={!isFormValid()}
+            disabled={!isFormValid() || isLoading}
+            isLoading={isLoading}
           />
         </View>
         <View
@@ -287,6 +291,7 @@ export default function BookDeliveryScreen() {
             textColor={themeStyle.WHITE_COLOR}
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
+            disabled={isLoading}
           />
         </View>
       </View>

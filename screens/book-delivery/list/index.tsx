@@ -48,8 +48,8 @@ export default function CustomDeliveryListScreen() {
   const handleDeliverySent = async (delivery) => {
     const updateData = {
       ...delivery,
-      isDelivered: true
-    }
+      isDelivered: true,
+    };
     await ordersStore.updateCustomDelivery(updateData);
     getDeliveryList();
   };
@@ -57,41 +57,77 @@ export default function CustomDeliveryListScreen() {
   const handleDeliveryCanceled = async (delivery) => {
     const updateData = {
       ...delivery,
-      isCanceled: true
-    }
+      isCanceled: true,
+    };
     await ordersStore.updateCustomDelivery(updateData);
     getDeliveryList();
   };
-  const getBGColorByStatus = (item) =>{
-    if(item.isDelivered && !item.isCanceled){
+  const getBGColorByStatus = (item) => {
+    if (item.isDelivered && !item.isCanceled) {
       return themeStyle.SUCCESS_COLOR;
     }
-    if(item.isCanceled){
+    if (item.isCanceled) {
       return themeStyle.ERROR_COLOR;
     }
     return "transparent";
-  }
+  };
 
   const renderItem = ({ item }) => (
     <View
       style={[
         styles.row,
         {
-          backgroundColor: getBGColorByStatus(item)
+          backgroundColor: getBGColorByStatus(item),
         },
       ]}
     >
-      <View style={styles.cellData}>
-        <Text style={styles.cellData}>{item?.fullName}</Text>
+      <View style={{
+            flex: 1.4,
+            padding: 8,
+        
+            alignSelf: "center",
+            borderRightWidth: 1,
+            borderColor: "#ccc",
+      }}>
+        <Text style={{
+              flex: 1,
+              textAlign: "center",
+              padding: 8,
+          
+              fontSize: 20,
+              color: themeStyle.WHITE_COLOR,
+              alignSelf: "center",
+              borderRightWidth: 1,
+              borderColor: "#ccc",
+        }}>{item?.fullName}</Text>
       </View>
       <View style={styles.cellData}>
         <Text style={styles.cellData}>{item?.phone}</Text>
       </View>
-      <View style={styles.cellData}>
-        <Text style={styles.cellData}>{item?.price}</Text>
+      <View style={{
+            flex: 0.6,
+            padding: 8,
+        
+            alignSelf: "center",
+            borderRightWidth: 1,
+            borderColor: "#ccc",
+      }}>
+        <Text style={{
+              flex: 1,
+              textAlign: "center",
+              padding: 8,
+          
+              fontSize: 20,
+              color: themeStyle.WHITE_COLOR,
+              alignSelf: "center",
+              borderRightWidth: 1,
+              borderColor: "#ccc",
+        }}>{item?.price}</Text>
       </View>
-      <View style={[styles.cellData,{flex:1.2}]}>
-        <Text style={styles.cellData}>{item?.deliveryDeltaMinutes} - {moment(item?.created).format('DD/MM')}</Text>
+      <View style={[styles.cellData, { flex: 1.2 }]}>
+        <Text style={styles.cellData}>
+          {item?.deliveryDeltaMinutes} - {moment(item?.created).format("DD/MM")}
+        </Text>
       </View>
 
       <View
@@ -115,7 +151,6 @@ export default function CustomDeliveryListScreen() {
             bgColor={themeStyle.SUCCESS_COLOR}
           />
         )}
-
       </View>
       <View
         style={{
@@ -125,7 +160,7 @@ export default function CustomDeliveryListScreen() {
           alignSelf: "center",
         }}
       >
-           { !item.isDelivered && !item.isCanceled && (
+        {!item.isDelivered && !item.isCanceled && (
           <Button
             text={t("cancel")}
             fontSize={20}
@@ -138,21 +173,42 @@ export default function CustomDeliveryListScreen() {
             bgColor={themeStyle.ERROR_COLOR}
           />
         )}
-        {item.isCanceled && <Text style={{fontSize: 20, alignSelf: 'center', color:themeStyle.WHITE_COLOR}}>الغيت</Text>}
+        {item.isCanceled && (
+          <Text
+            style={{
+              fontSize: 20,
+              alignSelf: "center",
+              color: themeStyle.WHITE_COLOR,
+            }}
+          >
+            الغيت
+          </Text>
+        )}
       </View>
     </View>
   );
 
   return (
     <View style={{ height: "100%" }}>
-      <View style={{flexDirection:'row', alignItems:'center', marginTop:40, marginLeft:20}}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginTop: 40,
+          marginLeft: 20,
+        }}
+      >
         <View>
-            <Text style={{
-                color: themeStyle.WHITE_COLOR,
-                fontSize:20,
-                }}>اعرض كل الارساليات</Text>
+          <Text
+            style={{
+              color: themeStyle.WHITE_COLOR,
+              fontSize: 20,
+            }}
+          >
+            اعرض كل الارساليات
+          </Text>
         </View>
-        <View style={{marginLeft:20}}>
+        <View style={{ marginLeft: 20 }}>
           <CheckBox onChange={(e) => setIsAll(e)} value={isAll} />
         </View>
       </View>
@@ -160,39 +216,73 @@ export default function CustomDeliveryListScreen() {
       <View style={{ width: "100%", marginTop: 15 }}>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Text style={styles.cell}>الاسم</Text>
+            <Text
+              style={{
+                flex: 1.4,
+                textAlign: "center",
+                padding: 8,
+                borderWidth: 1,
+                borderColor: "#ccc",
+                fontSize: 22,
+                color: themeStyle.WHITE_COLOR,
+                alignSelf: "center",
+              }}
+            >
+              الاسم
+            </Text>
             <Text style={styles.cell}>رقم الهاتف</Text>
-            <Text style={styles.cell}>السعر</Text>
-            <Text  style={{
-                  flex: 1.2,
-                  textAlign: "center",
-                  padding: 8,
-                  borderWidth: 1,
-                  borderColor: "#ccc",
-                  fontSize: 22,
-                  color: themeStyle.WHITE_COLOR,
-                  alignSelf: "center",
-            }}>الوقت</Text>
-            <Text style={{
-                  flex: 1,
-                  textAlign: "center",
-                  padding: 8,
-                  borderWidth: 0,
-                  borderColor: "#ccc",
-                  fontSize: 22,
-                  color: themeStyle.WHITE_COLOR,
-                  alignSelf: "center",
-            }}> </Text>
-            <Text  style={{
-                  flex: 1,
-                  textAlign: "center",
-                  padding: 8,
-                  borderWidth: 0,
-                  borderColor: "#ccc",
-                  fontSize: 22,
-                  color: themeStyle.WHITE_COLOR,
-                  alignSelf: "center",
-            }}> </Text>
+            <Text               style={{
+                flex: 0.6,
+                textAlign: "center",
+                padding: 8,
+                borderWidth: 1,
+                borderColor: "#ccc",
+                fontSize: 22,
+                color: themeStyle.WHITE_COLOR,
+                alignSelf: "center",
+              }}>السعر</Text>
+            <Text
+              style={{
+                flex: 1.2,
+                textAlign: "center",
+                padding: 8,
+                borderWidth: 1,
+                borderColor: "#ccc",
+                fontSize: 22,
+                color: themeStyle.WHITE_COLOR,
+                alignSelf: "center",
+              }}
+            >
+              الوقت
+            </Text>
+            <Text
+              style={{
+                flex: 1,
+                textAlign: "center",
+                padding: 8,
+                borderWidth: 0,
+                borderColor: "#ccc",
+                fontSize: 22,
+                color: themeStyle.WHITE_COLOR,
+                alignSelf: "center",
+              }}
+            >
+              {" "}
+            </Text>
+            <Text
+              style={{
+                flex: 1,
+                textAlign: "center",
+                padding: 8,
+                borderWidth: 0,
+                borderColor: "#ccc",
+                fontSize: 22,
+                color: themeStyle.WHITE_COLOR,
+                alignSelf: "center",
+              }}
+            >
+              {" "}
+            </Text>
           </View>
           <FlatList
             data={deliveryList}
