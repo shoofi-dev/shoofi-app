@@ -13,7 +13,7 @@ const Text = ({ children, style,type }: TProps) => {
     style = { ...style, color: themeStyle.TEXT_PRIMARY_COLOR };
   }
   if (!style?.fontFamily ) {
-    style = { ...style, fontFamily: getCurrentLang() == 'ar' ? 'ar-SemiBold':  `he-SemiBold`, top:2 };
+    style = { ...style, fontFamily: getCurrentLang() == 'ar' ? 'ar-SemiBold':  `he-SemiBold`};
   }
   const customStyles = { ...style };
 

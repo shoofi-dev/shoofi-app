@@ -631,7 +631,7 @@ const MealScreen = ({ route }) => {
             }]}
             onPress={handleCartClick}
         >
-          <Icon icon="cart_icon" size={30} style={{ color: themeStyle.WHITE_COLOR }} />
+          <Icon icon="pizza-box" size={45} style={{ color: themeStyle.WHITE_COLOR }} />
           <Text style={styles.cartCount}>{cartStore.getProductsCount()}</Text>
         </TouchableOpacity>
         </View>
@@ -1144,7 +1144,7 @@ const styles = StyleSheet.create({
   },
   cartCount: {
     position: "absolute",
-   marginTop: Platform.OS === 'ios' ? 18 : 12,
+   top: Platform.OS === 'ios' ? 18 : 12,
    color: themeStyle.WHITE_COLOR,
    fontSize:15
  },

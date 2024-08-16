@@ -142,7 +142,7 @@ const ProductItem = ({
         </View>
         <View
           style={{
-            height: deviceType === devicesType.tablet ? 120 : 120,
+            height: deviceType === devicesType.tablet ? 110 : 110,
             shadowColor: "black",
             shadowOffset: {
               width: 0,

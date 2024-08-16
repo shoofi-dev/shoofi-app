@@ -27,7 +27,7 @@ const hideHHeaderScreens = ["login", "verify-code", "meal", "terms-and-condition
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];
 const hideProfile = ["terms-and-conditions"];
-const hideProfileScreens = ["terms-and-conditions", "insert-customer-name"];
+const hideProfileScreens = ["terms-and-conditions", "insert-customer-name", "menuScreen", "cart"];
 const hideLanguageScreens = ["terms-and-conditions"];
 const hideCartScreens = ["terms-and-conditions", "insert-customer-name"];
 const Header = () => {
@@ -308,7 +308,7 @@ const Header = () => {
               ]}
             >
                         <Icon
-              icon="profile_icon"
+              icon="profile-round"
               size={30}
               style={{ color: theme.PRIMARY_COLOR }}
             />
@@ -366,7 +366,7 @@ const Header = () => {
                 />
                 <View
                   style={[
-                    styles.cartCount,
+                    styles.bell,
                     {
                       borderWidth: 1,
                       borderRadius: 40,
@@ -394,7 +394,7 @@ const Header = () => {
         style={{ ...styles.headerItem, left: -15, justifyContent: "flex-end" }}
       >
         <TouchableOpacity
-          style={[styles.buttonContainer, { justifyContent: "flex-end" }]}
+          style={[styles.buttonContainer, { justifyContent: "flex-end", right:20 }]}
           onPress={onLogoClick}
         >
           {/* <Icon
@@ -472,13 +472,17 @@ const Header = () => {
           />
         </TouchableOpacity>
       )}
-     <Animated.View style={[styles.headerItem, animatedStyle]}>
+     <Animated.View style={[styles.headerItem, animatedStyle, {left: 10}]}>
         <TouchableOpacity
             style={[styles.buttonContainer, {opacity: isHideCart() ? 0 : 1}]}
             onPress={handleCartClick}
         >
-          <Icon icon="cart_icon" size={30} style={{ color: theme.PRIMARY_COLOR }} />
-          <Text style={styles.cartCount}>{cartStore.getProductsCount()}</Text>
+          <Icon icon="pizza-box" size={45} style={{ color: theme.PRIMARY_COLOR }} />
+          <View style={styles.cartCount}>
+            
+          <Text style={{color: theme.TEXT_PRIMARY_COLOR}}>{cartStore.getProductsCount()}</Text>
+
+          </View>
         </TouchableOpacity>
       </Animated.View>
     </View>
@@ -513,6 +517,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   cartCount: {
+     position: "absolute",
+    top: Platform.OS === 'ios' ? 26 : 24,
+    fontSize:15,
+    width:25,
+    height:25,
+    borderRadius:30,
+    alignItems:'center',
+    justifyContent:'center',
+  },
+  bell: {
      position: "absolute",
     top: Platform.OS === 'ios' ? 19 : 17,
     color: themeStyle.TEXT_PRIMARY_COLOR,

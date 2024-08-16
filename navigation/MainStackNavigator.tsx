@@ -23,6 +23,7 @@ import AddProductScreen from "../screens/admin/product/add";
 import CalanderContainer from "../screens/admin/calander/clander-container";
 import DashboardScreen from "../screens/admin/dashboard/main";
 import HomeScreen from "../screens/home/home";
+import MenuScreen from "../screens/menu/menu";
 import uploadImages from "../screens/admin/upload-images/upload-images";
 import EditTranslationsScreen from "../screens/admin/edit-translations";
 import StockManagementScreen from "../screens/admin/stock-management";
@@ -85,7 +86,7 @@ export const MainStackNavigator = () => {
     icon: "shopping-bag1",
     iconSize: 30,
     component: MenuScreen, */}
-      <Stack.Screen name="menuScreen" component={FooterTabs} />
+      <Stack.Screen name="menuScreen" component={MenuScreen} />
       <Stack.Screen name="homeScreen" component={HomeScreen} />
       <Stack.Screen name="terms-and-conditions" component={TermsAndConditionsScreen} />
       <Stack.Screen name="orders-status" component={OrdersStatusScreen} />

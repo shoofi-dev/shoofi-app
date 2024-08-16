@@ -114,7 +114,7 @@ const ProfileScreen = () => {
   };
 
   const onContactUs = () => {
-    Linking.openURL("tel:053-6660444");
+    Linking.openURL(`tel:${storeDataStore.storeData.storePhone}`);
 
   }
 
@@ -174,7 +174,7 @@ const ProfileScreen = () => {
               </View>
               {item.key == "contact-us" && (
                 <View style={{justifyContent:"flex-start", flex:1}}>
-                  <Text type="number" style={{fontSize: 18}}>{storeDataStore.storeData.storePhone}</Text>
+                  <Text type="number" style={{fontSize: 18, color:themeStyle.WHITE_COLOR}}>{storeDataStore.storeData.storePhone}</Text>
                 </View>
               )}
               {item.key == "phone" && (

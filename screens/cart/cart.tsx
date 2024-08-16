@@ -1900,7 +1900,7 @@ const CartScreen = ({ route }) => {
                   icon={() => (
                     <View style={styles.togglleItemContentContainer}>
                       <Icon
-                        icon="cart_icon"
+                        icon="shopping-bag-1"
                         size={25}
                         style={{
                           color:
@@ -2057,7 +2057,7 @@ const CartScreen = ({ route }) => {
                         style={{ height: 85, width: 50 }}
                       /> */}
                       <Icon
-                        icon="credit_card_icom"
+                        icon="credit-card-1"
                         size={25}
                         style={{
                           color:
