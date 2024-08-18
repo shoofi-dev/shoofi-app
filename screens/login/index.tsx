@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, ImageBackground, TouchableOpacity, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, View, Image, ImageBackground, TouchableOpacity, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, DeviceEventEmitter } from "react-native";
 import InputText from "../../components/controls/input";
 import Button from "../../components/controls/button/button";
 import themeStyle from "../../styles/theme.style";
@@ -103,6 +103,10 @@ const LoginScreen = () => {
         })
         .catch(function (error) {
           console.log(error);
+          DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
+            show: true,
+            isSignOut: false,
+          });
         });
     } else {
       setIsValid(false);
@@ -186,6 +190,7 @@ const LoginScreen = () => {
               keyboardType="numeric"
               onChange={onChange}
               label={t("phone")}
+              isPreviewMode={isLoading}
             />
             {!isValid && (
               <Text style={{ color: themeStyle.ERROR_COLOR, paddingLeft: 15 }}>
@@ -216,6 +221,7 @@ const LoginScreen = () => {
         positiveText="ok"
         negativeText="cancel"
       />
+      
     </View>
   );
 };
