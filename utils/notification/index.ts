@@ -23,6 +23,19 @@ export async function schedulePushNotification(data: any) {
     });
 }
 
+export async function schedulePushNotificationDeliveryDelay(data: any) {
+    await Notifications.scheduleNotificationAsync({
+        content: {
+            title: "פיצה ג׳מיל",
+            body: 'تاخير بالارسالية',
+            data: data,
+            sound: 'deliverysound.wav',
+            vibrate: [10]
+        },
+        trigger: { seconds: 2 },
+    });
+}
+
 export async function registerForPushNotificationsAsync() {
     let token;
     if (Platform.OS === 'android') {

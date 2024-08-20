@@ -36,7 +36,7 @@ import Button from "../../../../components/controls/button/button";
 import { testPrint } from "../../../../helpers/printer/print";
 import useWebSocket from "react-use-websocket";
 import { WS_URL } from "../../../../consts/api";
-import { schedulePushNotification } from "../../../../utils/notification";
+import { schedulePushNotificationDeliveryDelay } from "../../../../utils/notification";
 import { orderBy } from "lodash";
 import sizeTitleAdapter from "../../../../helpers/size-name-adapter";
 import ShowImageDialog from "../../../../components/dialogs/show-image/show-image";
@@ -76,7 +76,7 @@ const OrdersListScreen = ({ route }) => {
   const [enableNoteList, setEnableNoteList] = useState([]);
   const [orderNoteText, setOrderNoteText] = useState("");
   const [weekdDays, setWeekDays] = useState();
-  const [selectedDay, setSelectedDay] = useState();
+  const [selectedDay, setSelectedDay] = useState({});
   const [showImageDialog, setShowImageDialog] = useState(false);
   const [showRefundDialog, setShowRefundDialog] = useState(false);
   const [selectedImageShow, setSelectedImageShow] = useState("");
@@ -229,7 +229,7 @@ const OrdersListScreen = ({ route }) => {
       ordersStore.getOrders(
         userDetailsStore.isAdmin(),
         [selectedStatus],
-        selectedDay?.date.format(),
+        selectedDay?.date?.format(),
         false,
         pageNum,
         true
@@ -243,7 +243,15 @@ const OrdersListScreen = ({ route }) => {
   });
 
   useEffect(() => {
-    if (lastJsonMessage) {
+    
+    if (lastJsonMessage && lastJsonMessage.type === "delivery delay") {
+      schedulePushNotificationDeliveryDelay({
+        data: {
+          orderId: 1,
+        },
+      });
+    }
+    if (lastJsonMessage && lastJsonMessage.type !== "delivery delay") {
       setOrdersList([]);
       getOrders(1);
       setPageNumber(1);
@@ -259,11 +267,14 @@ const OrdersListScreen = ({ route }) => {
 
   useEffect(() => {
     getNext7Days();
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       getOrders(1);
     }, 30 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedDay, selectedStatus]);
 
   const getUpdatedOrderList = () => {
     // const filteredByStatus = ordersStore.ordersList?.filter(

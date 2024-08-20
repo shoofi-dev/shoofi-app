@@ -18,7 +18,8 @@
           "icon": "./assets/icon5.png",
           "color": "#ffffff",
           "sounds": [
-            "./assets/sounds/buffalosound.wav"
+            "./assets/sounds/buffalosound.wav",
+            "./assets/sounds/deliverysound.wav"
           ]
         }
       ]
@@ -36,7 +37,7 @@
       "bundleIdentifier": "com.sariq.pizza.gmel"
     },
     "android": {
-      "versionCode": 8,
+      "versionCode": 9,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-gmel.png",
         "backgroundColor": "#FFFFFF"
