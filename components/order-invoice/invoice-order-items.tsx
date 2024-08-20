@@ -87,7 +87,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   )}
 
                   {order?.halfOne?.length > 0
-                    ? Object.keys(order?.halfOne).map((key) => {
+                    ? Object.keys(order?.halfOne.sort()).map((key) => {
                         return (
                           <View>
                             <View style={{ flexDirection: "row" }}>
@@ -148,7 +148,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                     </View>
                   )}
                   {order?.halfTwo?.length > 0
-                    ? Object.keys(order?.halfTwo).map((key) => {
+                    ? Object.keys(order?.halfTwo.sort()).map((key) => {
                         return (
                           <View>
                             <View style={{ flexDirection: "row" }}>
