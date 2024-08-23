@@ -30,11 +30,6 @@ export default function BookDeliveryScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
 
-  useEffect(()=>{
-    setDeliveryData({});
-    return () => setDeliveryData({});
-  },[])
-
   const bookDelivery = async () => {
     setIsLoading(true);
     let convertedPhoneValue = deliveryData["phone"];
@@ -50,6 +45,13 @@ export default function BookDeliveryScreen() {
     setIsLoading(false);
     navigation.navigate("admin-orders");
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setDeliveryData({fullName: '', phone: '', price: '', time: ''})
+    });
+    return unsubscribe;
+ }, [navigation]);
 
   const cancelBook = async () => {
     navigation.navigate("admin-orders");
@@ -164,6 +166,7 @@ export default function BookDeliveryScreen() {
           <InputText
             onChange={(e) => handleInputChange(e, "fullName")}
             label={t("name")}
+            value={deliveryData?.fullName}
           />
         </View>
         <View
@@ -178,6 +181,7 @@ export default function BookDeliveryScreen() {
             keyboardType="numeric"
             onChange={(e) => handleInputChange(e, "phone")}
             label={t("phone")}
+            value={deliveryData?.phone}
           />
         </View>
         <View
@@ -192,6 +196,7 @@ export default function BookDeliveryScreen() {
             keyboardType="numeric"
             onChange={(e) => handleInputChange(e, "price")}
             label={t("price")}
+            value={deliveryData?.price}
           />
         </View>
 
