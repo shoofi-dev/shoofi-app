@@ -1,14 +1,10 @@
-/*
-
-Concept: https://dribbble.com/shots/5476562-Forgot-Password-Verification/attachments
-
-*/
 import { Animated, Image, SafeAreaView, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import i18n, { getCurrentLang } from "../../translations/i18n";
 import DashedLine from "react-native-dashed-line";
 import isShowSize from "../../helpers/is-show-size";
+import sortPizzaExtras from "../../helpers/sort-pizza-extras";
 
 const InvoiceOrderItems = ({ orderItems }) => {
   return (
@@ -20,6 +16,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
         style={{ marginBottom: 15 }}
       /> */}
       {orderItems.map((order, index) => {
+        const extrasSorted = sortPizzaExtras(order?.halfOne, order?.halfTwo)
         return (
           <View style={{marginTop:20, borderWidth:5}}>
             <View
@@ -87,7 +84,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                   )}
 
                   {order?.halfOne?.length > 0
-                    ? Object.keys(order?.halfOne.sort()).map((key) => {
+                    ? (extrasSorted?.halfOne).map((key, index) => {
                         return (
                           <View>
                             <View style={{ flexDirection: "row" }}>
@@ -98,7 +95,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                                   marginTop: 10,
                                 }}
                               >
-                                {`${Number(key) + 1}`}
+                                {`${Number(index) + 1}`}
                               </Text>
                               <Text
                                 style={{
@@ -108,7 +105,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                                 }}
                               >
                                 {" "}
-                                - {i18n.t(order?.halfOne[key])}
+                                - {i18n.t(key)}
                               </Text>
                             </View>
                           </View>
@@ -148,7 +145,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                     </View>
                   )}
                   {order?.halfTwo?.length > 0
-                    ? Object.keys(order?.halfTwo.sort()).map((key) => {
+                    ? (extrasSorted?.halfTwo).map((key, index) => {
                         return (
                           <View>
                             <View style={{ flexDirection: "row" }}>
@@ -159,7 +156,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                                   marginTop: 10,
                                 }}
                               >
-                                {`${Number(key) + 1}`}
+                                {`${Number(index) + 1}`}
                               </Text>
                               <Text
                                 style={{
@@ -169,7 +166,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
                                 }}
                               >
                                 {" "}
-                                - {i18n.t(order?.halfTwo[key])}
+                                - {i18n.t(key)}
                               </Text>
                             </View>
                           </View>
