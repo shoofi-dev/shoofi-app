@@ -23,12 +23,17 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 export default function BookDeliveryScreen() {
   const { t } = useTranslation();
   let { ordersStore } = useContext(StoreContext);
-
+  const deliveryTimePlusNow = [
+    {
+      label: "فوري",
+      value: 0,
+    },
+    ...deliveryTime,
+  ];
   const navigation = useNavigation();
 
   const [deliveryData, setDeliveryData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-
 
   const bookDelivery = async () => {
     setIsLoading(true);
@@ -47,11 +52,11 @@ export default function BookDeliveryScreen() {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      setDeliveryData({fullName: '', phone: '', price: '', time: ''})
+    const unsubscribe = navigation.addListener("focus", () => {
+      setDeliveryData({ fullName: "", phone: "", price: "", time: "" });
     });
     return unsubscribe;
- }, [navigation]);
+  }, [navigation]);
 
   const cancelBook = async () => {
     navigation.navigate("admin-orders");
@@ -229,7 +234,7 @@ export default function BookDeliveryScreen() {
               justifyContent: "center",
             }}
           >
-            {deliveryTime.map((time) => {
+            {deliveryTimePlusNow.map((time) => {
               return (
                 <TouchableOpacity
                   onPress={() => handleInputChange(time.value, "time")}
