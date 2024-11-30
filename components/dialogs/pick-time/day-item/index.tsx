@@ -367,7 +367,7 @@ const OrderDayItem = ({
   };
 
   const onContactUs = () => {
-    Linking.openURL("tel:053-6660444");
+    Linking.openURL("tel:097939996");
   };
 
   const handleTouchScreen = async () => {
