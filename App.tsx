@@ -513,11 +513,14 @@ const App = () => {
           //   }
           // );
 
-          // const isShouldUpdateVersion = await storeDataStore.isUpdateAppVersion();
-          // if(isShouldUpdateVersion){
-          //    setIsOpenUpdateVersionDialog(true);
-          //   return;
-          // }
+          setTimeout(async () => {
+            const isShouldUpdateVersion =
+              await storeDataStore.isUpdateAppVersion();
+            if (isShouldUpdateVersion) {
+              setIsOpenUpdateVersionDialog(true);
+              return;
+            }
+          }, 1000);
 
           // const imageAssets = await cacheImages(tempHomeSlides);
           if (authStore.isLoggedIn()) {
@@ -735,10 +738,6 @@ const App = () => {
           </View>
           <GeneralServerErrorDialog />
           <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />
-          <UpdateVersion
-            isOpen={isOpenUpdateVersionDialog}
-            handleAnswer={handleUpdateVersionDialogAnswer}
-          />
         </ImageBackground>
       </View>
     );
@@ -795,10 +794,9 @@ const App = () => {
                   >
                     <View
                       style={{
-                        marginBottom:15,
+                        marginBottom: 15,
                         borderWidth: 5,
                         width: "100%",
-
                       }}
                     >
                       <Text style={{ alignSelf: "center", fontSize: 100 }}>
@@ -808,13 +806,15 @@ const App = () => {
                     <View
                       style={{
                         borderWidth: 5,
-                        marginBottom:15,
+                        marginBottom: 15,
                         width: "100%",
-
                       }}
                     >
                       <Text style={{ alignSelf: "center", fontSize: 100 }}>
-                        السعر: {getOrderTotalPrice(invoice)}{invoice.order?.payment_method && invoice?.ccPaymentRefData?.data?.StatusCode == 1 &&  ' - א'}
+                        السعر: {getOrderTotalPrice(invoice)}
+                        {invoice.order?.payment_method &&
+                          invoice?.ccPaymentRefData?.data?.StatusCode == 1 &&
+                          " - א"}
                       </Text>
                     </View>
 
@@ -822,7 +822,6 @@ const App = () => {
                       style={{
                         borderWidth: 5,
                         width: "100%",
-
                       }}
                     >
                       <Text style={{ alignSelf: "center", fontSize: 100 }}>

@@ -51,7 +51,7 @@ const printOrder = async (orders, status) => {
             { uri: order },
             {
               width: 500,
-              height: 1000,
+              height: 3000,
             }
           )
           .newline(1)

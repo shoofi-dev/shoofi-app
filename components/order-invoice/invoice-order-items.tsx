@@ -16,7 +16,7 @@ const InvoiceOrderItems = ({ orderItems }) => {
         style={{ marginBottom: 15 }}
       /> */}
       {orderItems.map((order, index) => {
-        const extrasSorted = sortPizzaExtras(order?.halfOne, order?.halfTwo)
+        const extrasSorted = sortPizzaExtras(order?.halfOne ? [...order?.halfOne] : undefined, order?.halfTwo ? [...order?.halfTwo] : undefined);
         return (
           <View style={{marginTop:20, borderWidth:5}}>
             <View

@@ -47,6 +47,7 @@ import refundTransaction from "../../../../components/credit-card/api/refund";
 import ConfirmRefundActiondDialog from "../../../../components/dialogs/refund-confirm";
 import ConfirmActiondDialog from "../../../../components/dialogs/confirm-action";
 import isShowSize from "../../../../helpers/is-show-size";
+import sortPizzaExtras from "../../../../helpers/sort-pizza-extras";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -817,6 +818,7 @@ const OrdersListScreen = ({ route }) => {
       if (isEmpty(meal)) {
         return;
       }
+      const extrasSorted = sortPizzaExtras(item?.halfOne ? [...item?.halfOne] : undefined, item?.halfTwo ? [...item?.halfTwo] : undefined);
 
       return (
         <View style={{ marginTop: 10 }}>
@@ -923,7 +925,7 @@ const OrdersListScreen = ({ route }) => {
                         </View>
                       )}
                       {item?.halfOne.length > 0 ? (
-                        Object.keys(item?.halfOne).map((key) => {
+                        Object.keys(extrasSorted?.halfOne).map((key) => {
                           return (
                             <View style={{}}>
                               <View style={{ flexDirection: "row" }}>
@@ -945,7 +947,7 @@ const OrdersListScreen = ({ route }) => {
                                   }}
                                 >
                                   {" "}
-                                  - {t(item?.halfOne[key])}
+                                  - {t(extrasSorted?.halfOne[key])}
                                 </Text>
                               </View>
                             </View>
@@ -984,7 +986,7 @@ const OrdersListScreen = ({ route }) => {
                         </View>
                       )}
                       {item?.halfTwo.length > 0 ? (
-                        Object.keys(item?.halfTwo).map((key) => {
+                        Object.keys(extrasSorted?.halfTwo).map((key) => {
                           return (
                             <View style={{}}>
                               <View style={{ flexDirection: "row" }}>
@@ -1006,7 +1008,7 @@ const OrdersListScreen = ({ route }) => {
                                   }}
                                 >
                                   {" "}
-                                  - {t(item?.halfTwo[key])}
+                                  - {t(extrasSorted?.halfTwo[key])}
                                 </Text>
                               </View>
                             </View>

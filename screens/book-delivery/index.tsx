@@ -24,11 +24,11 @@ export default function BookDeliveryScreen() {
   const { t } = useTranslation();
   let { ordersStore } = useContext(StoreContext);
   const deliveryTimePlusNow = [
+    ...deliveryTime,
     {
       label: "فوري",
       value: 0,
     },
-    ...deliveryTime,
   ];
   const navigation = useNavigation();
 
@@ -113,7 +113,7 @@ export default function BookDeliveryScreen() {
     if (
       deliveryData["phone"] &&
       deliveryData["price"] &&
-      deliveryData["time"]
+      deliveryData["time"] !== ""
     ) {
       if (isValidNumber() && isValidPrice()) {
         return true;
