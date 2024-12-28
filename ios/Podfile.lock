@@ -355,7 +355,7 @@ PODS:
     - glog
   - react-native-cameraroll (5.10.0):
     - React-Core
-  - react-native-esc-pos-printer (2.6.0):
+  - react-native-esc-pos-printer (3.1.1):
     - React-Core
   - react-native-image-picker (5.7.0):
     - React-Core
@@ -478,7 +478,7 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.15.0):
+  - RNScreens (3.22.0):
     - React-Core
     - React-RCTImage
   - RNSVG (12.5.1):
@@ -789,7 +789,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 5b92a5a30e02e1a21802f293cc71e05d887c7378
   React-logger: 96d904c5bc87c2660d48e6a36fb2edf65f9cfb11
   react-native-cameraroll: 4701ae7c3dbcd3f5e9e150ca17f250a276154b35
-  react-native-esc-pos-printer: b3ee93f42173a8af1bb348cb923eb05bdca8595a
+  react-native-esc-pos-printer: e4cd8ce58a3850e62f8809734c409c247683b17d
   react-native-image-picker: 3269f75c251cdcd61ab51b911dd30d6fff8c6169
   react-native-maps: 8b8bfada2c86205a7f5a07dd1f92f29b33ea83aa
   react-native-month-year-picker: 948797e981ca502427024a34b17f545eb321bbff
@@ -815,7 +815,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 30e6733efc179d1e49d6008ea5fce42cdc9aeeca
   RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNReanimated: 2cf7451318bb9cc430abeec8d67693f9cf4e039c
-  RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
+  RNScreens: 68fd1060f57dd1023880bf4c05d74784b5392789
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   UMAppLoader: 6185e8c45922f187002b85afae097961c4781df4
   Yoga: 7a4d48cfb35dfa542151e615fa73c1a0d88caf21
