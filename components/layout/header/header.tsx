@@ -23,11 +23,23 @@ import Button from "../../controls/button/button";
 import { WS_URL } from "../../../consts/api";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
-const hideHHeaderScreens = ["login", "verify-code", "meal", "terms-and-conditions"];
+const hideHHeaderScreens = [
+  "login",
+  "verify-code",
+  "meal",
+  "terms-and-conditions",
+  "checkout-screen",
+  "cart",
+];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];
 const hideProfile = ["terms-and-conditions"];
-const hideProfileScreens = ["terms-and-conditions", "insert-customer-name", "menuScreen", "cart"];
+const hideProfileScreens = [
+  "terms-and-conditions",
+  "insert-customer-name",
+  "menuScreen",
+  "cart",
+];
 const hideLanguageScreens = ["terms-and-conditions"];
 const hideCartScreens = ["terms-and-conditions", "insert-customer-name"];
 const Header = () => {
@@ -250,20 +262,18 @@ const Header = () => {
     [ReadyState.UNINSTANTIATED]: themeStyle.ERROR_COLOR,
   }[readyState];
 
-  const onGoToNewDelivery = () =>{
+  const onGoToNewDelivery = () => {
     navigation.navigate("book-delivery");
-  }
+  };
 
   return (
     <View style={{ ...styles.container }}>
       {/* <LinearGradient
         colors={[
-          "rgba(239, 238, 238, 0.9)",
-          "rgba(239, 238, 238, 0.8)",
-          "rgba(239, 238, 238, 0.8)",
-          "rgba(239, 238, 238, 0.8)",
-          "rgba(239, 238, 238, 0.8)",
-          "rgba(239, 238, 238, 0.9)",
+          "rgba(36, 33, 30, 0.9)",
+          "rgba(115, 115, 112, 0.8)",
+          "rgba(115, 115, 112, 0.8)",
+          "rgba(36, 33, 30, 0.9)",
         ]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 0 }}
@@ -304,14 +314,14 @@ const Header = () => {
               onPress={handleProfileClick}
               style={[
                 styles.buttonContainer,
-                { opacity: isHideProfile() ? 0 : 1,paddingRight: 20 },
+                { opacity: isHideProfile() ? 0 : 1, paddingRight: 20 },
               ]}
             >
-                        <Icon
-              icon="profile-round"
-              size={30}
-              style={{ color: theme.PRIMARY_COLOR }}
-            />
+              <Icon
+                icon="profile-round"
+                size={30}
+                style={{ color: theme.PRIMARY_COLOR }}
+              />
               {/* <Image
                 source={require("../../../assets/pngs/profile.png")}
                 style={{ width: 60, height: 60 }}
@@ -374,14 +384,13 @@ const Header = () => {
                       height: 30,
                       left: -5,
                       overflow: "hidden",
-                      borderColor: 'black',
+                      borderColor: "black",
                       top: -2,
                       backgroundColor: themeStyle.TEXT_PRIMARY_COLOR,
-                      alignItems:'center'
+                      alignItems: "center",
                     },
                   ]}
                 >
-              
                   <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>
                     {ordersStore?.notViewdOrders?.length}
                   </Text>
@@ -394,7 +403,21 @@ const Header = () => {
         style={{ ...styles.headerItem, left: -15, justifyContent: "flex-end" }}
       >
         <TouchableOpacity
-          style={[styles.buttonContainer, { justifyContent: "flex-end", right:20 }]}
+          style={[
+            styles.buttonContainer,
+            { justifyContent: "flex-end", right: 20,
+              shadowColor: "#737370",
+              shadowOffset: {
+                width: 0,
+                height: 3,
+              },
+              shadowOpacity: 10,
+              shadowRadius: 10,
+              elevation: 25,
+              borderWidth: 0,
+             },
+            
+          ]}
           onPress={onLogoClick}
         >
           {/* <Icon
@@ -403,7 +426,7 @@ const Header = () => {
             style={{ color: theme.GRAY_700,  width:100 }}
           /> */}
           <Image
-            style={{ width: 50, height: "99%" }}
+            style={{ width: 100, height: 100, top: 35 }}
             source={require("../../../assets/icon4.png")}
           />
         </TouchableOpacity>
@@ -454,7 +477,7 @@ const Header = () => {
             /> */}
         </View>
       )}
-           {userDetailsStore.isAdmin() && (
+      {userDetailsStore.isAdmin() && (
         <TouchableOpacity
           style={{
             ...styles.headerItem,
@@ -472,16 +495,37 @@ const Header = () => {
           />
         </TouchableOpacity>
       )}
-     <Animated.View style={[styles.headerItem, animatedStyle, {left: 10}]}>
+      <Animated.View
+        style={[
+          styles.headerItem,
+          animatedStyle,
+          {
+            left: 20,
+            backgroundColor: themeStyle.SECONDARY_COLOR,
+            borderTopEndRadius: 50,
+            borderBottomEndRadius: 50,
+            height:50, top:10,
+            shadowColor: "#737370",
+            shadowOffset: {
+              width: -10,
+              height: 3,
+            },
+            shadowOpacity: 1,
+            shadowRadius: 5,
+            elevation: 5,
+            borderWidth: 0,
+          },
+        ]}
+      >
         <TouchableOpacity
-            style={[styles.buttonContainer, {opacity: isHideCart() ? 0 : 1}]}
-            onPress={handleCartClick}
+          style={[styles.buttonContainer, { opacity: isHideCart() ? 0 : 1 }]}
+          onPress={handleCartClick}
         >
-          <Icon icon="pizza-box" size={45} style={{ color: theme.PRIMARY_COLOR }} />
+          <Icon icon="grill" size={40} style={{ color: theme.PRIMARY_COLOR }} />
           <View style={styles.cartCount}>
-            
-          <Text style={{color: theme.TEXT_PRIMARY_COLOR}}>{cartStore.getProductsCount()}</Text>
-
+            <Text style={{ color: theme.TEXT_PRIMARY_COLOR }}>
+              {cartStore.getProductsCount()}
+            </Text>
           </View>
         </TouchableOpacity>
       </Animated.View>
@@ -500,7 +544,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingRight: 15,
     paddingLeft: 15,
-    shadowColor: "#c31a21",
+    shadowColor: "#737370",
     shadowOffset: {
       width: 0,
       height: 3,
@@ -509,7 +553,8 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 20,
     borderWidth: 0,
-    backgroundColor: "#FFCB05",
+    marginBottom: 15,
+    // backgroundColor: "#737373",
     // backgroundColor: themeStyle.WHITE_COLOR
   },
   headerItem: {
@@ -517,20 +562,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   cartCount: {
-     position: "absolute",
-    top: Platform.OS === 'ios' ? 26 : 24,
-    fontSize:15,
-    width:25,
-    height:25,
-    borderRadius:30,
-    alignItems:'center',
-    justifyContent:'center',
+    position: "absolute",
+    top: Platform.OS === "ios" ? 2 : 0,
+    fontSize: 15,
+    width: 25,
+    height: 25,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
   },
   bell: {
-     position: "absolute",
-    top: Platform.OS === 'ios' ? 19 : 17,
+    position: "absolute",
+    top: Platform.OS === "ios" ? 19 : 17,
     color: themeStyle.TEXT_PRIMARY_COLOR,
-    fontSize:15
+    fontSize: 15,
   },
   buttonContainer: {
     padding: 9,

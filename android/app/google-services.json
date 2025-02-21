@@ -1,15 +1,15 @@
 {
   "project_info": {
     "project_number": "202867785400",
-    "project_id": "pizza-gmel",
-    "storage_bucket": "pizza-gmel.appspot.com"
+    "project_id": "abdelhai-butcher",
+    "storage_bucket": "abdelhai-butcher.appspot.com"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:202867785400:android:5de48f627f468259f57e4d",
         "android_client_info": {
-          "package_name": "com.sariq.pizza.gmel"
+          "package_name": "com.sariq.abdelhai.butcher"
         }
       },
       "oauth_client": [],

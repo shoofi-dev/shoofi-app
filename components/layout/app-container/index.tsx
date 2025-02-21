@@ -220,9 +220,9 @@ resizeMode="contain"
         <ImageBackground
           source={require("../../../assets/splash-screen-9.jpg")}
           resizeMode="cover"
-          style={{ height: "100%" }}
+          style={{ height: "100%",  }}
         >
-          <View style={{ flex: 1, paddingTop: 60 }}>
+          <View style={{ flex: 1, paddingTop: 60, backgroundColor:'rgba(36, 33, 30, 0)' }}>
             <Header />
             <MainStackNavigator />
         {renderImage()}

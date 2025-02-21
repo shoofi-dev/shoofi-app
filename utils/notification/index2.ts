@@ -13,7 +13,7 @@ Notifications.setNotificationHandler({
 export async function schedulePushNotification(data: any) {
     await Notifications.scheduleNotificationAsync({
         content: {
-            title: "פיצה ג׳מיל",
+            title: "אבו סאלח",
             body: 'התקבלה הזמנה חדשה',
             data: data,
             sound: 'buffalosound.wav',

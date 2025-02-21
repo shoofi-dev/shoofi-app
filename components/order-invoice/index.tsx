@@ -13,9 +13,8 @@ import { StoreContext } from "../../stores";
 import getPizzaCount from "../../helpers/get-pizza-count";
 
 const OrderInvoiceCMP = ({ invoiceOrder }) => {
+  const { storeDataStore } = useContext(StoreContext);
 
-  const {storeDataStore} = useContext(StoreContext);
-  
   const getOrderId = (orderId) => {
     const orderIdSplit = orderId.split("-");
     const idPart1 = orderIdSplit[0];
@@ -25,11 +24,11 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
 
   const getOrderTotalPrice = (order) => {
     const oOrder = order?.order;
-    if(oOrder.receipt_method == SHIPPING_METHODS.shipping){
+    if (oOrder.receipt_method == SHIPPING_METHODS.shipping) {
       return order?.total - storeDataStore?.storeData?.delivery_price;
     }
     return order?.total;
-  }
+  };
 
   return (
     invoiceOrder && (
@@ -86,7 +85,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
             </Text>
           </View>
         </View>
-{/* 
+        {/* 
         <View
           style={{
             marginTop: 10,
@@ -101,21 +100,23 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
             {moment(invoiceOrder.orderDate).format("DD/MM")}
           </Text>
         </View> */}
-       {invoiceOrder.order?.payment_method && invoiceOrder?.ccPaymentRefData?.data?.StatusCode == 1 && <View
-          style={{
-            marginTop: 10,
-            borderWidth: 5,
-            padding: 5,
-            flexDirection: "row",
-            justifyContent: "space-evenly",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ fontSize: 90, textAlign: "center" }}>
-             بطاقة - مدفوع
-          </Text>
-        </View>
-        }
+        {invoiceOrder.order?.payment_method &&
+          invoiceOrder?.ccPaymentRefData?.data?.StatusCode == 1 && (
+            <View
+              style={{
+                marginTop: 10,
+                borderWidth: 5,
+                padding: 5,
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontSize: 90, textAlign: "center" }}>
+                بطاقة - مدفوع
+              </Text>
+            </View>
+          )}
 
         <View style={{ borderWidth: 5, marginTop: 15, padding: 10 }}>
           <View
@@ -201,7 +202,7 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
               </Text>
             </View>
           </View>
-          </View>
+        </View>
 
         <View
           style={{
@@ -245,7 +246,31 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
           </View>
         </View>
 
-        {invoiceOrder?.order?.geo_positioning?.qrURI && (
+        {invoiceOrder?.order?.geo_positioning?.qrURI &&
+          !invoiceOrder?.order?.locationText && (
+            <View
+              style={{
+                marginTop: 10,
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View>
+                <Text style={{ fontSize: 45, textAlign: "left" }}>
+                  {i18n.t("scan-barcode")}
+                </Text>
+              </View>
+              <View style={{ marginTop: 0 }}>
+                <Image
+                  source={{ uri: invoiceOrder?.order?.geo_positioning?.qrURI }}
+                  style={{ width: 350, height: 350 }}
+                />
+              </View>
+            </View>
+          )}
+
+        {invoiceOrder?.order?.locationText && (
           <View
             style={{
               marginTop: 10,
@@ -256,14 +281,13 @@ const OrderInvoiceCMP = ({ invoiceOrder }) => {
           >
             <View>
               <Text style={{ fontSize: 45, textAlign: "left" }}>
-                {i18n.t("scan-barcode")}
+                {i18n.t("address")}
               </Text>
             </View>
             <View style={{ marginTop: 0 }}>
-              <Image
-                source={{ uri: invoiceOrder?.order?.geo_positioning?.qrURI }}
-                style={{ width: 350, height: 350 }}
-              />
+              <Text style={{ fontSize: 45, textAlign: "left" }}>
+                {invoiceOrder?.order?.locationText}
+              </Text>
             </View>
           </View>
         )}

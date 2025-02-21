@@ -53,7 +53,7 @@ export default function BackButton({ goTo, onClick }: TProps) {
         >
           <Icon
             icon={"arrow-left2"}
-            style={{ color: themeStyle.WHITE_COLOR }}
+            style={{ color: themeStyle.SECONDARY_COLOR }}
             size={25}
           />
         </View>

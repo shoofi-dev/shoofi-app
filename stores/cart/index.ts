@@ -53,6 +53,7 @@ type TOrder = {
   creditcard_ReferenceNumber?: string;
   geo_positioning?: string;
   items: TProduct[];
+  locationText?: string;
 };
 
 type TCart = {
@@ -279,6 +280,7 @@ class CartStore {
       payment_method: order.paymentMthod,
       receipt_method: order.shippingMethod,
       geo_positioning: order.geo_positioning,
+      locationText: order.locationText,
       items: produtsAdapter(order),
     };
     const version = Constants.nativeAppVersion;

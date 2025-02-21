@@ -19,7 +19,7 @@ export type TProps = {
   isDisabledCatItem?: any;
 };
 const menuIcons = {
-  "pizza-active": require("../../../../assets/categories//pizza-meal4.png"),
+  "pizza-active": require("../../../../assets/categories/baget.png"),
   "pizza-inactive": require("../../../../assets/categories/pizza-meal4.png"),
   "drinks-active": require("../../../../assets/categories/drinks-active.png"),
 };
@@ -48,16 +48,17 @@ const MenuItem = ({
           shadowOpacity: selectedItem._id === item._id ? 0.5 : 0,
           shadowRadius: 6.84,
           elevation: 9,
-          borderRadius:10,
+          borderRadius:50,
   
           // marginTop: selectedItem._id === item._id ? 35 : 0,
-          backgroundColor: themeStyle.SECONDARY_COLOR,
+          backgroundColor: themeStyle.WHITE_COLOR,
             borderColor: themeStyle.PRIMARY_COLOR,
             
-            overflow:'hidden',
             alignItems:'center',
             justifyContent:'center',
-            padding:10
+            padding:5,
+            overflow: 'visible'
+
         }}
         onPress={() => {
           onItemSelect(item);
@@ -90,8 +91,12 @@ const MenuItem = ({
 
             <Image
               style={{
-                width: selectedItem._id === item._id ? "90%" : "90%",
-                height: selectedItem._id === item._id ? "90%" : "90%",
+                width: selectedItem._id === item._id ? "140%" : "90%",
+                height: selectedItem._id === item._id ? "100%" : "90%",
+                position:'absolute',
+                right:10,
+                top:-10
+
               }}
               source={
                 menuIcons[
@@ -110,7 +115,7 @@ const MenuItem = ({
           <Text
             style={{
                 marginTop: 0,
-                color: themeStyle.SECONDARY_COLOR,
+                color: themeStyle.PRIMARY_COLOR,
                 fontSize:18
               }}
           >
@@ -134,7 +139,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     // width: 120
     paddingTop: 5,
-    shadowColor: "#C19A6B",
+    shadowColor: themeStyle.SECONDARY_COLOR,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -149,8 +154,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
-    height: 80,
-    width: 80,
+    height: 70,
+    width: 70,
+    overflow: 'visible'
     // padding: 15,
   },
   itemsListConainer: {},

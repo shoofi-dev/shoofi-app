@@ -781,7 +781,7 @@ const MealScreen = ({ route }) => {
                 </View>
               )}
 
-              {(meal.data?.categoryId == "5") &&
+              {/* {(meal.data?.categoryId == "5") &&
                 ((meal.data?.subCategoryId == "1") ||
                   (meal?.data?.extras?.taste?.options && Number(
                     Object.keys(meal?.data?.extras?.taste?.options).length
@@ -803,7 +803,7 @@ const MealScreen = ({ route }) => {
                       />
                     </View>
                   </View>
-                )}
+                )} */}
 
               {meal.data.extras["taste"] &&
                 meal.data.extras["taste"].options && (

@@ -215,8 +215,6 @@ export default function GradiantRow({
               flexDirection: "row",
               width: "100%",
               flexWrap:'wrap',
-              alignItems:'center', justifyContent:'center'
-               
             }}
             
           >
@@ -224,13 +222,13 @@ export default function GradiantRow({
               return(
               <View
                 style={{
-                  alignItems: "center",
                   // backgroundColor: value.includes(options[key].title) ? themeStyle.SUCCESS_COLOR : themeStyle.WHITE_COLOR,
                   // marginRight: 10,
                   // borderRadius: 20,
-                  alignSelf:'center',
-                  flexBasis:"33%",
-                  marginBottom:40
+                  flexBasis:"100%",
+                  paddingHorizontal:20,
+                  marginVertical:10
+         
                 }}
               >
                 <CheckBox
@@ -238,7 +236,6 @@ export default function GradiantRow({
                   value={value}
                   title={options[key].title}
                   isOneChoice
-                  variant="button"
                   isActive={value.includes(options[key].title)}
                   // isDisabled={options[key].count === 0}
                 />
@@ -246,11 +243,7 @@ export default function GradiantRow({
                 {/* <View>
                   <Text>{options[key].title}</Text>
                 </View>*/}
-                 <View style={{height:20, paddingTop:5}}>
-                { (value.indexOf(options[key].title) >= (value.indexOf('tuna')> -1 ? 2:3)) &&
-                  <Text type="number">+₪{options[key].price}</Text>
-               }
-                 </View>
+             
               </View>
             )})}
           </View>

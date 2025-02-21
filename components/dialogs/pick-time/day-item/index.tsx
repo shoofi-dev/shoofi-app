@@ -5,14 +5,14 @@ import {
   FlatList,
   Linking,
 } from "react-native";
-import Text from "../../../../components/controls/Text";
+import Text from "../../../controls/Text";
 import { observer } from "mobx-react";
 import moment from "moment";
 import { useState, useEffect, useContext, useRef } from "react";
 import { isEmpty } from "lodash";
 import themeStyle from "../../../../styles/theme.style";
 import { ScrollView } from "react-native-gesture-handler";
-import Button from "../../../../components/controls/button/button";
+import Button from "../../../controls/button/button";
 import { StoreContext } from "../../../../stores";
 import useWebSocket from "react-use-websocket";
 import { WS_URL } from "../../../../consts/api";
@@ -22,6 +22,7 @@ import { getCurrentLang } from "../../../../translations/i18n";
 import { useTranslation } from "react-i18next";
 import {
   ORDER_TYPE,
+  animationDuration,
   closeHour,
   lastHourInSameDay,
   openHour,
@@ -32,12 +33,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import Icon from "../../../icon";
 import { ScrollHandLottie } from "../../../lottie/scroll-hand-animation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Animatable from "react-native-animatable";
 
 export type TProps = {
   data: any;
   updateSelectedHour: any;
   selectedHour: string;
-  userDate?: any;
+  userDateValue?: any;
   minDeltaMinutes: number;
 };
 
@@ -45,10 +47,11 @@ const OrderDayItem = ({
   data,
   updateSelectedHour,
   selectedHour,
-  userDate,
+  userDateValue,
   minDeltaMinutes,
 }: TProps) => {
   const { t } = useTranslation();
+  const viewRefs = useRef([]); 
 
   const { calanderStore, ordersStore, storeDataStore, userDetailsStore } =
     useContext(StoreContext);
@@ -59,6 +62,16 @@ const OrderDayItem = ({
   const [activeSlide, setActiveSlide] = useState(null);
   const carousleRef = useRef(null);
   const progressValue = useSharedValue<number>(0);
+  const [userDate, setUserDate] = useState();
+  useEffect(()=>{
+    console.log("userDate444", userDateValue)
+    setUserDate(userDateValue)
+    if(dayHours && userDateValue){
+      initDefaultActiveHour(dayHours)
+
+    }
+
+  },[userDateValue, dayHours])
 
   const { lastJsonMessage } = useWebSocket(WS_URL, {
     share: true,
@@ -162,16 +175,20 @@ const OrderDayItem = ({
     const currentMinutes = moment().minutes();
     const str2 = `${currentHours}:${currentMinutes}`;
     // setActiveSlide(2);
-
+    const userHour = moment(userDate).hours();
+    const userMinute = moment(userDate).format('mm');
+    const currentUserHourMinute = `${userHour}:${userMinute}`
     Object.keys(hoursList).forEach((hourKey, index) => {
       const arr = hourKey.split(":");
       const hour = arr[0];
       const min = arr[1];
+      const currentHourMinute = `${hour}:${min}`
+
       if (userDate) {
-        const userHour = moment(userDate).hours();
-        // if (hour == userHour.toString()) {
-        //   setActiveSlide(index);
-        // }
+        if (currentHourMinute == currentUserHourMinute) {
+          console.log("UUUUU")
+          setActiveSlide(currentUserHourMinute);
+        }
       } else {
         // if (hour == currentHours.toString()) {
         //   setActiveSlide(index);
@@ -184,7 +201,7 @@ const OrderDayItem = ({
     const deafultDayHours = initDeafaulHours();
     setDayhours(deafultDayHours);
     setIsDayHoursReady(true);
-    // initDefaultActiveHour(deafultDayHours);
+    initDefaultActiveHour(deafultDayHours);
   };
 
   const initHandScroll = async () => {
@@ -354,6 +371,8 @@ const OrderDayItem = ({
   };
 
   const handleTimeSelect = (index) => {
+    setUserDate(null)
+
     setActiveSlide(index);
 
     // const ishourDisabled = checkIsDisabledHour(index);
@@ -367,7 +386,7 @@ const OrderDayItem = ({
   };
 
   const onContactUs = () => {
-    Linking.openURL("tel:097939996");
+    Linking.openURL("tel:053-6660444");
   };
 
   const handleTouchScreen = async () => {
@@ -375,6 +394,11 @@ const OrderDayItem = ({
       setIsShowScrollHand(false);
       await AsyncStorage.setItem("@storage_scroll_hand", JSON.stringify(true));
     }
+  };
+
+  const handleBounce = (index) => {
+    // Trigger bounce animation for the clicked item
+    viewRefs.current[index]?.flash();
   };
 
   if (!dayHours) {
@@ -457,9 +481,11 @@ const OrderDayItem = ({
         <FlatList
           style={{ width: "100%" }}
           data={Object.keys(dayHours)}
-          keyExtractor={(item) => item}
+          keyExtractor={(item, index) => index.toString()}
           onScroll={handleTouchScreen}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
+            <Animatable.View ref={(ref) => (viewRefs.current[index] = ref)}    animation="fadeInRight"
+                            duration={animationDuration} >
             <TouchableOpacity
               style={{
                 paddingVertical: 15,
@@ -484,6 +510,7 @@ const OrderDayItem = ({
               }}
               onPress={() => {
                 handleTimeSelect(item);
+                handleBounce(index)
               }}
               onPressIn={handleTouchScreen}
               disabled={dayHours[item]?.isDisabled}
@@ -590,6 +617,7 @@ const OrderDayItem = ({
                 </View>
               </View>
             </TouchableOpacity>
+            </Animatable.View>
           )}
           // Set horizontal to true for horizontal scrolling
 

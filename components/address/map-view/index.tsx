@@ -1,0 +1,86 @@
+import { View, StyleSheet } from "react-native";
+import theme from "../../../styles/theme.style";
+import MapView, { Marker } from "react-native-maps";
+import { SHIPPING_METHODS } from "../../../consts/shared";
+
+export type TProps = {
+  region: any;
+  location: any;
+};
+
+export const MapViewAddress = ({ region, location }: TProps) => {
+  return (
+        <View
+          pointerEvents="none"
+          style={{
+            alignItems: "center",
+            paddingHorizontal: 1,
+            width:"100%"
+          }}
+        >
+          {location && region ? (
+            <View style={styles.mapViewContainer}>
+              <MapView
+                style={styles.mapContainer}
+                initialRegion={{
+                  ...region,
+                }}
+              >
+                {location && (
+                  <Marker
+                    coordinate={{
+                      latitude: location.coords.latitude,
+                      longitude: location.coords.longitude,
+                    }}
+                  />
+                )}
+              </MapView>
+            </View>
+          ) : (
+            <MapView
+              style={styles.mapContainerDefault}
+              initialRegion={{
+                latitude: 32.233583,
+                latitudeDelta: 0.01,
+                longitude: 34.951661,
+                longitudeDelta: 0.01,
+              }}
+            ></MapView>
+          )}
+        </View>
+  );
+};
+
+const styles = StyleSheet.create({
+
+
+  mapContainerDefault: {
+    height: 150,
+    borderRadius: 10,
+    minHeight: 150,
+    
+  },
+  mapContainer: {
+    width: "100%",
+    height: 150,
+    borderRadius: 10,
+    minHeight: 150,
+
+  },
+  mapViewContainer: {
+    width: "100%",
+    height: 150,
+    borderRadius: 10,
+    minHeight: 150,
+    alignSelf: "center",
+    shadowColor: "black",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.9,
+    shadowRadius: 6,
+    elevation: 20,
+    
+  },
+});

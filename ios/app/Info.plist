@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>פיצה ג׳מיל</string>
+    <string>אטליז עבד אלחי</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -25,13 +25,13 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.sariq.pizza.gmel</string>
+          <string>com.sariq.abdelhai.butcher</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>exp+pizzagmel</string>
+          <string>exp+abdelhaibutcher</string>
         </array>
       </dict>
     </array>

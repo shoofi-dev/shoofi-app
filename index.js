@@ -1,5 +1,6 @@
 import { registerRootComponent } from 'expo';
 import {Text, TextInput} from 'react-native';
+import 'react-native-get-random-values'; // Polyfill for crypto
 
 import App from './App';
 if (Text.defaultProps == null) {

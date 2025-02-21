@@ -203,21 +203,30 @@ const MenuScreen = () => {
     <View style={{ height: "100%", marginTop: 0 }}>
       <View style={styles.container}>
         <View
-          style={{ height: "100%", width: "100%",flexDirection:'row', alignItems:'center', justifyContent:'center' }}
+          style={{ height: "100%", width: "100%",flexDirection:'row', alignItems:'center', justifyContent:'center',  paddingTop:15,
+            shadowColor: "#737370",
+            shadowOffset: {
+              width: 0,
+              height: 3,
+            },
+            shadowOpacity: 10,
+            shadowRadius: 10,
+            elevation: 25,
+            borderWidth: 0, }}
         >
           {/* {userDetailsStore.isAdmin() && <View style={{ width: 120, height: 96, flexBasis: 90 }}>
             <AddMenuItem onItemSelect={onAddCategory} />
           </View>} */}
           {/* <Animated.View style={{flexDirection:'row'}}> */}
-          {/* <Animated.View style={{flexDirection:'row', transform:[{translateX: anim.current}]}}> */}
+          <Animated.View style={{flexDirection:'row', transform:[{translateX: anim.current}]}}> 
 
        
           {categoryList.map((category) => (
             <View
               style={{
-                width: 90,
-                height:90,
-                marginHorizontal:20
+                width: 100,
+                height:100,
+                marginHorizontal:5
               }}
               key={category._id}
             >
@@ -229,7 +238,7 @@ const MenuScreen = () => {
                 />
             </View>
           ))}
-             {/* </Animated.View> */}
+              </Animated.View>
         </View>
       </View>
       {/* <LinearGradient
@@ -260,7 +269,8 @@ const MenuScreen = () => {
                 category.categoryId === tmpSelectedCategory?.categoryId
                   ? "flex"
                   : "none",
-                  marginTop:20
+                  marginTop:20,
+                  
             }}
           >
             <CategoryItemsList

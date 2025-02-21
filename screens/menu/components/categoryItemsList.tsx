@@ -196,8 +196,8 @@ const CategoryItemsList = ({ productsList, category }) => {
 
   const filterBirthdayProducts = filterBirthday();
   return (
-    <View style={{ marginTop: "10%" }}>
-      {category.categoryId == 1 && (
+    <View style={{ marginTop: 0,  }}>
+      {/* {category.categoryId == 1 && (
         <TouchableOpacity onPress={() => onItemSelect(productsList[0])} disabled={isDisabled(productsList[0])}>
             <Animated.View
               style={{
@@ -291,20 +291,20 @@ const CategoryItemsList = ({ productsList, category }) => {
               </View>
             </Animated.View>
         </TouchableOpacity>
-      )}
+      )} */}
 
-      {category.categoryId === 2 && isProductAnimateDone && (
+      {true && (
         <View
           style={{
-            height: "95%",
-            shadowColor: "#C19A6B",
+            height: "100%",
+            shadowColor: '#737370 ',
             shadowOffset: {
-              width: 0,
-              height: 2,
+              width: 1,
+              height: 3,
             },
-            shadowOpacity: 0.9,
-            shadowRadius: 6,
-            elevation: 0,
+            shadowOpacity: 0.8,
+            shadowRadius: 10,
+            elevation: 2,
             borderWidth: 0,
             backgroundColor: "transparent",
             marginTop: 0,
@@ -337,14 +337,10 @@ const CategoryItemsList = ({ productsList, category }) => {
                   <View
                     key={item._id}
                     style={{
-                      marginBottom:
-                        productsList?.length > 1
-                          ? index % 2 === 0
-                            ? 70
-                            : 70
-                          : 0,
-                      flexBasis: "48.5%",
-                      height: 180,
+                      marginBottom:30,
+                      flexBasis: "100%",
+                      height: 90,
+
                     }}
                   >
                     <ProductItem

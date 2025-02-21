@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "פיצה ג׳מיל",
-    "slug": "Pizza Gmel",
+    "name": "אטליז עבד אלחי",
+    "slug": "Abdelhai butcher",
     "version": "1.0.4",
     "orientation": "portrait",
-    "icon": "./assets/icon5.png",
+    "icon": "./assets/icon4.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash-screen-8.png",
+      "image": "./assets/splash-screen.png",
       "resizeMode": "cover",
       "backgroundColor": "#FFFFFF"
     },
@@ -15,7 +15,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/icon5.png",
+          "icon": "./assets/icon4.png",
           "color": "#ffffff",
           "sounds": [
             "./assets/sounds/buffalosound.wav",
@@ -34,7 +34,7 @@
     "ios": {
       "buildNumber": "1.0.4",
       "supportsTablet": true,
-      "bundleIdentifier": "com.sariq.pizza.gmel"
+      "bundleIdentifier": "com.sariq.abdelhai.butcher"
     },
     "android": {
       "versionCode": 11,
@@ -43,11 +43,11 @@
         "backgroundColor": "#FFFFFF"
       },
       "splash": {
-        "image": "./assets/splash-screen-8.png",
+        "image": "./assets/splash-screen.png",
         "backgroundColor": "#FFFFFF",
         "resizeMode":"cover"
       },
-      "package": "com.sariq.pizza.gmel",
+      "package": "com.sariq.abdelhai.butcher",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyD0CSVYW-UxSDEnderEtAB9YDmYYZLu8q8"

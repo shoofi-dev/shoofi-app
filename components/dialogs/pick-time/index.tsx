@@ -4,121 +4,67 @@ import Text from "../../controls/Text";
 
 /* styles */
 import theme from "../../../styles/theme.style";
-import { useState, useEffect } from "react";
-import Button from "../../../components/controls/button/button";
+import { useState, useEffect, useContext } from "react";
+import Button from "../../controls/button/button";
 import themeStyle from "../../../styles/theme.style";
 import { useTranslation } from "react-i18next";
 import Icon from "../../icon";
 import CalanderContainerUser from "./clander-container";
 import DialogBG from "../dialog-bg";
+import { useNavigation } from "@react-navigation/native";
+import { StoreContext } from "../../../stores";
+import { cartStore } from "../../../stores/cart";
+import { storeDataStore } from "../../../stores/store";
 // import ExpandableCalendarScreen from "./clander-container";
 
-type TProps = {
-  isOpen: boolean;
-  handleAnswer?: any;
-  text?: string;
-  icon?: any;
-  userDate?: any;
-  minDeltaMinutes: number;
-};
+export default function PickTimeCMP() {
 
-export default function PickTimeDialog({
-  isOpen,
-  handleAnswer,
-  userDate,
-  text,
-  icon,
-  minDeltaMinutes
-}: TProps) {
-  const { t } = useTranslation();
-  const [visible, setVisible] = useState(isOpen);
+  const navigation = useNavigation();
+  const { cartStore, ordersStore } = useContext(StoreContext);
+  const [minDeltaMinutes, setMinDeltaMinutes] = useState(30);
+
+  const [editOrderData, setEditOrderData] = useState(null);
+  const [selectedOrderDate, setSelectedOrderDate] = useState();
 
   useEffect(() => {
-    setVisible(isOpen);
-  }, [isOpen]);
+    if (ordersStore.editOrderData) {
+      setEditOrderData(ordersStore.editOrderData);
+    }
+  }, [ordersStore.editOrderData]);
 
-  const hideDialog = (value: boolean) => {
-    handleAnswer && handleAnswer(value);
-    setVisible(false);
+  useEffect(() => {
+    if (editOrderData) {
+      setSelectedOrderDate(editOrderData.orderDate);
+      ordersStore.setOrderType(editOrderData.orderType);
+    }
+  }, [editOrderData]);
+
+  const isBirthdayCakeInCart = () => {
+    const { birthdayCakesConfig } = storeDataStore.storeData;
+    const isBirthdayInCart =
+      cartStore.isBirthdayCakeInCart(birthdayCakesConfig);
+    if (isBirthdayInCart) {
+      setMinDeltaMinutes(birthdayCakesConfig?.birthdayCakeMinDeltaMin);
+    } else {
+      setMinDeltaMinutes(30);
+    }
+  };
+
+  const handleSelectedDate = (value: boolean) => {
+    console.log("xx", value);
+    if (value) {
+      navigation.navigate("checkout-screen", { selectedDate: value });
+    } else {
+      navigation.goBack();
+    }
   };
   return (
-    <Provider>
-      <Portal>
-        <Dialog
-          theme={{
-            colors: {
-              //   backdrop: "transparent",
-              
-            },
-          }}
-          
-          visible={visible}
-          dismissable={false}
-          style={{
-      
-           
-            zIndex:100, 
-            width:"100%",
-            position:"absolute",
-            top:-20,
-            left:-25,
-            right:0, 
-            bottom:0,
-
-          }}
-        >
-          <DialogBG>
-          <Dialog.Content
-            style={{
-              paddingLeft: 0,
-              paddingRight: 0,
-              paddingTop: 0,
-              paddingBottom: 0,
-              overflow:'hidden',
-              marginTop:-20
-         
-            }}
-          >
-            {/* <View
-                style={{
-                  backgroundColor: themeStyle.WHITE_COLOR,
-                  height: 45,
-                  borderRadius: 20,
-                  width: 50,
-                  right: -15,
-                  top: -8,
-                  zIndex: 5,
-                  position:'absolute'
-                }}
-              >
-                <TouchableOpacity
-                  onPress={() => {
-                    hideDialog(false);
-                  }}
-                  style={{
-                    zIndex: 5,
-                    height: "100%",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: themeStyle.TEXT_PRIMARY_COLOR,
-                      right: 25,
-                      top: 17,
-                      fontSize: 20,
-                      fontWeight: "900",
-                      zIndex: 5,
-                    }}
-                  >
-                    X
-                  </Text>
-                </TouchableOpacity>
-              </View> */}
-            <CalanderContainerUser handleSelectedDate={hideDialog} userDate={userDate} minDeltaMinutes={minDeltaMinutes} />
-          </Dialog.Content>
-          </DialogBG>
-        </Dialog>
-      </Portal>
-    </Provider>
+    <View style={{ marginTop: 10 }}>
+      <CalanderContainerUser
+        handleSelectedDate={handleSelectedDate}
+        minDeltaMinutes={minDeltaMinutes}
+        userDateValue={selectedOrderDate}
+      />
+    </View>
   );
 }

@@ -143,7 +143,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId 'com.sariq.pizza.gmel'
+        applicationId 'com.sariq.abdelhai.butcher'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 11
@@ -233,9 +233,9 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('pizza_gmel_release_keystore.keystore')
+            storeFile file('abdelhai_butcher_release_keystore.keystore')
             storePassword 'Paris2023!'
-            keyAlias 'pizza_gmel_release_keystore'
+            keyAlias 'abdelhai_butcher_release_keystore'
             keyPassword 'Paris2023!'
         }
     }

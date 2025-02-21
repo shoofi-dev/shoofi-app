@@ -3,6 +3,10 @@ export const SHIPPING_METHODS = {
   takAway: "TAKEAWAY",
   table: "TABLE",
 };
+export const PLACE = {
+  current: "CURRENT",
+  other: "OTHER",
+};
 export const PAYMENT_METHODS = {
   creditCard: "CREDITCARD",
   cash: "CASH",
@@ -11,6 +15,7 @@ export const ORDER_TYPE = {
   now: "NOW",
   later: "LATER",
 };
+export const animationDuration = 1500;
 
 export const bcoindId = 3027;
 
@@ -82,7 +87,7 @@ export const mealsImages = {
   "water": require("../assets/drinks/water.png"),
   "fanta": require("../assets/drinks/fanta.png"),
   "sprite": require("../assets/drinks/sprite.png"),
-  "pizza": require("../assets/categories/pizza-meal4.png"),
+  "pizza": require("../assets/categories/baget.png"),
   "shrab-anb": require("../assets/drinks/shrab-anb.png"),
   "shrab-lmon": require("../assets/drinks/shrab-lmon.png"),
   "shrab-tot": require("../assets/drinks/shrab-tot.png"),

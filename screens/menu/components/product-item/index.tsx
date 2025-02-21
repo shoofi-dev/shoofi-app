@@ -27,7 +27,7 @@ import { useTranslation } from "react-i18next";
 import _useDeviceType from "../../../../hooks/use-device-type";
 import CustomFastImage from "../../../../components/custom-fast-image";
 import Icon from "../../../../components/icon";
-
+const addToCartIcon = require("../../../../assets/add-to-cart.png")
 export type TProps = {
   item: any;
   onItemSelect: (item: any) => void;
@@ -92,11 +92,14 @@ const ProductItem = ({
   return (
     <View
       style={{
-        borderRadius: 30,
+        borderRadius: 10,
         backgroundColor: themeStyle.SECONDARY_COLOR,
-        width: "70%",
+        width: "85%",
         alignSelf: "center",
         opacity: !isInStore(item) ? 0.4 : 1,
+        borderTopStartRadius:50,
+        borderBottomStartRadius:50,
+        right:10
       }}
     >
       {/* <LinearGradient
@@ -123,7 +126,7 @@ const ProductItem = ({
         key={item.id}
         disabled={isDisabled(item)}
       >
-        <View
+        {/* <View
           style={{
             backgroundColor: themeStyle.PRIMARY_COLOR,
             position: "absolute",
@@ -139,20 +142,21 @@ const ProductItem = ({
             size={25}
             style={{ color: themeStyle.SECONDARY_COLOR }}
           />
-        </View>
+        </View> */}
         <View
           style={{
-            height: deviceType === devicesType.tablet ? 110 : 110,
-            shadowColor: "black",
+            height: deviceType === devicesType.tablet ? 90 :90,
+            shadowColor: "#737370",
             shadowOffset: {
               width: 0,
               height: 2,
             },
             shadowOpacity: 0.9,
-            shadowRadius: 6,
+            shadowRadius: 3,
             elevation: 0,
             borderWidth: 0,
-            alignItems:'center', justifyContent:'center'
+            alignItems: "center",
+          
           }}
         >
           {/* <CustomFastImage
@@ -170,7 +174,14 @@ const ProductItem = ({
           /> */}
           <Image
             source={mealsImages[item.img]}
-            style={{ height: "100%", width: "100%",alignSelf:'center', marginTop:40}}
+            style={{
+              height: "120%",
+              width: "100%",
+              alignSelf: "center",
+              marginTop: -10,
+              position:'absolute', 
+              left:"40%"
+            }}
             resizeMode="contain"
           />
 
@@ -216,16 +227,19 @@ const ProductItem = ({
             resizeMode="stretch"
           />
         </View> */}
-
+  <View style={{flexDirection:'row',  width: "100%",paddingLeft:20, marginTop:15}}>
+  <Image source={addToCartIcon} style={{ alignSelf: "center", width:35, height:32, }} />
+            <View style={{ width:"57%", alignItems:'center', justifyContent:'center' }}>
           <View
             style={{
+             
               flexDirection: "row",
-              marginTop: 8,
-              alignItems: "center",
-              justifyContent: "center",
-              paddingHorizontal: 8 / -2,
             }}
           >
+            
+            <Text style={{ textAlinge: "right", fontSize: 22 }}>
+              {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
+            </Text>
             {/* <View style={{ paddingHorizontal: 8 / 2 }}>
             <Text
               style={{
@@ -270,6 +284,19 @@ const ProductItem = ({
             </View>
           )} */}
           </View>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row",
+              alignItems:'center',
+              justifyContent:'center'
+            }}
+          >
+            <Text style={{  fontSize: 22 }}>
+             {item.price}10 ₪
+            </Text></View>
+            </View>
+            </View>
           {/* {!isInStore(item) && (
             <View
               style={{ position: "absolute", bottom: "50%", width: "100%" }}
@@ -372,22 +399,6 @@ const ProductItem = ({
               </Text>
             </View>
           )} */}
-        </View>
-        <View
-          style={{
-            backgroundColor: themeStyle.PRIMARY_COLOR,
-            bottom: 0,
-            position: "absolute",
-            width: "100%",
-            padding: 10,
-            borderBottomEndRadius: 20,
-            borderBottomStartRadius: 20,
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: themeStyle.WHITE_COLOR, fontSize: 18 }}>
-            {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
-          </Text>
         </View>
       </TouchableOpacity>
     </View>

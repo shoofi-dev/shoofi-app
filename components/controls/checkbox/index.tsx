@@ -204,17 +204,20 @@ export default function CheckBox({
 
   if (isOneChoice) {
     return (
-      <View style={{ alignItems: "center", opacity: isDisabled ? 0.5 : 1 }}>
+      <View style={{ flexDirection: 'row', opacity: isDisabled ? 0.5 : 1, alignItems:'center', justifyContent:'space-between' }}>
         {sizeTitleAdapter(title) && (
           <Text style={{ marginBottom: 10, fontSize: 20 }}>
             {sizeTitleAdapter(title)}
           </Text>
         )}
 
+        <Text style={{fontSize: 20}}>              {t(title)}
+        </Text>
+
         <TouchableOpacity
           style={{
             borderWidth: 1,
-            borderRadius: 20,
+            borderRadius: 5,
             width: 30,
             height: 30,
             alignItems: "center",
@@ -226,16 +229,11 @@ export default function CheckBox({
           }}
           disabled={isDisabled}
         >
-          {value === title ? (
+          {isActive ? (
             <View
-              style={{ height: 25, width: 25, borderRadius: 30, padding: 5 }}
+              style={{ height: 25, width: 25, borderRadius: 5, padding: 5, backgroundColor:themeStyle.PRIMARY_COLOR }}
             >
-              <LinearGradient
-                colors={["#eaaa5c", "#a77948"]}
-                start={{ x: 1, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={[styles.background]}
-              />
+  
             </View>
           ) : (
             <View></View>

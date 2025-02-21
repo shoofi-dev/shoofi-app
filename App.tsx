@@ -636,7 +636,7 @@ const App = () => {
         }}
       >
         <ImageBackground
-          source={require("./assets/splash-screen-8.jpg")}
+          source={require("./assets/splash-screen.png")}
           resizeMode="stretch"
           style={{ height: "100%", backgroundColor: "white" }}
         >

@@ -78,7 +78,9 @@ const HomeScreen = ({ navigation }) => {
     setIsAppReady(true);
     setTimeout(() => {
       setIsAnimateReady(true);
-    }, 1000);
+      navigation.navigate("menuScreen");
+
+    }, 0);
   };
   const goToAdminDashboard = async () => {
     if (userDetailsStore.isAdmin(ROLES.all)) {
@@ -291,11 +293,7 @@ const HomeScreen = ({ navigation }) => {
         display: isHideScreen ? "none" : "flex",
       }}
     >
-            <ImageBackground
-          source={require("../../assets/home/home-bg1.png")}
-          resizeMode="stretch"
-          style={{ height: "100%",width:"100%"}}
-              > 
+
       <View
         style={{
           alignItems: "center",
@@ -537,7 +535,6 @@ const HomeScreen = ({ navigation }) => {
         isOpen={isOpenStoreErrorMsgDialog}
         text={storeErrorText}
       />
-      </ImageBackground>
     </View>
   );
 };

@@ -17,6 +17,7 @@ import {
 import MapView, { Marker } from "react-native-maps";
 import DashedLine from "react-native-dashed-line";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Animatable from 'react-native-animatable';
 
 /* styles */
 import theme from "../../styles/theme.style";
@@ -58,6 +59,7 @@ import {
   ORDER_TYPE,
   PAYMENT_METHODS,
   mealsImages,
+  animationDuration,
 } from "../../consts/shared";
 import { ToggleButton } from "react-native-paper";
 import { transparent } from "react-native-paper/lib/typescript/styles/colors";
@@ -550,7 +552,7 @@ const CartScreen = ({ route }) => {
     if (value) {
       Platform.OS === "android"
         ? Linking.sendIntent("android.settings.LOCATION_SOURCE_SETTINGS")
-        : Linking.openURL("App-Prefs:com.sariq.pizza.gmel");
+        : Linking.openURL("App-Prefs:com.sariq.abdelhai.butcher");
         setIsOpenLocationIsDisableDialog(false);
         setShippingMethod(SHIPPING_METHODS.takAway);
     } else {
@@ -912,6 +914,11 @@ const CartScreen = ({ route }) => {
     // american-express
     // visa
   };
+
+  const handleSubmintButton = () => {
+    navigation.navigate("checkout-screen");
+  };
+
   return (
     <View style={{ position: "relative", height: "100%", flex: 1, bottom: 0 }}>
       {/* <LinearGradient
@@ -922,13 +929,13 @@ const CartScreen = ({ route }) => {
       /> */}
       <ScrollView style={{ height: "100%" }}>
         <View style={{ ...styles.container }}>
-          <View style={{ paddingHorizontal: 20 }}>
+          <View style={{ paddingHorizontal: 20, }}>
             <View style={styles.backContainer}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", backgroundColor:'rgba(36, 33, 30, 0.8)', paddingHorizontal:5, borderRadius:10 }}>
                 <Text
                   style={{
                     fontSize: 20,
-                    color: themeStyle.WHITE_COLOR,
+                    color: themeStyle.SECONDARY_COLOR,
                   }}
                 >
                   {t("items-count")}
@@ -936,7 +943,7 @@ const CartScreen = ({ route }) => {
                 <Text
                   style={{
                     fontSize: 20,
-                    color: themeStyle.WHITE_COLOR,
+                    color: themeStyle.SECONDARY_COLOR,
                     fontFamily: `${getCurrentLang()}-American-bold`,
                   }}
                 >
@@ -945,12 +952,13 @@ const CartScreen = ({ route }) => {
               </View>
               <View
                 style={{
-                  width: 30,
-                  height: 30,
+                  width: 40,
+                  height: 35,
                   alignItems: "center",
                   justifyContent: "center",
                   marginVertical: 10,
                   marginLeft: 10,
+                  backgroundColor:'rgba(36, 33, 30, 0.8)', paddingHorizontal:5, borderRadius:10
                 }}
               >
                 <BackButton onClick={onBackClick} />
@@ -1170,28 +1178,7 @@ const CartScreen = ({ route }) => {
                                     }}
                                   >
                                     <View style={{ flexBasis: "48%" }}>
-                                      {product?.data?.extras?.halfOne
-                                        ?.value && (
-                                        <View
-                                          style={{
-                                            borderBottomWidth: 1,
-                                            borderTopWidth: 1,
-                                            borderColor:
-                                              themeStyle.PRIMARY_COLOR,
-                                            paddingVertical: 3,
-                                          }}
-                                        >
-                                          <Text
-                                            style={{
-                                              textAlign: "center",
-                                              fontSize: 16,
-                                              fontFamily: `${getCurrentLang()}-SemiBold`,
-                                            }}
-                                          >
-                                            {t("halfOne")}
-                                          </Text>
-                                        </View>
-                                      )}
+                               
 
                                       {product?.data?.extras?.halfOne?.value
                                         .length > 0
@@ -1248,83 +1235,7 @@ const CartScreen = ({ route }) => {
                                           )}
                                     </View>
 
-                                    <View style={{ flexBasis: "48%" }}>
-                                      {product?.data?.extras?.halfTwo
-                                        ?.value && (
-                                        <View
-                                          style={{
-                                            borderBottomWidth: 1,
-                                            borderTopWidth: 1,
-                                            borderColor:
-                                              themeStyle.PRIMARY_COLOR,
-                                            paddingVertical: 3,
-                                          }}
-                                        >
-                                          <Text
-                                            style={{
-                                              textAlign: "center",
-                                              fontSize: 16,
-                                              fontFamily: `${getCurrentLang()}-SemiBold`,
-                                            }}
-                                          >
-                                            {t("halfTwo")}
-                                          </Text>
-                                        </View>
-                                      )}
-                                      {product?.data?.extras?.halfTwo?.value
-                                        .length > 0
-                                        ? Object.keys(
-                                            product?.data?.extras?.halfTwo
-                                              ?.value
-                                          ).map((key) => {
-                                            return (
-                                              <View>
-                                                <View
-                                                  style={{
-                                                    flexDirection: "row",
-                                                  }}
-                                                >
-                                                  <Text
-                                                    style={{
-                                                      textAlign: "left",
-                                                      fontSize: 16,
-                                                      marginTop: 10,
-                                                    }}
-                                                    type="number"
-                                                  >
-                                                    {`${Number(key) + 1}`}
-                                                  </Text>
-                                                  <Text
-                                                    style={{
-                                                      textAlign: "left",
-                                                      fontSize: 16,
-                                                      marginTop: 10,
-                                                    }}
-                                                  >
-                                                    {" "}
-                                                    -{" "}
-                                                    {t(
-                                                      product.data.extras
-                                                        ?.halfTwo?.value[key]
-                                                    )}
-                                                  </Text>
-                                                </View>
-                                              </View>
-                                            );
-                                          })
-                                        : product?.data?.extras?.halfOne
-                                            ?.value && (
-                                            <Text
-                                              style={{
-                                                textAlign: "left",
-                                                fontSize: 16,
-                                                marginTop: 10,
-                                              }}
-                                            >
-                                              من غير اضافات
-                                            </Text>
-                                          )}
-                                    </View>
+                  
                                   </View>
                                   {isShowSize(product?.data?._id) && <View
                                     style={{
@@ -1738,439 +1649,10 @@ const CartScreen = ({ route }) => {
               </View>
             </View> */}
 
-            {editOrderData && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  marginHorizontal: 20,
-                  marginTop: 10,
-                }}
-              >
-                <ToggleButton.Row
-                  onValueChange={(value) => handleOrderTypeSelect(value)}
-                  value={ordersStore.orderType}
-                  style={styles.togglleContainer}
-                >
-                  <ToggleButton
-                    style={{
-                      ...styles.togglleCItem,
-                      backgroundColor:
-                        ordersStore.orderType === ORDER_TYPE.now
-                          ? theme.PRIMARY_COLOR
-                          : "transparent",
-                      borderTopRightRadius: 50,
-                      borderBottomRightRadius: 50,
-                    }}
-                    icon={() => (
-                      <View style={styles.togglleItemContentContainer}>
-                        {ordersStore.orderType === ORDER_TYPE.now && (
-                          <LinearGradient
-                            colors={["#eaaa5c", "#a77948"]}
-                            start={{ x: 1, y: 0 }}
-                            end={{ x: 0, y: 1 }}
-                            style={[styles.background]}
-                          />
-                        )}
-                        <View
-                          style={{ height: 85, width: 40, left: -10 }}
-                        ></View>
-                        <Text
-                          style={{
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            color:
-                              ordersStore.orderType === ORDER_TYPE.now
-                                ? themeStyle.WHITE_COLOR
-                                : themeStyle.TEXT_PRIMARY_COLOR,
-                            left: -10,
-                          }}
-                        >
-                          {t("order-now")}
-                        </Text>
-                      </View>
-                    )}
-                    value={ORDER_TYPE.now}
-                  />
-                  <ToggleButton
-                    style={{
-                      ...styles.togglleCItem,
-                      backgroundColor:
-                        ordersStore.orderType === ORDER_TYPE.later
-                          ? theme.PRIMARY_COLOR
-                          : "transparent",
-                      borderTopLeftRadius: 50,
-                      borderBottomLeftRadius: 50,
-                    }}
-                    icon={() => (
-                      <View style={styles.togglleItemContentContainer}>
-                        {ordersStore.orderType === ORDER_TYPE.later && (
-                          <LinearGradient
-                            colors={["#eaaa5c", "#a77948"]}
-                            start={{ x: 1, y: 0 }}
-                            end={{ x: 0, y: 1 }}
-                            style={[styles.background]}
-                          />
-                        )}
-                        <View
-                          style={{ height: 85, width: 40, left: -10 }}
-                        ></View>
+         
 
-                        <Text
-                          style={{
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            color:
-                              ordersStore.orderType === ORDER_TYPE.later
-                                ? themeStyle.WHITE_COLOR
-                                : themeStyle.TEXT_PRIMARY_COLOR,
-                          }}
-                        >
-                          {t("order-later")}
-                        </Text>
-                      </View>
-                    )}
-                    value={ORDER_TYPE.later}
-                  />
-                </ToggleButton.Row>
-              </View>
-            )}
+            
 
-            <View
-              style={{
-                flexDirection: "row",
-                marginHorizontal: 20,
-                marginTop: 10,
-              }}
-            >
-              <ToggleButton.Row
-                onValueChange={(value) => handleDeliverySelect(value)}
-                value={shippingMethod}
-                style={styles.togglleContainer}
-              >
-                <ToggleButton
-                  style={{
-                    ...styles.togglleCItem,
-                    backgroundColor:
-                      shippingMethod === SHIPPING_METHODS.shipping
-                        ? theme.SECONDARY_COLOR
-                        : "transparent",
-                    borderTopRightRadius: 50,
-                    borderBottomRightRadius: 50,
-                  }}
-                  icon={() => (
-                    <View style={styles.togglleItemContentContainer}>
-                      <Icon
-                        icon="delivery-active"
-                        size={25}
-                        style={{
-                          color:
-                            shippingMethod === SHIPPING_METHODS.shipping
-                              ? theme.TEXT_PRIMARY_COLOR
-                              : theme.WHITE_COLOR,
-                        }}
-                      />
-
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          fontWeight: "bold",
-                          color:
-                            shippingMethod === SHIPPING_METHODS.shipping
-                              ? themeStyle.TEXT_PRIMARY_COLOR
-                              : themeStyle.WHITE_COLOR,
-                          left: 3,
-                        }}
-                      >
-                        {t("delivery")}
-                      </Text>
-                    </View>
-                  )}
-                  value={SHIPPING_METHODS.shipping}
-                />
-                <ToggleButton
-                  style={{
-                    ...styles.togglleCItem,
-                    backgroundColor:
-                      shippingMethod === SHIPPING_METHODS.takAway
-                        ? theme.SECONDARY_COLOR
-                        : "transparent",
-                    borderTopLeftRadius: 50,
-                    borderBottomLeftRadius: 50,
-                  }}
-                  icon={() => (
-                    <View style={styles.togglleItemContentContainer}>
-                      <Icon
-                        icon="shopping-bag-1"
-                        size={25}
-                        style={{
-                          color:
-                            shippingMethod === SHIPPING_METHODS.takAway
-                              ? theme.TEXT_PRIMARY_COLOR
-                              : themeStyle.WHITE_COLOR,
-                        }}
-                      />
-
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          fontWeight: "bold",
-                          color:
-                            shippingMethod === SHIPPING_METHODS.takAway
-                              ? themeStyle.TEXT_PRIMARY_COLOR
-                              : themeStyle.WHITE_COLOR,
-                        }}
-                      >
-                        {t("take-away")}
-                      </Text>
-                    </View>
-                  )}
-                  value={SHIPPING_METHODS.takAway}
-                />
-              </ToggleButton.Row>
-            </View>
-            {shippingMethod === SHIPPING_METHODS.shipping && (
-              <View
-                pointerEvents="none"
-                style={{
-                  alignItems: "center",
-                  marginTop: 5,
-                  paddingHorizontal: 1,
-                }}
-              >
-                {location && region ? (
-                  <View style={styles.mapViewContainer}>
-                    <MapView
-                      style={styles.mapContainer}
-                      initialRegion={{
-                        ...region,
-                      }}
-                    >
-                      {location && (
-                        <Marker
-                          coordinate={{
-                            latitude: location.coords.latitude,
-                            longitude: location.coords.longitude,
-                          }}
-                        />
-                      )}
-                    </MapView>
-                  </View>
-                ) : (
-                  <MapView
-                    style={styles.mapContainerDefault}
-                    initialRegion={{
-                      latitude: 32.233583,
-                      latitudeDelta: 0.01,
-                      longitude: 34.951661,
-                      longitudeDelta: 0.01,
-                    }}
-                  ></MapView>
-                )}
-              </View>
-            )}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginTop: 5,
-                paddingHorizontal: 20,
-              }}
-            >
-              <ToggleButton.Row
-                onValueChange={(value) => handlePaymentMethodChange(value)}
-                value={paymentMthod}
-                style={styles.togglleContainer}
-              >
-                <ToggleButton
-                  style={{
-                    ...styles.togglleCItem,
-                    backgroundColor:
-                      paymentMthod === PAYMENT_METHODS.cash
-                        ? theme.SECONDARY_COLOR
-                        : "transparent",
-                    borderTopRightRadius: 50,
-                    borderBottomRightRadius: 50,
-                  }}
-                  icon={() => (
-                    <View style={styles.togglleItemContentContainer}>
-                      {/* {paymentMthod === PAYMENT_METHODS.cash && (
-                        <LinearGradient
-                          colors={["#eaaa5c", "#a77948"]}
-                          start={{ x: 1, y: 0 }}
-                          end={{ x: 0, y: 1 }}
-                          style={[styles.background]}
-                        />
-                      )} */}
-                      <Icon
-                        icon="shekel"
-                        size={20}
-                        style={{
-                          color:
-                            paymentMthod === PAYMENT_METHODS.cash
-                              ? themeStyle.TEXT_PRIMARY_COLOR
-                              : theme.WHITE_COLOR,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          fontWeight: "bold",
-                          color:
-                            paymentMthod === PAYMENT_METHODS.cash
-                              ? themeStyle.TEXT_PRIMARY_COLOR
-                              : themeStyle.WHITE_COLOR,
-                        }}
-                      >
-                        {" "}
-                        {t("cash")}
-                      </Text>
-                    </View>
-                  )}
-                  value={PAYMENT_METHODS.cash}
-                />
-                <ToggleButton
-                  style={{
-                    ...styles.togglleCItem,
-                    backgroundColor:
-                      paymentMthod === PAYMENT_METHODS.creditCard
-                        ? theme.SECONDARY_COLOR
-                        : "transparent",
-                    borderTopLeftRadius: 50,
-                    borderBottomLeftRadius: 50,
-                  }}
-                  icon={() => (
-                    <View style={styles.togglleItemContentContainer}>
-                      {/* {paymentMthod === PAYMENT_METHODS.creditCard && (
-                        <LinearGradient
-                          colors={["#eaaa5c", "#a77948"]}
-                          start={{ x: 1, y: 0 }}
-                          end={{ x: 0, y: 1 }}
-                          style={[styles.background]}
-                        />
-                      )} */}
-                      {/* <Image
-                        source={
-                          paymentMthod === PAYMENT_METHODS.creditCard
-                            ? icons["ccOff"]
-                            : icons["ccOn"]
-                        }
-                        style={{ height: 85, width: 50 }}
-                      /> */}
-                      <Icon
-                        icon="credit-card-1"
-                        size={25}
-                        style={{
-                          color:
-                            paymentMthod === PAYMENT_METHODS.creditCard
-                              ? theme.TEXT_PRIMARY_COLOR
-                              : themeStyle.WHITE_COLOR,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          fontWeight: "bold",
-                          color:
-                            paymentMthod === PAYMENT_METHODS.creditCard
-                              ? themeStyle.TEXT_PRIMARY_COLOR
-                              : themeStyle.WHITE_COLOR,
-                        }}
-                      >
-                        {t("credit-card")}
-                      </Text>
-                    </View>
-                  )}
-                  value={PAYMENT_METHODS.creditCard}
-                />
-              </ToggleButton.Row>
-            </View>
-
-            {paymentMthod === PAYMENT_METHODS.creditCard &&
-              ccData?.last4Digits && (
-                <View>
-              
-                <View
-                  style={{
-                    flexDirection: "row",
-                    marginTop: 5,
-                    marginHorizontal: 25,
-                    alignItems: "center",
-                    justifyContent: "space-between",
-
-                    borderRadius: 15,
-                    paddingHorizontal: 10,
-                    overflow: "hidden",
-                    shadowColor: "black",
-                    shadowOffset: {
-                      width: 0,
-                      height: 2,
-                    },
-                    shadowOpacity: 0.9,
-                    shadowRadius: 6,
-                    elevation: 20,
-                    borderWidth: 0,
-                  }}
-                >
-                  <LinearGradient
-                    colors={[
-                      "rgba(207, 207, 207, 0.4)",
-                      "rgba(246,246,247, 0.8)",
-                      "rgba(246,246,247, 0.8)",
-                      "rgba(207, 207, 207, 0.4)",
-                    ]}
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={[styles.background]}
-                  />
-                  <View
-                    style={{
-                      alignItems: "center",
-                      flexDirection: "row",
-                    }}
-                  >
-                    <TouchableOpacity onPress={replaceCreditCard}>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          color: themeStyle.TEXT_PRIMARY_COLOR,
-                        }}
-                      >
-                        {t("change")}
-                      </Text>
-                    </TouchableOpacity>
-                    {/* <TouchableOpacity
-                      onPress={removeCreditCard}
-                      style={{ marginLeft: 20 }}
-                    >
-                      <Icon icon="trash" size={20} />
-                    </TouchableOpacity> */}
-                  </View>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text
-                      style={{
-                        fontSize: 17,
-                        color: themeStyle.TEXT_PRIMARY_COLOR,
-                        fontFamily: `${getCurrentLang()}-American-bold`,
-                      }}
-                    >{`****_****_****_${ccData?.last4Digits}`}</Text>
-                    <Icon
-                      icon={ccData?.ccType}
-                      size={50}
-                      style={{ color: theme.GRAY_700, marginLeft: 5 }}
-                    />
-                  </View>
-                </View>
-                {shippingMethod === SHIPPING_METHODS.shipping && <View style={{marginTop:10, paddingHorizontal:20, flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-                <Text    style={{
-                        fontSize: 18,
-                        color: themeStyle.WHITE_COLOR,
-                        textAlign: "left",
-                      }} >*{t("delivery-method-note")}.</Text>
-                  </View>}
-       
-
-</View>
-              )}
           </View>
           {/* {true && (
             <Animated.View
@@ -2205,114 +1687,8 @@ const CartScreen = ({ route }) => {
               />
             </Animated.View>
           )} */}
-          <View style={styles.totalPrictContainer}>
-            {/* <LinearGradient
-              colors={["#c1bab3", "#efebe5", "#d8d1ca", "#dcdcd4", "#ccccc4"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={[styles.background, { borderRadius: 10 }]}
-            /> */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-around",
-                borderBottomWidth: 1,
-                borderBottomColor: themeStyle.PRIMARY_COLOR,
-              }}
-            >
-              <View style={styles.priceRowContainer}>
-                <View>
-                  <Text
-                    style={{
-                      fontFamily: `${getCurrentLang()}-SemiBold`,
-                      fontSize: 18,
-                      color: themeStyle.WHITE_COLOR,
-                    }}
-                  >
-                    {t("order-price")}:
-                  </Text>
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontFamily: `${getCurrentLang()}-SemiBold`,
-                      color: themeStyle.WHITE_COLOR,
-                    }}
-                    type="number"
-                  >
-                    ₪{itemsPrice}{" "}
-                  </Text>
-                </View>
-              </View>
-
-              {shippingMethod === SHIPPING_METHODS.shipping && (
-                <View style={styles.priceRowContainer}>
-                  <View>
-                    <Text
-                      style={{
-                        fontFamily: `${getCurrentLang()}-SemiBold`,
-                        fontSize: 18,
-                        color: themeStyle.WHITE_COLOR,
-                      }}
-                    >
-                      {t("delivery")}:
-                    </Text>
-                  </View>
-                  <View>
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        fontFamily: `${getCurrentLang()}-SemiBold`,
-                        color: themeStyle.WHITE_COLOR,
-                      }}
-                      type="number"
-                    >
-                      ₪{deliveryPrice}{" "}
-                    </Text>
-                  </View>
-                </View>
-              )}
-            </View>
-
-            {deliveryPrice > 0 && <View style={{ borderWidth: 0.3 }}></View>}
-
-            <View style={[styles.priceRowContainer, { marginTop: 10 }]}>
-              <View>
-                <Text
-                  style={{
-                    fontFamily: `${getCurrentLang()}-SemiBold`,
-                    fontSize: 20,
-                    color: themeStyle.WHITE_COLOR,
-                  }}
-                >
-                  {t("final-price")}:
-                </Text>
-              </View>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontSize: 17,
-                    fontWeight: "bold",
-                    color: themeStyle.WHITE_COLOR,
-                  }}
-                  type="number"
-                >
-                  {totalPrice}{" "}
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 17,
-                    color: themeStyle.WHITE_COLOR,
-                  }}
-                >
-                  ₪
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View
+  
+          {/* <View
             style={{ marginTop: 20, marginHorizontal: 60, marginBottom: 100 }}
           >
             <Button
@@ -2351,9 +1727,56 @@ const CartScreen = ({ route }) => {
                 </TouchableOpacity>
               </View>
             )}
-          </View>
+          </View> */}
         </View>
       </ScrollView>
+      <Animatable.View
+        animation="fadeInUp"
+        duration={animationDuration}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: themeStyle.SECONDARY_COLOR,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          padding: 20,
+          borderTopStartRadius: 30,
+          borderTopEndRadius: 30,
+          shadowColor: themeStyle.PRIMARY_COLOR,
+          shadowOffset: {
+            width: 2,
+            height: 2,
+          },
+          shadowOpacity: 1,
+          shadowRadius: 15,
+          alignItems: "center",
+          height: 100,
+        }}
+      >
+        <View style={{ width: "50%" }}>
+          <Button
+            onClickFn={handleSubmintButton}
+            text={t("continue-to-pay")}
+            fontSize={18}
+            textColor={theme.WHITE_COLOR}
+            borderRadious={50}
+            textPadding={0}
+          />
+        </View>
+
+        <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <View>
+            <Text style={{ fontSize: 16 }}>{t("price")}</Text>
+          </View>
+          <View>
+            <Text style={{ fontSize: 18 }} type="number">
+              ₪{itemsPrice}
+            </Text>
+          </View>
+        </View>
+      </Animatable.View>
       {isBarcodeOpen && (
         <BarcodeScannerCMP
           onChange={handleBarcodeAnswer}
@@ -2406,12 +1829,12 @@ const CartScreen = ({ route }) => {
         isOpen={showStoreIsCloseDialog}
         text={t("store-is-close")}
       />
-      <PickTimeDialog
+      {/* <PickTimeDialog
         handleAnswer={handleTimeSelectedAnswer}
         isOpen={showPickTimeDialog}
         userDate={selectedOrderDate}
         minDeltaMinutes={minDeltaMinutes}
-      />
+      /> */}
       <PaymentFailedDialog
         handleAnswer={handlePaymentFailedAnswer}
         isOpen={showPaymentFailedDialog}
@@ -2434,6 +1857,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    
   },
   togglleContainer: {
     borderRadius: 50,

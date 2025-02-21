@@ -1,5 +1,5 @@
 import React from "react";
-import { createStackNavigator, CardStyleInterpolators, TransitionSpecs, HeaderStyleInterpolators } from "@react-navigation/stack";
+import { createStackNavigator, CardStyleInterpolators, TransitionSpecs, HeaderStyleInterpolators, TransitionPresets } from "@react-navigation/stack";
 import FooterTabs from "../components/layout/footer-tabs/FooterTabs";
 import CartScreen from "../screens/cart/cart";
 import TermsAndConditionsScreen from "../screens/terms-and-conditions";
@@ -31,10 +31,12 @@ import StoreManagementScreen from "../screens/admin/store-managment";
 import ProductOrderScreen from "../screens/admin/products-order";
 import BookDeliveryScreen from "../screens/book-delivery";
 import CustomDeliveryListScreen from "../screens/book-delivery/list";
+import CheckoutScreen from "../screens/checkout";
+import PickTimeCMP from "../components/dialogs/pick-time";
 
 const Stack = createStackNavigator();
 const TransitionScreen = {
-  gestureDirection: 'horizontal',
+  gestureDirection: 'vertical',
   transitionSpec: {
       open: TransitionSpecs.TransitionIOSSpec,
       close: TransitionSpecs.TransitionIOSSpec
@@ -75,10 +77,13 @@ export const MainStackNavigator = () => {
       initialRouteName="homeScreen"
       header={null}
       presentation={"presentation"}
+
       screenOptions={{
         cardStyle: { backgroundColor: 'transparent' },
         headerMode: false,
         ...TransitionScreen,
+ 
+        
       }}
     >
        {/* name: "menuScreen",
@@ -114,6 +119,8 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="products-order" component={ProductOrderScreen} />
       <Stack.Screen name="book-delivery" component={BookDeliveryScreen} />
       <Stack.Screen name="custom-delivery-list" component={CustomDeliveryListScreen} />
+      <Stack.Screen name="checkout-screen" component={CheckoutScreen} initialParams={{ selectedDate: null }}/>
+      {/* <Stack.Screen name="pick-time-screen" component={PickTimeCMP} /> */}
       <Stack.Screen 
         name="order-submitted"
         component={OrderSubmittedScreen}
@@ -123,6 +130,25 @@ export const MainStackNavigator = () => {
         name="meal"
         component={MealScreen}
         initialParams={{ product: null, categoryId: null }}
+        
+        options={{
+          presentation: 'modal',
+          ...TransitionPresets.ModalSlideFromBottomIOS,
+          detachPreviousScreen: true,
+          cardStyle: { opacity: 100, }, // Slide from bottom animation
+          
+          transitionSpec: {
+            open: {
+              animation: 'timing',
+              config: { duration: 300 }, // Adjust duration for a smoother animation
+            
+            },
+            close: {
+              animation: 'timing',
+              config: { duration: 300 },
+            },
+          },
+        }}
       />
       <Stack.Screen
         name="meal/edit"

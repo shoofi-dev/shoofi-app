@@ -16,6 +16,7 @@ import BirthdayImagesList from "../../components/birthday-images-list";
 import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react";
 import { isEmpty } from "lodash";
+import * as Animatable from 'react-native-animatable';
 
 import GradiantRow from "../../components/gradiant-row";
 import Button from "../../components/controls/button/button";
@@ -29,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import {
+  animationDuration,
   canOrderOutOfStock,
   cdnUrl,
   mealsImages,
@@ -565,21 +567,8 @@ const MealScreen = ({ route }) => {
   }
 
   return (
-    <View style={{ height: "100%" }}>
-      <LinearGradient
-        colors={[
-          "rgba(207, 207, 207, 0.4)",
-          "rgba(246,246,247, 0.1)",
-          "rgba(246,246,247, 0.8)",
-          "rgba(246,246,247, 0.8)",
-          "rgba(246,246,247, 0.8)",
-          "rgba(246,246,247, 0.8)",
-          "rgba(207, 207, 207, 0.4)",
-        ]}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.background]}
-      />
+    <Animatable.View animation="fadeInUp" duration={animationDuration}>
+
       <View
         style={{
           width: Dimensions.get("window").width + 70,
@@ -609,11 +598,12 @@ const MealScreen = ({ route }) => {
             top: 10,
           }}
         >
-          <Icon
+          {/* <Icon
             icon={"arrow-left2"}
             style={{ color: themeStyle.WHITE_COLOR }}
             size={30}
-          />
+          /> */}
+          <Text  style={{ color: themeStyle.WHITE_COLOR, fontSize:30 }}>X</Text>
         </TouchableOpacity>
       </View>
       <View style={{ zIndex: 10 }}>
@@ -742,29 +732,11 @@ const MealScreen = ({ route }) => {
                 </View>
               )} */}
 
-              {meal.data?.categoryId == "1" && (
-                <View style={{ marginTop: 20, width: "100%" }}>
-                  <GradiantRow
-                    onChangeFn={(value) => {
-                      updateMeal(value, "size", meal.data.extras["size"].type);
-                    }}
-                    type={meal.data.extras["size"].type}
-                    value={meal.data.extras["size"].value}
-                    title={"size"}
-                    options={meal.data.extras["size"].options}
-                  />
-                </View>
-              )}
-
+     
               {meal.data?.categoryId == "1" && (
                 <View style={{ marginTop: 10 }}>
                   <View style={{ marginHorizontal: 40, marginBottom: 20 }}>
-                    <ToggleControl
-                      value={selectedPizzaHalf}
-                      option1={"halfOne"}
-                      option2={"halfTwo"}
-                      onChange={(value) => {if(value){setSelectedPizzaHalf(value)}}}
-                    />
+           
                     {/* <View
                       style={{
                         flexDirection: "row",
@@ -782,8 +754,9 @@ const MealScreen = ({ route }) => {
                       <Text style={{ fontSize: 16 }}>{t('extra-free')}</Text>
                     </View> */}
                   </View>
+                  <Text style={{alignSelf:'center', fontSize:22}}>{t('extra-salads')}</Text>
                   {selectedPizzaHalf == "halfOne" && (
-                    <View style={{ width: "100%" }}>
+                    <View style={{ width: "100%", backgroundColor: themeStyle.SECONDARY_COLOR,  }}>
                       <GradiantRow
                         onChangeFn={(value) => {
                           updateMeal(
@@ -795,27 +768,11 @@ const MealScreen = ({ route }) => {
                         type={meal.data.extras["halfOne"].type}
                         value={[...meal.data.extras["halfOne"].value]}
                         title={"halfOne"}
-                        options={orderBy(storeDataStore.storeData.pizzaExtras, ["order"], ["asc"])}
+                        options={orderBy(storeDataStore.storeData.mealExtras, ["order"], ["asc"])}
                       />
                     </View>
                   )}
-                  {selectedPizzaHalf == "halfTwo" && (
-                    <View style={{ width: "100%" }}>
-                      <GradiantRow
-                        onChangeFn={(value) => {
-                          updateMeal(
-                            value,
-                            "halfTwo",
-                            meal.data.extras["halfTwo"].type
-                          );
-                        }}
-                        type={meal.data.extras["halfTwo"].type}
-                        value={[...meal.data.extras["halfTwo"].value]}
-                        title={"halfTwo"}
-                        options={orderBy(storeDataStore.storeData.pizzaExtras, ["order"], ["asc"])}
-                      />
-                    </View>
-                  )}
+     
                 </View>
               )}
 
@@ -1014,7 +971,7 @@ const MealScreen = ({ route }) => {
           </View>
         </KeyboardAvoidingView>
       </ScrollView>
-      <View style={styles.buttonContainer}>
+      {/* <View style={styles.buttonContainer}>
         <View
           style={{
             width: "60%",
@@ -1040,7 +997,47 @@ const MealScreen = ({ route }) => {
             </Text>
           </View>
         </View>
-      </View>
+      </View> */}
+            <Animatable.View animation="fadeInUp"  duration={animationDuration}
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: themeStyle.SECONDARY_COLOR,
+      
+                padding: 20,
+                borderTopStartRadius: 30,
+                borderTopEndRadius: 30,
+                shadowColor: "#C19A6B",
+                shadowOffset: {
+                  width: 2,
+                  height: 2,
+                },
+                shadowOpacity: 1,
+                shadowRadius: 20,
+                alignItems: "center",
+              }}
+            >
+              <View>
+              <Text style={{ fontSize: 22 }} type="number">
+              {" "}
+              ₪{meal.data.price * meal.data.extras.counter.value}
+            </Text>
+              </View>
+              <View style={{ width: "90%", marginTop: 10 }}>
+              <Button
+            text={isEdit ? t("save") : t("add-to-cart")}
+            icon="shopping-bag-plus"
+            fontSize={17}
+            onClickFn={isEdit ? onUpdateCartProduct : onAddToCart}
+            textColor={themeStyle.WHITE_COLOR}
+            fontFamily={`${getCurrentLang()}-Bold`}
+            borderRadious={19}
+            disabled={!isValidMeal()}
+          />
+              </View>
+            </Animatable.View>
       {meal.data.subCategoryId == "1" && (
         <PickImagedDialog
           isOpen={isPickImageDialogOpen}
@@ -1064,7 +1061,7 @@ const MealScreen = ({ route }) => {
         text={confirmActiondDialogText}
         positiveText="ok"
       />
-    </View>
+</Animatable.View>
   );
 };
 export default observer(MealScreen);

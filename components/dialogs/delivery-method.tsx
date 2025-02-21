@@ -28,7 +28,7 @@ export default function DeliveryMethodDialog({
   handleAnswer,
   type,
   selectedOrderDate,
-  paymentMthod
+  paymentMthod,
 }: TProps) {
   const { t } = useTranslation();
 
@@ -58,91 +58,59 @@ export default function DeliveryMethodDialog({
               <ExclamationMarkLottie />
             </Dialog.Title>
             <Dialog.Content>
-         
-                {type === SHIPPING_METHODS.shipping && (
-                  <View style={{}}>
-                {paymentMthod === PAYMENT_METHODS.creditCard && <View style={{marginBottom:10}}>
-                  <Text style={{
-                  fontSize: 16,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  color:themeStyle.ERROR_COLOR
-                }}>
-                  
-                  *{t("delivery-method-note")}
-                  </Text>
-                  </View>}
+              {type === SHIPPING_METHODS.shipping && (
+                <View style={{}}>
+                  {paymentMthod === PAYMENT_METHODS.creditCard && (
+                    <View style={{ marginBottom: 10 }}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          textAlign: "center",
+                          fontWeight: "bold",
+                          color: themeStyle.ERROR_COLOR,
+                        }}
+                      >
+                        *{t("delivery-method-note")}
+                      </Text>
+                    </View>
+                  )}
                   <View>
-                  <Text style={{
-                  fontSize: 16,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                }}>
-                  
-                  {t("approve-delivery-method")}
-                  </Text>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {t("approve-delivery-method")}
+                    </Text>
                   </View>
-              
-                </View>)}
+                </View>
+              )}
 
-
-          
-                {type === SHIPPING_METHODS.takAway && <Text
-                style={{
-                  fontSize: 16,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                }}
-              >
-                 {t("approve-takeaway-method")}</Text>}
-
-                {type === SHIPPING_METHODS.table && <Text
-                style={{
-                  fontSize: 16,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                }}
-              >{t("approve-table-method")}</Text>}
-                              {/* <View style={{ marginTop: 10 }}>
+              {type === SHIPPING_METHODS.takAway && (
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: 16,
                     textAlign: "center",
                     fontWeight: "bold",
                   }}
                 >
-                  {t("requested-order-date")}:
+                  {t("approve-takeaway-method")}
                 </Text>
-              </View> */}
-              {/* <View style={{ marginTop: 5 }}>
+              )}
+
+              {type === SHIPPING_METHODS.table && (
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: 16,
                     textAlign: "center",
                     fontWeight: "bold",
-                    fontFamily:`${getCurrentLang()}-American-bold`
-
                   }}
                 >
-                  {selectedOrderDate &&
-                   `${moment(selectedOrderDate).format("DD/MM")} - ${i18n.t(moment(selectedOrderDate).format("dddd"))}`
-                  }
+                  {t("approve-table-method")}
                 </Text>
-              </View>
-              <View style={{ marginTop: 0 }}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    fontFamily:`${getCurrentLang()}-American-bold`
-
-                  }}
-                >
-                  {selectedOrderDate &&
-                  moment(selectedOrderDate).format("HH:mm")}
-                </Text>
-              </View> */}
+              )}
             </Dialog.Content>
             <Dialog.Actions>
               <View

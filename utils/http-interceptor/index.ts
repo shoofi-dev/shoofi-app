@@ -24,7 +24,7 @@ axiosInstance.interceptors.request.use(
     const version = Constants.nativeAppVersion;
     config.headers["app-version"] = version;
     
-    config.headers["app-name"] = 'pizza-gmel'
+    config.headers["app-name"] = 'abdelhai-butcher'
 
     return config;
   },

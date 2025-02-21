@@ -5,7 +5,7 @@ import {
   Dimensions,
   ImageBackground,
 } from "react-native";
-import Text from "../../../../components/controls/Text";
+import Text from "../../../controls/Text";
 import { observer } from "mobx-react";
 import {
   Calendar,
@@ -14,7 +14,7 @@ import {
   LocaleConfig,
 } from "react-native-calendars";
 import OrderDayItem from "../day-item";
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useRef } from "react";
 import { StoreContext } from "../../../../stores";
 import moment from "moment";
 import { groupBy } from "lodash";
@@ -24,9 +24,14 @@ import Carousel from "react-native-reanimated-carousel";
 import { LinearGradient } from "expo-linear-gradient";
 import { getCurrentLang } from "../../../../translations/i18n";
 import { useTranslation } from "react-i18next";
-import { ORDER_TYPE, closeHour } from "../../../../consts/shared";
+import {
+  ORDER_TYPE,
+  animationDuration,
+  closeHour,
+} from "../../../../consts/shared";
 import TimeCarousel from "../../../time-carousle";
 import { ScrollView } from "react-native-gesture-handler";
+import * as Animatable from "react-native-animatable";
 
 LocaleConfig.locales["fr"] = {
   monthNames: [
@@ -43,20 +48,6 @@ LocaleConfig.locales["fr"] = {
     "نوفمبر",
     "ديسمبر",
   ],
-  // monthNamesShort: [
-  //   "Janv.",
-  //   "Févr.",
-  //   "Mars",
-  //   "Avril",
-  //   "Mai",
-  //   "Juin",
-  //   "Juil.",
-  //   "Août",
-  //   "Sept.",
-  //   "Oct.",
-  //   "Nov.",
-  //   "Déc.",
-  // ],
   dayNames: [
     "الأحد",
     "الإثنين",
@@ -77,23 +68,31 @@ LocaleConfig.locales["fr"] = {
   ],
   today: "Aujourd'hui",
 };
+
 LocaleConfig.defaultLocale = "fr";
 
 export type TProps = {
   handleSelectedDate: any;
-  userDate?: any;
+  userDateValue?: any;
   minDeltaMinutes: number;
 };
-const CalanderContainerUser = ({ handleSelectedDate, userDate, minDeltaMinutes }: TProps) => {
+const CalanderContainerUser = ({
+  handleSelectedDate,
+  userDateValue,
+  minDeltaMinutes,
+}: TProps) => {
   const { t } = useTranslation();
+  const viewRefs = useRef([]);
 
-  const { menuStore, ordersStore, authStore, userDetailsStore } = useContext(
-    StoreContext
-  );
+  const { menuStore, ordersStore, authStore, userDetailsStore } =
+    useContext(StoreContext);
   // const [ordersList, setOrdersList] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(
-    
-  );
+  const [selectedDate, setSelectedDate] = useState();
+  const [userDate, setUserDate] = useState();
+  useEffect(() => {
+    setUserDate(userDateValue);
+  }, [userDateValue]);
+
   const [selectedHour, setSelectedHour] = useState();
   const [ordersByDate, setOrdersByDate] = useState({});
   // const [markedDates, setMarkedDates] = useState({});
@@ -102,18 +101,22 @@ const CalanderContainerUser = ({ handleSelectedDate, userDate, minDeltaMinutes }
 
   const isAddDay = () => {
     var now = moment();
-    var hourToCheck = (now.day() !== 0)?closeHour:0;
+    var hourToCheck = now.day() !== 0 ? closeHour : 0;
     var dateToCheck = now.hour(hourToCheck);
     //return moment().isAfter(dateToCheck);
     return moment().isAfter(dateToCheck) ? 1 : 0;
-  }
+  };
 
   const [weekdDays, setWeekDays] = useState();
   const getNext7Days = () => {
     let days = [];
     let daysRequired = 14;
+    const plusDay = userDate ? 0 : 1;
     for (let i = 0; i < daysRequired; i++) {
-      let day = moment().add(ordersStore.orderType === ORDER_TYPE.later ? i+1 : i, "days");
+      let day = moment().add(
+        ordersStore.orderType === ORDER_TYPE.later ? i + plusDay : i,
+        "days"
+      );
       days.push({
         dayId: day.day(),
         dayLetter: day.format("dddd"),
@@ -126,9 +129,16 @@ const CalanderContainerUser = ({ handleSelectedDate, userDate, minDeltaMinutes }
     setWeekDays(days);
   };
   useEffect(() => {
-    setSelectedDate(userDate? userDate : moment().clone().add(ordersStore.orderType === ORDER_TYPE.later ? 1 : 0, "days").format("YYYY-MM-DD"))
+    setSelectedDate(
+      userDate
+        ? userDate
+        : moment()
+            .clone()
+            .add(ordersStore.orderType === ORDER_TYPE.later ? 1 : 0, "days")
+            .format("YYYY-MM-DD")
+    );
     getNext7Days();
-  }, []);
+  }, [userDate]);
 
   const isSelectedDay = (day) => {
     // moment(selectedDate,"YYYY-MM-DD").isSame(moment(day.date, "YYYY-MM-DD"))
@@ -144,9 +154,13 @@ const CalanderContainerUser = ({ handleSelectedDate, userDate, minDeltaMinutes }
 
   const updateSelectedHour = (hour: any, tmpIsDisabledHour: boolean) => {
     setSelectedHour(hour);
-    setIsDisabledHour(tmpIsDisabledHour)
+    setIsDisabledHour(tmpIsDisabledHour);
   };
 
+  const handleBounce = (index) => {
+    // Trigger bounce animation for the clicked item
+    viewRefs.current[index]?.flash();
+  };
   const handleSaveDate = () => {
     const ddate = moment(selectedDate).format("YYYY-MM-DD");
     const orderDate = moment(`${ddate} ${selectedHour}`);
@@ -156,117 +170,153 @@ const CalanderContainerUser = ({ handleSelectedDate, userDate, minDeltaMinutes }
   const closeDialog = () => {
     handleSelectedDate(null);
   };
-  
+
   if (!weekdDays) {
     return;
   }
-
   return (
-    <View style={{ height: "100%",  }}>
-
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "transparent",
-            height: "90%",
-    
-          }}
-        >
-          { ordersStore.orderType === ORDER_TYPE.later && <View style={{ flexBasis: "25%", paddingLeft:5 }}>
-            <ScrollView style={{borderRightWidth:1,  borderRightColor:"#eaaa5c"}}>
-            {weekdDays.map((day) => {
-              return (
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    backgroundColor: isSelectedDay(day) ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR,
-                    marginVertical: 5,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: 10,
-                    shadowColor: isSelectedDay(day) ? 'black' : "#C19A6B",
-                    shadowOffset: {
-                      width: 0,
-                      height: 2,
-                    },
-                    shadowOpacity: 1,
-                    shadowRadius: 5,
-                    paddingVertical:20,
-                    opacity:0.8,
-                    margin:5
-                  }}
-                  onPress={() => updateSelectedDate(day.date)}
-                >
-                  <Text style={{ fontSize: 18,fontFamily: `${getCurrentLang()}-SemiBold`, color: isSelectedDay(day) ? themeStyle.WHITE_COLOR : themeStyle.TEXT_PRIMARY_COLOR,                       fontWeight: '900'
- }}>
-                    {moment(day.date).lang("ar").format("dddd")}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontFamily: `Rubik-Medium`,
-                      color: isSelectedDay(day) ? themeStyle.WHITE_COLOR : themeStyle.TEXT_PRIMARY_COLOR,
-                    }}
-                  >
-                    {moment(day.date).format("D")}/
-                    {moment(day.date).format("M")}
-                  </Text>
-                  <View style={isSelectedDay(day) ? styles.triangle : {}}>
-                    <LinearGradient
-                      colors={["#eaaa5c", "#a77948"]}
-                      start={{ x: 1, y: 0 }}
-                      end={{ x: 0, y: 1 }}
-                      style={[styles.background]}
-                    />
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
+    <View style={{ height: "100%", width: "100%" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          backgroundColor: "transparent",
+          height: "90%",
+        }}
+      >
+        {ordersStore.orderType === ORDER_TYPE.later && (
+          <View style={{ flexBasis: "25%", paddingLeft: 5 }}>
+            <ScrollView
+              style={{ borderRightWidth: 1, borderRightColor: "#eaaa5c" }}
+            >
+              <Animatable.View
+                animation="fadeInRight"
+                duration={animationDuration}
+              >
+                {weekdDays.map((day, index) => {
+                  return (
+                    <Animatable.View
+                      ref={(ref) => (viewRefs.current[index] = ref)}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          flex: 1,
+                          backgroundColor: isSelectedDay(day)
+                            ? themeStyle.PRIMARY_COLOR
+                            : themeStyle.WHITE_COLOR,
+                          marginVertical: 5,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: 10,
+                          shadowColor: isSelectedDay(day) ? "black" : "#C19A6B",
+                          shadowOffset: {
+                            width: 0,
+                            height: 2,
+                          },
+                          shadowOpacity: 1,
+                          shadowRadius: 5,
+                          paddingVertical: 20,
+                          opacity: 0.8,
+                          margin: 5,
+                        }}
+                        onPress={() => {
+                          updateSelectedDate(day.date);
+                          handleBounce(index);
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            fontFamily: `${getCurrentLang()}-SemiBold`,
+                            color: isSelectedDay(day)
+                              ? themeStyle.WHITE_COLOR
+                              : themeStyle.TEXT_PRIMARY_COLOR,
+                            fontWeight: "900",
+                          }}
+                        >
+                          {moment(day.date)
+                            .locale(getCurrentLang())
+                            .format("dddd")}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            fontFamily: `Rubik-Medium`,
+                            color: isSelectedDay(day)
+                              ? themeStyle.WHITE_COLOR
+                              : themeStyle.TEXT_PRIMARY_COLOR,
+                          }}
+                        >
+                          {moment(day.date).format("D")}/
+                          {moment(day.date).format("M")}
+                        </Text>
+                        <View style={isSelectedDay(day) ? styles.triangle : {}}>
+                          <LinearGradient
+                            colors={["#eaaa5c", "#a77948"]}
+                            start={{ x: 1, y: 0 }}
+                            end={{ x: 0, y: 1 }}
+                            style={[styles.background]}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    </Animatable.View>
+                  );
+                })}
+              </Animatable.View>
             </ScrollView>
-          </View>}
-          <View style={{ flexBasis: ordersStore.orderType === ORDER_TYPE.now ? "100%" : "75%", paddingHorizontal: 8 }}>
-            <OrderDayItem
-              selectedHour={selectedHour}
-              data={{ selectedDate: selectedDate, items: [] }}
-              updateSelectedHour={updateSelectedHour}
-              userDate={userDate}
-              minDeltaMinutes={minDeltaMinutes}
-            />
-            {/* <TimeCarousel/> */}
           </View>
-        </View>
-        <View
+        )}
+        <Animatable.View
+          animation="fadeInLeft"
+          duration={animationDuration}
           style={{
-            flexDirection: "row",
-            width: "95%",
-            justifyContent: "space-around",
-            alignItems: "center",
-            height: "10%",
-            alignSelf: "center",
-            marginTop: 8,
-            marginBottom:20
+            flexBasis:
+              ordersStore.orderType === ORDER_TYPE.now ? "100%" : "75%",
+            paddingHorizontal: 8,
           }}
         >
-          <View style={{ flexBasis: "49%", }}>
-            <Button
-              onClickFn={handleSaveDate}
-              text={t("save")}
-              textColor={themeStyle.WHITE_COLOR}
-              fontSize={16}
-              disabled={!selectedHour || isDisabledHour}
-              bgColor={themeStyle.SUCCESS_COLOR}
-            />
-          </View>
-          <View style={{ flexBasis: "49%" }}>
-                <Button
-                  onClickFn={closeDialog}
-                  text={t("cancel")}
-                  bgColor={themeStyle.GRAY_600}
-                  textColor={themeStyle.WHITE_COLOR}
-                  fontSize={16}
-                />
-              </View>
+          <OrderDayItem
+            selectedHour={selectedHour}
+            data={{ selectedDate: selectedDate, items: [] }}
+            updateSelectedHour={updateSelectedHour}
+            userDateValue={userDate}
+            minDeltaMinutes={minDeltaMinutes}
+          />
+          {/* <TimeCarousel/> */}
+        </Animatable.View>
+      </View>
+      <Animatable.View
+        animation="fadeInUp"
+        duration={animationDuration}
+        style={{
+          flexDirection: "row",
+          width: "95%",
+          justifyContent: "space-around",
+          alignItems: "center",
+          height: "10%",
+          alignSelf: "center",
+          marginTop: 8,
+          marginBottom: 20,
+        }}
+      >
+        <View style={{ flexBasis: "49%" }}>
+          <Button
+            onClickFn={handleSaveDate}
+            text={t("save")}
+            textColor={themeStyle.WHITE_COLOR}
+            fontSize={16}
+            disabled={!selectedHour || isDisabledHour}
+          />
         </View>
+        <View style={{ flexBasis: "49%" }}>
+          <Button
+            onClickFn={closeDialog}
+            text={t("cancel")}
+            bgColor={themeStyle.GRAY_600}
+            textColor={themeStyle.WHITE_COLOR}
+            fontSize={16}
+          />
+        </View>
+      </Animatable.View>
     </View>
   );
 };
@@ -292,7 +342,7 @@ const styles = StyleSheet.create({
 
     right: -6,
     position: "absolute",
-    zIndex:10
+    zIndex: 10,
   },
   background: {
     position: "absolute",
