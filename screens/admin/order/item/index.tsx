@@ -18,7 +18,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Button from "../../../../components/controls/button/button";
 import { testPrint } from "../../../../helpers/printer/print";
 import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../../../consts/api";
 import { schedulePushNotification } from "../../../../utils/notification";
 import { orderBy } from "lodash";
 import isShowSize from "../../../../helpers/is-show-size";

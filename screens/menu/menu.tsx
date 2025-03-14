@@ -26,10 +26,10 @@ import * as Haptics from "expo-haptics";
 import MenuItem from "./components/menu-item/index";
 import AddMenuItem from "./components/menu-item/add";
 import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../consts/api";
 import { ActivityIndicator } from "react-native-paper";
 import { adminCustomerStore } from "../../stores/admin-customer";
 import { useNavigation } from "@react-navigation/native";
+import _useWebSocketUrl from "../../hooks/use-web-socket-url";
 export function toBase64(input) {
   return Buffer.from(input, "utf-8").toString("base64");
 }
@@ -50,7 +50,9 @@ const MenuScreen = () => {
 
   useEffect(() => {}, [languageStore]);
 
-  const { lastJsonMessage } = useWebSocket(WS_URL, {
+  const { webScoketURL } = _useWebSocketUrl();
+
+  const { lastJsonMessage } = useWebSocket(webScoketURL, {
     share: true,
     shouldReconnect: (closeEvent) => true,
   });
@@ -147,7 +149,7 @@ const MenuScreen = () => {
   
       }).start(()=>{
         Animated.timing(anim.current, {
-          toValue: -10,
+          toValue: 25,
           duration: 600,
           useNativeDriver: true,
     
@@ -204,15 +206,7 @@ const MenuScreen = () => {
       <View style={styles.container}>
         <View
           style={{ height: "100%", width: "100%",flexDirection:'row', alignItems:'center', justifyContent:'center',  paddingTop:15,
-            shadowColor: "#737370",
-            shadowOffset: {
-              width: 0,
-              height: 3,
-            },
-            shadowOpacity: 10,
-            shadowRadius: 10,
-            elevation: 25,
-            borderWidth: 0, }}
+      }}
         >
           {/* {userDetailsStore.isAdmin() && <View style={{ width: 120, height: 96, flexBasis: 90 }}>
             <AddMenuItem onItemSelect={onAddCategory} />
@@ -269,7 +263,7 @@ const MenuScreen = () => {
                 category.categoryId === tmpSelectedCategory?.categoryId
                   ? "flex"
                   : "none",
-                  marginTop:20,
+                  marginTop:60,
                   
             }}
           >

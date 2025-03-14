@@ -120,7 +120,7 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="book-delivery" component={BookDeliveryScreen} />
       <Stack.Screen name="custom-delivery-list" component={CustomDeliveryListScreen} />
       <Stack.Screen name="checkout-screen" component={CheckoutScreen} initialParams={{ selectedDate: null }}/>
-      {/* <Stack.Screen name="pick-time-screen" component={PickTimeCMP} /> */}
+      <Stack.Screen name="pick-time-screen" component={PickTimeCMP} />
       <Stack.Screen 
         name="order-submitted"
         component={OrderSubmittedScreen}

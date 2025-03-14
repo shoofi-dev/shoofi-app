@@ -297,7 +297,7 @@ const CategoryItemsList = ({ productsList, category }) => {
         <View
           style={{
             height: "100%",
-            shadowColor: '#737370 ',
+            shadowColor: 'gray',
             shadowOffset: {
               width: 1,
               height: 3,
@@ -308,6 +308,8 @@ const CategoryItemsList = ({ productsList, category }) => {
             borderWidth: 0,
             backgroundColor: "transparent",
             marginTop: 0,
+            
+    
           }}
         >
           {/* {(tmpSelectedCategory == undefined || tmpSelectedCategoryProg) && (
@@ -317,7 +319,7 @@ const CategoryItemsList = ({ productsList, category }) => {
           )} */}
           <ScrollView
             ref={scrollRef}
-            style={{ height: "100%", marginBottom: 50 }}
+            style={{ height: "100%", marginBottom: 100}}
             onMomentumScrollEnd={onScrollEnd}
             onScrollEndDrag={onScrollEnd}
             onMomentumScrollBegin={onScrollEnd}
@@ -326,7 +328,7 @@ const CategoryItemsList = ({ productsList, category }) => {
               {userDetailsStore.isAdmin(ROLES.all) && (
                 <View
                   style={{
-                    flexBasis: "48.5%",
+                    // flexBasis: "48.5%",
                   }}
                 >
                   <AddProductItem onItemSelect={onAddProduct} />
@@ -339,7 +341,7 @@ const CategoryItemsList = ({ productsList, category }) => {
                     style={{
                       marginBottom:30,
                       flexBasis: "100%",
-                      height: 90,
+                      height: 250,
 
                     }}
                   >
@@ -373,7 +375,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row-reverse",
     flexWrap: "wrap",
-    marginTop: 40,
     maxWidth: 600,
     justifyContent: "space-between",
     paddingHorizontal: 8,

@@ -133,6 +133,7 @@ const produtsAdapter = (order) => {
       nameAR: product.data.nameAR,
       nameHE: product.data.nameHE,
       qty: product.data.extras.counter.value,
+      weight: product.data?.extras?.weight?.value,
       note: product.others.note,
       toName: product.others.toName,
       toAge: product.others.toAge,

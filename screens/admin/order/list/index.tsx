@@ -23,6 +23,7 @@ import Icon from "../../../../components/icon";
 import Text from "../../../../components/controls/Text";
 import DashedLine from "react-native-dashed-line";
 import {
+  APP_NAME,
   PAYMENT_METHODS,
   ROLES,
   SHIPPING_METHODS,
@@ -35,7 +36,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Button from "../../../../components/controls/button/button";
 import { testPrint } from "../../../../helpers/printer/print";
 import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../../../consts/api";
 import { schedulePushNotificationDeliveryDelay } from "../../../../utils/notification";
 import { orderBy } from "lodash";
 import sizeTitleAdapter from "../../../../helpers/size-name-adapter";
@@ -48,6 +48,8 @@ import ConfirmRefundActiondDialog from "../../../../components/dialogs/refund-co
 import ConfirmActiondDialog from "../../../../components/dialogs/confirm-action";
 import isShowSize from "../../../../helpers/is-show-size";
 import sortPizzaExtras from "../../../../helpers/sort-pizza-extras";
+import _useWebSocketUrl from "../../../../hooks/use-web-socket-url";
+import CustomFastImage from "../../../../components/custom-fast-image";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -165,8 +167,10 @@ const OrdersListScreen = ({ route }) => {
   const getNext7Days = () => {
     let days = [];
     let daysRequired = 14;
+    const multiple = storeDataStore.storeData.isOrderLaterSupport ? 1 : -1;
     for (let i = 0; i < daysRequired; i++) {
-      let day = moment().add(i * -1, "days");
+      
+      let day = moment().add(i * multiple, "days");
       days.push({
         dayId: i,
         dayLetter: day.format("dddd"),
@@ -225,8 +229,9 @@ const OrdersListScreen = ({ route }) => {
   };
 
   const getOrders = (pageNum) => {
-    if (authStore.isLoggedIn()) {
+    if (authStore.isLoggedIn() && selectedDay?.date) {
       setIsloading(true);
+      console.log("selectedDay?.date?.format()",selectedDay?.date?.format())
       ordersStore.getOrders(
         userDetailsStore.isAdmin(),
         [selectedStatus],
@@ -237,8 +242,9 @@ const OrdersListScreen = ({ route }) => {
       );
     }
   };
+  const { webScoketURL } = _useWebSocketUrl();
 
-  const { lastJsonMessage } = useWebSocket(WS_URL, {
+  const { lastJsonMessage } = useWebSocket(webScoketURL, {
     share: true,
     shouldReconnect: (closeEvent) => true,
   });
@@ -529,18 +535,18 @@ const OrdersListScreen = ({ route }) => {
             <View style={{ marginBottom: 0 }}>
               <Text style={styles.dateRawText}>{t("collect-date")}</Text>
             </View>
-            {/* <Text
+            <Text
             style={{
-              fontSize: 34,
+              fontSize: 30,
               fontFamily: `${getCurrentLang()}-Bold`,
               color: themeStyle.ERROR_COLOR,
             }}
           >
             {t(moment(order.orderDate).format("dddd"))}
-          </Text> */}
+          </Text>
             <Text
               style={{
-                fontSize: 20,
+                fontSize: 30,
                 fontFamily: `${getCurrentLang()}-American-bold`,
 
                 color: themeStyle.SUCCESS_COLOR,
@@ -853,10 +859,21 @@ const OrdersListScreen = ({ route }) => {
                       handleShowImage(`${cdnUrl}${meal.img[0].uri}`)
                     }
                   >
-                    <Image
-                      style={{ width: "100%", height: "100%" }}
-                      source={mealsImages[meal.img]}
+           
+                             <CustomFastImage
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        marginLeft: 0,
+                        borderRadius: 20,
+                      }}
+                      source={{
+                        uri: `${cdnUrl}${meal.img[0].uri}`,
+                      }}
                       resizeMode="contain"
+                      cacheKey={`${APP_NAME}_${meal.img[0].uri
+                        .split(/[\\/]/)
+                        .pop()}`}
                     />
                   </TouchableOpacity>
                 </View>
@@ -896,138 +913,40 @@ const OrdersListScreen = ({ route }) => {
               </View>
 
               <View style={{ marginTop: 15 }}>
-                {(item?.halfOne || item?.halfTwo) && (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: "60%",
-                      marginBottom: 30,
-                    }}
-                  >
-                    <View style={{}}>
-                      {item?.halfOne && (
-                        <View
-                          style={{
-                            borderBottomWidth: 1,
-                            paddingVertical: 6,
-                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              textAlign: "left",
-                              fontSize: 20,
-                            }}
-                          >
-                            {t("halfOne")}
-                          </Text>
-                        </View>
-                      )}
-                      {item?.halfOne.length > 0 ? (
-                        Object.keys(extrasSorted?.halfOne).map((key) => {
-                          return (
-                            <View style={{}}>
-                              <View style={{ flexDirection: "row" }}>
-                                <Text
-                                  style={{
-                                    textAlign: "left",
-                                    fontSize: 20,
-                                    marginTop: 10,
-                                  }}
-                                  type="number"
-                                >
-                                  {`${Number(key) + 1}`}
-                                </Text>
-                                <Text
-                                  style={{
-                                    textAlign: "left",
-                                    fontSize: 20,
-                                    marginTop: 10,
-                                  }}
-                                >
-                                  {" "}
-                                  - {t(extrasSorted?.halfOne[key])}
-                                </Text>
-                              </View>
-                            </View>
-                          );
-                        })
-                      ) : (
-                        <Text
-                          style={{
-                            textAlign: "left",
-                            fontSize: 20,
-                            marginTop: 12,
-                          }}
-                        >
-                          من غير اضافات
-                        </Text>
-                      )}
-                    </View>
-
-                    <View style={{}}>
-                      {item?.halfTwo && (
-                        <View
-                          style={{
-                            borderBottomWidth: 1,
-                            paddingVertical: 6,
-                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              textAlign: "left",
-                              fontSize: 20,
-                            }}
-                          >
-                            {t("halfTwo")}
-                          </Text>
-                        </View>
-                      )}
-                      {item?.halfTwo.length > 0 ? (
-                        Object.keys(extrasSorted?.halfTwo).map((key) => {
-                          return (
-                            <View style={{}}>
-                              <View style={{ flexDirection: "row" }}>
-                                <Text
-                                  style={{
-                                    textAlign: "left",
-                                    fontSize: 20,
-                                    marginTop: 10,
-                                  }}
-                                  type="number"
-                                >
-                                  {`${Number(key) + 1}`}
-                                </Text>
-                                <Text
-                                  style={{
-                                    textAlign: "left",
-                                    fontSize: 20,
-                                    marginTop: 10,
-                                  }}
-                                >
-                                  {" "}
-                                  - {t(extrasSorted?.halfTwo[key])}
-                                </Text>
-                              </View>
-                            </View>
-                          );
-                        })
-                      ) : (
-                        <Text
-                          style={{
-                            textAlign: "left",
-                            fontSize: 20,
-                            marginTop: 12,
-                          }}
-                        >
-                          من غير اضافات
-                        </Text>
-                      )}
-                    </View>
-                  </View>
-                )}
+              <View
+                                    style={{
+                                      flexDirection: "row",
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        fontSize: 20,
+                                        color: themeStyle.TEXT_PRIMARY_COLOR,
+                                      }}
+                                    >
+                                      <View style={{marginRight:10}}>
+                                      <Icon
+                                        icon="scale"
+                                        size={20}
+                                        style={{
+                                          color: themeStyle.TEXT_PRIMARY_COLOR,
+                                        }}
+                                      />
+                                      </View>
+                          
+                                      {t("weight")} :{" "}
+                                      {item?.weight}
+                                      <Text
+                                        style={{
+                                          fontSize: 20,
+                                          color: themeStyle.TEXT_PRIMARY_COLOR,
+                                        }}
+                                      >
+                                        {" "}
+                                        {t("gram")}
+                                      </Text>
+                                    </Text>
+                                  </View>
               </View>
               {/* <DashedLine
               dashLength={5}
@@ -1061,6 +980,7 @@ const OrdersListScreen = ({ route }) => {
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
+                  marginTop:15
                 }}
               >
                 <Text
@@ -1101,9 +1021,10 @@ const OrdersListScreen = ({ route }) => {
               {item.note && (
                 <View
                   style={{
-                    marginTop: 2,
+                    marginTop: 15,
                     alignItems: "flex-start",
                     width: "100%",
+                    
                   }}
                 >
                   <Text
@@ -1112,7 +1033,7 @@ const OrdersListScreen = ({ route }) => {
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                     }}
                   >
-                    {t("مواصفات الكعكة")}:
+                    {t("note")}:
                   </Text>
                   <Text
                     style={{
@@ -1357,7 +1278,7 @@ const OrdersListScreen = ({ route }) => {
                 style={{
                   right: 0,
                   top: 8,
-                  color: themeStyle.PRIMARY_COLOR,
+                  color: themeStyle.SECONDARY_COLOR,
                 }}
               />
             </TouchableOpacity>
@@ -1379,14 +1300,15 @@ const OrdersListScreen = ({ route }) => {
         decelerationRate={0.1}
       >
         {weekdDays?.map((day) => {
+          const isSelectedDay = selectedDay?.dayId == day.dayId;
           return (
             <TouchableOpacity
               style={{
-                backgroundColor: themeStyle.WHITE_COLOR,
+                backgroundColor: isSelectedDay ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR,
                 padding: 10,
                 borderRadius: 10,
-                borderWidth: selectedDay?.dayId == day.dayId ? 2 : 0,
-                borderColor: themeStyle.PRIMARY_COLOR,
+                // borderWidth: isSelectedDay ? 2 : 0,
+                // borderColor: themeStyle.SECONDARY_COLOR,
                 minWidth: "12%",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1423,7 +1345,7 @@ const OrdersListScreen = ({ route }) => {
                 </View>
               )} */}
               <Text
-                style={{ fontSize: 20, fontFamily: `${getCurrentLang()}-Bold` }}
+                style={{ fontSize: 20, fontFamily: `${getCurrentLang()}-Bold`, color: isSelectedDay ? themeStyle.WHITE_COLOR : themeStyle.PRIMARY_COLOR }}
               >
                 {t(day?.dayName)}
               </Text>
@@ -1431,6 +1353,7 @@ const OrdersListScreen = ({ route }) => {
                 style={{
                   fontSize: 18,
                   fontFamily: `${getCurrentLang()}-American-bold`,
+                  color: isSelectedDay ? themeStyle.WHITE_COLOR : themeStyle.PRIMARY_COLOR
                 }}
               >
                 {moment(day.date).format("DD/MM")}

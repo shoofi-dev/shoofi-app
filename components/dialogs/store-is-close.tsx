@@ -39,7 +39,9 @@ export default function StoreIsCloseDialog({ isOpen, handleAnswer, text }: TProp
             },
           }}
           style={{
-
+            top:0,
+            position:'absolute',
+            alignSelf:'center'
           }}
           visible={visible}
           dismissable={false}

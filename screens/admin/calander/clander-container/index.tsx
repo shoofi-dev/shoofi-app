@@ -9,7 +9,7 @@ import moment from "moment";
 import { groupBy } from "lodash";
 import themeStyle from "../../../../styles/theme.style";
 import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../../../consts/api";
+import _useWebSocketUrl from "../../../../hooks/use-web-socket-url";
 
 export type TProps = {
   data: any;
@@ -26,7 +26,9 @@ const CalanderContainer = ({ data }: TProps) => {
   const [markedDates, setMarkedDates] = useState({});
   const [isLoading, setIsloading] = useState(false);
 
-  const { lastJsonMessage } = useWebSocket(WS_URL, {
+  const { webScoketURL } = _useWebSocketUrl();
+
+  const { lastJsonMessage } = useWebSocket(webScoketURL, {
     share: true,
     shouldReconnect: (closeEvent) => true,
   });

@@ -15,7 +15,6 @@ import { ScrollView } from "react-native-gesture-handler";
 import Button from "../../../controls/button/button";
 import { StoreContext } from "../../../../stores";
 import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../../../consts/api";
 import Carousel from "react-native-reanimated-carousel";
 import { useSharedValue } from "react-native-reanimated";
 import { getCurrentLang } from "../../../../translations/i18n";
@@ -34,6 +33,7 @@ import Icon from "../../../icon";
 import { ScrollHandLottie } from "../../../lottie/scroll-hand-animation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Animatable from "react-native-animatable";
+import _useWebSocketUrl from "../../../../hooks/use-web-socket-url";
 
 export type TProps = {
   data: any;
@@ -72,8 +72,9 @@ const OrderDayItem = ({
     }
 
   },[userDateValue, dayHours])
+  const { webScoketURL } = _useWebSocketUrl();
 
-  const { lastJsonMessage } = useWebSocket(WS_URL, {
+  const { lastJsonMessage } = useWebSocket(webScoketURL, {
     share: true,
     shouldReconnect: (closeEvent) => true,
   });
@@ -411,7 +412,7 @@ const OrderDayItem = ({
         alignItems: "center",
         justifyContent: "center",
         height: "100%",
-        shadowColor: "#C19A6B",
+        shadowColor: themeStyle.PRIMARY_COLOR,
         shadowOffset: {
           width: 0,
           height: 2,
@@ -550,7 +551,7 @@ const OrderDayItem = ({
                       }}
                     >
                       <LinearGradient
-                        colors={["#eaaa5c", "#a77948"]}
+                        colors={[themeStyle.SECONDARY_COLOR, themeStyle.SECONDARY_COLOR]}
                         start={{ x: 1, y: 0 }}
                         end={{ x: 0, y: 1 }}
                         style={[styles.background]}
@@ -576,6 +577,7 @@ const OrderDayItem = ({
                   style={{
                     fontSize: 18,
                     fontFamily: `${getCurrentLang()}-American-bold`,
+                    color:themeStyle.PRIMARY_COLOR
                   }}
                 >
                   {item}

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import themeStyle from "../../../styles/theme.style";
 import * as Haptics from "expo-haptics";
 
-export default function Counter({ onCounterChange, value, stepValue = 1, minValue = 0, isVertical = false, variant = null, size = 35 }) {
+export default function Counter({ onCounterChange, value, stepValue = 1, minValue = 0, isVertical = false, variant = null, size = 45 }) {
   const [couter, setCounter] = useState(value || 0);
   const onBtnClick = (value) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -61,8 +61,8 @@ export default function Counter({ onCounterChange, value, stepValue = 1, minValu
             <Text style={styles.btnTextGreen}>+</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.counterValue}>
-          <Text style={{ fontSize: 16,color:themeStyle.WHITE_COLOR}}>{couter}</Text>
+        <View style={[styles.counterValue, {width:50}]}>
+          <Text style={{ fontSize: 20,color:themeStyle.WHITE_COLOR}}>{couter}</Text>
         </View>
         <View>
           <TouchableOpacity
@@ -90,7 +90,7 @@ export default function Counter({ onCounterChange, value, stepValue = 1, minValu
           <Text style={styles.btnText}>+</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.counterValue}>
+      <View style={[styles.counterValue, {width:200}]}>
         <Text style={{ fontSize: 20,color:themeStyle.PRIMARY_COLOR}}>{couter}</Text>
       </View>
       <View>
@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width:40,
     backgroundColor:themeStyle.PRIMARY_COLOR
   },
   btn: {

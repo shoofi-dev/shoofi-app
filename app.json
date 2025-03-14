@@ -2,7 +2,7 @@
   "expo": {
     "name": "אטליז עבד אלחי",
     "slug": "Abdelhai butcher",
-    "version": "1.0.4",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon4.png",
     "userInterfaceStyle": "light",
@@ -32,12 +32,12 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "1.0.4",
+      "buildNumber": "1.0.0",
       "supportsTablet": true,
       "bundleIdentifier": "com.sariq.abdelhai.butcher"
     },
     "android": {
-      "versionCode": 11,
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-gmel.png",
         "backgroundColor": "#FFFFFF"

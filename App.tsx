@@ -47,7 +47,7 @@ import { adminCustomerStore } from "./stores/admin-customer";
 import { errorHandlerStore } from "./stores/error-handler";
 import InterntConnectionDialog from "./components/dialogs/internet-connection";
 import UpdateVersion from "./components/dialogs/update-app-version";
-import { CUSTOMER_API, SITE_URL, WS_URL } from "./consts/api";
+import { CUSTOMER_API } from "./consts/api";
 import themeStyle from "./styles/theme.style";
 import { isLatestGreaterThanCurrent } from "./helpers/check-version";
 import moment from "moment";
@@ -64,6 +64,7 @@ import _useAppCurrentState from "./hooks/use-app-current-state";
 import OrderInvoiceCMP from "./components/order-invoice";
 import { axiosInstance } from "./utils/http-interceptor";
 import getPizzaCount from "./helpers/get-pizza-count";
+import _useWebSocketUrl from "./hooks/use-web-socket-url";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -143,9 +144,12 @@ const App = () => {
   const [isOpenUpdateVersionDialog, setIsOpenUpdateVersionDialog] =
     useState(false);
 
+    const { webScoketURL } = _useWebSocketUrl();
+
   const { readyState, sendJsonMessage, lastJsonMessage } = useWebSocket(
-    WS_URL,
+    webScoketURL,
     {
+      share: true,
       onOpen: (data) => {
         // console.log("connected", data);
       },
@@ -156,6 +160,13 @@ const App = () => {
       queryParams: { customerId: userDetailsStore.userDetails?.customerId },
     }
   );
+
+  useEffect(() => {
+    if (userDetailsStore.userDetails?.customerId) {
+      // WebSocket will automatically connect once the customerId is available
+      console.log("WebSocket connection established.");
+    }
+  }, [userDetailsStore.userDetails?.customerId, webScoketURL]);
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: "Connecting",
@@ -236,7 +247,7 @@ const App = () => {
         lastJsonMessage.type === "print not printed") &&
       userDetailsStore.isAdmin()
     ) {
-      if (userDetailsStore.isAdmin(ROLES.all) && !isPrinting) {
+      if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print) && !isPrinting) {
         printNotPrinted();
       }
       if (
@@ -316,8 +327,8 @@ const App = () => {
   const forLoop = async (queue) => {
     try {
       const orderInvoicesPS = await getInvoiceSP(queue);
-      if (userDetailsStore.isAdmin(ROLES.all)) {
-        const isPrinted = await testPrint(orderInvoicesPS, printer);
+      if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print)) {
+        const isPrinted = await testPrint(orderInvoicesPS, printer, storeDataStore.storeData?.isDisablePrinter);
         if (isPrinted) {
           for (let i = 0; i < queue.length; i++) {
             await ordersStore.updateOrderPrinted(queue[i]._id, true);
@@ -325,7 +336,7 @@ const App = () => {
           setPrintOrdersQueue([]);
         }
         setIsPrinting(false);
-        printNotPrinted();
+        // printNotPrinted();
       }
     } catch {
       setIsPrinting(false);
@@ -372,7 +383,7 @@ const App = () => {
       userDetailsStore.isAdmin() &&
       appIsReady
     ) {
-      if (userDetailsStore.isAdmin(ROLES.all) && !isPrinting) {
+      if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print) && !isPrinting) {
         initPrinter();
         printNotPrinted();
       }
@@ -389,7 +400,7 @@ const App = () => {
         userDetailsStore.isAdmin() &&
         appIsReady
       ) {
-        if (userDetailsStore.isAdmin(ROLES.all) && !isPrinting) {
+        if (userDetailsStore.isAdmin(ROLES.all) && userDetailsStore.isAdmin(ROLES.print) && !isPrinting) {
           initPrinter();
           printNotPrinted();
         }

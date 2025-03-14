@@ -22,16 +22,23 @@ import DeliveryMethodAggreeBasedEventDialog from "../../components/dialogs/deliv
 import _useCheckoutValidate from "../../hooks/checkout/use-checkout-validate";
 import StoreIsCloseBasedEventDialog from "../../components/dialogs/store-is-close-based-event";
 import InvalidAddressdBasedEventDialog from "../../components/dialogs/invalid-address-based-event";
-import { animationDuration, PAYMENT_METHODS, PLACE, SHIPPING_METHODS } from "../../consts/shared";
+import {
+  animationDuration,
+  PAYMENT_METHODS,
+  PLACE,
+  SHIPPING_METHODS,
+} from "../../consts/shared";
 import _useCheckoutSubmit from "../../hooks/checkout/use-checkout-submit";
 import PaymentFailedBasedEventDialog from "../../components/dialogs/payment-failed-based-event";
-import * as Animatable from 'react-native-animatable';
+import * as Animatable from "react-native-animatable";
+import { storeDataStore } from "../../stores/store";
 
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { ordersStore, cartStore, adminCustomerStore } = useContext(StoreContext);
+  const { ordersStore, cartStore, adminCustomerStore } =
+    useContext(StoreContext);
   const { selectedDate } = route.params;
 
   const { isCheckoutValid } = _useCheckoutValidate();
@@ -47,24 +54,22 @@ const CheckoutScreen = ({ route }) => {
   const [place, setPlace] = useState(PLACE.current);
   const [totalPrice, setTotalPrice] = useState(0);
 
+  const [editOrderData, setEditOrderData] = useState(null);
 
+  useEffect(() => {
+    if (ordersStore.editOrderData) {
+      setEditOrderData(ordersStore.editOrderData);
+    }
+  }, [ordersStore.editOrderData]);
 
-    const [editOrderData, setEditOrderData] = useState(null);
-  
-    useEffect(() => {
-      if (ordersStore.editOrderData) {
-        setEditOrderData(ordersStore.editOrderData);
-      }
-    }, [ordersStore.editOrderData]);
-  
-    // useEffect(() => {
-    //   if (editOrderData) {
-    //     console.log("editOrderData",editOrderData.order.receipt_method)
-    //     setShippingMethod(editOrderData.order.receipt_method);
-    //     setPaymentMthod(editOrderData.order.payment_method);
-    //     ordersStore.setOrderType(editOrderData.orderType);
-    //   }
-    // }, [editOrderData]);
+  // useEffect(() => {
+  //   if (editOrderData) {
+  //     console.log("editOrderData",editOrderData.order.receipt_method)
+  //     setShippingMethod(editOrderData.order.receipt_method);
+  //     setPaymentMthod(editOrderData.order.payment_method);
+  //     ordersStore.setOrderType(editOrderData.orderType);
+  //   }
+  // }, [editOrderData]);
 
   useEffect(() => {
     setIsShippingMethodAgrred(false);
@@ -145,15 +150,14 @@ const CheckoutScreen = ({ route }) => {
     return false;
   };
   // SHIPPING METHOD AGGRE - END
-  
 
   const postChargeOrderActions = () => {
     onLoadingOrderSent(false);
     cartStore.resetCart();
-    if(editOrderData){
+    if (editOrderData) {
       setTimeout(() => {
         adminCustomerStore.setCustomer(null);
-      ordersStore.setEditOrderData(null);
+        ordersStore.setEditOrderData(null);
       }, 1000);
       navigation.navigate("admin-orders");
       return;
@@ -189,7 +193,7 @@ const CheckoutScreen = ({ route }) => {
       location: addressLocation,
       locationText: addressLocationText,
     });
-    if(checkoutSubmitOrderRes){
+    if (checkoutSubmitOrderRes) {
       postChargeOrderActions();
       return;
     }
@@ -203,7 +207,9 @@ const CheckoutScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.backContainer}>
-        <Animatable.View animation="fadeInLeft" duration={animationDuration}
+        <Animatable.View
+          animation="fadeInLeft"
+          duration={animationDuration}
           style={{
             width: 40,
             height: 35,
@@ -211,22 +217,35 @@ const CheckoutScreen = ({ route }) => {
             justifyContent: "center",
             marginVertical: 0,
             marginLeft: 10,
-            backgroundColor:'rgba(36, 33, 30, 0.8)', paddingHorizontal:5, borderRadius:10
+            backgroundColor: "rgba(36, 33, 30, 0.8)",
+            paddingHorizontal: 5,
+            borderRadius: 10,
           }}
         >
           <BackButton />
         </Animatable.View>
       </View>
-      <ScrollView style={{ marginHorizontal: 20 }} keyboardShouldPersistTaps="handled">
-        {/* <Animatable.View animation="fadeInDown" duration={animationDuration}
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+      <ScrollView
+        style={{ marginHorizontal: 20 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        {storeDataStore.storeData.isOrderLaterSupport && (
+          <Animatable.View
+            animation="fadeInDown"
+            duration={animationDuration}
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <SelectedTimeCMP selectedTime={selectedDate} />
+          </Animatable.View>
+        )}
+        <Animatable.View
+          animation="fadeInRight"
+          duration={animationDuration}
+          style={{ marginTop: 20 }}
         >
-          <SelectedTimeCMP selectedTime={selectedDate} />
-        </Animatable.View> */}
-        <Animatable.View animation="fadeInRight" duration={animationDuration} style={{ marginTop: 20 }}>
           <AddressCMP
             onShippingMethodChangeFN={onShippingMethodChange}
             onGeoAddressChange={onGeoAddressChange}
@@ -234,7 +253,11 @@ const CheckoutScreen = ({ route }) => {
             onPlaceChangeFN={onPlaceChange}
           />
         </Animatable.View>
-        <Animatable.View animation="fadeInLeft" duration={animationDuration} style={{ marginTop: 25 }}>
+        <Animatable.View
+          animation="fadeInLeft"
+          duration={animationDuration}
+          style={{ marginTop: 25 }}
+        >
           <PaymentMethodCMP
             onChange={onPaymentMethodChange}
             defaultValue={paymentMthod}
@@ -243,7 +266,9 @@ const CheckoutScreen = ({ route }) => {
         </Animatable.View>
       </ScrollView>
 
-      <Animatable.View animation="fadeInUp" duration={animationDuration}
+      <Animatable.View
+        animation="fadeInUp"
+        duration={animationDuration}
         style={{
           position: "absolute",
           bottom: 0,
@@ -319,7 +344,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 10,
-    marginTop:10
-  
+    marginTop: 10,
   },
 });

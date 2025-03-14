@@ -16,7 +16,7 @@ export default function DialogBG({children}) {
   //   paddingVertical: 30,
   //    }}
   // >
-  <View style={{backgroundColor:themeStyle.WHITE_COLOR_300,  alignItems: "center",justifyContent: "center",paddingVertical: 30,}}>
+  <View style={{backgroundColor:themeStyle.SECONDARY_COLOR,  alignItems: "center",justifyContent: "center",paddingVertical: 30,}}>
     {children}
     </View>
     // </ImageBackground>

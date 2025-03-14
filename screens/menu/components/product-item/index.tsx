@@ -27,7 +27,8 @@ import { useTranslation } from "react-i18next";
 import _useDeviceType from "../../../../hooks/use-device-type";
 import CustomFastImage from "../../../../components/custom-fast-image";
 import Icon from "../../../../components/icon";
-const addToCartIcon = require("../../../../assets/add-to-cart.png")
+import header from "../../../../components/layout/header/header";
+const addToCartIcon = require("../../../../assets/add-to-cart.png");
 export type TProps = {
   item: any;
   onItemSelect: (item: any) => void;
@@ -93,13 +94,23 @@ const ProductItem = ({
     <View
       style={{
         borderRadius: 10,
-        backgroundColor: themeStyle.SECONDARY_COLOR,
-        width: "85%",
+        // backgroundColor: themeStyle.SECONDARY_COLOR,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+
+        width: "90%",
         alignSelf: "center",
         opacity: !isInStore(item) ? 0.4 : 1,
-        borderTopStartRadius:50,
-        borderBottomStartRadius:50,
-        right:10
+        overflow:'hidden'
+        // shadowColor: 'rgba(46, 46, 46, 0.6)',
+        //       shadowOffset: {
+        //         width: 2,
+        //         height: 2,
+        //       },
+        //       shadowOpacity: 1,
+        //       shadowRadius: 20,
+        //       elevation: 0,
+        //       borderWidth: 0,
+      
       }}
     >
       {/* <LinearGradient
@@ -117,7 +128,11 @@ const ProductItem = ({
       <TouchableOpacity
         style={[
           styles.categoryItem,
-          { opacity: isDisabled(item) ? 0.4 : 1, height: "100%" },
+          {
+            opacity: isDisabled(item) ? 0.4 : 1,
+            height: "100%",
+            overflow: "hidden",width:"100%"
+          },
         ]}
         delayPressIn={30}
         onPress={() => {
@@ -141,38 +156,53 @@ const ProductItem = ({
             icon="shopping-bag-plus"
             size={25}
             style={{ color: themeStyle.SECONDARY_COLOR }}
-          />
+          />plus-add-icon
         </View> */}
-        <View
+        <View style={{height:"75%"}}>
+
+        <ImageBackground
+          source={require("../../../../assets/pngs/gray-veg-bg.png")}
+          resizeMode="cover"
           style={{
-            height: deviceType === devicesType.tablet ? 90 :90,
-            shadowColor: "#737370",
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.9,
-            shadowRadius: 3,
-            elevation: 0,
-            borderWidth: 0,
             alignItems: "center",
-          
+            justifyContent: "center",
+            padding:10
+
           }}
         >
-          {/* <CustomFastImage
+          <CustomFastImage
             style={{
-              height: deviceType === devicesType.tablet ? 350 : 250,
-              position: "absolute",
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: 0,
+              width: "60%",
+              height: "100%",
+              left:20,
+              shadowColor: 'black',
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.9,
+              shadowRadius: 6,
+              elevation: 0,
+              borderWidth: 0,
+              
             }}
             source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
             cacheKey={`${item.img[0].uri.split(/[\\/]/).pop()}`}
-            resizeMode={item.subCategoryId == '2' ? 'stretch' : null}
-          /> */}
-          <Image
+            resizeMode="contain"
+          />
+        </ImageBackground>
+        </View>
+
+        <View
+          style={{
+            // height: deviceType === devicesType.tablet ? 90 :90,
+            
+            alignItems: "center",
+            height: "25%",
+            justifyContent:'center'
+          }}
+        >
+          {/* <Image
             source={mealsImages[item.img]}
             style={{
               height: "120%",
@@ -183,7 +213,7 @@ const ProductItem = ({
               left:"40%"
             }}
             resizeMode="contain"
-          />
+          /> */}
 
           {/* <ImageBackground
           source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
@@ -227,20 +257,34 @@ const ProductItem = ({
             resizeMode="stretch"
           />
         </View> */}
-  <View style={{flexDirection:'row',  width: "100%",paddingLeft:20, marginTop:15}}>
-  <Image source={addToCartIcon} style={{ alignSelf: "center", width:35, height:32, }} />
-            <View style={{ width:"57%", alignItems:'center', justifyContent:'center' }}>
           <View
             style={{
-             
               flexDirection: "row",
+              width: "100%",
+              justifyContent:'space-between',
+              paddingHorizontal:15,
+              paddingVertical:10,
+              alignItems:'center',
+   
             }}
           >
-            
-            <Text style={{ textAlinge: "right", fontSize: 22 }}>
-              {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
-            </Text>
-            {/* <View style={{ paddingHorizontal: 8 / 2 }}>
+       
+            <View
+              style={{
+                justifyContent: "center",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                }}
+              >
+                <Text style={{  fontSize: 22, color: themeStyle.SECONDARY_COLOR }}>
+                  {languageStore.selectedLang === "ar"
+                    ? item.nameAR
+                    : item.nameHE}
+                </Text>
+                {/* <View style={{ paddingHorizontal: 8 / 2 }}>
             <Text
               style={{
                 color: themeStyle.GRAY_700,
@@ -251,7 +295,7 @@ const ProductItem = ({
               ₪{item.price}
             </Text>
           </View> */}
-            {/* {userDetailsStore.isAdmin() && item.count > 0 && (
+                {/* {userDetailsStore.isAdmin() && item.count > 0 && (
               <View style={{ paddingHorizontal: 8 / 2 }}>
                 <Text
                   style={{
@@ -265,7 +309,7 @@ const ProductItem = ({
               </View>
             )} */}
 
-            {/* {isInStore(item) && (
+                {/* {isInStore(item) && (
             <View>
               {!userDetailsStore.isAdmin() && (
                 <Button
@@ -283,20 +327,27 @@ const ProductItem = ({
               )}
             </View>
           )} */}
+              </View>
+              {/* <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                }}
+              >
+                <Text style={{ fontSize: 22 }}>{item.price}10 ₪</Text>
+              </View> */}
+            </View>
+            {/* <Image
+              source={addToCartIcon}
+              style={{ alignSelf: "center", width: 35, height: 32 }}
+            /> */}
+
+<Icon
+            icon="plus-add-icon"
+            size={35}
+            style={{ color: themeStyle.SECONDARY_COLOR }}
+          />
           </View>
-          <View
-            style={{
-              width: "100%",
-              flexDirection: "row",
-              alignItems:'center',
-              justifyContent:'center'
-            }}
-          >
-            <Text style={{  fontSize: 22 }}>
-             {item.price}10 ₪
-            </Text></View>
-            </View>
-            </View>
           {/* {!isInStore(item) && (
             <View
               style={{ position: "absolute", bottom: "50%", width: "100%" }}
@@ -420,7 +471,6 @@ const styles = StyleSheet.create({
   categoryItem: {
     width: "100%",
     //height: 280,
-    borderRadius: 30,
     // backgroundColor: "rgba(255, 255, 255, 0.7)",
     borderColor: "rgba(0, 0, 0, 0.1)",
 

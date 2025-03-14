@@ -87,18 +87,18 @@ const DashboardScreen = () => {
         //   key: "calander",
         //   role: ROLES.all,
         // },
-        // {
-        //   title: "menu",
-        //   icon: "menu-list",
-        //   key: "menu",
-        //   role: undefined,
-        // },
-        // {
-        //   title: "new-product",
-        //   icon: "boutique-active",
-        //   key: "new-product",
-        //   role: ROLES.all,
-        // },
+        {
+          title: "menu",
+          icon: "orders-icon",
+          key: "menu",
+          role: undefined,
+        },
+        {
+          title: "new-product",
+          icon: "plus",
+          key: "new-product",
+          role: ROLES.all,
+        },
         // {
         //   title: "products-order",
         //   icon: "list-numbered",

@@ -120,14 +120,14 @@ export default function Button({
           onBtnClick();
         }}
       >
-        {/* {!bgColor && (
+        {!bgColor && (
           <LinearGradient
             colors={isOposetGradiant ? ["#eaaa5c", "#a77948"] : ["#EBA33E", "#D75F30","#EBA33E"]}
             start={{ x: 1, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={[styles.background,{borderRadius:borderRadious !== undefined ? borderRadious : 30}]}
           />
-        )} */}
+        )}
         <View
           style={{
             height: isFlexCol ? "100%" : "auto",

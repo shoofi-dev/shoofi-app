@@ -186,7 +186,7 @@ const CalanderContainerUser = ({
         {ordersStore.orderType === ORDER_TYPE.later && (
           <View style={{ flexBasis: "25%", paddingLeft: 5 }}>
             <ScrollView
-              style={{ borderRightWidth: 1, borderRightColor: "#eaaa5c" }}
+              style={{ borderRightWidth: 1, borderRightColor: themeStyle.SECONDARY_COLOR }}
             >
               <Animatable.View
                 animation="fadeInRight"
@@ -207,7 +207,7 @@ const CalanderContainerUser = ({
                           alignItems: "center",
                           justifyContent: "center",
                           borderRadius: 10,
-                          shadowColor: isSelectedDay(day) ? "black" : "#C19A6B",
+                          shadowColor: isSelectedDay(day) ? themeStyle.WHITE_COLOR : themeStyle.PRIMARY_COLOR,
                           shadowOffset: {
                             width: 0,
                             height: 2,
@@ -215,7 +215,7 @@ const CalanderContainerUser = ({
                           shadowOpacity: 1,
                           shadowRadius: 5,
                           paddingVertical: 20,
-                          opacity: 0.8,
+                          opacity: 1,
                           margin: 5,
                         }}
                         onPress={() => {
@@ -229,7 +229,7 @@ const CalanderContainerUser = ({
                             fontFamily: `${getCurrentLang()}-SemiBold`,
                             color: isSelectedDay(day)
                               ? themeStyle.WHITE_COLOR
-                              : themeStyle.TEXT_PRIMARY_COLOR,
+                              : themeStyle.PRIMARY_COLOR,
                             fontWeight: "900",
                           }}
                         >
@@ -243,7 +243,7 @@ const CalanderContainerUser = ({
                             fontFamily: `Rubik-Medium`,
                             color: isSelectedDay(day)
                               ? themeStyle.WHITE_COLOR
-                              : themeStyle.TEXT_PRIMARY_COLOR,
+                              : themeStyle.PRIMARY_COLOR,
                           }}
                         >
                           {moment(day.date).format("D")}/
@@ -294,7 +294,7 @@ const CalanderContainerUser = ({
           alignItems: "center",
           height: "10%",
           alignSelf: "center",
-          marginTop: 8,
+      
           marginBottom: 20,
         }}
       >
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 20,
     borderLeftColor: "transparent",
     borderRightColor: "transparent",
-    borderBottomColor: "#eaaa5c",
+    borderBottomColor: themeStyle.SECONDARY_COLOR,
     transform: [{ rotate: "90deg" }],
     margin: 0,
     marginLeft: 0,

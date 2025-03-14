@@ -20,8 +20,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ROLES } from "../../../consts/shared";
 import { useTranslation } from "react-i18next";
 import Button from "../../controls/button/button";
-import { WS_URL } from "../../../consts/api";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
 
 const hideHHeaderScreens = [
   "login",
@@ -33,6 +33,8 @@ const hideHHeaderScreens = [
 ];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];
+const hideLogo = ["homeScreen"];
+
 const hideProfile = ["terms-and-conditions"];
 const hideProfileScreens = [
   "terms-and-conditions",
@@ -134,8 +136,9 @@ const Header = () => {
   }, [cartStore.cartItems.length]);
 
   const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
+  const { webScoketURL } = _useWebSocketUrl();
 
-  const { readyState } = useWebSocket(WS_URL, {
+  const { readyState } = useWebSocket(webScoketURL, {
     share: true,
     shouldReconnect: (closeEvent) => true,
   });
@@ -265,9 +268,9 @@ const Header = () => {
   const onGoToNewDelivery = () => {
     navigation.navigate("book-delivery");
   };
-
+ const isHomeScreen = navigation?.getCurrentRoute()?.name === 'homeScreen';
   return (
-    <View style={{ ...styles.container }}>
+    <View style={{ ...styles.container,marginBottom: isHomeScreen ? 0 : 40 }}>
       {/* <LinearGradient
         colors={[
           "rgba(36, 33, 30, 0.9)",
@@ -300,13 +303,17 @@ const Header = () => {
               onPress={handleSettingsClick}
               style={[
                 styles.buttonContainer,
-                { opacity: isHideProfile() ? 0 : 1, paddingRight: 20 },
+                {
+                  opacity: isHideProfile() ? 0 : 1,
+                  paddingRight: 20,
+                  alignSelf: "center",
+                },
               ]}
             >
               <Icon
                 icon="cog"
                 size={35}
-                style={{ color: theme.PRIMARY_COLOR }}
+                style={{ color: theme.SECONDARY_COLOR }}
               />
             </TouchableOpacity>
           ) : (
@@ -320,7 +327,7 @@ const Header = () => {
               <Icon
                 icon="profile-round"
                 size={30}
-                style={{ color: theme.PRIMARY_COLOR }}
+                style={{ color: theme.SECONDARY_COLOR }}
               />
               {/* <Image
                 source={require("../../../assets/pngs/profile.png")}
@@ -337,7 +344,7 @@ const Header = () => {
             flexDirection: "row",
             left: 90,
             position: "absolute",
-            top: 22,
+            alignSelf: "center",
           }}
         >
           <Icon
@@ -347,7 +354,7 @@ const Header = () => {
           />
         </View>
       )}
-      <View style={{ position: "absolute", left: "18%", top: 8 }}>
+      <View style={{ position: "absolute", left: "18%", alignSelf: "center" }}>
         {userDetailsStore.isAdmin() &&
           ordersStore?.notViewdOrders?.length > 0 && (
             <Animated.View
@@ -399,24 +406,13 @@ const Header = () => {
             </Animated.View>
           )}
       </View>
-      <View
-        style={{ ...styles.headerItem, left: -15, justifyContent: "flex-end" }}
-      >
+      {hideLogo.indexOf(navigation?.getCurrentRoute()?.name) == -1 && <View style={{}}>
         <TouchableOpacity
           style={[
-            styles.buttonContainer,
-            { justifyContent: "flex-end", right: 20,
-              shadowColor: "#737370",
-              shadowOffset: {
-                width: 0,
-                height: 3,
-              },
-              shadowOpacity: 10,
-              shadowRadius: 10,
-              elevation: 25,
-              borderWidth: 0,
-             },
-            
+            {
+              height: "100%",
+              alignItems: "center",
+            },
           ]}
           onPress={onLogoClick}
         >
@@ -426,11 +422,11 @@ const Header = () => {
             style={{ color: theme.GRAY_700,  width:100 }}
           /> */}
           <Image
-            style={{ width: 100, height: 100, top: 35 }}
+            style={{ maxWidth: "50%", maxHeight: "150%" }}
             source={require("../../../assets/icon4.png")}
           />
         </TouchableOpacity>
-      </View>
+      </View>}
       {userDetailsStore.isAdmin() && adminCustomerStore?.userDetails && (
         <View
           style={{
@@ -484,14 +480,15 @@ const Header = () => {
             flexDirection: "row",
             left: 250,
             position: "absolute",
-            top: 15,
+            alignSelf: "center",
+
           }}
           onPress={onGoToNewDelivery}
         >
           <Icon
             icon="delivery-active"
             size={40}
-            style={{ color: themeStyle.TEXT_PRIMARY_COLOR }}
+            style={{ color: themeStyle.SECONDARY_COLOR }}
           />
         </TouchableOpacity>
       )}
@@ -504,14 +501,15 @@ const Header = () => {
             backgroundColor: themeStyle.SECONDARY_COLOR,
             borderTopEndRadius: 50,
             borderBottomEndRadius: 50,
-            height:50, top:10,
-            shadowColor: "#737370",
+            height: "70%",
+            alignSelf: "center",
+            shadowColor: themeStyle.PRIMARY_COLOR,
             shadowOffset: {
-              width: -10,
+              width: 0,
               height: 3,
             },
             shadowOpacity: 1,
-            shadowRadius: 5,
+            shadowRadius: 15,
             elevation: 5,
             borderWidth: 0,
           },
@@ -523,7 +521,7 @@ const Header = () => {
         >
           <Icon icon="grill" size={40} style={{ color: theme.PRIMARY_COLOR }} />
           <View style={styles.cartCount}>
-            <Text style={{ color: theme.TEXT_PRIMARY_COLOR }}>
+            <Text style={{ color: themeStyle.PRIMARY_COLOR }}>
               {cartStore.getProductsCount()}
             </Text>
           </View>
@@ -539,21 +537,20 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     flexDirection: "row-reverse",
-    height: 70,
-    paddingTop: 0,
+    height: "10%",
     justifyContent: "space-between",
     paddingRight: 15,
     paddingLeft: 15,
-    shadowColor: "#737370",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 20,
-    borderWidth: 0,
-    marginBottom: 15,
+    // shadowColor: "#737370",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 3,
+    // },
+    // shadowOpacity: 1,
+    // shadowRadius: 10,
+    // elevation: 20,
+    // borderWidth: 0,
+    // marginBottom: 40,
     // backgroundColor: "#737373",
     // backgroundColor: themeStyle.WHITE_COLOR
   },

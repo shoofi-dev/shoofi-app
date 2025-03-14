@@ -4,6 +4,7 @@ import { ORDER_API, CUSTOMER_API } from "../../consts/api";
 import { fromBase64, toBase64 } from "../../helpers/convert-base64";
 import { orderBy } from "lodash";
 import { SHIPPING_METHODS } from "../../consts/shared";
+import { storeDataStore } from "../store";
 export const inProgressStatuses = ["SENT", "APPROVED"];
 
 class OrdersStore {
@@ -25,7 +26,7 @@ class OrdersStore {
     return axiosInstance
       .post(
         api,
-        {statusList, ordersDate, isNotPrinted, pageNumber, isNotViewd}
+        {statusList, ordersDate, isNotPrinted, pageNumber, isNotViewd, isOrderLaterSupport: storeDataStore.storeData.isOrderLaterSupport}
       )
       .then(function (response: any) {
         return response;
@@ -178,9 +179,11 @@ class OrdersStore {
   }
 
   
-  updatOrderViewdServer = async (flag: boolean, orderId: string, isAdminAll: boolean, currentTime: any, readyMinutes: number) => {
+  updatOrderViewdServer = async (flag: boolean, orderId: string, isAdminAll: boolean, currentTime: any, readyMinutes: number, isOrderLaterSupport: any) => {
+    
     const api =  `${ORDER_API.CONTROLLER}/${ORDER_API.UPDATE_ADMIN_ORDERS_VIEWD_API}`
-    const updateData = isAdminAll ? {isViewdAdminAll: flag, isViewd: flag, currentTime, readyMinutes} : {isViewd: flag, currentTime, readyMinutes};
+    const updateData = isAdminAll ? {isViewdAdminAll: flag, isViewd: flag, currentTime, readyMinutes, isOrderLaterSupport} : {isViewd: flag, currentTime, readyMinutes, isOrderLaterSupport};
+    
     const body = {
       updateData,
       orderId
@@ -195,8 +198,8 @@ class OrdersStore {
         return response;
       });
   }
-  updatOrderViewd = async (order:any, isAdminAll: boolean, currentTime: any, readyMinutes: number) => {
-    this.updatOrderViewdServer(true, order._id, isAdminAll, currentTime, readyMinutes);
+  updatOrderViewd = async (order:any, isAdminAll: boolean, currentTime: any, readyMinutes: number, isOrderLaterSupport: any) => {
+    this.updatOrderViewdServer(true, order._id, isAdminAll, currentTime, readyMinutes, isOrderLaterSupport);
   }
   
   bookDeliveryServer = async (flag: boolean, orderId: string) => {

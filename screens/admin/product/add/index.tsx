@@ -39,6 +39,7 @@ export type TProduct = {
   cakeLevels: number;
   activeTastes: string[];
   isToNameAndAge: boolean;
+  isWeight?: boolean;
 };
 
 const cakeLevels = [
@@ -79,70 +80,35 @@ const AddProductScreen = ({ route }) => {
   const initNewProduct = () => {
     return {
       categoryId: "",
-      nameAR: "كعكة ",
-      nameHE: "עוגות ",
+      nameAR: "",
+      nameHE: "",
       img: null,
-      descriptionAR: "شرح",
-      descriptionHE: "הסבר",
-      price: 10,
-      mediumPrice: 10,
+      descriptionAR: "",
+      descriptionHE: "",
+      price: 0,
+      mediumPrice: 0,
       largePrice: selectedProduct?.categoryId == "5" ? 20 : 0,
-      mediumCount: 20,
+      mediumCount: 0,
       largeCount: selectedProduct?.categoryId == "5" ? 10 : 0,
       isInStore: true,
       isToNameAndAge: false,
       isSizes: false,
       isUploadImage: false,
       subCategoryId: "",
+      isWeight: true
+
     };
   };
 
-  const isValidMediumPrice = () => {
-    if (selectedProduct?.mediumPrice) {
-      return true;
-    }
-    return false;
-  };
-  const isValidLargePrice = () => {
-    const isWithLargePrice =
-    (selectedProduct.categoryId == "5" || selectedProduct.categoryId == "6") &&
-      (selectedProduct.subCategoryId == "1" || selectedProduct.subCategoryId == "5" || selectedProduct.cakeLevels == 1);
-    if (isWithLargePrice) {
-      if (selectedProduct?.largePrice) {
-        return true;
-      }else{
-        return false;
-      }
-    }
-    return true;
-  };
 
-  const isValidBirthdayCake = () => {
-    const isBirthdayCake =
-      selectedProduct?.categoryId == "5" &&
-      selectedProduct.subCategoryId != "1" &&
-      selectedProduct.subCategoryId != "6" &&
-      selectedProduct.subCategoryId != undefined &&
-      selectedProduct.subCategoryId != null;
-    if (isBirthdayCake) {
-      if (selectedProduct?.cakeLevels) {
-        return true;
-      }
-      return false;
-    }
-    return true;
-  };
+
   const isValidForm = () => {
     return (
       selectedProduct?.nameAR &&
       selectedProduct?.nameHE &&
-      selectedProduct?.categoryId &&
-      selectedProduct?.descriptionAR &&
-      selectedProduct?.descriptionHE &&
-
-      isValidMediumPrice() &&
-      isValidLargePrice() &&
-      isValidBirthdayCake()
+      selectedProduct?.categoryId
+      // selectedProduct?.descriptionAR &&
+      // selectedProduct?.descriptionHE
     );
   };
 
@@ -183,8 +149,7 @@ const AddProductScreen = ({ route }) => {
   const onImageSelect = async () => {
     const result = await launchImageLibrary({
       mediaType: "photo",
-      maxHeight: 600,
-      maxWidth: 300,
+
     });
     setImage(result.assets[0]);
   };
@@ -313,7 +278,7 @@ const AddProductScreen = ({ route }) => {
       </View>
 
       <View style={styles.inputsContainer}>
-        <Text style={{  fontSize: 30 }}>{t("add-product")}</Text>
+        <Text style={{  fontSize: 30, color: themeStyle.WHITE_COLOR }}>{t("add-product")}</Text>
 
         <View
           style={{
@@ -335,6 +300,7 @@ const AddProductScreen = ({ route }) => {
               label={t("name-ar")}
               value={selectedProduct?.nameAR}
               isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
+              color={themeStyle.WHITE_COLOR}
             />
             {!selectedProduct?.nameAR && (
               <Text style={{ color: themeStyle.ERROR_COLOR }}>
@@ -354,6 +320,8 @@ const AddProductScreen = ({ route }) => {
               label={t("name-he")}
               value={selectedProduct?.nameHE}
               isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
+              color={themeStyle.WHITE_COLOR}
+
             />
             {!selectedProduct?.nameHE && (
               <Text style={{ color: themeStyle.ERROR_COLOR }}>
@@ -375,24 +343,8 @@ const AddProductScreen = ({ route }) => {
             onChange={(e) => handleInputChange(e, "isInStore")}
             value={selectedProduct?.isInStore}
           />
-          <Text style={{ fontSize: 20, marginLeft: 10 }}>
+          <Text style={{ fontSize: 20, marginLeft: 10,color: themeStyle.WHITE_COLOR }}>
             {t("هل متوفر حاليا")}
-          </Text>
-        </View>
-        <View
-          style={{
-            width: "100%",
-            marginTop: 40,
-            alignItems: "center",
-            flexDirection: "row",
-          }}
-        >
-          <CheckBox
-            onChange={(e) => handleInputChange(e, "isToNameAndAge")}
-            value={selectedProduct?.isToNameAndAge}
-          />
-          <Text style={{ fontSize: 20, marginLeft: 10 }}>
-            {t("هل مع اسم وعمر")}
           </Text>
         </View>
 
@@ -408,7 +360,7 @@ const AddProductScreen = ({ route }) => {
         >
           {categoryList && (
             <View style={{ alignItems: "flex-start" }}>
-              <Text style={{ fontSize: 16, marginBottom: 10 }}>
+              <Text style={{ fontSize: 16, marginBottom: 10, color: themeStyle.WHITE_COLOR }}>
                 اختر القسم :
               </Text>
               <View style={{ zIndex: 11 }}>
@@ -430,122 +382,8 @@ const AddProductScreen = ({ route }) => {
           )}
         </View>
 
-        {selectedProduct._id == shmareemId && (
-          <View style={{ marginTop: 40, width: "100%" }}>
-            <View style={{ alignSelf: "center" }}>
-              <Text
-                style={{
-                  fontSize: 20,
-                  selfAlign: "center",
-                  textDecorationLine: "underline",
-                }}
-              >
-                الاطعمة
-              </Text>
-            </View>
-            <View style={{ flexDirection: "column", alignSelf: "flex-start" }}>
-              {storeDataStore.storeData?.TASETS_LIST.shmareem.map((taste) => {
-                return (
-                  <View
-                    style={{
-                      alignItems: "center",
-                      marginBottom: 10,
-                      flexDirection: "row",
-                    }}
-                  >
-                    <CheckBox
-                      onChange={(e) => handleTasteActiveChange(e, taste.value)}
-                      value={
-                        selectedProduct.activeTastes.indexOf(taste.value) > -1
-                      }
-                    />
-                    <Text style={{ fontSize: 20, marginLeft: 10 }}>
-                      {t(taste.label)}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
-        )}
-
-        {selectedProduct.categoryId == "5" && birthdaySubCategories && (
-          <View
-            style={{
-              width: "100%",
-              marginTop: 40,
-              alignItems: "flex-start",
-              zIndex: 10,
-            }}
-          >
-            <View style={{ alignItems: "flex-start" }}>
-              <Text style={{ fontSize: 16, marginBottom: 10 }}>
-                اختر القسم :
-              </Text>
-
-              <View style={{ zIndex: 11 }}>
-                <DropDown
-                  itemsList={birthdaySubCategories}
-                  defaultValue={selectedSubCategoryId}
-                  onChangeFn={(e) => handleInputChange(e, "subCategoryId")}
-                  placeholder={"اختر القسم"}
-                  disabled={!userDetailsStore.isAdmin(ROLES.all)}
-                />
-              </View>
-              {!selectedProduct?.subCategoryId && (
-                <Text style={{ color: themeStyle.ERROR_COLOR }}>
-                  {t("invalid-subCategoryId")}
-                </Text>
-              )}
-            </View>
-          </View>
-        )}
-
-        {(selectedProduct.categoryId == "5" || selectedProduct.categoryId == "6") &&
-          selectedProduct.subCategoryId != "1" && selectedProduct.subCategoryId != "5" &&
-          // selectedProduct.subCategoryId != undefined &&
-          // selectedProduct.subCategoryId != null &&
-          birthdaySubCategories && (
-            <View
-              style={{
-                width: "100%",
-                marginTop: 20,
-                alignItems: "flex-start",
-                zIndex: 9,
-              }}
-            >
-              <View style={{ alignItems: "flex-start" }}>
-                <Text style={{ fontSize: 16, marginBottom: 10 }}>
-                  اختر عدد الطبقات :
-                </Text>
-
-                <View style={{ zIndex: 11 }}>
-                  <DropDown
-                    itemsList={cakeLevels}
-                    defaultValue={
-                      selectedProduct?.extras?.taste?.options
-                        ? Number(
-                            Object.keys(selectedProduct?.extras?.taste?.options)
-                              .length
-                          )
-                        : null
-                    }
-                    onChangeFn={(e) => handleInputChange(e, "cakeLevels")}
-                    placeholder={"اختر عدد الطبقات"}
-                    disabled={!userDetailsStore.isAdmin(ROLES.all)}
-                  />
-                </View>
-                {!selectedProduct?.cakeLevels && (
-                  <Text style={{ color: themeStyle.ERROR_COLOR }}>
-                    {t("invalid-cakeLevels")}
-                  </Text>
-                )}
-              </View>
-            </View>
-          )}
-
         <View style={{ width: "100%", marginTop: 40 }}>
-          <View>
+          {/* <View>
             <Text
               style={{
                 textAlign: "center",
@@ -555,12 +393,12 @@ const AddProductScreen = ({ route }) => {
             >
               {t("medium-size")}
             </Text>
-          </View>
+          </View> */}
           <View
             style={{
               flexDirection: "row",
               width: "100%",
-              justifyContent: "space-around",
+              // justifyContent: "space-around",
             }}
           >
             <View
@@ -576,6 +414,7 @@ const AddProductScreen = ({ route }) => {
                 value={selectedProduct?.mediumPrice?.toString()}
                 keyboardType="numeric"
                 isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
+                color={themeStyle.WHITE_COLOR}
               />
               {selectedProduct?.mediumPrice == undefined && (
                 <Text style={{ color: themeStyle.ERROR_COLOR }}>
@@ -583,7 +422,7 @@ const AddProductScreen = ({ route }) => {
                 </Text>
               )}
             </View>
-            <View
+            {/* <View
               style={{
                 marginTop: 15,
                 alignItems: "flex-start",
@@ -602,76 +441,9 @@ const AddProductScreen = ({ route }) => {
                   {t("invalid-medium-count")}
                 </Text>
               )}
-            </View>
+            </View> */}
           </View>
         </View>
-
-        {(selectedProduct.categoryId == "5" || selectedProduct.categoryId == "6") &&
-          ((selectedProduct.subCategoryId == "1" || selectedProduct.subCategoryId == "5") ||
-            selectedProduct.cakeLevels == 1) && (
-            <View style={{ width: "100%", marginTop: 40 }}>
-              <View>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    fontSize: 20,
-                    textDecorationLine: "underline",
-                  }}
-                >
-                  {t("large-size")}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  width: "100%",
-                  justifyContent: "space-around",
-                }}
-              >
-                <View
-                  style={{
-                    flexBasis: "49%",
-                    marginTop: 15,
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <InputText
-                    onChange={(e) => handleInputChange(e, "largePrice")}
-                    label={t("large-price")}
-                    value={selectedProduct?.largePrice?.toString()}
-                    keyboardType="numeric"
-                    isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
-                    
-                  />
-                  {selectedProduct?.largePrice == undefined && (
-                    <Text style={{ color: themeStyle.ERROR_COLOR }}>
-                      {t("invalid-medium-price")}
-                    </Text>
-                  )}
-                </View>
-                <View
-                  style={{
-                    flexBasis: "49%",
-                    marginTop: 15,
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <InputText
-                    onChange={(e) => handleInputChange(e, "largeCount")}
-                    label={t("large-count")}
-                    value={selectedProduct?.largeCount?.toString()}
-                    keyboardType="numeric"
-                    isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
-                  />
-                  {selectedProduct?.largeCount == undefined && (
-                    <Text style={{ color: themeStyle.ERROR_COLOR }}>
-                      {t("invalid-large-count")}
-                    </Text>
-                  )}
-                </View>
-              </View>
-            </View>
-          )}
 
         <View style={{ marginTop: 60 }}>
           <Text
@@ -680,6 +452,7 @@ const AddProductScreen = ({ route }) => {
               textAlign: "center",
               width: "100%",
               textDecorationLine: "underline",
+              color: themeStyle.WHITE_COLOR
             }}
           >
             {t("product-description")}
@@ -693,7 +466,7 @@ const AddProductScreen = ({ route }) => {
             alignItems: "flex-start",
           }}
         >
-          <Text style={{ fontSize: 16, marginBottom: 10 }}>
+          <Text style={{ fontSize: 16, marginBottom: 10, color: themeStyle.WHITE_COLOR }}>
             {t("insert-discription-ar")}
           </Text>
           <TextInput
@@ -734,7 +507,7 @@ const AddProductScreen = ({ route }) => {
             alignItems: "flex-start",
           }}
         >
-          <Text style={{ fontSize: 16, marginBottom: 10 }}>
+          <Text style={{ fontSize: 16, marginBottom: 10, color: themeStyle.WHITE_COLOR }}>
             {t("insert-discription-he")}
           </Text>
           <TextInput
@@ -768,7 +541,7 @@ const AddProductScreen = ({ route }) => {
           )}
         </View>
 
-        <View style={{ marginTop: 50 }}>
+        {/* <View style={{ marginTop: 50 }}>
           <Text
             style={{
               fontSize: 20,
@@ -779,9 +552,9 @@ const AddProductScreen = ({ route }) => {
           >
             رسالة خاصه بحالة عدم توفر المنتج
           </Text>
-        </View>
+        </View> */}
 
-        <View
+        {/* <View
           style={{
             width: "100%",
             marginTop: 20,
@@ -811,8 +584,8 @@ const AddProductScreen = ({ route }) => {
               // fontFamily: `${getCurrentLang()}-SemiBold`,
             }}
           />
-        </View>
-        <View
+        </View> */}
+        {/* <View
           style={{
             width: "100%",
             marginTop: 15,
@@ -841,7 +614,7 @@ const AddProductScreen = ({ route }) => {
               // fontFamily: `${getCurrentLang()}-SemiBold`,
             }}
           />
-        </View>
+        </View> */}
         <View style={{ marginTop: 40 }}>
           {image && (
             <View>

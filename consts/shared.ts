@@ -1,3 +1,4 @@
+export const APP_NAME = 'abdelhai-butcher';
 export const SHIPPING_METHODS = {
   shipping: "DELIVERY",
   takAway: "TAKEAWAY",
@@ -19,7 +20,7 @@ export const animationDuration = 1500;
 
 export const bcoindId = 3027;
 
-export const cdnUrl = 'https://xxx/';
+export const cdnUrl = 'https://app-main-bucket.fra1.cdn.digitaloceanspaces.com/';
 
 export const devicesType = {
   tablet: 2
@@ -243,7 +244,8 @@ export const canOrderOutOfStock = {
 
 export const ROLES = {
   "all": "all",
-  "cashier": "cashier"
+  "cashier": "cashier",
+  "print": "print"
 }
 
 export const mockOrderDelivery = {

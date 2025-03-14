@@ -22,6 +22,7 @@ import Icon from "../../../../../components/icon";
 import Text from "../../../../../components/controls/Text";
 import DashedLine from "react-native-dashed-line";
 import {
+  APP_NAME,
   ROLES,
   SHIPPING_METHODS,
   cdnUrl,
@@ -34,7 +35,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Button from "../../../../../components/controls/button/button";
 import { testPrint } from "../../../../../helpers/printer/print";
 import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../../../../consts/api";
 import { schedulePushNotification } from "../../../../../utils/notification";
 import { orderBy } from "lodash";
 import sizeTitleAdapter from "../../../../../helpers/size-name-adapter";
@@ -43,6 +43,8 @@ import { useNavigation } from "@react-navigation/native";
 import { adminCustomerStore } from "../../../../../stores/admin-customer";
 import DropDown from "../../../../../components/controls/dropdown";
 import isShowSize from "../../../../../helpers/is-show-size";
+import _useWebSocketUrl from "../../../../../hooks/use-web-socket-url";
+import CustomFastImage from "../../../../../components/custom-fast-image";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -79,6 +81,7 @@ const NewOrdersListScreen = ({ route }) => {
     userDetailsStore,
     languageStore,
     cartStore,
+    storeDataStore
   } = useContext(StoreContext);
   const [ordersList, setOrdersList] = useState([]);
   const [isLoading, setIsloading] = useState(false);
@@ -121,18 +124,20 @@ const NewOrdersListScreen = ({ route }) => {
     //   setOrderNoteText('')
     // }
   };
-  const updateViewedOrder = async (order, readyMinutes) => {
+  const updateViewedOrder = async (order, readyMinutes, isOrderLaterSupport) => {
+
     setIsloading(true);
     delete selectedTime[order.id];
     await ordersStore.updatOrderViewd(
       order,
       userDetailsStore.isAdmin(ROLES.all),
       new Date(),
-      readyMinutes
+      readyMinutes,
+      isOrderLaterSupport
     );
     setIsloading(false);
-    if(ordersList?.length === 1){
-      navigation.navigate("admin-orders");  
+    if (ordersList?.length === 1) {
+      navigation.navigate("admin-orders");
     }
   };
 
@@ -152,7 +157,9 @@ const NewOrdersListScreen = ({ route }) => {
     }
   };
 
-  const { lastJsonMessage } = useWebSocket(WS_URL, {
+  const { webScoketURL } = _useWebSocketUrl();
+
+  const { lastJsonMessage } = useWebSocket(webScoketURL, {
     share: true,
     shouldReconnect: (closeEvent) => true,
   });
@@ -321,15 +328,15 @@ const NewOrdersListScreen = ({ route }) => {
           </View>
         </View>
         <View style={{ flexDirection: "row" }}>
-        <Text style={styles.dateRawText}> اسم الزبون:</Text>
-        <Text style={styles.dateRawText}>
+          <Text style={styles.dateRawText}> اسم الزبون:</Text>
+          <Text style={styles.dateRawText}>
             {" "}
             {order?.customerDetails?.name}
           </Text>
         </View>
         <View style={{ flexDirection: "row" }}>
-        <Text style={styles.dateRawText}> رقم الهاتف:</Text>
-        <Text style={styles.dateRawText}>
+          <Text style={styles.dateRawText}> رقم الهاتف:</Text>
+          <Text style={styles.dateRawText}>
             {order?.customerDetails?.phone}{" "}
           </Text>
         </View>
@@ -611,10 +618,20 @@ const NewOrdersListScreen = ({ route }) => {
                       handleShowImage(`${cdnUrl}${meal.img[0].uri}`)
                     }
                   >
-                    <Image
-                      style={{ width: "100%", height: "100%" }}
-                      source={mealsImages[meal.img]}
+                    <CustomFastImage
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        marginLeft: 0,
+                        borderRadius: 20,
+                      }}
+                      source={{
+                        uri: `${cdnUrl}${meal.img[0].uri}`,
+                      }}
                       resizeMode="contain"
+                      cacheKey={`${APP_NAME}_${meal.img[0].uri
+                        .split(/[\\/]/)
+                        .pop()}`}
                     />
                   </TouchableOpacity>
                 </View>
@@ -685,7 +702,7 @@ const NewOrdersListScreen = ({ route }) => {
                       {item?.halfOne.length > 0 ? (
                         Object.keys(item?.halfOne).map((key) => {
                           return (
-                            <View style={{ }}>
+                            <View style={{}}>
                               <View style={{ flexDirection: "row" }}>
                                 <Text
                                   style={{
@@ -794,23 +811,24 @@ const NewOrdersListScreen = ({ route }) => {
               dashColor={themeStyle.GRAY_600}
               style={{ marginTop: 15, width:"100%" }}
             /> */}
-             { isShowSize(item.item_id) && <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: 10,
-                }}
-              >
-                <Text
+              {isShowSize(item.item_id) && (
+                <View
                   style={{
-                    fontSize: 20,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 10,
                   }}
                 >
-                  {t("size")} : {t(item.size)}
-                </Text>
-              </View>
- }
+                  <Text
+                    style={{
+                      fontSize: 20,
+                    }}
+                  >
+                    {t("size")} : {t(item.size)}
+                  </Text>
+                </View>
+              )}
               <View
                 style={{
                   flexDirection: "row",
@@ -979,13 +997,10 @@ const NewOrdersListScreen = ({ route }) => {
         </View>
       )}
 
-<View style={{width:'100%', marginTop:15 }}>
-
+      <View style={{ width: "100%", marginTop: 15 }}>
         <View
           style={{
-      
             alignItems: "center",
-     
           }}
         >
           <Text
@@ -999,9 +1014,9 @@ const NewOrdersListScreen = ({ route }) => {
           </Text>
         </View>
       </View>
-      <View style={{ zIndex: 1, position:'absolute', right:15 }}>
-          <BackButton />
-        </View>
+      <View style={{ zIndex: 1, position: "absolute", right: 15 }}>
+        <BackButton />
+      </View>
       <ScrollView style={styles.container}>
         <View style={{ marginTop: 20, marginBottom: 200 }}>
           {ordersList?.length < 1 && !isLoading ? (
@@ -1012,7 +1027,9 @@ const NewOrdersListScreen = ({ route }) => {
                 height: "100%",
               }}
             >
-              <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>{t("لا يوجد طلبيات")}</Text>
+              <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>
+                {t("لا يوجد طلبيات")}
+              </Text>
             </View>
           ) : (
             // !isLoading && (
@@ -1033,8 +1050,7 @@ const NewOrdersListScreen = ({ route }) => {
                           shadowRadius: 10.84,
                           elevation: 30,
                           borderRadius: 20,
-                          backgroundColor: themeStyle.SECONDARY_COLOR
-
+                          backgroundColor: themeStyle.SECONDARY_COLOR,
                         },
                       ]}
                     >
@@ -1201,7 +1217,7 @@ const NewOrdersListScreen = ({ route }) => {
                       </View>
                       {renderOrderTotalRaw(order)}
                       {/*{renderStatus(order)} */}
-{/* 
+                      {/* 
                       <View
                         style={{
                           maxWidth: "50%",
@@ -1219,69 +1235,71 @@ const NewOrdersListScreen = ({ route }) => {
                         />
                       </View> */}
 
-                      <View
-          style={{
-            marginVertical: 40,
-            // alignItems: "flex-start",
-            width: "100%",
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              width: "100%",
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ fontSize: 22 }}>ستكون جاهزة خلال</Text>
-          </View>
+                     {!storeDataStore.storeData.isOrderLaterSupport &&  <View
+                        style={{
+                          marginVertical: 40,
+                          // alignItems: "flex-start",
+                          width: "100%",
+                        }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            width: "100%",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text style={{ fontSize: 22 }}>ستكون جاهزة خلال</Text>
+                        </View>
 
-          <View
-            style={{
-              marginTop: 30,
-              // alignItems: "flex-start",
-              flexDirection: "row",
-              width: "100%",
+                        <View
+                          style={{
+                            marginTop: 30,
+                            // alignItems: "flex-start",
+                            flexDirection: "row",
+                            width: "100%",
 
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {deliveryTime.map((time) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => updateSelectedTime(order._id, time.value)}
-                  style={{
-                    width: 60,
-                    borderWidth: 1,
-                    height: 60,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginRight: 20,
-                    borderColor: themeStyle.TEXT_PRIMARY_COLOR,
-                    backgroundColor:
-                    selectedTime[order._id] === time.label
-                        ? themeStyle.SUCCESS_COLOR
-                        : "transparent",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 22,
-                      color:
-                      selectedTime[order._id] == time.value
-                          ? themeStyle.WHITE_COLOR
-                          : themeStyle.TEXT_PRIMARY_COLOR,
-                    }}
-                  >
-                    {time.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {deliveryTime.map((time) => {
+                            return (
+                              <TouchableOpacity
+                                onPress={() =>
+                                  updateSelectedTime(order._id, time.value)
+                                }
+                                style={{
+                                  width: 60,
+                                  borderWidth: 1,
+                                  height: 60,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  marginRight: 20,
+                                  borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                                  backgroundColor:
+                                    selectedTime[order._id] === time.label
+                                      ? themeStyle.SUCCESS_COLOR
+                                      : "transparent",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 22,
+                                    color:
+                                      selectedTime[order._id] == time.value
+                                        ? themeStyle.WHITE_COLOR
+                                        : themeStyle.TEXT_PRIMARY_COLOR,
+                                  }}
+                                >
+                                  {time.label}
+                                </Text>
+                              </TouchableOpacity>
+                            );
+                          })}
+                        </View>
+                      </View>}
 
                       <View
                         style={{
@@ -1294,12 +1312,12 @@ const NewOrdersListScreen = ({ route }) => {
                           text={t("approve")}
                           fontSize={22}
                           onClickFn={() =>
-                            updateViewedOrder(order, selectedTime[order._id])
+                            updateViewedOrder(order, selectedTime[order._id],storeDataStore.storeData.isOrderLaterSupport)
                           }
                           textColor={themeStyle.WHITE_COLOR}
                           fontFamily={`${getCurrentLang()}-Bold`}
                           borderRadious={19}
-                          disabled={!selectedTime[order._id]}
+                          disabled={!selectedTime[order._id] && !storeDataStore.storeData.isOrderLaterSupport}
                         />
                       </View>
                     </View>

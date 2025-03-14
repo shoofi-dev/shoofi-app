@@ -302,6 +302,7 @@ class MenuStore {
     formData.append("isInStore", product.isInStore.toString());
     formData.append("isToNameAndAge", product.isToNameAndAge.toString());
     formData.append("isUploadImage", product.isUploadImage.toString());
+    product.isWeight && formData.append("isWeight", product.isWeight.toString());
 
     product?.activeTastes && formData.append("activeTastes", product.activeTastes.toString());
     // return axios

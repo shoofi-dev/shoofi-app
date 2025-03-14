@@ -3,9 +3,14 @@ import EscPosPrinter, {
 } from "react-native-esc-pos-printer";
 import moment from "moment";
 import i18n from "../../translations/i18n";
+import { errorHandlerStore } from "../../stores/error-handler";
+import { userDetailsStore } from "../../stores/user-details";
 
-export async function testPrint(order: any, printer) {
+export async function testPrint(order: any, printer, isDisablePrinter = false) {
   try {
+    if(isDisablePrinter){
+      return true;
+    }
     if (order) {
       // if(!printer){
       //   await EscPosPrinter.init({
@@ -59,7 +64,17 @@ const printOrder = async (orders, status) => {
       });
       resolve(status);
     });
-  } catch (e) {
-    console.log("Error:", e);
+  } catch (error) {
+    errorHandlerStore.sendClientError({
+      error: {
+        message: error?.message,
+        cause: error?.cause,
+        name: error?.name,
+        source: 'printer',
+      },
+      customerId: userDetailsStore.userDetails?.customerId,
+      createdDate: moment().format(),
+    });
+    return false;
   }
 };

@@ -20,7 +20,7 @@ export default function SelectedTimeCMP({selectedTime}: TProps) {
         }}
       >
         <View style={{ marginBottom: 5 }}>
-          <Text style={{ fontSize: 20 }}>{t("picked-time")}</Text>
+          <Text style={{ fontSize: 20,color: themeStyle.SECONDARY_COLOR, }}>{t("picked-time")}</Text>
         </View>
         <View
           style={{
@@ -33,11 +33,11 @@ export default function SelectedTimeCMP({selectedTime}: TProps) {
             icon="calendar"
             size={18}
             style={{
-              color: themeStyle.PRIMARY_COLOR,
+              color: themeStyle.SECONDARY_COLOR,
               marginRight: 5,
             }}
           />
-          <Text type="number" style={{ fontSize: 20 }}>
+          <Text type="number" style={{ fontSize: 20,color: themeStyle.SECONDARY_COLOR, }}>
           {moment(selectedTime).locale(getCurrentLang()).format("dddd")} - {moment(selectedTime).format("DD/MM/YYYY - HH:mm")}
 
           </Text>

@@ -11,8 +11,9 @@ import { SHIPPING_METHODS } from "../../../consts/shared";
 import Icon from "../../../components/icon";
 import Text from "../../../components/controls/Text";
 import LottieView from 'lottie-react-native';
+import { color } from "react-native-reanimated";
 const orderSubmitedAnimation = require('../../../assets/order/animation-order-submitted.json')
-const cakeAnimation = require('../../../assets/lottie/pizza-animation.json')
+const cakeAnimation = require('../../../assets/lottie/butcher-typ-animation.json')
 const OrderSubmittedScreen = ({ route }) => {
   const { t } = useTranslation();
   const { ordersStore,userDetailsStore } = useContext(StoreContext);
@@ -40,7 +41,7 @@ const OrderSubmittedScreen = ({ route }) => {
     <View style={styles.container}>
       <View style={{ alignItems: "center", width: "100%" }}>
         <View
-          style={{ alignItems: "center", paddingHorizontal: 0, width: "100%", top:-30 }}
+          style={{ alignItems: "center", paddingHorizontal: 0, width: "100%", top:-60 }}
         >
           <View style={{width: 200, height:200, }}>
          {isAnimateReady &&  <LottieView
@@ -90,14 +91,16 @@ const OrderSubmittedScreen = ({ route }) => {
             )}
 
           </View>
-          <View>
+          {/* <View>
             <Text
               style={{
                 ...styles.textLang,
                 fontFamily: `${getCurrentLang()}-Bold`,
                 fontSize: 22,
                 textAlign: "center",
-                marginTop:10
+                marginTop:10,
+                color:themeStyle.WHITE_COLOR,
+                marginBottom:20
               }}
             >
              
@@ -107,7 +110,7 @@ const OrderSubmittedScreen = ({ route }) => {
              
          
             </Text>
-          </View>
+          </View> */}
         </View>
         <View style={{ width: "80%", bottom:0, position:'absolute' }}>
           <View>

@@ -3,21 +3,15 @@ import { useNavigation } from "@react-navigation/native";
 import { useContext } from "react";
 import { observer } from "mobx-react";
 import {
-  Image,
   View,
   StyleSheet,
-  Linking,
   Platform,
   Animated,
   LayoutAnimation,
-  DeviceEventEmitter,
-  ImageBackground,
   Easing,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
-import DashedLine from "react-native-dashed-line";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Animatable from 'react-native-animatable';
+import * as Animatable from "react-native-animatable";
 
 /* styles */
 import theme from "../../styles/theme.style";
@@ -28,44 +22,23 @@ import Text from "../../components/controls/Text";
 import Icon from "../../components/icon";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import BackButton from "../../components/back-button";
-import NewPaymentMethodDialog from "../../components/dialogs/new-credit-card";
-import {
-  TOrderSubmitResponse,
-  TUpdateCCPaymentRequest,
-} from "../../stores/cart";
 import { TCCDetails } from "../../components/credit-card/api/validate-card";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import chargeCreditCard, {
-  TPaymentProps,
-} from "../../components/credit-card/api/payment";
+
 import Button from "../../components/controls/button/button";
-import LocationIsDisabledDialog from "../../components/dialogs/location-is-disabled";
 import { getCurrentLang } from "../../translations/i18n";
 import { useTranslation } from "react-i18next";
 import themeStyle from "../../styles/theme.style";
-import InvalidAddressdDialog from "../../components/dialogs/invalid-address";
-import StoreIsCloseDialog from "../../components/dialogs/store-is-close";
-import PaymentFailedDialog from "../../components/dialogs/payment-failed";
-import BarcodeScannerCMP from "../../components/barcode-scanner";
-import OpenBarcodeScannerdDialog from "../../components/dialogs/barcode-scanner/open-barcode-scannte";
-import BarcodeScannedDialog from "../../components/dialogs/barcode-scanner/barcode-scanned";
-import RecipetNotSupportedDialog from "../../components/dialogs/recipet-service/recipet-not-supported";
-import StoreErrorMsgDialog from "../../components/dialogs/store-errot-msg";
-import DeliveryMethodDialog from "../../components/dialogs/delivery-method";
 import {
   SHIPPING_METHODS,
   bcoindId,
   cdnUrl,
-  ORDER_TYPE,
   PAYMENT_METHODS,
-  mealsImages,
   animationDuration,
+  APP_NAME,
 } from "../../consts/shared";
-import { ToggleButton } from "react-native-paper";
-import { transparent } from "react-native-paper/lib/typescript/styles/colors";
-import PickTimeDialog from "../../components/dialogs/pick-time";
-import moment from "moment";
-import isShowSize from "../../helpers/is-show-size";
+import CustomFastImage from "../../components/custom-fast-image";
+import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 const barcodeString = "https://onelink.to/zky772";
 
 type TShippingMethod = {
@@ -87,7 +60,6 @@ const CartScreen = ({ route }) => {
 
   const {
     cartStore,
-    authStore,
     languageStore,
     storeDataStore,
     userDetailsStore,
@@ -95,61 +67,11 @@ const CartScreen = ({ route }) => {
     adminCustomerStore,
     menuStore,
   } = useContext(StoreContext);
-  const [locationPermissionStatus, requestPermission] =
-    Location.useForegroundPermissions();
   const navigation = useNavigation();
 
-  const [shippingMethod, setShippingMethod] = React.useState(
-    SHIPPING_METHODS.takAway
-  );
-  const [paymentMthod, setPaymentMthod] = React.useState(PAYMENT_METHODS.cash);
-
-  const [isShippingMethodAgrred, setIsShippingMethodAgrred] =
-    React.useState(false);
-  const [isOpenShippingMethodDialog, setIsOpenShippingMethodDialog] =
-    React.useState(false);
-
-  const [isOpenLocationIsDisabledDialog, setIsOpenLocationIsDisableDialog] =
-    React.useState(false);
-  const [isOpenNewCreditCardDialog, setOpenNewCreditCardDialog] =
-    React.useState(false);
-
-  const [ccData, setCCData] = React.useState<TCCDetails | undefined>();
-
   const [itemsPrice, setItemsPrice] = React.useState(0);
-  const [totalPrice, setTotalPrice] = React.useState(0);
-  const [minDeltaMinutes, setMinDeltaMinutes] = React.useState(30);
-  const [bcoinUpdatePrice, setBcoinUpdatePrice] = React.useState(0);
-
-  const [location, setLocation] = useState(null);
-  const [region, setRegion] = useState(null);
-  const [showStoreIsCloseDialog, setShowStoreIsCloseDialog] = useState(false);
-  const [selectedOrderDate, setSelectedOrderDate] = useState();
-  const [showPickTimeDialog, setShowPickTimeDialog] = useState(false);
-  const [showPaymentFailedDialog, setShowPaymentFailedDialog] = useState(false);
-  const [paymentErrorMessage, setPaymentErrorMessage] = useState();
-  const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
-  const [deliveryPrice, setDeliveryPrice] = useState(0);
-  const [isOpenBarcodeSacnnerDialog, stIsOpenBarcodeSacnnerDialog] =
+  const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
-  const [isOpenBarcodeSacnnedDialog, stIsOpenBarcodeSacnnedDialog] =
-    useState(false);
-  const [isOpenRecipetNotSupportedDialog, setIOpenRecipetNotSupportedDialog] =
-    useState(false);
-  const [isOpenStoreErrorMsgDialog, setIsOpenStoreErrorMsgDialog] =
-    useState(false);
-  const [barcodeSacnnedDialogText, setBarcodeSacnnedDialogText] = useState("");
-  const [recipetSupportText, setRecipetSupportText] = useState({
-    text: "",
-    icon: null,
-  });
-  const [storeErrorText, setStoreErrorText] = useState("");
-  const [isLoadingOrderSent, setIsLoadingOrderSent] = useState(null);
-  const [isValidAddress, setIsValidAddress] = useState(false);
-  const [isPickTime, setIsPickTime] = useState(false);
-  const [isOpenInvalidAddressDialod, setIsOpenInvalidAddressDialod] =
-    React.useState(false);
-
   const [editOrderData, setEditOrderData] = useState(null);
 
   useEffect(() => {
@@ -158,53 +80,18 @@ const CartScreen = ({ route }) => {
     }
   }, [ordersStore.editOrderData]);
 
-  useEffect(() => {
-    if (editOrderData) {
-      setSelectedOrderDate(editOrderData.orderDate);
-      setShippingMethod(editOrderData.order.receipt_method);
-      setPaymentMthod(editOrderData.order.payment_method);
-      setDeliveryPrice(
-        editOrderData.order.receipt_method == SHIPPING_METHODS.shipping ? 20 : 0
-      );
-      ordersStore.setOrderType(editOrderData.orderType);
-    }
-  }, [editOrderData]);
+  // useEffect(() => {
+  //   if (editOrderData) {
+  //     setSelectedOrderDate(editOrderData.orderDate);
+  //     setShippingMethod(editOrderData.order.receipt_method);
+  //     setPaymentMthod(editOrderData.order.payment_method);
+  //     setDeliveryPrice(
+  //       editOrderData.order.receipt_method == SHIPPING_METHODS.shipping ? 20 : 0
+  //     );
+  //     ordersStore.setOrderType(editOrderData.orderType);
+  //   }
+  // }, [editOrderData]);
 
-  useEffect(() => {
-    //cartStore.resetCart();
-
-    let bcoinPrice = 0;
-    const shippingPrice =
-      shippingMethod === SHIPPING_METHODS.shipping ? deliveryPrice : 0;
-    setTotalPrice(shippingPrice + itemsPrice);
-  }, [shippingMethod, itemsPrice]);
-
-  useEffect(() => {
-    if (shippingMethod === SHIPPING_METHODS.shipping) {
-      askForLocation();
-    }
-  }, [shippingMethod]);
-
-  useEffect(() => {
-    if (
-      paymentMthod === PAYMENT_METHODS.creditCard &&
-      !ccData &&
-      !editOrderData
-    ) {
-      setOpenNewCreditCardDialog(true);
-    }
-  }, [paymentMthod]);
-
-  const resetCreditCardAdmin = async () => {
-    await AsyncStorage.removeItem("@storage_CCData");
-  };
-  useEffect(() => {
-    return () => {
-      if (userDetailsStore.isAdmin()) {
-        resetCreditCardAdmin();
-      }
-    };
-  }, []);
 
   const updateItemsPrice = () => {
     if (cartStore.cartItems.length === 0 && !editOrderData) {
@@ -235,56 +122,6 @@ const CartScreen = ({ route }) => {
   useEffect(() => {
     updateItemsPrice();
   }, [cartStore.cartItems]);
-
-  const getCCData = async () => {
-    //await AsyncStorage.setItem("@storage_CCData","");
-    const data = await AsyncStorage.getItem("@storage_CCData");
-    setCCData(JSON.parse(data));
-  };
-
-  useEffect(() => {
-    getCCData();
-  }, []);
-
-  const [isloadingLocation, setIsloadingLocation] = useState(false);
-
-  const askForLocation = async (isValidation?: boolean) => {
-    // const res = await Location.hasServicesEnabledAsync();
-    if (location) {
-      return location;
-    } else {
-      isValidation && setIsloadingLocation(true);
-      const permissionRes = await requestPermission();
-      if(permissionRes.status == 'denied'){
-        setIsOpenLocationIsDisableDialog(true);
-        return;
-      }
-      const res = await Location.hasServicesEnabledAsync();
-      if (res) {
-        let tempLocation = await Location.getCurrentPositionAsync({
-          accuracy:
-            Platform.OS === "android"
-              ? Location.Accuracy.Balanced
-              : Location.Accuracy.Balanced,
-          mayShowUserSettingsDialog: false,
-        });
-        if (tempLocation) {
-          setLocation(tempLocation);
-          setRegion({
-            latitude: tempLocation.coords.latitude,
-            latitudeDelta: 0.01,
-            longitude: tempLocation.coords.longitude,
-            longitudeDelta: 0.01,
-          });
-        }
-
-        isValidation && setIsloadingLocation(false);
-        return tempLocation;
-      } else {
-        return null;
-      }
-    }
-  };
 
   const getProductIndexId = (product, index) => {
     if (product) {
@@ -317,320 +154,10 @@ const CartScreen = ({ route }) => {
     }, 600);
   };
 
-  const isStoreSupport = (key: string) => {
-    return storeDataStore.getStoreData().then((res) => {
-      setDeliveryPrice(res.delivery_price);
-      return res[key];
-    });
-  };
-
-  const isStoreAvailable = () => {
-    return storeDataStore.getStoreData().then((res) => {
-      return {
-        ar: res["invalid_message_ar"],
-        he: res["invalid_message_he"],
-        isOpen: res.alwaysOpen || userDetailsStore.isAdmin() || res.isOpen,
-        isBusy: false,
-      };
-    });
-  };
-
-  const isErrMessage = async () => {
-    let data = await isStoreAvailable();
-    if (data.ar || data.he) {
-      setStoreErrorText(data[getCurrentLang()]);
-      setIsOpenStoreErrorMsgDialog(true);
-    }
-    return data;
-  };
-
-  const validateAdress = async () => {
-    return new Promise(async (resolve) => {
-      const addressLocation = await askForLocation(true);
-      if (addressLocation) {
-        cartStore
-          .isValidGeo(
-            addressLocation.coords.latitude,
-            addressLocation.coords.longitude
-          )
-          .then((res: any) => {
-            if (res.data) {
-              setIsValidAddress(res.data);
-              setIsOpenInvalidAddressDialod(!res.data);
-              resolve(res.data);
-            } else {
-              setIsOpenInvalidAddressDialod(!res.data);
-              resolve(false);
-            }
-          });
-      } else {
-        setIsOpenLocationIsDisableDialog(true);
-        resolve(false);
-      }
-    });
-  };
-  const onPickTime = async () => {
-    setShowPickTimeDialog(true);
-  };
-  const onSendCart = async () => {
-    const isLoggedIn = authStore.isLoggedIn();
-    if (isLoggedIn) {
-      const data: any = await isErrMessage();
-      if (!(data.ar || data.he) || userDetailsStore.isAdmin()) {
-        if (data.isOpen || userDetailsStore.isAdmin()) {
-          if (shippingMethod === SHIPPING_METHODS.shipping) {
-            const isValid = await validateAdress();
-
-            if (isValid) {
-              if (!isShippingMethodAgrred) {
-                setIsOpenShippingMethodDialog(true);
-                return;
-              } else {
-                submitCart();
-              }
-            } else {
-              setIsOpenInvalidAddressDialod(true);
-            }
-          } else {
-            if (shippingMethod === SHIPPING_METHODS.takAway) {
-              if (!isShippingMethodAgrred) {
-                setIsOpenShippingMethodDialog(true);
-                return;
-              } else {
-                submitCart();
-              }
-            }
-          }
-        } else {
-          setShowStoreIsCloseDialog(true);
-        }
-      }
-    } else {
-      navigation.navigate("login");
-    }
-  };
-
-  const chargeOrder = (chargeData: TPaymentProps, cartData: any) => {
-    chargeCreditCard(chargeData, cartData).then((resCharge) => {
-      const updateCCData: TUpdateCCPaymentRequest = {
-        orderId: chargeData.orderId,
-        creditcard_ReferenceNumber: resCharge?.ReferenceNumber,
-        datetime: moment().format(),
-        ZCreditInvoiceReceiptResponse: resCharge?.ZCreditInvoiceReceiptResponse,
-        ZCreditChargeResponse: resCharge,
-      };
-      cartStore.UpdateCCPayment(updateCCData).then((res) => {
-        if (resCharge.HasError) {
-          setPaymentErrorMessage(resCharge.ReturnMessage);
-          setShowPaymentFailedDialog(true);
-          setIsLoadingOrderSent(false);
-          return;
-        }
-        if (res?.has_err) {
-          setShowPaymentFailedDialog(true);
-          return;
-        }
-        postChargeOrderActions();
-      });
-    });
-  };
-
-  const postChargeOrderActions = () => {
-    setIsLoadingOrderSent(false);
-    cartStore.resetCart();
-    adminCustomerStore.setCustomer(null);
-    navigation.navigate("order-submitted", { shippingMethod });
-  };
-  const postSubmitOrderActions = (orderData: TOrderSubmitResponse) => {
-    if (paymentMthod === PAYMENT_METHODS.creditCard) {
-      const chargeData: TPaymentProps = {
-        token: ccData.ccToken,
-        id: ccData.id,
-        totalPrice: itemsPrice,
-        orderId: orderData.response.orderId,
-        email: ccData?.email,
-        cvv: ccData?.cvv,
-        phone: userDetailsStore?.userDetails?.phone,
-        userName: userDetailsStore?.userDetails?.name,
-      };
-      chargeOrder(chargeData, orderData.cartData);
-    } else {
-      postChargeOrderActions();
-    }
-  };
-
-  const postUpdateOrderAdminActions = () => {
-    setIsLoadingOrderSent(false);
-    cartStore.resetCart();
-    adminCustomerStore.setCustomer(null);
-    ordersStore.setEditOrderData(null);
-    navigation.navigate("admin-orders");
-  };
-
-  const updateOrderAdmin = (order: any) => {
-    if (editOrderData) {
-      order.customerId = editOrderData.customerId;
-      order.db_orderId = editOrderData._id;
-      order.orderId = editOrderData.orderId;
-    }
-    cartStore
-      .updateOrderAdmin(order)
-      .then((res: TOrderSubmitResponse | any) => {
-        if (res == "sameHashKey") {
-          if (paymentMthod === PAYMENT_METHODS.creditCard) {
-          }
-        }
-        if (res?.has_err) {
-          DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
-            show: true,
-          });
-        }
-        postUpdateOrderAdminActions();
-      });
-  };
-
-  const submitCart = () => {
-    setIsLoadingOrderSent(true);
-    const order: any = {
-      paymentMthod,
-      shippingMethod,
-      totalPrice,
-      products: cartStore.cartItems,
-      bcoinUpdatePrice,
-      orderDate: selectedOrderDate,
-      orderType: ordersStore.orderType,
-    };
-
-    if (
-      userDetailsStore.isAdmin() &&
-      adminCustomerStore?.userDetails?.customerId
-    ) {
-      order.customerId = adminCustomerStore?.userDetails?.customerId;
-      order.isAdmin = true;
-    } else {
-      order.isAdmin = false;
-    }
-
-    if (shippingMethod === SHIPPING_METHODS.shipping) {
-      order.geo_positioning = {
-        latitude: editOrderData
-          ? editOrderData?.order?.geo_positioning?.latitude ||
-            location?.coords?.latitude
-          : location?.coords?.latitude,
-        longitude: editOrderData
-          ? editOrderData?.order?.geo_positioning?.longitude ||
-            location?.coords?.longitude
-          : location?.coords?.longitude,
-      };
-    }
-
-    if (!!editOrderData) {
-      updateOrderAdmin(order);
-      return;
-    }
-    //cartStore.addOrderToHistory(order,userDetailsStore.userDetails.phone);
-    cartStore.submitOrder(order).then((res: TOrderSubmitResponse | any) => {
-      if (res == "sameHashKey") {
-        if (paymentMthod === PAYMENT_METHODS.creditCard) {
-        }
-      }
-      if (res?.has_err) {
-        DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
-          show: true,
-        });
-        return;
-      }
-      postSubmitOrderActions(res);
-    });
-  };
-
   const onEditProduct = (index) => {
     navigation.navigate("meal", { index });
   };
 
-  const handleLocationIsDiabledAnswer = (value: boolean) => {
-    if (value) {
-      Platform.OS === "android"
-        ? Linking.sendIntent("android.settings.LOCATION_SOURCE_SETTINGS")
-        : Linking.openURL("App-Prefs:com.sariq.abdelhai.butcher");
-        setIsOpenLocationIsDisableDialog(false);
-        setShippingMethod(SHIPPING_METHODS.takAway);
-    } else {
-      setIsOpenLocationIsDisableDialog(false);
-      setShippingMethod(SHIPPING_METHODS.takAway);
-    }
-    setIsloadingLocation(false);
-  };
-  const handleShippingMethoAnswer = (value: boolean) => {
-    setIsOpenShippingMethodDialog(value);
-    setIsShippingMethodAgrred(value);
-    setIsLoadingOrderSent(value);
-    if (value) {
-      submitCart();
-    }
-  };
-  const handleInvalidLocationAnswer = (value: boolean) => {
-    setIsOpenInvalidAddressDialod(false);
-  };
-  const handleStoreIsCloseAnswer = (value: boolean) => {
-    setShowStoreIsCloseDialog(false);
-  };
-  const handleTimeSelectedAnswer = (value: boolean) => {
-    setSelectedOrderDate(value);
-    setShowPickTimeDialog(false);
-  };
-  const handlePaymentFailedAnswer = (value: boolean) => {
-    setShowPaymentFailedDialog(false);
-    setIsLoadingOrderSent(false);
-    setIsOpenShippingMethodDialog(false);
-  };
-  const handleNewPMAnswer = (value: any) => {
-    if (value === "close") {
-      setPaymentMthod(PAYMENT_METHODS.cash);
-      setOpenNewCreditCardDialog(false);
-      return;
-    }
-    setOpenNewCreditCardDialog(false);
-    getCCData();
-  };
-
-  const replaceCreditCard = () => {
-    setOpenNewCreditCardDialog(true);
-  };
-
-  const filterMealExtras = (extras) => {
-    const filteredExtras = extras.filter((extra) => {
-      if (extra.available_on_app) {
-        if (extra.type === "CHOICE" && !extra.multiple_choice) {
-          if (extra.value !== false && extra.value !== extra.isdefault) {
-            return extra;
-          }
-          return false;
-        }
-        if (extra.type === "COUNTER") {
-          if (extra.counter_init_value !== extra.value) {
-            return extra;
-          }
-          return false;
-        }
-        if (extra.type === "CHOICE" && extra.multiple_choice) {
-          if (
-            extra.isdefault !== extra.value &&
-            extra.value !== extra.isdefault
-          ) {
-            return extra;
-          }
-          return false;
-        }
-      }
-    });
-
-    return filteredExtras;
-  };
-
-  // extra.value &&
-  // extra.isdefault != extra.value &&
-  // extra.counter_init_value != extra.value
   const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
   const handleAnimation = () => {
     // @ts-ignore
@@ -667,114 +194,6 @@ const CartScreen = ({ route }) => {
       (product) => product.data._id === bcoindId
     );
     return bcoinFound;
-  };
-
-  const renderExtras = (filteredExtras, extrasLength, key) => {
-    return (
-      <View>{renderFilteredExtras(filteredExtras, extrasLength, key)}</View>
-    );
-  };
-
-  const handleBarcodeAnswer = (answer: string) => {
-    setIsBarcodeOpen(false);
-    if (answer === "canceled") {
-      setBarcodeSacnnedDialogText("scann-canceled");
-      setShippingMethod(SHIPPING_METHODS.takAway);
-    } else {
-      if (answer != barcodeString) {
-        setBarcodeSacnnedDialogText("wrong-barcode");
-        setShippingMethod(SHIPPING_METHODS.takAway);
-      } else {
-        setBarcodeSacnnedDialogText("scanned-succefully");
-      }
-    }
-    stIsOpenBarcodeSacnnedDialog(true);
-  };
-  const handleOpenBarcodeScannerAnswer = (answer: string) => {
-    setIsBarcodeOpen(true);
-    stIsOpenBarcodeSacnnerDialog(false);
-  };
-  const handleOpenBarcodeScannedAnswer = (answer: string) => {
-    stIsOpenBarcodeSacnnedDialog(false);
-  };
-
-  const handleOrderTypeSelect = async (value) => {
-    setSelectedOrderDate(null);
-    ordersStore.setOrderType(value);
-  };
-  const handleDeliverySelect = async (value) => {
-    if (value == null) {
-      return;
-    }
-    if (value !== SHIPPING_METHODS.takAway) {
-      const isSupported = await isStoreSupport("delivery_support");
-      if (!isSupported) {
-        setRecipetSupportText({
-          text: "shipping-not-supported",
-          icon: "shipping_icon",
-        });
-        setIOpenRecipetNotSupportedDialog(true);
-        setShippingMethod(SHIPPING_METHODS.takAway);
-        return;
-      }
-      setShippingMethod(SHIPPING_METHODS.shipping);
-    } else {
-      setShippingMethod(SHIPPING_METHODS.takAway);
-    }
-  };
-  const handleTableSelect = async () => {
-    setIsBarcodeOpen(false);
-    setShippingMethod(SHIPPING_METHODS.table);
-    const isSupported = await isStoreSupport("table_support");
-    if (!isSupported) {
-      stIsOpenBarcodeSacnnerDialog(true);
-    }
-  };
-  const handlePaymentMethodChange = async (value) => {
-    if (value == null) {
-      return;
-    }
-    let selectedPM = "";
-    switch (value) {
-      case "CREDITCARD":
-        selectedPM = "creditcard_support";
-        break;
-      case "CASH":
-        selectedPM = "cash_support";
-        break;
-    }
-    const isSupported = await isStoreSupport(selectedPM);
-
-    if (!isSupported) {
-      setRecipetSupportText({
-        text: "creditcard-not-supported",
-        icon: "delivery-icon",
-      });
-      setIOpenRecipetNotSupportedDialog(true);
-      setPaymentMthod(PAYMENT_METHODS.cash);
-      return;
-    }
-    setPaymentMthod(value);
-  };
-
-  const handleRecipetNotSupportedAnswer = () => {
-    setIOpenRecipetNotSupportedDialog(false);
-  };
-  const handleStoreErrorMsgAnswer = () => {
-    setIsOpenStoreErrorMsgDialog(false);
-  };
-
-  const removeCreditCard = async () => {
-    await AsyncStorage.removeItem("@storage_CCData");
-    setCCData(null);
-    setPaymentMthod(PAYMENT_METHODS.cash);
-  };
-
-  const isPickTimeValid = () => {
-    // if (ordersStore.orderType === ORDER_TYPE.later) {
-    return !selectedOrderDate;
-    //}
-    // return false;
   };
 
   const anim = useRef(new Animated.Value(1));
@@ -843,9 +262,7 @@ const CartScreen = ({ route }) => {
     }
   }, [cartStore.cartItems]);
 
-  const openTerms = () => {
-    navigation.navigate("terms-and-conditions");
-  };
+
 
   let extrasArray = [];
   const renderFilteredExtras = (filteredExtras, extrasLength, key) => {
@@ -909,14 +326,31 @@ const CartScreen = ({ route }) => {
       );
     });
   };
-  const getCardIcon = (type: string) => {
-    //mastercard
-    // american-express
-    // visa
+
+
+  const onPickTime = async () => {
+    if(userDetailsStore.isAdmin() || !storeDataStore.storeData.isEnablePickTimeNote){
+      goToPickTimeScreen();
+    }else{
+      setIsOpenConfirmActiondDialog(true);
+    }
+  };
+
+  const goToPickTimeScreen = () => {
+    navigation.navigate("pick-time-screen");
+  };
+
+  const handleConfirmActionAnswer = (answer: string) => {
+    setIsOpenConfirmActiondDialog(false);
+    goToPickTimeScreen();
   };
 
   const handleSubmintButton = () => {
-    navigation.navigate("checkout-screen");
+    if(storeDataStore.storeData.isOrderLaterSupport){
+      onPickTime();
+    }else{
+      navigation.navigate("checkout-screen");
+    }
   };
 
   return (
@@ -927,11 +361,19 @@ const CartScreen = ({ route }) => {
         end={{ x: 1, y: 1 }}
         style={[styles.background]}
       /> */}
-      <ScrollView style={{ height: "100%" }}>
+      <ScrollView style={{ height: "100%", marginBottom: 110 }}>
         <View style={{ ...styles.container }}>
-          <View style={{ paddingHorizontal: 20, }}>
+          <View style={{ paddingHorizontal: 20 }}>
             <View style={styles.backContainer}>
-              <View style={{ flexDirection: "row", alignItems: "center", backgroundColor:'rgba(36, 33, 30, 0.8)', paddingHorizontal:5, borderRadius:10 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: "rgba(36, 33, 30, 0.8)",
+                  paddingHorizontal: 5,
+                  borderRadius: 10,
+                }}
+              >
                 <Text
                   style={{
                     fontSize: 20,
@@ -958,7 +400,9 @@ const CartScreen = ({ route }) => {
                   justifyContent: "center",
                   marginVertical: 10,
                   marginLeft: 10,
-                  backgroundColor:'rgba(36, 33, 30, 0.8)', paddingHorizontal:5, borderRadius:10
+                  backgroundColor: "rgba(36, 33, 30, 0.8)",
+                  paddingHorizontal: 5,
+                  borderRadius: 10,
                 }}
               >
                 <BackButton onClick={onBackClick} />
@@ -1118,15 +562,19 @@ const CartScreen = ({ route }) => {
                                   borderWidth: 0,
                                 }}
                               >
-                                <Image
+                                <CustomFastImage
                                   style={{
                                     width: "100%",
                                     height: "100%",
                                     marginLeft: 0,
                                     borderRadius: 20,
                                   }}
-                                  source={mealsImages[product.data.img]}
-                                  resizeMode="contain"
+                                  source={{
+                                    uri: `${cdnUrl}${product.data.img[0].uri}`,
+                                  }}
+                                  cacheKey={`${APP_NAME}_${product.data.img[0].uri
+                                    .split(/[\\/]/)
+                                    .pop()}`}
                                 />
                               </View>
                               <View
@@ -1160,7 +608,7 @@ const CartScreen = ({ route }) => {
                                       style={{
                                         textAlign: "left",
                                         fontSize: 18,
-                                        color: themeStyle.PRIMARY_COLOR,
+                                        color: themeStyle.TEXT_PRIMARY_COLOR,
                                         fontFamily: `${getCurrentLang()}-Bold`,
                                       }}
                                     >
@@ -1176,84 +624,87 @@ const CartScreen = ({ route }) => {
                                       justifyContent: "space-between",
                                       marginTop: 15,
                                     }}
-                                  >
-                                    <View style={{ flexBasis: "48%" }}>
-                               
-
-                                      {product?.data?.extras?.halfOne?.value
-                                        .length > 0
-                                        ? Object.keys(
-                                            product?.data?.extras?.halfOne
-                                              ?.value
-                                          ).map((key) => {
-                                            return (
-                                              <View>
-                                                <View
-                                                  style={{
-                                                    flexDirection: "row",
-                                                  }}
-                                                >
-                                                  <Text
-                                                    style={{
-                                                      textAlign: "left",
-                                                      fontSize: 16,
-                                                      marginTop: 10,
-                                                    }}
-                                                    type="number"
-                                                  >
-                                                    {`${Number(key) + 1}`}
-                                                  </Text>
-                                                  <Text
-                                                    style={{
-                                                      textAlign: "left",
-                                                      fontSize: 16,
-                                                      marginTop: 10,
-                                                    }}
-                                                  >
-                                                    {" "}
-                                                    -{" "}
-                                                    {t(
-                                                      product.data.extras
-                                                        ?.halfOne?.value[key]
-                                                    )}
-                                                  </Text>
-                                                </View>
-                                              </View>
-                                            );
-                                          })
-                                        : product?.data?.extras?.halfOne
-                                            ?.value && (
-                                            <Text
-                                              style={{
-                                                textAlign: "left",
-                                                fontSize: 16,
-                                                marginTop: 10,
-                                              }}
-                                            >
-                                              من غير اضافات
-                                            </Text>
-                                          )}
-                                    </View>
-
-                  
-                                  </View>
-                                  {isShowSize(product?.data?._id) && <View
+                                  ></View>
+                                  <View
                                     style={{
                                       flexDirection: "row",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      marginTop: 25,
                                     }}
                                   >
                                     <Text
                                       style={{
                                         fontSize: 18,
+                                        color: themeStyle.TEXT_PRIMARY_COLOR,
                                       }}
                                     >
-                                      {t("size")} :{" "}
-                                      {t(product?.data?.extras?.size?.value)}
+                                      <View style={{marginRight:10}}>
+                                      <Icon
+                                        icon="scale"
+                                        size={20}
+                                        style={{
+                                          color: themeStyle.TEXT_PRIMARY_COLOR,
+                                        }}
+                                      />
+                                      </View>
+                          
+                                      {t("weight")} :{" "}
+                                      {t(product?.data?.extras?.weight?.value)}
+                                      <Text
+                                        style={{
+                                          fontSize: 16,
+                                          color: themeStyle.TEXT_PRIMARY_COLOR,
+                                        }}
+                                      >
+                                        {" "}
+                                        {t("gram")}
+                                      </Text>
                                     </Text>
-                                  </View>}
+                                  </View>
+
+                                  {product?.others?.note && (
+                                    <View
+                                      style={{
+                                        flexDirection: "row",
+                                        marginTop: 15,
+                                      }}
+                                    >
+                                      <View>
+                                        <Icon
+                                          icon="file-text2"
+                                          size={20}
+                                          style={{
+                                            color: themeStyle.PRIMARY_COLOR,
+                                            marginRight: 10,
+                                          }}
+                                        />
+                                      </View>
+
+                                      <View
+                                        style={{
+                                          // flexDirection: "row",
+                                          alignSelf: "flex-start",
+                                        }}
+                                      >
+                                        <Text
+                                          style={{
+                                            fontSize: 18,
+                                            alignSelf: "flex-start",
+                                          }}
+                                        >
+                                          {t('note')}:
+                                        </Text>
+                                        <Text
+                                          style={{
+                                            fontSize: 18,
+                                            color:
+                                              themeStyle.TEXT_PRIMARY_COLOR,
+                                            alignSelf: "flex-start",
+                                          }}
+                                        >
+                                          {product.others.note}
+                                        </Text>
+                                      </View>
+                                    </View>
+                                  )}
 
                                   <View
                                     style={{
@@ -1302,10 +753,9 @@ const CartScreen = ({ route }) => {
                                       >
                                         <Text
                                           style={{
-                                            fontSize: 17,
+                                            fontSize: 20,
                                             fontWeight: "bold",
-                                            color:
-                                              themeStyle.TEXT_PRIMARY_COLOR,
+                                            color: themeStyle.PRIMARY_COLOR,
                                           }}
                                           type="number"
                                         >
@@ -1318,8 +768,7 @@ const CartScreen = ({ route }) => {
                                           style={{
                                             fontWeight: "bold",
                                             fontSize: 17,
-                                            color:
-                                              themeStyle.TEXT_PRIMARY_COLOR,
+                                            color: themeStyle.PRIMARY_COLOR,
                                           }}
                                         >
                                           ₪
@@ -1370,15 +819,6 @@ const CartScreen = ({ route }) => {
                                       onRemoveProduct(product, index);
                                     }}
                                   >
-                                    {/* <Icon
-                                      icon="trash"
-                                      size={20}
-                                      style={{
-                                        right: 20,
-                                        top: 17,
-                                        color: "white",
-                                      }}
-                                    /> */}
                                     <Text
                                       style={{
                                         color: themeStyle.WHITE_COLOR,
@@ -1430,150 +870,6 @@ const CartScreen = ({ route }) => {
                               </View>
                             </View>
                           </View>
-                          {product?.others?.note && (
-                            <View
-                              style={{
-                                // flexDirection: "row",
-                                paddingHorizontal: 15,
-                                paddingTop: 5,
-                                alignItems: "center",
-                                paddingBottom: 15,
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 18,
-
-                                  color: themeStyle.SUCCESS_COLOR,
-                                  marginBottom: 10,
-                                }}
-                              >
-                                مواصفات الكعكة
-                              </Text>
-                              <Text
-                                style={{
-                                  fontSize: 18,
-                                  color: themeStyle.TEXT_PRIMARY_COLOR,
-                                  textAlign: "left",
-                                }}
-                              >
-                                {product.others.note}
-                              </Text>
-                            </View>
-                          )}
-                          {/* <View
-                                style={{
-                                  paddingHorizontal: 15,
-                                  marginTop: 10,
-                                }}
-                              >
-                                <DashedLine
-                                  dashLength={5}
-                                  dashThickness={1}
-                                  dashGap={5}
-                                  dashColor={themeStyle.GRAY_300}
-                                />
-                                <View
-                                  style={{
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    marginTop: 10,
-                                  }}
-                                >
-                                  <View style={{ flexDirection: "row" }}>
-                                    <View
-                                      style={{
-                                        flexDirection: "row",
-                                        marginRight: 15,
-                                      }}
-                                    >
-                                      <TouchableOpacity
-                                        style={{
-                                          flexDirection: "row",
-                                          alignItems: "center",
-                                          padding: 5,
-                                        }}
-                                        onPress={() => {
-                                          onEditProduct(index);
-                                        }}
-                                      >
-                                        <Text
-                                          style={{
-                                            fontSize: 20,
-                                            fontFamily: `${getCurrentLang()}-SemiBold`,
-                                            color: themeStyle.BROWN_700,
-                                          }}
-                                        >
-                                          {t("edit")}
-                                        </Text>
-                                        <View>
-                                          <Icon
-                                            icon="edit"
-                                            size={20}
-                                            style={{ color: theme.GRAY_700 }}
-                                          />
-                                        </View>
-                                      </TouchableOpacity>
-                                    </View>
-                                    <View style={{ flexDirection: "row" }}>
-                                      <TouchableOpacity
-                                        style={{
-                                          flexDirection: "row",
-                                          alignItems: "center",
-                                          justifyContent: "center",
-                                          padding: 5,
-                                        }}
-                                        onPress={() => {
-                                          onRemoveProduct(product, index);
-                                        }}
-                                      >
-                                        <Text
-                                          style={{
-                                            fontSize: 20,
-                                            fontFamily: `${getCurrentLang()}-SemiBold`,
-                                            height: "100%",
-                                            color: themeStyle.BROWN_700,
-                                          }}
-                                        >
-                                          {t("delete")}
-                                        </Text>
-
-                                        <View style={{ top: -1 }}>
-                                          <Icon icon="delete" size={20} />
-                                        </View>
-                                      </TouchableOpacity>
-                                    </View>
-                                  </View>
-                                  <View
-                                    style={{
-                                      marginTop: 0,
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Text
-                                      style={{
-                                        fontWeight: "bold",
-                                        fontSize: 17,
-                                        color: themeStyle.BROWN_700,
-                                        fontFamily: "Rubik-Bold",
-                                      }}
-                                    >
-                                      {product.data.price *
-                                        product.data.extras.counter.value}
-                                    </Text>
-                                    <Text
-                                      style={{
-                                        fontWeight: "bold",
-                                        fontSize: 17,
-                                        color: themeStyle.BROWN_700,
-                                      }}
-                                    >
-                                      ₪
-                                    </Text>
-                                  </View>
-                                </View>
-                              </View> */}
                         </View>
                       </Animated.View>
                     </Animated.View>
@@ -1582,152 +878,6 @@ const CartScreen = ({ route }) => {
               })}
             </View>
           </View>
-
-          <View>
-            {/* <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginTop: 30,
-                paddingHorizontal: 20,
-                height: 125,
-              }}
-            >
-              <View style={{ flexBasis: "32%", flexDirection: "column" }}>
-                <Button
-                  onClickFn={handleDeliverySelect}
-                  text={t("delivery")}
-                  bgColor={
-                    shippingMethod === SHIPPING_METHODS.shipping
-                      ? theme.PRIMARY_COLOR
-                      : "white"
-                  }
-                  fontFamily={`${getCurrentLang()}-SemiBold`}
-                  fontSize={20}
-                  icon="shipping_icon"
-                  iconSize={50}
-                  isFlexCol
-                  borderRadious={15}
-                  textColor={themeStyle.GRAY_700}
-                />
-              </View>
-              <View style={{ flexBasis: "32%" }}>
-                <Button
-                  onClickFn={() => setShippingMethod(SHIPPING_METHODS.takAway)}
-                  text={t("take-away")}
-                  bgColor={
-                    shippingMethod === SHIPPING_METHODS.takAway
-                      ? theme.PRIMARY_COLOR
-                      : "white"
-                  }
-                  fontFamily={`${getCurrentLang()}-SemiBold`}
-                  fontSize={20}
-                  icon="takeaway-icon"
-                  iconSize={50}
-                  isFlexCol
-                  borderRadious={15}
-                  textColor={themeStyle.GRAY_700}
-                />
-              </View>
-              <View style={{ flexBasis: "32%" }}>
-                <Button
-                  onClickFn={handleTableSelect}
-                  text={t("table")}
-                  bgColor={
-                    shippingMethod === SHIPPING_METHODS.table
-                      ? theme.PRIMARY_COLOR
-                      : "white"
-                  }
-                  fontFamily={`${getCurrentLang()}-SemiBold`}
-                  fontSize={20}
-                  icon="table"
-                  iconSize={50}
-                  isFlexCol
-                  borderRadious={15}
-                  textColor={themeStyle.GRAY_700}
-                />
-              </View>
-            </View> */}
-
-         
-
-            
-
-          </View>
-          {/* {true && (
-            <Animated.View
-              style={{
-                justifyContent: "space-between",
-                marginTop: 30,
-                paddingHorizontal: 20,
-                // transform: [{ scale: selectedOrderDate ? 1 : anim.current }],
-              }}
-            >
-              <Button
-                onClickFn={onPickTime}
-                icon={"calendar"}
-                iconSize={20}
-                iconPosition="right"
-                text={t("pick-time")}
-                fontSize={22}
-                textColor={theme.WHITE_COLOR}
-                borderRadious={10}
-                textPadding={5}
-                fontFamilyExtraText={`${getCurrentLang()}-American-bold`}
-                borderWidthNumber={!selectedOrderDate && 2}
-                borderColor={!selectedOrderDate && "#A64B2A"}
-                bgColor={!selectedOrderDate && "#A64B2A"}
-                extraText={
-                  selectedOrderDate &&
-                  moment(selectedOrderDate).format("DD-MM-YYYY HH:mm")
-                }
-                transformIconAnimate={[
-                  { scale: selectedOrderDate ? 1 : anim.current },
-                ]}
-              />
-            </Animated.View>
-          )} */}
-  
-          {/* <View
-            style={{ marginTop: 20, marginHorizontal: 60, marginBottom: 100 }}
-          >
-            <Button
-              onClickFn={onSendCart}
-              disabled={
-                isLoadingOrderSent ||
-                // isOpenShippingMethodDialog ||
-                isloadingLocation
-              }
-              text={t("send-order")}
-              fontSize={22}
-              textColor={theme.WHITE_COLOR}
-              isLoading={isLoadingOrderSent}
-              borderRadious={30}
-              textPadding={5}
-            />
-            {paymentMthod == PAYMENT_METHODS.creditCard && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  marginTop: 10,
-                  alignItems: "center",
-                }}
-              >
-                <Text>{t("terms-pay")}</Text>
-                <Text> </Text>
-                <TouchableOpacity
-                  onPress={openTerms}
-                  style={{
-                    borderBottomWidth: 1,
-                    borderColor: themeStyle.TEXT_PRIMARY_COLOR,
-                  }}
-                >
-                  <Text>{t("terms-link")}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View> */}
         </View>
       </ScrollView>
       <Animatable.View
@@ -1758,7 +908,7 @@ const CartScreen = ({ route }) => {
         <View style={{ width: "50%" }}>
           <Button
             onClickFn={handleSubmintButton}
-            text={t("continue-to-pay")}
+            text={storeDataStore.storeData.isOrderLaterSupport? t("pick-time") : t("continue-to-pay")}
             fontSize={18}
             textColor={theme.WHITE_COLOR}
             borderRadious={50}
@@ -1768,77 +918,27 @@ const CartScreen = ({ route }) => {
 
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <View>
-            <Text style={{ fontSize: 16 }}>{t("price")}</Text>
+            <Text style={{ fontSize: 18, color: themeStyle.PRIMARY_COLOR }}>
+              {t("price")}
+            </Text>
           </View>
           <View>
-            <Text style={{ fontSize: 18 }} type="number">
+            <Text
+              style={{ fontSize: 22,  }}
+              type="number"
+            >
               ₪{itemsPrice}
             </Text>
           </View>
         </View>
       </Animatable.View>
-      {isBarcodeOpen && (
-        <BarcodeScannerCMP
-          onChange={handleBarcodeAnswer}
-          isOpen={isBarcodeOpen}
-        />
-      )}
-
-      <StoreErrorMsgDialog
-        handleAnswer={handleStoreErrorMsgAnswer}
-        isOpen={isOpenStoreErrorMsgDialog}
-        text={storeErrorText}
-      />
-
-      <RecipetNotSupportedDialog
-        handleAnswer={handleRecipetNotSupportedAnswer}
-        isOpen={isOpenRecipetNotSupportedDialog}
-        text={recipetSupportText.text}
-        icon={recipetSupportText.icon}
-      />
-      <OpenBarcodeScannerdDialog
-        handleAnswer={handleOpenBarcodeScannerAnswer}
-        isOpen={isOpenBarcodeSacnnerDialog}
-      />
-      <BarcodeScannedDialog
-        handleAnswer={handleOpenBarcodeScannedAnswer}
-        isOpen={isOpenBarcodeSacnnedDialog}
-        text={barcodeSacnnedDialogText}
-      />
-      <NewPaymentMethodDialog
-        handleAnswer={handleNewPMAnswer}
-        isOpen={isOpenNewCreditCardDialog}
-      />
-      <DeliveryMethodDialog
-        handleAnswer={handleShippingMethoAnswer}
-        isOpen={isOpenShippingMethodDialog}
-        type={shippingMethod}
-        selectedOrderDate={selectedOrderDate}
-        paymentMthod={paymentMthod}
-      />
-      <LocationIsDisabledDialog
-        handleAnswer={handleLocationIsDiabledAnswer}
-        isOpen={isOpenLocationIsDisabledDialog}
-      />
-      <InvalidAddressdDialog
-        handleAnswer={handleInvalidLocationAnswer}
-        isOpen={isOpenInvalidAddressDialod}
-      />
-      <StoreIsCloseDialog
-        handleAnswer={handleStoreIsCloseAnswer}
-        isOpen={showStoreIsCloseDialog}
-        text={t("store-is-close")}
-      />
-      {/* <PickTimeDialog
-        handleAnswer={handleTimeSelectedAnswer}
-        isOpen={showPickTimeDialog}
-        userDate={selectedOrderDate}
-        minDeltaMinutes={minDeltaMinutes}
-      /> */}
-      <PaymentFailedDialog
-        handleAnswer={handlePaymentFailedAnswer}
-        isOpen={showPaymentFailedDialog}
-        errorMessage={paymentErrorMessage}
+      <ConfirmActiondDialog
+        handleAnswer={handleConfirmActionAnswer}
+        isOpen={isOpenConfirmActiondDialog}
+        text={"pick-time-note"}
+        positiveText="ok"
+        isLoop
+        isAnimateText
       />
     </View>
   );
@@ -1857,7 +957,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    
   },
   togglleContainer: {
     borderRadius: 50,

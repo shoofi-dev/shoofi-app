@@ -76,11 +76,11 @@ const HomeScreen = ({ navigation }) => {
       }, 0);
     }
     setIsAppReady(true);
-    setTimeout(() => {
-      setIsAnimateReady(true);
-      navigation.navigate("menuScreen");
+    // setTimeout(() => {
+    //   setIsAnimateReady(true);
+    //   navigation.navigate("menuScreen");
 
-    }, 0);
+    // }, 0);
   };
   const goToAdminDashboard = async () => {
     if (userDetailsStore.isAdmin(ROLES.all)) {
@@ -195,28 +195,30 @@ const HomeScreen = ({ navigation }) => {
         return;
       }
     }
-    // if (orderTypeTmp === ORDER_TYPE.now) {
-    //   const endTime = storeDataStore.storeData.orderNowEndTime;
-    //   var currentTime = moment().utc(true).valueOf();
-    //   var endTime2 = moment(endTime, "hh:mm").utc(true).valueOf();
-    //   const isAfterEndTime = currentTime > endTime2;
-    //   if (isAfterEndTime) {
-    //     setStoreIsCloseDialogText(t("store-is-close-after-end-time"));
-    //     setShowStoreIsCloseDialog(true);
-    //     return;
-    //   }
-    // }
-    // if (
-    //   ordersStore.orderType &&
-    //   ordersStore.orderType != orderTypeTmp &&
-    //   cartStore.cartItems.length > 0
-    // ) {
-    //   setIsShowChangeOrderTypeDialog(true);
-    // } else {
-    //   updateOrderAndGoToMenu(orderTypeTmp);
-    // }
-       updateOrderAndGoToMenu(orderTypeTmp);
-
+    if(storeDataStore.storeData.isOrderLaterSupport){
+    if (orderTypeTmp === ORDER_TYPE.now) {
+      const endTime = storeDataStore.storeData.orderNowEndTime;
+      var currentTime = moment().utc(true).valueOf();
+      var endTime2 = moment(endTime, "hh:mm").utc(true).valueOf();
+      const isAfterEndTime = currentTime > endTime2;
+      if (isAfterEndTime) {
+        setStoreIsCloseDialogText(t("store-is-close-after-end-time"));
+        setShowStoreIsCloseDialog(true);
+        return;
+      }
+    }
+    if (
+      ordersStore.orderType &&
+      ordersStore.orderType != orderTypeTmp &&
+      cartStore.cartItems.length > 0
+    ) {
+      setIsShowChangeOrderTypeDialog(true);
+    } else {
+      updateOrderAndGoToMenu(orderTypeTmp);
+    }
+    }else{
+      updateOrderAndGoToMenu(orderTypeTmp);
+    }
   };
 
   const goToNewOrder = () => {
@@ -296,9 +298,7 @@ const HomeScreen = ({ navigation }) => {
 
       <View
         style={{
-          alignItems: "center",
-          paddingTop: 20,
-          paddingBottom: 20,
+ 
           // backgroundColor: "rgba(255,255,255,0.6)",
         }}
       >
@@ -344,17 +344,17 @@ const HomeScreen = ({ navigation }) => {
             )}
           </TouchableOpacity>
         )} */}
-        {/* <View style={{ width: "100%", }}>
+        <View style={{ width: "100%",marginTop:-20}}>
           {isAnimateReady && (
             <Animated.View entering={FadeInUp.duration(500)}>
               <Image
-                source={require("../../assets/home/logo-and-pizza4.png")}
-                style={{ width: "100%", height:"100%", marginTop:"-5%" }}
+                source={require("../../assets/icon4.png")}
+                style={{ width: "100%",  height:"85%" }}
                 resizeMode="contain"
               />
             </Animated.View>
           )}
-        </View> */}
+        </View>
 
         {/* <View style={{marginTop:15}}>
           <Text
@@ -480,34 +480,30 @@ const HomeScreen = ({ navigation }) => {
           style={[styles.background]}
         /> */}
         {isAnimateReady && (
-          <Animated.View entering={FadeInDown.duration(500)}>
+          <Animated.View entering={FadeInDown.duration(500)} style={{marginBottom:50}}>
    
      
 
-              <View
+   <View
                 style={{
-                  flexDirection: "row",
                   alignItems: "center",
-                  marginTop: 0,
                   width: "100%",
                   paddingHorizontal: 5,
-                  marginBottom: 50,
-              justifyContent:'center',
-
+                  borderColor:themeStyle.WHITE_COLOR,
+                  justifyContent:'center',
                 }}
               >
                 <AnimatesAs.View
                   style={{
-                    width: "70%",
                     alignItems: "center",
                     justifyContent: "center",
-                    height: 60,
-
+                    height: 80,
+                    width: "90%",
                   }}
                 >
                   <Button
-                    text={t("new-order")}
-                    fontSize={24}
+                    text={isAnimationDone && storeDataStore.storeData.isOrderLaterSupport ? t("order-now") : t('new-order')}
+                    fontSize={18}
                     onClickFn={() => onOrderTypeSelect(ORDER_TYPE.now)}
                     // isLoading={isLoading}
                     // disabled={isLoading}
@@ -516,7 +512,30 @@ const HomeScreen = ({ navigation }) => {
                     
                   />
                 </AnimatesAs.View>
-      
+                <View style={{marginVertical:20,  borderWidth:1, borderColor:themeStyle.WHITE_COLOR, borderRadius:30, padding:10, alignItems:'center', justifyContent:'center', width:50, height:50}}>
+                <Text style={{color:themeStyle.WHITE_COLOR, fontSize:20,}}>
+                او
+                </Text>
+                </View>
+                {storeDataStore.storeData.isOrderLaterSupport && <AnimatesAs.View
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                      height: 80,
+                    width: "90%"
+                  }}
+                >
+                  <Button
+                    text={isAnimationDone && t("order-later")}
+                    fontSize={18}
+                    onClickFn={() => onOrderTypeSelect(ORDER_TYPE.later)}
+                    // isLoading={isLoading}
+                    // disabled={isLoading}
+                    borderWidth={false}
+                    isFlexCol
+                    isOposetGradiant
+                  />
+                </AnimatesAs.View>}
               </View>
           </Animated.View>
         )}

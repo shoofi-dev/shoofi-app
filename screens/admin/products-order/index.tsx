@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, View, ScrollView, ActivityIndicator } from "react-native";
 import { StoreContext } from "../../../stores";
 import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../../consts/api";
 import ProductsOrderList from "./products-list";
 import DashedLine from "react-native-dashed-line";
 import Text from "../../../components/controls/Text";
@@ -12,6 +11,7 @@ import MenuItem from "../../menu/components/menu-item";
 import Button from "../../../components/controls/button/button";
 import BirthdayCakes from "../../menu/components/product-item/birthday-cakes";
 import themeStyle from "../../../styles/theme.style";
+import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
 
 const categoriesToShow = [1, 2, 3, 4, 5, 6, 7];
 
@@ -41,7 +41,9 @@ const ProductOrderScreen = ({ route }) => {
 
   };
 
-  const { lastJsonMessage } = useWebSocket(WS_URL, {
+  const { webScoketURL } = _useWebSocketUrl();
+
+  const { lastJsonMessage } = useWebSocket(webScoketURL, {
     share: true,
     shouldReconnect: (closeEvent) => true,
   });

@@ -11,6 +11,7 @@ import DropDown from "../controls/dropdown";
 import { extrasImages } from "../../consts/shared";
 import { ScrollView } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
+import Icon from "../icon";
 
 type TProps = {
   onChangeFn: any;
@@ -30,6 +31,8 @@ type TProps = {
   dropDownDirection?: string;
   tasteList?: any;
   categoryId?: any;
+  variant?: any;
+  color?: any;
 };
 
 export default function GradiantRow({
@@ -50,6 +53,8 @@ export default function GradiantRow({
   dropDownDirection,
   tasteList,
   categoryId,
+  variant,
+  color,
 }: TProps) {
   const { t } = useTranslation();
 
@@ -84,6 +89,7 @@ export default function GradiantRow({
             value={valuex}
             stepValue={stepValue}
             minValue={minValue}
+            variant={variant}
           />
         );
       case "CHOICE":
@@ -114,7 +120,7 @@ export default function GradiantRow({
         <View
           style={[
             styles.textAndPriceContainer,
-            { marginLeft: 20, width: "25%" },
+            // { marginLeft: 20, width: "25%" },
           ]}
         >
           <Text
@@ -143,14 +149,14 @@ export default function GradiantRow({
     return (
       <View
         style={[
-          { alignItems: "center", justifyContent: "center", alignSelf:'center', },
+          {
+            alignItems: "center",
+            justifyContent: "center",
+            alignSelf: "center",
+          },
         ]}
       >
-        <View
-          style={[
-            {  marginBottom:10 },
-          ]}
-        >
+        <View style={[{ marginBottom: 10 }]}>
           <Text
             style={{
               fontSize: fontSize || 20,
@@ -214,38 +220,36 @@ export default function GradiantRow({
             style={{
               flexDirection: "row",
               width: "100%",
-              flexWrap:'wrap',
+              flexWrap: "wrap",
             }}
-            
           >
             {Object.keys(options).map((key) => {
-              return(
-              <View
-                style={{
-                  // backgroundColor: value.includes(options[key].title) ? themeStyle.SUCCESS_COLOR : themeStyle.WHITE_COLOR,
-                  // marginRight: 10,
-                  // borderRadius: 20,
-                  flexBasis:"100%",
-                  paddingHorizontal:20,
-                  marginVertical:10
-         
-                }}
-              >
-                <CheckBox
-                  onChange={onPizzaExtraChange}
-                  value={value}
-                  title={options[key].title}
-                  isOneChoice
-                  isActive={value.includes(options[key].title)}
-                  // isDisabled={options[key].count === 0}
-                />
+              return (
+                <View
+                  style={{
+                    // backgroundColor: value.includes(options[key].title) ? themeStyle.SUCCESS_COLOR : themeStyle.WHITE_COLOR,
+                    // marginRight: 10,
+                    // borderRadius: 20,
+                    flexBasis: "100%",
+                    paddingHorizontal: 20,
+                    marginVertical: 10,
+                  }}
+                >
+                  <CheckBox
+                    onChange={onPizzaExtraChange}
+                    value={value}
+                    title={options[key].title}
+                    isOneChoice
+                    isActive={value.includes(options[key].title)}
+                    // isDisabled={options[key].count === 0}
+                  />
 
-                {/* <View>
+                  {/* <View>
                   <Text>{options[key].title}</Text>
                 </View>*/}
-             
-              </View>
-            )})}
+                </View>
+              );
+            })}
           </View>
         </View>
       </View>
@@ -327,15 +331,25 @@ export default function GradiantRow({
   }
   return (
     <View style={styles.gradiantRow}>
-      <View
-        style={[styles.textAndPriceContainer, { marginLeft: 20, width: "40%" }]}
-      >
-        <View>
+      <View style={[styles.textAndPriceContainer, { width: "40%" }]}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {icon && (
+            <View style={{ marginRight: 5 }}>
+              <Icon
+                icon={icon}
+                size={20}
+                style={{
+                  color: themeStyle.SECONDARY_COLOR,
+                }}
+              />
+            </View>
+          )}
+
           <Text
             style={{
               fontSize: fontSize || 18,
               fontFamily: `${getCurrentLang()}-SemiBold`,
-              color: themeStyle.BROWN_700,
+              color: color,
             }}
           >
             {title}
@@ -375,12 +389,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   gradiantRow: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
+    justifyContent: "center",
   },
   textAndPriceContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
   },
   background: {
     position: "absolute",
