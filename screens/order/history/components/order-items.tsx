@@ -57,6 +57,7 @@ const OrderItems = ({ order }) => {
                   <Image
                     style={{ width: "100%", height: "100%" }}
                     source={{ uri: `${cdnUrl}${meal.img[0].uri}` }}
+                    resizeMode="contain"
                   />
                 </View>
                 {/* <View style={{ alignItems: "flex-start" }}>

@@ -30,6 +30,9 @@ import { ActivityIndicator } from "react-native-paper";
 import { adminCustomerStore } from "../../stores/admin-customer";
 import { useNavigation } from "@react-navigation/native";
 import _useWebSocketUrl from "../../hooks/use-web-socket-url";
+import { animationDuration } from "../../consts/shared";
+import * as Animatable from "react-native-animatable";
+
 export function toBase64(input) {
   return Buffer.from(input, "utf-8").toString("base64");
 }
@@ -43,6 +46,8 @@ const MenuScreen = () => {
   const navigation = useNavigation();
 
   const scrollRef = useRef();
+  const animationRefs = useRef({});
+
 
   const { menuStore, languageStore, userDetailsStore } =
     useContext(StoreContext);
@@ -73,6 +78,13 @@ const MenuScreen = () => {
   const [selectedCats, setSelectedCats] = useState([]);
 
   const [selectedCategoryKey, setSelectedCategoryKey] = useState("BURGERS");
+
+  useEffect(()=>{
+    if(animationRefs.current && animationRefs.current[tmpSelectedCategory?.categoryId]){
+      animationRefs.current[tmpSelectedCategory?.categoryId].fadeInRight(1000);
+
+    }
+  },[tmpSelectedCategory?.categoryId])
 
   const onCategorySelect = (category) => {
 
@@ -267,10 +279,18 @@ const MenuScreen = () => {
                   
             }}
           >
+                              <Animatable.View
+                     animation="fadeInUp"
+                     duration={animationDuration}
+                     style={{ height: "100%" }}
+                     ref={(ref) => (animationRefs.current[category.categoryId] = ref)}
+   
+                   >
             <CategoryItemsList
               productsList={category.products}
               category={category}
             />
+            </Animatable.View>
           </View>
         ))}
       </View>

@@ -23,6 +23,7 @@ import Button from "../../../components/controls/button/button";
 import {
   ORDER_TYPE,
   ROLES,
+  animationDuration,
   cdnUrl,
   devicesType,
 } from "../../../consts/shared";
@@ -56,6 +57,8 @@ const CategoryItemsList = ({ productsList, category }) => {
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [isProductAnimateDone, setIsProductAnimateDone] = useState(false);
+
+
 
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
@@ -248,12 +251,14 @@ const CategoryItemsList = ({ productsList, category }) => {
 
                     }}
                   >
+      
                     <ProductItem
                       item={item}
                       onItemSelect={onItemSelect}
                       onDeleteProduct={onDeleteProduct}
                       onEditProduct={onEditProduct}
                     />
+
                   </View>
                 );
               })}

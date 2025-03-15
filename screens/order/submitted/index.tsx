@@ -41,7 +41,7 @@ const OrderSubmittedScreen = ({ route }) => {
     <View style={styles.container}>
       <View style={{ alignItems: "center", width: "100%" }}>
         <View
-          style={{ alignItems: "center", paddingHorizontal: 0, width: "100%", top:-60 }}
+          style={{ alignItems: "center", paddingHorizontal: 0, width: "100%", top:-80 }}
         >
           <View style={{width: 200, height:200, }}>
          {isAnimateReady &&  <LottieView

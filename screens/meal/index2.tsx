@@ -266,7 +266,7 @@ const MealScreen = ({ route }) => {
 
   const isValidMeal = () => {
     return true;
-  }
+  };
 
   if (!meal) {
     return null;
@@ -278,21 +278,33 @@ const MealScreen = ({ route }) => {
       duration={animationDuration}
       style={{ height: "100%" }}
     >
-      <View style={{}}></View>
-
       <View style={{ zIndex: 10 }}>
         <TouchableOpacity
           onPress={onClose}
           style={{
             zIndex: 1,
             position: "absolute",
-            right: 10,
-            width: 40,
+            right: 0,
+            width: 45,
             padding: 0,
             alignItems: "center",
             height: 40,
             justifyContent: "center",
             top: 10,
+            backgroundColor: "rgba(36, 33, 30, 0.8)",
+
+            borderTopStartRadius: 50,
+            borderBottomStartRadius: 50,
+            alignSelf: "center",
+            shadowColor: themeStyle.SECONDARY_COLOR,
+            shadowOffset: {
+              width: 0,
+              height: 3,
+            },
+            shadowOpacity: 1,
+            shadowRadius: 15,
+            elevation: 5,
+            borderWidth: 0,
           }}
         >
           <Text style={{ color: themeStyle.SECONDARY_COLOR, fontSize: 30 }}>
@@ -306,13 +318,27 @@ const MealScreen = ({ route }) => {
             {
               zIndex: 1,
               position: "absolute",
-              left: 10,
-              width: 40,
+              left: 0,
+              width: 45,
               padding: 9,
               alignItems: "center",
-              height: 40,
+              height: 45,
               justifyContent: "center",
               top: 10,
+              backgroundColor: "rgba(36, 33, 30, 0.8)",
+
+              borderTopEndRadius: 50,
+              borderBottomEndRadius: 50,
+              alignSelf: "center",
+              shadowColor: themeStyle.SECONDARY_COLOR,
+              shadowOffset: {
+                width: 0,
+                height: 3,
+              },
+              shadowOpacity: 1,
+              shadowRadius: 15,
+              elevation: 5,
+              borderWidth: 0,
             },
           ]}
           onPress={handleCartClick}
@@ -340,7 +366,7 @@ const MealScreen = ({ route }) => {
           borderWidth: 0,
           padding: 5,
           alignItems: "center",
-          marginTop:50
+          marginTop: 50,
         }}
       >
         <CustomFastImage
@@ -353,7 +379,7 @@ const MealScreen = ({ route }) => {
           resizeMode="contain"
         />
       </View>
-      <ScrollView ref={scrollRef} style={{ height: "100%",  }}>
+      <ScrollView ref={scrollRef} style={{ height: "100%" }}>
         <KeyboardAvoidingView
           keyboardVerticalOffset={100}
           behavior="position"
@@ -370,7 +396,7 @@ const MealScreen = ({ route }) => {
                   ? "100%"
                   : Dimensions.get("window").height -
                     (Dimensions.get("window").height * 70) / 100,
-                    padding:20, 
+              padding: 20,
             }}
           >
             {/* <View
@@ -399,7 +425,7 @@ const MealScreen = ({ route }) => {
                     updateMeal(value, "weight", meal.data?.extras?.weight);
                   }}
                   // type={tag.type}
-                  title={t('weight')}
+                  title={t("weight")}
                   price={meal.data?.extras?.weight?.price}
                   minValue={500}
                   stepValue={500}
@@ -409,7 +435,6 @@ const MealScreen = ({ route }) => {
                   fontSize={26}
                   color={themeStyle.SECONDARY_COLOR}
                   icon="scale"
-                  
                 />
               </View>
 
@@ -417,11 +442,10 @@ const MealScreen = ({ route }) => {
                 <View style={{ flexDirection: "column", width: "100%" }}>
                   <Text
                     style={{
-             
                       marginBottom: 5,
                       textAlign: "center",
-                      fontSize:26,
-                      color:themeStyle.SECONDARY_COLOR
+                      fontSize: 26,
+                      color: themeStyle.SECONDARY_COLOR,
                     }}
                   >
                     {t("insert-note")}
@@ -444,7 +468,7 @@ const MealScreen = ({ route }) => {
                       padding: 10,
                       height: 80,
                       width: "100%",
-                      borderRadius:10,
+                      borderRadius: 10,
                       shadowColor: themeStyle.SECONDARY_COLOR,
                       shadowOffset: {
                         width: 2,
@@ -626,10 +650,11 @@ const styles = StyleSheet.create({
   },
   cartCount: {
     position: "absolute",
-    top: Platform.OS === "ios" ? -5 : 0,
+    top: Platform.OS === "ios" ? 0 : 0,
     fontSize: 15,
 
     alignItems: "center",
     justifyContent: "center",
+    color: themeStyle.SECONDARY_COLOR,
   },
 });
