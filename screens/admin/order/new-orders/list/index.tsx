@@ -27,7 +27,6 @@ import {
   SHIPPING_METHODS,
   cdnUrl,
   deliveryTime,
-  mealsImages,
 } from "../../../../../consts/shared";
 import BackButton from "../../../../../components/back-button";
 import { LinearGradient } from "expo-linear-gradient";

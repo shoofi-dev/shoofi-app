@@ -28,7 +28,6 @@ import {
   ROLES,
   SHIPPING_METHODS,
   cdnUrl,
-  mealsImages,
 } from "../../../../consts/shared";
 import BackButton from "../../../../components/back-button";
 import { LinearGradient } from "expo-linear-gradient";

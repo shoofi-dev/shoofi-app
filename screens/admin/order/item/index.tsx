@@ -11,7 +11,7 @@ import { isEmpty } from "lodash";
 import Icon from "../../../../components/icon";
 import Text from "../../../../components/controls/Text";
 import DashedLine from "react-native-dashed-line";
-import { cdnUrl, mealsImages, PAYMENT_METHODS, SHIPPING_METHODS } from "../../../../consts/shared";
+import { cdnUrl, PAYMENT_METHODS, SHIPPING_METHODS } from "../../../../consts/shared";
 import BackButton from "../../../../components/back-button";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -384,11 +384,11 @@ const gerRefundAmount = (order: any) => {
                   }}
                 >
          
-                    <Image
-                      style={{ width: "100%", height: "100%" }}
-                      source={mealsImages[meal.img]}
-                      resizeMode="contain"
-                    />
+                  <Image
+                    style={{ width: "100%", height: "100%" }}
+                    source={{ uri: `${cdnUrl}${meal.img[0].uri}` }}
+                    resizeMode="contain"
+                  />
                 </View>
                 {/* <View style={{ alignItems: "flex-start" }}>
                     {renderOrderItemsExtras(item.data)}

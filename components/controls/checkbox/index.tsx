@@ -6,7 +6,6 @@ import Button from "../button/button";
 import * as Haptics from "expo-haptics";
 import Text from "../Text";
 import { LinearGradient } from "expo-linear-gradient";
-import { extrasImages } from "../../../consts/shared";
 import { useTranslation } from "react-i18next";
 
 export default function CheckBox({
@@ -109,7 +108,7 @@ export default function CheckBox({
               marginTop:10,
             }}
           >
-            <Image
+            {/* <Image
               source={extrasImages[title]}
               style={{
                 height: title === "medium" ? 60 : 70,
@@ -117,7 +116,7 @@ export default function CheckBox({
     
               }}
               resizeMode="cover"
-            />
+            /> */}
           </View>
 
           {/* // <Button

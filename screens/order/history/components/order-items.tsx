@@ -9,7 +9,7 @@ import { useContext } from "react";
 import { StoreContext } from "../../../../stores";
 import { isEmpty } from "lodash";
 import DashedLine from "react-native-dashed-line";
-import { cdnUrl, mealsImages } from "../../../../consts/shared";
+import { cdnUrl } from "../../../../consts/shared";
 import sizeTitleAdapter from "../../../../helpers/size-name-adapter";
 import Button from "../../../../components/controls/button/button";
 import isShowSize from "../../../../helpers/is-show-size";
@@ -56,8 +56,7 @@ const OrderItems = ({ order }) => {
                 >
                   <Image
                     style={{ width: "100%", height: "100%" }}
-                    source={mealsImages[meal.img]}
-                    resizeMode="contain"
+                    source={{ uri: `${cdnUrl}${meal.img[0].uri}` }}
                   />
                 </View>
                 {/* <View style={{ alignItems: "flex-start" }}>

@@ -20,7 +20,6 @@ import {
   cdnUrl,
   ORDER_TYPE,
   devicesType,
-  mealsImages,
 } from "../../../../consts/shared";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
@@ -202,61 +201,6 @@ const ProductItem = ({
             justifyContent:'center'
           }}
         >
-          {/* <Image
-            source={mealsImages[item.img]}
-            style={{
-              height: "120%",
-              width: "100%",
-              alignSelf: "center",
-              marginTop: -10,
-              position:'absolute', 
-              left:"40%"
-            }}
-            resizeMode="contain"
-          /> */}
-
-          {/* <ImageBackground
-          source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
-          resizeMode={"cover"}
-        > */}
-          {/* <View
-            style={{
-              backgroundColor: "rgba(247,247,247,0.6)",
-              alignItems: "center",
-              padding: 5,
-            }}
-          >
-            <Text
-              style={{
-                color: themeStyle.GRAY_700,
-                marginTop: 5,
-                fontSize: 18,
-                fontFamily: `${getCurrentLang()}-SemiBold`,
-                textAlign: "center",
-              }}
-            >
-              {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
-            </Text>
-          </View> */}
-          {/* <LinearGradient
-          colors={["rgba(250, 249, 248,1)", "rgba(250, 249, 248,1)"]}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.background]}
-        /> */}
-
-          {/* <View style={[styles.iconContainer]}>
-          <Image
-            style={{
-              width: "100%",
-              height: "100%",
-              borderTopLeftRadius: 30,
-              borderTopRightRadius: 30,
-            }}
-            source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
-            resizeMode="stretch"
-          />
-        </View> */}
           <View
             style={{
               flexDirection: "row",

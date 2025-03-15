@@ -30,7 +30,6 @@ import * as Haptics from "expo-haptics";
 import {
   canOrderOutOfStock,
   cdnUrl,
-  mealsImages,
   ORDER_TYPE,
   shmareemId,
   TASETS_LIST,
@@ -567,7 +566,6 @@ const MealScreen = ({ route }) => {
                   backgroundColor: "transparent",
                 }}
               >
-                         <Image source={mealsImages.pizza} style={{ alignSelf: "center", width:"100%", height:"100%", borderRadius:20, marginTop:10 }} />
 
               </View>
             </View>

@@ -649,7 +649,7 @@ const App = () => {
       >
         <ImageBackground
           source={require("./assets/splash-screen.png")}
-          resizeMode="contain"
+          resizeMode="stretch"
           style={{ height: "100%", backgroundColor: "white" }}
         >
           <View

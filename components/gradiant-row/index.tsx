@@ -8,7 +8,6 @@ import Text from "../controls/Text";
 import ImagePicker from "../controls/image-picker";
 import { useTranslation } from "react-i18next";
 import DropDown from "../controls/dropdown";
-import { extrasImages } from "../../consts/shared";
 import { ScrollView } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "../icon";

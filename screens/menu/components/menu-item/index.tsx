@@ -19,11 +19,7 @@ export type TProps = {
   selectedItem: any;
   isDisabledCatItem?: any;
 };
-const menuIcons = {
-  "pizza-active": require("../../../../assets/categories/baget.png"),
-  "pizza-inactive": require("../../../../assets/categories/pizza-meal4.png"),
-  "drinks-active": require("../../../../assets/categories/drinks-active.png"),
-};
+
 const MenuItem = ({
   item,
   onItemSelect,

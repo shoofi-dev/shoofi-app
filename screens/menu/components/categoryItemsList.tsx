@@ -25,7 +25,6 @@ import {
   ROLES,
   cdnUrl,
   devicesType,
-  mealsImages,
 } from "../../../consts/shared";
 import ProductItem from "./product-item/index";
 import ProductCarousleItem from "./product-item/carousle";
@@ -197,102 +196,6 @@ const CategoryItemsList = ({ productsList, category }) => {
   const filterBirthdayProducts = filterBirthday();
   return (
     <View style={{ marginTop: 0,  }}>
-      {/* {category.categoryId == 1 && (
-        <TouchableOpacity onPress={() => onItemSelect(productsList[0])} disabled={isDisabled(productsList[0])}>
-            <Animated.View
-              style={{
-                transform: [{ translateY: productsAnim.current }],
-                backgroundColor: themeStyle.SECONDARY_COLOR,
-                marginHorizontal: 50,
-                borderRadius: 30,
-                paddingVertical: 50,
-                marginTop: 30,
-
-                shadowColor: themeStyle.SECONDARY_COLOR,
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.9,
-                shadowRadius: 6,
-                elevation: 0,
-                borderWidth: 0,
-                opacity: !isInStore(productsList[0]) ? 0.4 : 1 
-              }}
-            >
-              <View
-                style={{
-                  backgroundColor: themeStyle.PRIMARY_COLOR,
-                  position: "absolute",
-                  alignSelf: "center",
-                  top: -30,
-                  padding: 10,
-                  borderRadius: 20,
-
-                  shadowColor: themeStyle.PRIMARY_COLOR,
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.9,
-                  shadowRadius: 6,
-                  elevation: 0,
-                  borderWidth: 0,
-                  marginTop: 0,
-                }}
-              >
-                <Icon
-                  icon="shopping-bag-plus"
-                  size={40}
-                  style={{ color: themeStyle.SECONDARY_COLOR }}
-                />
-              </View>
-
-              <View
-                style={{
-                  shadowColor: "black",
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.9,
-                  shadowRadius: 6,
-                  elevation: 0,
-                  borderWidth: 0,
-                }}
-              >
-                <Image
-                  source={mealsImages.pizza}
-                  style={{
-                    alignSelf: "center",
-                    width: 150,
-                    height: 150,
-                    borderRadius: 10,
-                  }}
-                />
-              </View>
-              <View
-                style={{
-                  backgroundColor: themeStyle.PRIMARY_COLOR,
-                  bottom: 0,
-                  position: "absolute",
-                  width: "100%",
-                  padding: 10,
-                  borderBottomEndRadius: 20,
-                  borderBottomStartRadius: 20,
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ color: themeStyle.WHITE_COLOR, fontSize: 18 }}>
-                  {languageStore.selectedLang === "ar"
-                    ? productsList[0].nameAR
-                    : productsList[0].nameHE}
-                </Text>
-              </View>
-            </Animated.View>
-        </TouchableOpacity>
-      )} */}
-
       {true && (
         <View
           style={{

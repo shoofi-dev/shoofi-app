@@ -18,7 +18,6 @@ import { useState, useEffect } from "react";
 import { Platform } from "expo-modules-core";
 import * as FileSystem from "expo-file-system";
 import { cacheImage, findImageInCache, getImgXtension } from "../../custom-fast-image";
-import { mealsImages } from "../../../consts/shared";
 
 const yellowBgTopScreens = ["meal", "terms-and-conditions"];
 const yellowBgBottomScreens = ["homeScreen", "menuScreen", "BCOINSScreen"];
@@ -152,17 +151,17 @@ const interpolateRotatingX = rotateAnimation.interpolate({
     return(
       productImgUrl ? 
       <Animated.Image 
-      source={mealsImages[productImgUrl]}
-resizeMode="contain"
+      source={{ uri: `${productImgUrl}` }}
+
      style={[isSendToCart && animatedStyle,
         isSendToCart && animatedHeightStyle,
         isSendToCart && animatedWidthStyle,
 
         {zIndex: 999,
        position: "absolute",
-       bottom: 0,
-       height: 50,
-       width: 50,
+       bottom: 350,
+       height: 300,
+       width: 200,
        maxHeight:heightAnimation,
        maxWidth: widthAnimation,
        display: isSendToCart ? "flex" : "none",
