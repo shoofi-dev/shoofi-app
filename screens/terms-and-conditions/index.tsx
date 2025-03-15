@@ -52,7 +52,7 @@ export default function TermsAndConditionsScreen() {
         />
         <View style={{ alignItems: "center", marginTop: 20, paddingBottom: 8 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-            אבו סאלח
+           אטליז עבדאלחי
           </Text>
           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
             תנאי שימוש / מדיניות פרטיות

@@ -8,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { getCurrentLang } from "../../translations/i18n";
 import Text from "../../components/controls/Text";
 import { LinearGradient } from "expo-linear-gradient";
+import { color } from "react-native-reanimated";
 
 const LanguageScreen = ({ route }) => {
   const { languageStore } = useContext(StoreContext);
@@ -25,7 +26,7 @@ const LanguageScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-             <LinearGradient
+             {/* <LinearGradient
           colors={[
             "rgba(207, 207, 207, 0.6)",
             "rgba(232, 232, 230, 0.5)",
@@ -36,12 +37,13 @@ const LanguageScreen = ({ route }) => {
           start={{ x: 1, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.background]}
-        />
+        /> */}
       <View style={{ alignItems: "center" }}>
         <View>
           <Text
             style={{
               ...styles.textLang,
+              color:themeStyle.SECONDARY_COLOR
             }}
           >
             أختر اللغة
@@ -50,6 +52,8 @@ const LanguageScreen = ({ route }) => {
             style={{
               ...styles.textLang,
               fontFamily: "he-SemiBold",
+              color:themeStyle.SECONDARY_COLOR
+
             }}
           >
             בחר שפה
@@ -67,7 +71,7 @@ const LanguageScreen = ({ route }) => {
           <TouchableOpacity
             style={{
               backgroundColor:
-              getCurrentLang() === "ar" && themeStyle.SECONDARY_COLOR,
+              getCurrentLang() === "ar" && themeStyle.PRIMARY_COLOR,
             alignItems: "center",
             justifyContent: "center",
             paddingHorizontal:20,
@@ -101,14 +105,14 @@ const LanguageScreen = ({ route }) => {
               paddingHorizontal:20,
               borderRadius:20,
               borderWidth:getCurrentLang() !== "he" ? 1 : 0,
-              borderColor:themeStyle.PRIMARY_COLOR
+              borderColor:themeStyle.SECONDARY_COLOR
             }}
             onPress={() => {
               onChangeLanguage("he");
             }}
           >
         
-            <Text style={{ fontFamily: "he-SemiBold", fontSize: 29,             color: getCurrentLang() === "he" ? themeStyle.WHITE_COLOR : themeStyle.PRIMARY_COLOR,
+            <Text style={{ fontFamily: "he-SemiBold", fontSize: 29,             color: getCurrentLang() === "he" ? themeStyle.WHITE_COLOR : themeStyle.SECONDARY_COLOR,
  }}>
             עברית
             </Text>

@@ -39,7 +39,7 @@ const hideProfile = ["terms-and-conditions"];
 const hideProfileScreens = [
   "terms-and-conditions",
   "insert-customer-name",
-  "menuScreen",
+  // "menuScreen",
   "cart",
 ];
 const hideLanguageScreens = ["terms-and-conditions"];
@@ -317,6 +317,31 @@ const Header = () => {
               />
             </TouchableOpacity>
           ) : (
+            <Animated.View
+            style={[
+              styles.headerItem,
+              animatedStyle,
+              {
+                left: 10,
+                backgroundColor: "rgba(36, 33, 30, 0.8)",
+    
+                borderTopStartRadius: 50,
+                borderBottomStartRadius: 50,
+                height: "70%",
+                alignSelf: "center",
+                shadowColor: themeStyle.SECONDARY_COLOR,
+                shadowOffset: {
+                  width: 0,
+                  height: 3,
+                },
+                shadowOpacity: 1,
+                shadowRadius: 15,
+                elevation: 5,
+                borderWidth: 0,
+                
+              },
+            ]}
+          >
             <TouchableOpacity
               onPress={handleProfileClick}
               style={[
@@ -326,14 +351,15 @@ const Header = () => {
             >
               <Icon
                 icon="profile-round"
-                size={30}
-                style={{ color: theme.SECONDARY_COLOR }}
+                size={22}
+                style={{ color: theme.SECONDARY_COLOR,  marginLeft:5}}
               />
               {/* <Image
                 source={require("../../../assets/pngs/profile.png")}
                 style={{ width: 60, height: 60 }}
               /> */}
             </TouchableOpacity>
+            </Animated.View>
           )}
         </View>
       </Animated.View>
@@ -498,12 +524,13 @@ const Header = () => {
           animatedStyle,
           {
             left: 20,
-            backgroundColor: themeStyle.SECONDARY_COLOR,
+            backgroundColor: "rgba(36, 33, 30, 0.8)",
+
             borderTopEndRadius: 50,
             borderBottomEndRadius: 50,
             height: "70%",
             alignSelf: "center",
-            shadowColor: themeStyle.PRIMARY_COLOR,
+            shadowColor: themeStyle.SECONDARY_COLOR,
             shadowOffset: {
               width: 0,
               height: 3,
@@ -519,9 +546,9 @@ const Header = () => {
           style={[styles.buttonContainer, { opacity: isHideCart() ? 0 : 1 }]}
           onPress={handleCartClick}
         >
-          <Icon icon="grill" size={40} style={{ color: theme.PRIMARY_COLOR }} />
+          <Icon icon="grill" size={40} style={{ color: theme.SECONDARY_COLOR }} />
           <View style={styles.cartCount}>
-            <Text style={{ color: themeStyle.PRIMARY_COLOR }}>
+            <Text style={{ color: themeStyle.SECONDARY_COLOR }}>
               {cartStore.getProductsCount()}
             </Text>
           </View>

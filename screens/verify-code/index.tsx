@@ -228,7 +228,7 @@ const VerifyCodeScreen = ({ route }) => {
      
           <View style={styles.inputsContainer}>
             <Text
-              style={{ marginTop: 0, fontSize: 25, color: themeStyle.TEXT_PRIMARY_COLOR, }}
+              style={{ marginTop: 0, fontSize: 25, color: themeStyle.SECONDARY_COLOR, }}
             >
               {t("inser-code")}
             </Text>
@@ -238,7 +238,7 @@ const VerifyCodeScreen = ({ route }) => {
                 fontSize: 17,
                 paddingHorizontal: 30,
                 textAlign: "center",
-                color: themeStyle.TEXT_PRIMARY_COLOR,
+                color: themeStyle.SECONDARY_COLOR,
               }}
             >
               {t("inser-recived-number")} {phoneNumber}
@@ -309,7 +309,7 @@ const VerifyCodeScreen = ({ route }) => {
             </View>
             <View style={{ marginTop: 20 }}>
               {timer > 0 && (
-                <Text>
+                <Text style={{color: themeStyle.SECONDARY_COLOR}}>
                   {t("can-send-again")} {timer}
                 </Text>
               )}
@@ -317,7 +317,7 @@ const VerifyCodeScreen = ({ route }) => {
                 <Text
                   style={{
                     fontSize: 17,
-                    color: themeStyle.TEXT_PRIMARY_COLOR
+                    color: themeStyle.SECONDARY_COLOR
                     // fontFamily: `${getCurrentLang()}-SemiBold`,
                   }}
                 >
@@ -337,7 +337,7 @@ const VerifyCodeScreen = ({ route }) => {
                     textDecorationLine: "underline",
                     padding: 5,
                     opacity: 0.8,
-                    color: themeStyle.TEXT_PRIMARY_COLOR
+                    color: themeStyle.SECONDARY_COLOR
                   }}
                 >
                   {t("resend-sms")}

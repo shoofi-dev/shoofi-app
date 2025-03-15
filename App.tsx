@@ -239,6 +239,7 @@ const App = () => {
       (lastJsonMessage && lastJsonMessage.type === "new order") ||
       (lastJsonMessage && lastJsonMessage.type === "order viewed updated")
     ) {
+      console.log("listenToNewOrder")
       await ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
     }
     if (
@@ -648,7 +649,7 @@ const App = () => {
       >
         <ImageBackground
           source={require("./assets/splash-screen.png")}
-          resizeMode="stretch"
+          resizeMode="contain"
           style={{ height: "100%", backgroundColor: "white" }}
         >
           <View

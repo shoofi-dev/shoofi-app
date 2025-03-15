@@ -31,7 +31,6 @@ const homeButton = require("../../assets/lottie/home-button-2.json");
 import { useEffect, useState, useContext, useCallback, useRef } from "react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
-import { SITE_URL } from "../../consts/api";
 import { getCurrentLang } from "../../translations/i18n";
 import { LinearGradient } from "expo-linear-gradient";
 import { ORDER_TYPE, ROLES, cdnUrl } from "../../consts/shared";
@@ -127,7 +126,11 @@ const HomeScreen = ({ navigation }) => {
   }, [storeDataStore.storeData?.id]);
 
   useEffect(() => {
-    if(authStore.isLoggedIn() && userDetailsStore?.userDetails?.phone && !userDetailsStore?.userDetails?.name){
+    if (
+      authStore.isLoggedIn() &&
+      userDetailsStore?.userDetails?.phone &&
+      !userDetailsStore?.userDetails?.name
+    ) {
       setTimeout(() => {
         navigation.navigate("insert-customer-name");
       }, 0);
@@ -173,12 +176,12 @@ const HomeScreen = ({ navigation }) => {
   const handleStoreIsCloseAnswer = (value: boolean) => {
     setStoreIsCloseDialogText("");
     setShowStoreIsCloseDialog(false);
-    updateOrderAndGoToMenu(orderType)
+    updateOrderAndGoToMenu(orderType);
   };
 
   const handleStoreErrorMsgAnswer = () => {
     setIsOpenStoreErrorMsgDialog(false);
-    updateOrderAndGoToMenu(orderType)
+    updateOrderAndGoToMenu(orderType);
   };
 
   const onOrderTypeSelect = async (orderTypeTmp: string) => {
@@ -195,28 +198,34 @@ const HomeScreen = ({ navigation }) => {
         return;
       }
     }
-    if(storeDataStore.storeData.isOrderLaterSupport){
-    if (orderTypeTmp === ORDER_TYPE.now) {
-      const endTime = storeDataStore.storeData.orderNowEndTime;
-      var currentTime = moment().utc(true).valueOf();
-      var endTime2 = moment(endTime, "hh:mm").utc(true).valueOf();
-      const isAfterEndTime = currentTime > endTime2;
-      if (isAfterEndTime) {
-        setStoreIsCloseDialogText(t("store-is-close-after-end-time"));
-        setShowStoreIsCloseDialog(true);
-        return;
+    if (storeDataStore.storeData.isOrderLaterSupport) {
+      if (orderTypeTmp === ORDER_TYPE.now) {
+        const endTime = storeDataStore.storeData.orderNowEndTime;
+        var currentTime = moment().utc(true).valueOf();
+        var endTime2 = moment(endTime, "hh:mm").utc(true).valueOf();
+        const isAfterEndTime = currentTime > endTime2;
+        console.log("endTime", endTime);
+        console.log("currentTime1", currentTime);
+        console.log("endTime21", endTime2);
+        console.log("currentTime", moment(currentTime, "hh:mm"));
+        console.log("endTime2", moment(endTime2, "hh:mm"));
+
+        if (isAfterEndTime) {
+          setStoreIsCloseDialogText(t("store-is-close-after-end-time"));
+          setShowStoreIsCloseDialog(true);
+          return;
+        }
       }
-    }
-    if (
-      ordersStore.orderType &&
-      ordersStore.orderType != orderTypeTmp &&
-      cartStore.cartItems.length > 0
-    ) {
-      setIsShowChangeOrderTypeDialog(true);
+      if (
+        ordersStore.orderType &&
+        ordersStore.orderType != orderTypeTmp &&
+        cartStore.cartItems.length > 0
+      ) {
+        setIsShowChangeOrderTypeDialog(true);
+      } else {
+        updateOrderAndGoToMenu(orderTypeTmp);
+      }
     } else {
-      updateOrderAndGoToMenu(orderTypeTmp);
-    }
-    }else{
       updateOrderAndGoToMenu(orderTypeTmp);
     }
   };
@@ -284,7 +293,7 @@ const HomeScreen = ({ navigation }) => {
     }, 1000);
   }, []);
 
-  if (!isAppReady || !homeSlides) {
+  if (!isAppReady || !storeDataStore.storeData) {
     return;
   }
   return (
@@ -295,12 +304,12 @@ const HomeScreen = ({ navigation }) => {
         display: isHideScreen ? "none" : "flex",
       }}
     >
-
       <View
-        style={{
- 
-          // backgroundColor: "rgba(255,255,255,0.6)",
-        }}
+        style={
+          {
+            // backgroundColor: "rgba(255,255,255,0.6)",
+          }
+        }
       >
         {/* {userDetailsStore.isAdmin() ? (
           <TouchableOpacity
@@ -344,12 +353,12 @@ const HomeScreen = ({ navigation }) => {
             )}
           </TouchableOpacity>
         )} */}
-        <View style={{ width: "100%",marginTop:-20}}>
+        <View style={{ width: "100%", marginTop: -20 }}>
           {isAnimateReady && (
             <Animated.View entering={FadeInUp.duration(500)}>
               <Image
                 source={require("../../assets/icon4.png")}
-                style={{ width: "100%",  height:"85%" }}
+                style={{ width: "100%", height: "85%" }}
                 resizeMode="contain"
               />
             </Animated.View>
@@ -465,6 +474,7 @@ const HomeScreen = ({ navigation }) => {
           borderTopEndRadius: 30,
 
           overflow: "hidden",
+          paddingTop:30
         }}
       >
         {/* <LinearGradient
@@ -480,53 +490,88 @@ const HomeScreen = ({ navigation }) => {
           style={[styles.background]}
         /> */}
         {isAnimateReady && (
-          <Animated.View entering={FadeInDown.duration(500)} style={{marginBottom:50}}>
-   
-     
-
-   <View
+          <Animated.View
+            entering={FadeInDown.duration(500)}
+            style={{ marginBottom: 50 }}
+          >
+            <View
+              style={{
+                alignItems: "center",
+                width: "100%",
+                paddingHorizontal: 5,
+                borderColor: themeStyle.WHITE_COLOR,
+                justifyContent: "center",
+              }}
+            >
+              <AnimatesAs.View
                 style={{
                   alignItems: "center",
-                  width: "100%",
-                  paddingHorizontal: 5,
-                  borderColor:themeStyle.WHITE_COLOR,
-                  justifyContent:'center',
+                  justifyContent: "center",
+                  height: 80,
+                  width: "90%",
+                  shadowColor: themeStyle.SECONDARY_COLOR,
+                  shadowOffset: {
+                    width: 0,
+                    height: 1,
+                  },
+                  shadowOpacity: 1,
+                  shadowRadius: 10,
+                  elevation: 5,
+                  borderWidth: 0,
                 }}
               >
+                <Button
+                  text={
+                    storeDataStore.storeData.isOrderLaterSupport
+                      ? t("order-now")
+                      : t("new-order")
+                  }
+                  fontSize={18}
+                  onClickFn={() => onOrderTypeSelect(ORDER_TYPE.now)}
+                  // isLoading={isLoading}
+                  // disabled={isLoading}
+                  borderWidth={false}
+                  isFlexCol
+                  
+                />
+              </AnimatesAs.View>
+              <View
+                style={{
+                  marginVertical: 20,
+                  borderWidth: 1,
+                  borderColor: themeStyle.WHITE_COLOR,
+                  borderRadius: 30,
+                  padding: 10,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 50,
+                  height: 50,
+                }}
+              >
+                <Text style={{ color: themeStyle.WHITE_COLOR, fontSize: 20 }}>
+                  او
+                </Text>
+              </View>
+              {storeDataStore.storeData.isOrderLaterSupport && (
                 <AnimatesAs.View
                   style={{
                     alignItems: "center",
                     justifyContent: "center",
                     height: 80,
                     width: "90%",
+                    shadowColor: themeStyle.SECONDARY_COLOR,
+                    shadowOffset: {
+                      width: 0,
+                      height: 1,
+                    },
+                    shadowOpacity: 1,
+                    shadowRadius: 10,
+                    elevation: 5,
+                    borderWidth: 0,
                   }}
                 >
                   <Button
-                    text={isAnimationDone && storeDataStore.storeData.isOrderLaterSupport ? t("order-now") : t('new-order')}
-                    fontSize={18}
-                    onClickFn={() => onOrderTypeSelect(ORDER_TYPE.now)}
-                    // isLoading={isLoading}
-                    // disabled={isLoading}
-                    borderWidth={false}
-                    isFlexCol
-                    
-                  />
-                </AnimatesAs.View>
-                <View style={{marginVertical:20,  borderWidth:1, borderColor:themeStyle.WHITE_COLOR, borderRadius:30, padding:10, alignItems:'center', justifyContent:'center', width:50, height:50}}>
-                <Text style={{color:themeStyle.WHITE_COLOR, fontSize:20,}}>
-                او
-                </Text>
-                </View>
-                {storeDataStore.storeData.isOrderLaterSupport && <AnimatesAs.View
-                  style={{
-                    alignItems: "center",
-                    justifyContent: "center",
-                      height: 80,
-                    width: "90%"
-                  }}
-                >
-                  <Button
-                    text={isAnimationDone && t("order-later")}
+                    text={t("order-later")}
                     fontSize={18}
                     onClickFn={() => onOrderTypeSelect(ORDER_TYPE.later)}
                     // isLoading={isLoading}
@@ -535,8 +580,9 @@ const HomeScreen = ({ navigation }) => {
                     isFlexCol
                     isOposetGradiant
                   />
-                </AnimatesAs.View>}
-              </View>
+                </AnimatesAs.View>
+              )}
+            </View>
           </Animated.View>
         )}
       </View>

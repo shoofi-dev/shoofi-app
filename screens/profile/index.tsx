@@ -158,23 +158,23 @@ const ProfileScreen = () => {
                   borderRadius: 30,
                   padding: 10,
                   borderWidth:2,
-                  borderColor: themeStyle.WHITE_COLOR
+                  borderColor: themeStyle.SECONDARY_COLOR
                 }}
               >
                 <Icon
                   icon={item.icon}
                   size={30}
-                  style={{ color: themeStyle.WHITE_COLOR, opacity: 1 }}
+                  style={{ color: themeStyle.SECONDARY_COLOR, opacity: 1 }}
                 />
               </View>
               <View>
-                <Text style={{ fontSize: 18, color: themeStyle.WHITE_COLOR }}>
+                <Text style={{ fontSize: 18, color: themeStyle.SECONDARY_COLOR }}>
                   {t(item.title)}
                 </Text>
               </View>
               {item.key == "contact-us" && (
                 <View style={{justifyContent:"flex-start", flex:1}}>
-                  <Text type="number" style={{fontSize: 18, color:themeStyle.WHITE_COLOR}}>{storeDataStore.storeData.storePhone}</Text>
+                  <Text type="number" style={{fontSize: 18, color:themeStyle.SECONDARY_COLOR}}>{storeDataStore.storeData.storePhone}</Text>
                 </View>
               )}
               {item.key == "phone" && (
@@ -206,7 +206,7 @@ const ProfileScreen = () => {
           <DashedLine
             dashLength={5}
             dashThickness={1}
-            dashGap={5}
+            dashGap={0}
             dashColor={themeStyle.TEXT_PRIMARY_COLOR}
             style={{ paddingVertical: 15 }}
           />
@@ -218,7 +218,7 @@ const ProfileScreen = () => {
   return (
     <View
       style={{
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         height: "100%",
       }}
     >
@@ -230,7 +230,7 @@ const ProfileScreen = () => {
 
 
       <View style={styles.container}>
-        <LinearGradient
+        {/* <LinearGradient
           colors={[
             "rgba(207, 207, 207, 0.6)",
             "rgba(232, 232, 230, 0.5)",
@@ -241,12 +241,12 @@ const ProfileScreen = () => {
           start={{ x: 1, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.background]}
-        />
-        <View style={{ alignItems: "center", width: "100%", marginTop: 5 }}>
+        /> */}
+        <View style={{ alignItems: "center", width: "100%", marginTop: 5,  }}>
           <Text
             style={{
               fontSize: 25,
-              color:themeStyle.WHITE_COLOR
+              color:themeStyle.SECONDARY_COLOR
              }}
              type="number"
 
@@ -267,7 +267,7 @@ const ProfileScreen = () => {
       >
         <View style={{}}>
           <Text
-            style={{ textAlign: "center", color: themeStyle.WHITE_COLOR }}
+            style={{ textAlign: "center", color: themeStyle.SECONDARY_COLOR }}
             type="number"
           >
             Version - {version}
@@ -287,20 +287,20 @@ const ProfileScreen = () => {
             onPress={() => actionHandler("openTerms")}
             style={{ alignItems: "center", marginBottom: 20 }}
           >
-            <Text style={{ color: themeStyle.WHITE_COLOR }}>
+            <Text style={{ color: themeStyle.SECONDARY_COLOR }}>
               {t("open-terms")}
             </Text>
           </TouchableOpacity>
         </View>
         <View style={{ top: -10 }}>
-          <Text style={{ color: themeStyle.WHITE_COLOR}}>{"  |  "}</Text>
+          <Text style={{ color: themeStyle.SECONDARY_COLOR}}>{"  |  "}</Text>
         </View>
         <View>
           <TouchableOpacity
             onPress={() => actionHandler("deleteAccount")}
             style={{ alignItems: "center", marginBottom: 20 }}
           >
-            <Text style={{ color: themeStyle.WHITE_COLOR }}>
+            <Text style={{ color: themeStyle.SECONDARY_COLOR }}>
               {t("delete-account")}
             </Text>
           </TouchableOpacity>
@@ -360,6 +360,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "100%",
     borderColor: "rgba(112,112,112,0.1)",
+    backgroundColor: "rgba(36, 33, 30, 0.8)",
+    paddingBottom:20
+
   },
   rowContainer: {
     flexDirection: "row",

@@ -1,12 +1,10 @@
-export const SITE_URL = "https://api.buffaloburger.co.il/";
-
 // // // // //PROD
-// export const BASE_URL = "https://sari-apps-lcibm.ondigitalocean.app/api";
-// export const WS_URL = "wss://sari-apps-lcibm.ondigitalocean.app";
+export const BASE_URL = "https://sari-apps-lcibm.ondigitalocean.app/api";
+export const WS_URL = "wss://sari-apps-lcibm.ondigitalocean.app";
 
 //DEV
- export const BASE_URL = "http://192.168.68.64:1111/api";
- export const WS_URL = "ws://192.168.68.64:1111";
+//  export const BASE_URL = "http://192.168.68.64:1111/api";
+//  export const WS_URL = "ws://192.168.68.64:1111";
 
 // export const BASE_URL = "http://192.168.0.100:1111/api";
 // export const WS_URL = "ws://192.168.0.100:1111";

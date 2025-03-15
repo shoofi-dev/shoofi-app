@@ -7,20 +7,18 @@ import { useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import DropDown from "../../../../components/controls/dropdown";
 import themeStyle from "../../../../styles/theme.style";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import { launchImageLibrary } from "react-native-image-picker";
 import { StoreContext } from "../../../../stores";
 import Icon from "../../../../components/icon";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { cdnUrl, ROLES, shmareemId } from "../../../../consts/shared";
+import { cdnUrl, ROLES } from "../../../../consts/shared";
 import CheckBox from "../../../../components/controls/checkbox";
 import BackButton from "../../../../components/back-button";
-import { Divider } from "react-native-paper";
 
 export type TProduct = {
   id?: string;
   categoryId: string;
-  subCategoryId?: string;
   nameAR: string;
   nameHE: string;
   img: any;
@@ -34,32 +32,8 @@ export type TProduct = {
   mediumCount: number;
   largeCount: number;
   isInStore: boolean;
-  isSizes: boolean;
-  isUploadImage: boolean;
-  cakeLevels: number;
-  activeTastes: string[];
-  isToNameAndAge: boolean;
   isWeight?: boolean;
 };
-
-const cakeLevels = [
-  {
-    label: 1,
-    value: 1,
-  },
-  {
-    label: 2,
-    value: 2,
-  },
-  {
-    label: 3,
-    value: 3,
-  },
-  {
-    label: 4,
-    value: 4,
-  },
-];
 
 const AddProductScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -71,9 +45,7 @@ const AddProductScreen = ({ route }) => {
   const [isEditMode, setIdEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [categoryList, setCategoryList] = useState();
-  const [birthdaySubCategories, setBirthdaySubCategories] = useState();
   const [selectedCategoryId, setSelectedCategoryId] = useState();
-  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState();
   const [selectedProduct, setSelectedProduct] = useState<TProduct>();
   const [image, setImage] = useState();
 
@@ -91,10 +63,6 @@ const AddProductScreen = ({ route }) => {
       mediumCount: 0,
       largeCount: selectedProduct?.categoryId == "5" ? 10 : 0,
       isInStore: true,
-      isToNameAndAge: false,
-      isSizes: false,
-      isUploadImage: false,
-      subCategoryId: "",
       isWeight: true
 
     };
@@ -130,9 +98,6 @@ const AddProductScreen = ({ route }) => {
     if (product) {
       setIdEditMode(true);
       setSelectedCategoryId(Number(product.categoryId));
-      setSelectedSubCategoryId(
-        product.subCategoryId ? Number(product.subCategoryId) : null
-      );
       let tmpProduct = {
         ...product,
         mediumPrice: product?.extras?.size?.options["medium"]?.price,
@@ -153,8 +118,6 @@ const AddProductScreen = ({ route }) => {
     });
     setImage(result.assets[0]);
   };
-  const onPriceChange = (value) => {};
-  const onDescriptionChange = (value) => {};
 
   const handleInputChange = (value: any, name: string) => {
     setSelectedProduct({ ...selectedProduct, [name]: value });
@@ -171,12 +134,6 @@ const AddProductScreen = ({ route }) => {
         updatedData = { ...selectedProduct };
       }
 
-      // if (updatedData.categoryId == "3") {
-      //   updatedData = {
-      //     ...updatedData,
-      //     isUploadImage: true,
-      //   };
-      // }
       setSelectedProduct(updatedData);
       menuStore
         .addOrUpdateProduct(updatedData, isEditMode, image)
@@ -209,59 +166,8 @@ const AddProductScreen = ({ route }) => {
       };
     });
     setCategoryList(mappedCategories);
-    initBirthdaySubCat();
   };
 
-  const initBirthdaySubCat = () => {
-    const birthdaySubCategories = [
-      {
-        label:
-          languageStore.selectedLang === "ar"
-            ? "كعكات حفل ميلاد"
-            : "עוגות יום הולדת",
-        value: 1,
-      },
-      {
-        label:
-          languageStore.selectedLang === "ar" ? "اولاد" : "עוגות בנים",
-        value: 2,
-      },
-      {
-        label:
-          languageStore.selectedLang === "ar" ? "بنات" : "עוגות לבנות",
-        value: 3,
-      },
-      {
-        label:
-          languageStore.selectedLang === "ar" ? "صبايا وشباب" : "עוגות למבוגרים",
-        value: 4,
-      },
-      {
-        label:
-          languageStore.selectedLang === "ar" ? "مناسبات خاصة" : "אירועים מיוחדים",
-        value: 5,
-      },
-      {
-        label:
-          languageStore.selectedLang === "ar" ? "تصميم خاص" : "עיצוב מיוחד",
-        value: 6,
-      },
-    ];
-    setBirthdaySubCategories(birthdaySubCategories);
-  };
-
-  const handleTasteActiveChange = (value, name) => {
-    let tmpActiveTastes = [...selectedProduct.activeTastes] || [];
-    if (value) {
-      tmpActiveTastes.push(name);
-    } else {
-      tmpActiveTastes = tmpActiveTastes.filter((taste) => taste != name);
-    }
-    setSelectedProduct({
-      ...selectedProduct,
-      ["activeTastes"]: [...tmpActiveTastes],
-    });
-  };
 
   useEffect(() => {
     getMenu();
@@ -422,26 +328,6 @@ const AddProductScreen = ({ route }) => {
                 </Text>
               )}
             </View>
-            {/* <View
-              style={{
-                marginTop: 15,
-                alignItems: "flex-start",
-                flexBasis: "49%",
-              }}
-            >
-              <InputText
-                onChange={(e) => handleInputChange(e, "mediumCount")}
-                label={t("medium-count")}
-                value={selectedProduct?.mediumCount?.toString()}
-                keyboardType="numeric"
-                isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
-              />
-              {selectedProduct?.mediumCount == undefined && (
-                <Text style={{ color: themeStyle.ERROR_COLOR }}>
-                  {t("invalid-medium-count")}
-                </Text>
-              )}
-            </View> */}
           </View>
         </View>
 

@@ -4,7 +4,7 @@
     "slug": "Abdelhai butcher",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon4.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash-screen.png",
@@ -15,7 +15,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/icon4.png",
+          "icon": "./assets/icon.png",
           "color": "#ffffff",
           "sounds": [
             "./assets/sounds/buffalosound.wav",
@@ -39,7 +39,7 @@
     "android": {
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon-gmel.png",
+        "foregroundImage": "./assets/adaptive-icon-butcher.png",
         "backgroundColor": "#FFFFFF"
       },
       "splash": {
