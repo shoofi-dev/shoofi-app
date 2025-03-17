@@ -22,9 +22,6 @@ import { useTranslation } from "react-i18next";
 import {
   ORDER_TYPE,
   animationDuration,
-  closeHour,
-  lastHourInSameDay,
-  openHour,
 } from "../../../../consts/shared";
 
 import { _useDebounce } from "../../../../hooks/use-debounce";
@@ -93,9 +90,15 @@ const OrderDayItem = ({
     );
     var currentDayPlusOne = moment().add(1, "days").format("MM/D/YYYY");
     const isSameDay = selectedDay.isSame(currentDayPlusOne, "day");
+    const endTime =
+    ordersStore.orderType === ORDER_TYPE.now
+      ? storeDataStore.storeData.orderNowEndTime
+      : storeDataStore.storeData.orderLaterEndTime;
+      const lastHourInSameDay = endTime.split(":")[0];
+      const openHour = storeDataStore.storeData.start.split(":")[0];
     const isAfterSeven =
       moment().hour() >= lastHourInSameDay &&
-      (hour == openHour || hour == openHour + 1);
+      (hour == openHour + 1);
     return isSameDay && isAfterSeven;
   };
 
@@ -110,6 +113,8 @@ const OrderDayItem = ({
   };
 
   const isSameDayAndFirstTwoHours = (isSameDay, hour) => {
+    const openHour = storeDataStore.storeData.start.split(":")[0];
+
     if (isSameDay && (hour == openHour || hour == openHour + 1)) {
       return true;
     }
@@ -134,8 +139,15 @@ const OrderDayItem = ({
     const deafultDayH = {};
     const isSameDay = checkIsSameDay();
     const timeSlots = [];
-    for (let hour = openHour; hour < closeHour; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
+        const endTime =
+      ordersStore.orderType === ORDER_TYPE.now
+        ? storeDataStore.storeData.orderNowEndTime
+        : storeDataStore.storeData.orderLaterEndTime;
+        const closeHour = endTime.split(":")[0];
+        const openHour = storeDataStore.storeData.start.split(":")[0];
+
+    for (let hour = openHour; hour <= closeHour; hour++) {
+      for (let minute = 0; minute < 60; minute += 60) {
         const formattedHour = hour.toString();
         const formattedMinute = minute == 0 ? "00" : minute.toString();
         timeSlots.push({

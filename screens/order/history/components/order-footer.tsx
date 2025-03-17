@@ -57,13 +57,13 @@ const OrderFooter = ({ order }) => {
                 </View>
               </View>
               <View style={{ flexDirection: "row" }}>
-                <View>
-                  <Text style={styles.totalPriceText}>{t("final-price")}:</Text>
-                </View>
-                <View>
-                  <Text style={styles.totalPriceText}>₪{order.total} </Text>
-                </View>
+              <View>
+                <Text style={styles.totalPriceText}>{t("order-price")}:</Text>
               </View>
+              <View>
+                <Text style={styles.totalPriceText}>₪{order.orderPrice} </Text>
+              </View>
+            </View>
             </View>
         </View>
       </View>

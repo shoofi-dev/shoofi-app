@@ -70,6 +70,8 @@ type TCart = {
   orderId?: string;
   db_orderId?: string;
   isAdmin?: boolean;
+  shippingPrice?: any;
+  orderPrice?: any;
 };
 
 const prodcutExtrasAdapter = (extras) => {
@@ -298,6 +300,8 @@ class CartStore {
       orderDate: order.orderDate || moment().format(),
       customerId: order.customerId,
       orderType: order.orderType,
+      shippingPrice: order.shippingPrice,
+      orderPrice: order.totalPrice - (order.shippingPrice || 0)
     };
 
     return cartData;

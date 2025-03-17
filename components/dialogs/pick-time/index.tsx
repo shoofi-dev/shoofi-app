@@ -32,26 +32,15 @@ export default function PickTimeCMP() {
     }
   }, [ordersStore.editOrderData]);
 
-  useEffect(() => {
-    if (editOrderData) {
-      setSelectedOrderDate(editOrderData.orderDate);
-      ordersStore.setOrderType(editOrderData.orderType);
-    }
-  }, [editOrderData]);
+  // useEffect(() => {
+  //   if (editOrderData) {
+  //     setSelectedOrderDate(editOrderData.orderDate);
+  //     ordersStore.setOrderType(editOrderData.orderType);
+  //   }
+  // }, [editOrderData]);
 
-  const isBirthdayCakeInCart = () => {
-    const { birthdayCakesConfig } = storeDataStore.storeData;
-    const isBirthdayInCart =
-      cartStore.isBirthdayCakeInCart(birthdayCakesConfig);
-    if (isBirthdayInCart) {
-      setMinDeltaMinutes(birthdayCakesConfig?.birthdayCakeMinDeltaMin);
-    } else {
-      setMinDeltaMinutes(30);
-    }
-  };
 
   const handleSelectedDate = (value: boolean) => {
-    console.log("xx", value);
     if (value) {
       navigation.navigate("checkout-screen", { selectedDate: value });
     } else {

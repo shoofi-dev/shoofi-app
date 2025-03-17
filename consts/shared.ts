@@ -77,7 +77,7 @@ export const arabicNumbers = [
 
 export const openHour = 10;
 export const closeHour = 23;
-export const lastHourInSameDay = 19;
+
 
 export const shmareemId = '647e63a81cef6b000d34be4c';
 export const mkhbozeId = '6522f0d03d5b88000dbffed7';

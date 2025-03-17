@@ -33,6 +33,7 @@ export type TProduct = {
   largeCount: number;
   isInStore: boolean;
   isWeight?: boolean;
+  isHidden?: boolean;
 };
 
 const AddProductScreen = ({ route }) => {
@@ -57,14 +58,16 @@ const AddProductScreen = ({ route }) => {
       img: null,
       descriptionAR: "",
       descriptionHE: "",
+      notInStoreDescriptionAR: "",
+      notInStoreDescriptionHE: "",
       price: 0,
       mediumPrice: 0,
-      largePrice: selectedProduct?.categoryId == "5" ? 20 : 0,
+      largePrice:  0,
       mediumCount: 0,
-      largeCount: selectedProduct?.categoryId == "5" ? 10 : 0,
+      largeCount:  0,
       isInStore: true,
-      isWeight: true
-
+      isWeight: true,
+      isHidden: false
     };
   };
 
@@ -178,7 +181,16 @@ const AddProductScreen = ({ route }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={{marginLeft:15,}}>
+      <View style={{right:15, position:'absolute',             width: 40,
+                  height: 35,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginVertical: 10,
+                  marginLeft: 10,
+                  backgroundColor: "rgba(36, 33, 30, 0.8)",
+                  paddingHorizontal: 5,
+                  borderRadius: 10,
+}}>
       <BackButton />
 
       </View>
@@ -509,6 +521,7 @@ const AddProductScreen = ({ route }) => {
                   uri: image.uri,
                 }}
                 style={{ width: 300, height: 400 }}
+                resizeMode="contain"
               />
 
               <TouchableOpacity
@@ -540,6 +553,7 @@ const AddProductScreen = ({ route }) => {
                   uri: `${cdnUrl}${product.img[0].uri}`,
                 }}
                 style={{ width: 300, height: 400 }}
+                resizeMode="contain"
               />
               <View style={{                  opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5
 }}>
@@ -605,7 +619,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   inputsContainer: {
-    marginTop: 0,
+    marginTop: 50,
     width: "100%",
     height: "100%",
     alignItems: "center",

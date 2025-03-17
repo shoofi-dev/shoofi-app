@@ -79,14 +79,8 @@ const MealScreen = ({ route }) => {
 
   const onAddToCart = () => {
     if (
-      ((ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) ||
-        (storeDataStore.storeData.isInStoreOrderLaterCats.indexOf(
-          meal?.data?.categoryId
-        ) > -1 &&
-          !meal.data.isInStore)) &&
-      storeDataStore.storeData?.isOutOfStockCanOrderProduct?.indexOf(
-        meal.data._id
-      ) == -1
+      (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore)
+ 
     ) {
       setConfirmActiondDialogText(
         getOutOfStockMessage() || "call-store-to-order"

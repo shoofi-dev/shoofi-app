@@ -115,6 +115,7 @@ const StockProductsList = ({ products, category, onLoadingChange }) => {
               borderWidth: 1,
               padding: 10,
               borderRadius: 20,
+              borderColor: themeStyle.WHITE_COLOR
               
             }}
           >

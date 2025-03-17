@@ -90,7 +90,7 @@ const StockManagementScreen = ({ route }) => {
                 alignItems: "center",
                 justifyContent: "center",
                 zIndex:10,
-                backgroundColor: "rgba(232, 232, 230, 0.8)",
+                backgroundColor: "rgba(232, 232, 230, 0.1)",
 
               }}
             >

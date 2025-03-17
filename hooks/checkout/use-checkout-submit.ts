@@ -16,7 +16,7 @@ export type TPropsCheckoutSubmit = {
   locationText?: any;
 };
 const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
-  const { cartStore, ordersStore, userDetailsStore, adminCustomerStore } =
+  const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, storeDataStore } =
     useContext(StoreContext);
   const { chargeCC } = _useCheckoutChargeCC();
 
@@ -85,6 +85,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
           ? editOrderData?.order?.locationText ? editOrderData?.order?.locationText : locationText
           : locationText;
       }
+      order.shippingPrice = storeDataStore.storeData.delivery_price;
     }
     
     if (!!editOrderData) {

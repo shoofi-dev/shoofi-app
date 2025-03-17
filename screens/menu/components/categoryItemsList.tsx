@@ -181,11 +181,7 @@ const CategoryItemsList = ({ productsList, category }) => {
   };
   const isInStore = (item) => {
     if (
-      (ordersStore.orderType == ORDER_TYPE.now && !item.isInStore) ||
-      (storeDataStore.storeData.isInStoreOrderLaterCats.indexOf(
-        item?.categoryId
-      ) > -1 &&
-        !item.isInStore)
+      (ordersStore.orderType == ORDER_TYPE.now && !item.isInStore) 
     ) {
       return false;
     }
@@ -231,7 +227,7 @@ const CategoryItemsList = ({ productsList, category }) => {
             onMomentumScrollBegin={onScrollEnd}
           >
             <View style={styles.container}>
-              {userDetailsStore.isAdmin(ROLES.all) && (
+              {/* {userDetailsStore.isAdmin(ROLES.all) && (
                 <View
                   style={{
                     // flexBasis: "48.5%",
@@ -239,7 +235,7 @@ const CategoryItemsList = ({ productsList, category }) => {
                 >
                   <AddProductItem onItemSelect={onAddProduct} />
                 </View>
-              )}
+              )} */}
               {productsList.slice(0, pageNumber * 5).map((item, index) => {
                 return (
                   <View
@@ -247,7 +243,7 @@ const CategoryItemsList = ({ productsList, category }) => {
                     style={{
                       marginBottom:30,
                       flexBasis: "100%",
-                      height: 250,
+                      height: deviceType === devicesType.tablet ? 450 : 250,
 
                     }}
                   >

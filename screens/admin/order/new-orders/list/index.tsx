@@ -340,10 +340,10 @@ const NewOrdersListScreen = ({ route }) => {
           </Text>
         </View>
         <View style={{ alignItems: "center" }}>
-          {/* <View style={{ marginBottom: 10 }}>
+          <View style={{ marginBottom: 10 }}>
             <Text style={styles.dateRawText}>{t("collect-date")}</Text>
-          </View> */}
-          {/* <Text
+          </View>
+          <Text
             style={{
               fontSize: 34,
               fontFamily: `${getCurrentLang()}-Bold`,
@@ -351,8 +351,8 @@ const NewOrdersListScreen = ({ route }) => {
             }}
           >
             {t(moment(order.orderDate).format("dddd"))}
-          </Text> */}
-          {/* <Text
+          </Text>
+          <Text
             style={{
               fontSize: 36,
               fontFamily: `${getCurrentLang()}-American-bold`,
@@ -361,7 +361,7 @@ const NewOrdersListScreen = ({ route }) => {
             }}
           >
             {moment(order.orderDate).format("HH:mm")}
-          </Text> */}
+          </Text>
           {/* <Text style={styles.dateText}>
               {moment(order.orderDate).format("DD/MM")}
             </Text> */}

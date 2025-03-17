@@ -80,18 +80,11 @@ const CartScreen = ({ route }) => {
     }
   }, [ordersStore.editOrderData]);
 
-  // useEffect(() => {
-  //   if (editOrderData) {
-  //     setSelectedOrderDate(editOrderData.orderDate);
-  //     setShippingMethod(editOrderData.order.receipt_method);
-  //     setPaymentMthod(editOrderData.order.payment_method);
-  //     setDeliveryPrice(
-  //       editOrderData.order.receipt_method == SHIPPING_METHODS.shipping ? 20 : 0
-  //     );
-  //     ordersStore.setOrderType(editOrderData.orderType);
-  //   }
-  // }, [editOrderData]);
-
+  useEffect(() => {
+    if (editOrderData) {
+      ordersStore.setOrderType(editOrderData.orderType);
+    }
+  }, [editOrderData]);
 
   const updateItemsPrice = () => {
     if (cartStore.cartItems.length === 0 && !editOrderData) {

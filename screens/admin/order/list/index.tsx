@@ -614,7 +614,7 @@ const OrdersListScreen = ({ route }) => {
                 </View>
                 <View>
                   <Text style={styles.totalPriceText}>
-                    ₪{getOrderTotalPrice(order)}{" "}
+                    ₪{order.orderPrice}{" "}
                   </Text>
                   {order?.refundData && (
                     <Text style={styles.totalPriceText}>
@@ -623,6 +623,17 @@ const OrdersListScreen = ({ route }) => {
                   )}
                 </View>
               </View>
+              {oOrder.receipt_method === SHIPPING_METHODS.shipping &&<View style={{ flexDirection: "row" }}>
+                <View>
+                  <Text style={styles.totalPriceText}>{t("delivery-price")}:</Text>
+                </View>
+                <View>
+                  <Text style={styles.totalPriceText}>
+                    ₪{storeDataStore?.storeData?.delivery_price}{" "}
+                    {order.isShippingPaid && " - مدفوع"}
+                  </Text>
+                </View>
+              </View>}
               {order.orderDate && (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <View>

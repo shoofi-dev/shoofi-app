@@ -56,11 +56,7 @@ const ProductItem = ({
   };
   const isInStore = (item) => {
     if (
-      (ordersStore.orderType == ORDER_TYPE.now && !item.isInStore) ||
-      (storeDataStore.storeData.isInStoreOrderLaterCats.indexOf(
-        item?.categoryId
-      ) > -1 &&
-        !item.isInStore)
+      (ordersStore.orderType == ORDER_TYPE.now && !item.isInStore)
     ) {
       return false;
     }
@@ -68,7 +64,8 @@ const ProductItem = ({
   };
 
   const getOutOfStockMessage = (item) => {
-    if (item.notInStoreDescriptionAR || item.notInStoreDescriptionHE) {
+
+    if (item?.notInStoreDescriptionAR || item?.notInStoreDescriptionHE) {
       return languageStore.selectedLang === "ar"
         ? item.notInStoreDescriptionAR
         : item.notInStoreDescriptionHE;
@@ -98,7 +95,7 @@ const ProductItem = ({
 
         width: "90%",
         alignSelf: "center",
-        opacity: !isInStore(item) ? 0.4 : 1,
+        opacity: !isInStore(item) ? 1 : 1,
         overflow:'hidden'
         // shadowColor: 'rgba(46, 46, 46, 0.6)',
         //       shadowOffset: {
@@ -112,6 +109,24 @@ const ProductItem = ({
       
       }}
     >
+                {!isInStore(item) && (
+            <View
+              style={{ position: "absolute", width: "100%", bottom:"50%", backgroundColor:themeStyle.SECONDARY_COLOR, zIndex:10}}
+            >
+          
+              <Text
+                style={{
+                  color: themeStyle.WHITE_COLOR,
+                  fontFamily: `${getCurrentLang()}-SemiBold`,
+                  fontSize: 20,
+                  alignSelf: "center",
+                  
+                }}
+              >
+                {getOutOfStockMessage(item)}
+              </Text>
+            </View>
+          )}
       {/* <LinearGradient
         colors={[
           "rgba(207, 207, 207, 0.9)",
@@ -128,7 +143,7 @@ const ProductItem = ({
         style={[
           styles.categoryItem,
           {
-            opacity: isDisabled(item) ? 0.4 : 1,
+            opacity: isDisabled(item) ? 0.3 : 1,
             height: "100%",
             overflow: "hidden",width:"100%"
           },
@@ -292,34 +307,7 @@ const ProductItem = ({
             style={{ color: themeStyle.SECONDARY_COLOR }}
           />
           </View>
-          {/* {!isInStore(item) && (
-            <View
-              style={{ position: "absolute", bottom: "50%", width: "100%" }}
-            >
-              <LinearGradient
-                colors={[
-                  "rgba(207, 207, 207, 0.9)",
-                  "rgba(232, 232, 230, 0.9)",
-                  "rgba(232, 232, 230, 0.9)",
-                  "rgba(232, 232, 230, 0.9)",
-                  "rgba(207, 207, 207, 0.9)",
-                ]}
-                start={{ x: 1, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[styles.background, { borderRadius: 0 }]}
-              />
-              <Text
-                style={{
-                  color: themeStyle.GRAY_700,
-                  fontFamily: `${getCurrentLang()}-SemiBold`,
-                  fontSize: 20,
-                  alignSelf: "center",
-                }}
-              >
-                {getOutOfStockMessage(item)}
-              </Text>
-            </View>
-          )} */}
+
           {userDetailsStore.isAdmin() && (
             <View
               style={{

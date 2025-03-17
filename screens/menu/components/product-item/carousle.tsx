@@ -44,7 +44,7 @@ const ProductCarousleItem = ({
     return !userDetailsStore.isAdmin() && item.count == 0;
   };
   const isInStore = (item) => {
-    if ((ordersStore.orderType == ORDER_TYPE.now && !item.isInStore) || ((storeDataStore.storeData.isInStoreOrderLaterCats.indexOf(item?.categoryId) > -1) && !item.isInStore)) {
+    if ((ordersStore.orderType == ORDER_TYPE.now && !item.isInStore)) {
       return false;
     }
     return true;
