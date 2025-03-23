@@ -13,7 +13,7 @@ Notifications.setNotificationHandler({
 export async function schedulePushNotification(data: any) {
     await Notifications.scheduleNotificationAsync({
         content: {
-            title: "אבו סאלח",
+            title: "אטליז עבד אלחי",
             body: 'طلبية جديدة',
             data: data,
             sound: 'buffalosound.wav',
@@ -26,7 +26,7 @@ export async function schedulePushNotification(data: any) {
 export async function schedulePushNotificationDeliveryDelay(data: any) {
     await Notifications.scheduleNotificationAsync({
         content: {
-            title: "אבו סאלח",
+            title: "אטליז עבד אלחי",
             body: 'تاخير بالارسالية',
             data: data,
             sound: 'deliverysound.wav',

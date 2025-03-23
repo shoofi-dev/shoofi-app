@@ -7,9 +7,30 @@ import { getCurrentLang } from "../../../../translations/i18n";
 import moment from "moment";
 import DashedLine from "react-native-dashed-line";
 import CurrentStatus from "../../current-status/current-status";
+import { useContext } from "react";
+import { StoreContext } from "../../../../stores";
 
 const OrderFooter = ({ order }) => {
   const { t } = useTranslation();
+  const { storeDataStore } = useContext(StoreContext);
+
+  const getCollectDate = () =>{
+    if(storeDataStore.storeData.isOrderLaterSupport){
+      return (
+        <Text style={styles.dateText}>
+        {t(moment(order.orderDate).format("dddd"))}{" - "}
+        {moment(order.orderDate).format("DD/MM")}{" - "}
+        {moment(order.orderDate).format("HH:mm")}{" "}
+        </Text>
+
+      )
+    }else{
+     return  (<Text style={styles.dateText}>
+      {moment(order.orderDate).format("HH:mm")}{" "}
+      </Text>)
+
+    }
+  }
 
   const renderOrderTotalRaw = (order) => {
     const oOrder = order.order;
@@ -42,7 +63,8 @@ const OrderFooter = ({ order }) => {
                   <View>
                     <Text style={styles.dateText}>
                       {" "}
-                      {moment(order.orderDate).isSame(order.datetime) ? t('waiting-for-approve') : moment(order.orderDate).format("HH:mm")}{" "}
+                      {moment(order.orderDate).isSame(order.datetime) ?
+                       t('waiting-for-approve') : getCollectDate()}
                     </Text>
                   </View>
                 </View>

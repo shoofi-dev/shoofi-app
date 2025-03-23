@@ -339,7 +339,7 @@ const NewOrdersListScreen = ({ route }) => {
             {order?.customerDetails?.phone}{" "}
           </Text>
         </View>
-        <View style={{ alignItems: "center" }}>
+       {storeDataStore.storeData.isOrderLaterSupport &&  <View style={{ alignItems: "center" }}>
           <View style={{ marginBottom: 10 }}>
             <Text style={styles.dateRawText}>{t("collect-date")}</Text>
           </View>
@@ -365,7 +365,7 @@ const NewOrdersListScreen = ({ route }) => {
           {/* <Text style={styles.dateText}>
               {moment(order.orderDate).format("DD/MM")}
             </Text> */}
-        </View>
+        </View>}
       </View>
     );
   };

@@ -535,7 +535,7 @@ const HomeScreen = ({ navigation }) => {
                   
                 />
               </AnimatesAs.View>
-              <View
+              {storeDataStore.storeData.isOrderLaterSupport && <View
                 style={{
                   marginVertical: 20,
                   borderWidth: 1,
@@ -551,7 +551,7 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={{ color: themeStyle.WHITE_COLOR, fontSize: 20 }}>
                   او
                 </Text>
-              </View>
+              </View>}
               {storeDataStore.storeData.isOrderLaterSupport && (
                 <AnimatesAs.View
                   style={{

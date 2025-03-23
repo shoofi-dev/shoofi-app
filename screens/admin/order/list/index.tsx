@@ -534,7 +534,7 @@ const OrdersListScreen = ({ route }) => {
             <View style={{ marginBottom: 0 }}>
               <Text style={styles.dateRawText}>{t("collect-date")}</Text>
             </View>
-            <Text
+            {storeDataStore.storeData.isOrderLaterSupport && <Text
             style={{
               fontSize: 30,
               fontFamily: `${getCurrentLang()}-Bold`,
@@ -542,7 +542,7 @@ const OrdersListScreen = ({ route }) => {
             }}
           >
             {t(moment(order.orderDate).format("dddd"))}
-          </Text>
+          </Text>}
             <Text
               style={{
                 fontSize: 30,
