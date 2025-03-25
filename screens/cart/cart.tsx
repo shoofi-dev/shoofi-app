@@ -41,6 +41,7 @@ import CustomFastImage from "../../components/custom-fast-image";
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 const barcodeString = "https://onelink.to/zky772";
 
+const hideExtras = ["counter"];
 type TShippingMethod = {
   shipping: string;
   takAway: string;
@@ -106,7 +107,7 @@ const CartScreen = ({ route }) => {
       if (item && item.data.id !== bcoindId) {
         tmpOrderPrice +=
           (getPriceBySize(item) || item.data.price) *
-          item.data.extras.counter.value;
+          item.others.qty;
       }
     });
     setItemsPrice(tmpOrderPrice);
@@ -255,8 +256,6 @@ const CartScreen = ({ route }) => {
     }
   }, [cartStore.cartItems]);
 
-
-
   let extrasArray = [];
   const renderFilteredExtras = (filteredExtras, extrasLength, key) => {
     return filteredExtras.map((extra, tagIndex) => {
@@ -320,11 +319,13 @@ const CartScreen = ({ route }) => {
     });
   };
 
-
   const onPickTime = async () => {
-    if(userDetailsStore.isAdmin() || !storeDataStore.storeData.isEnablePickTimeNote){
+    if (
+      userDetailsStore.isAdmin() ||
+      !storeDataStore.storeData.isEnablePickTimeNote
+    ) {
       goToPickTimeScreen();
-    }else{
+    } else {
       setIsOpenConfirmActiondDialog(true);
     }
   };
@@ -339,9 +340,9 @@ const CartScreen = ({ route }) => {
   };
 
   const handleSubmintButton = () => {
-    if(storeDataStore.storeData.isOrderLaterSupport){
+    if (storeDataStore.storeData.isOrderLaterSupport) {
       onPickTime();
-    }else{
+    } else {
       navigation.navigate("checkout-screen");
     }
   };
@@ -610,7 +611,7 @@ const CartScreen = ({ route }) => {
                                         : product.data.nameHE}
                                     </Text>
                                   </View>
-
+                                  {/* 
                                   <View
                                     style={{
                                       flexDirection: "row",
@@ -629,16 +630,16 @@ const CartScreen = ({ route }) => {
                                         color: themeStyle.TEXT_PRIMARY_COLOR,
                                       }}
                                     >
-                                      <View style={{marginRight:10}}>
-                                      <Icon
-                                        icon="scale"
-                                        size={20}
-                                        style={{
-                                          color: themeStyle.TEXT_PRIMARY_COLOR,
-                                        }}
-                                      />
+                                      <View style={{ marginRight: 10 }}>
+                                        <Icon
+                                          icon="scale"
+                                          size={20}
+                                          style={{
+                                            color:
+                                              themeStyle.TEXT_PRIMARY_COLOR,
+                                          }}
+                                        />
                                       </View>
-                          
                                       {t("weight")} :{" "}
                                       {t(product?.data?.extras?.weight?.value)}
                                       <Text
@@ -651,6 +652,55 @@ const CartScreen = ({ route }) => {
                                         {t("gram")}
                                       </Text>
                                     </Text>
+                                  </View> */}
+
+                                  <View
+                                    style={{ marginTop: 15, marginLeft: 5 }}
+                                  >
+                                    {Object.keys(product?.data?.extras).map(
+                                      (key) => {
+                                        if (
+                                          (product?.data?.extras[key].value ===
+                                            product?.data?.extras[key]
+                                              .defaultValue ||
+                                          hideExtras.indexOf(
+                                            product?.data?.extras[key]
+                                              .categoryId
+                                          ) > -1) && !product?.data?.extras[key].forceShowInCart
+                                        ) {
+                                          return null;
+                                        }
+                                        return (
+                                          <View
+                                            style={{
+                                              flexDirection: "row",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                fontSize: 18,
+                                              }}
+                                            >{"- "}
+                                              {t(
+                                                product?.data?.extras[key].name
+                                              )}
+                                            </Text>
+
+                                            <Text
+                                              style={{
+                                                fontSize: 18,
+                                              }}
+                                            >
+                                              {product?.data?.extras[
+                                                key
+                                              ].value?.toString()}
+                                              {" :"}
+                                            </Text>
+                                          </View>
+                                        );
+                                      }
+                                    )}
                                   </View>
 
                                   {product?.others?.note && (
@@ -683,7 +733,7 @@ const CartScreen = ({ route }) => {
                                             alignSelf: "flex-start",
                                           }}
                                         >
-                                          {t('note')}:
+                                          {t("note")}:
                                         </Text>
                                         <Text
                                           style={{
@@ -715,8 +765,7 @@ const CartScreen = ({ route }) => {
                                       <View style={{}}>
                                         <Counter
                                           value={
-                                            product?.data?.extras?.counter
-                                              ?.value
+                                            product?.others.qty
                                           }
                                           minValue={1}
                                           onCounterChange={(value) => {
@@ -754,8 +803,7 @@ const CartScreen = ({ route }) => {
                                         >
                                           {(getPriceBySize(product) ||
                                             product.data.price) *
-                                            product?.data?.extras?.counter
-                                              ?.value}
+                                            product?.others.qty}
                                         </Text>
                                         <Text
                                           style={{
@@ -901,7 +949,11 @@ const CartScreen = ({ route }) => {
         <View style={{ width: "50%" }}>
           <Button
             onClickFn={handleSubmintButton}
-            text={storeDataStore.storeData.isOrderLaterSupport? t("pick-time") : t("continue-to-pay")}
+            text={
+              storeDataStore.storeData.isOrderLaterSupport
+                ? t("pick-time")
+                : t("continue-to-pay")
+            }
             fontSize={18}
             textColor={theme.WHITE_COLOR}
             borderRadious={50}
@@ -916,10 +968,7 @@ const CartScreen = ({ route }) => {
             </Text>
           </View>
           <View>
-            <Text
-              style={{ fontSize: 22,  }}
-              type="number"
-            >
+            <Text style={{ fontSize: 22 }} type="number">
               ₪{itemsPrice}
             </Text>
           </View>

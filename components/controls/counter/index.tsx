@@ -61,7 +61,7 @@ export default function Counter({ onCounterChange, value, stepValue = 1, minValu
             <Text style={styles.btnTextGreen}>+</Text>
           </TouchableOpacity>
         </View>
-        <View style={[styles.counterValue, {width:50}]}>
+        <View style={[styles.counterValue, {width:80}]}>
           <Text style={{ fontSize: 20,color:themeStyle.WHITE_COLOR}}>{couter}</Text>
         </View>
         <View>
@@ -127,7 +127,8 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor:themeStyle.PRIMARY_COLOR
+    backgroundColor:themeStyle.PRIMARY_COLOR,
+    borderRadius:10
   },
   btn: {
     // backgroundColor: themeStyle.PRIMARY_COLOR,
@@ -136,9 +137,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
-    color:themeStyle.PRIMARY_COLOR,
-    borderColor: themeStyle.PRIMARY_COLOR,
-    borderWidth:1
+    color:themeStyle.SECONDARY_COLOR,
+    borderColor: themeStyle.SECONDARY_COLOR,
+    borderWidth:1,
+    marginHorizontal:10
   },
   btnGray: {
     backgroundColor: themeStyle.WHITE_COLOR,
@@ -149,7 +151,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     color:themeStyle.PRIMARY_COLOR,
-    borderColor: themeStyle.PRIMARY_COLOR,
+    borderColor: themeStyle.SECONDARY_COLOR,
     borderRadius:10
   },
   btnGreen: {
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
   },
   btnText: {
     fontSize: 20,
-    color: themeStyle.PRIMARY_COLOR,
+    color: themeStyle.SECONDARY_COLOR,
     fontFamily: "Poppins-Regular",
     // alignSelf:"center",
     // top:1,

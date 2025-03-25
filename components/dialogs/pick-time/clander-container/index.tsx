@@ -305,6 +305,7 @@ const CalanderContainerUser = ({
             textColor={themeStyle.WHITE_COLOR}
             fontSize={16}
             disabled={!selectedHour || isDisabledHour}
+            bgColor={themeStyle.SECONDARY_COLOR}
           />
         </View>
         <View style={{ flexBasis: "49%" }}>

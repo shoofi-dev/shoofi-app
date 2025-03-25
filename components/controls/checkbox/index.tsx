@@ -16,6 +16,7 @@ export default function CheckBox({
   isOneChoice = false,
   isDisabled = false,
   isActive = false,
+  color = themeStyle.TEXT_PRIMARY_COLOR
 }) {
   const { t } = useTranslation();
 
@@ -243,29 +244,52 @@ export default function CheckBox({
   }
 
   return (
+    <View
+    style={{
+      flexDirection: "row",
+      opacity: isDisabled ? 0.5 : 1,
+      alignItems: "center",
+      justifyContent: "space-between",
+    }}
+  >
+    {sizeTitleAdapter(title) && (
+      <Text style={{ marginBottom: 10, fontSize: 20 }}>
+        {sizeTitleAdapter(title)}
+      </Text>
+    )}
+
+    <Text style={{ fontSize: 20, color: color }}> {t(title)}</Text>
+
     <TouchableOpacity
       style={{
         borderWidth: 1,
-        borderRadius: 20,
+        borderRadius: 5,
         width: 30,
         height: 30,
         alignItems: "center",
         justifyContent: "center",
-        borderColor: themeStyle.PRIMARY_COLOR,
+        borderColor: themeStyle.WHITE_COLOR,
       }}
       onPress={() => {
         onBtnClick();
       }}
+      disabled={isDisabled}
     >
-      {title && <Text style={{ marginBottom: 10 }}>{title}</Text>}
       {isSelected ? (
-        <View style={{ height: 25, width: 25, borderRadius: 30, padding: 5, backgroundColor:themeStyle.SECONDARY_COLOR }}>
-      
-        </View>
+        <View
+          style={{
+            height: 25,
+            width: 25,
+            borderRadius: 5,
+            padding: 5,
+            backgroundColor: themeStyle.SECONDARY_COLOR,
+          }}
+        ></View>
       ) : (
         <View></View>
       )}
     </TouchableOpacity>
+  </View>
   );
 }
 const styles = StyleSheet.create({

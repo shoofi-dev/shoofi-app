@@ -42,7 +42,7 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
     let tmpOrderPrice = 0;
     cartStore.cartItems.forEach((item) => {
       if (item) {
-        tmpOrderPrice += item.data.price * item.data.extras.counter.value;
+        tmpOrderPrice += item.data.price * item.data.others.qty;
       }
     });
     setItemsPrice(tmpOrderPrice);
@@ -68,7 +68,7 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
           <View>
             <Text
               style={{
-                fontFamily: `${getCurrentLang()}-Light`,
+                fontFamily: `${getCurrentLang()}-SemiBold`,
                 fontSize: 18,
               }}
             >
@@ -83,7 +83,7 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
               }}
               type="number"
             >
-              ₪{itemsPrice}
+              ₪{itemsPrice}{" "}
             </Text>
           </View>
         </View>
@@ -96,7 +96,7 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
             <View>
               <Text
                 style={{
-                  fontFamily: `${getCurrentLang()}-Light`,
+                  fontFamily: `${getCurrentLang()}-SemiBold`,
                   fontSize: 18,
                 }}
               >
@@ -111,7 +111,7 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
                 }}
                 type="number"
               >
-                ₪{storeDataStore.storeData?.delivery_price}
+                ₪{storeDataStore.storeData?.delivery_price}{" "}
               </Text>
             </View>
           </View>

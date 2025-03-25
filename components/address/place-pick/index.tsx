@@ -88,15 +88,16 @@ export const PlacePickCmp = ({ onChnage, selectedPlace }: TProps) => {
           }}
           textColor={
             place === PLACE.current
-              ? themeStyle.WHITE_COLOR
-              : themeStyle.TEXT_PRIMARY_COLOR
+              ? themeStyle.TEXT_PRIMARY_COLOR
+              : themeStyle.WHITE_COLOR
           }
-          bgColor={place === PLACE.current ? null : themeStyle.WHITE_COLOR}
+          bgColor={place === PLACE.current ? themeStyle.SECONDARY_COLOR : themeStyle.RGBA_BLACK}
           fontFamily={`${getCurrentLang()}-SemiBold`}
           text={t("current-location")}
           isFlexCol
           borderRadious={10}
           textPadding={0}
+          fontSize={16}
         />
       </View>
       <View style={{width:15}}></View>
@@ -107,10 +108,10 @@ export const PlacePickCmp = ({ onChnage, selectedPlace }: TProps) => {
           }}
           textColor={
             place === PLACE.other
-              ? themeStyle.WHITE_COLOR
-              : themeStyle.TEXT_PRIMARY_COLOR
+              ? themeStyle.TEXT_PRIMARY_COLOR
+              : themeStyle.WHITE_COLOR
           }
-          bgColor={place === PLACE.other ? null : themeStyle.WHITE_COLOR}
+          bgColor={place === PLACE.other ? themeStyle.SECONDARY_COLOR : themeStyle.RGBA_BLACK}
           isFlexCol
           fontFamily={`${getCurrentLang()}-SemiBold`}
           text={t("other-location")}

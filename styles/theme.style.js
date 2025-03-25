@@ -19,5 +19,7 @@ export default {
     FONT_WEIGHT_MEDIUM: 600,
     FONT_WEIGHT_HEAVY: 800,
     
-    TEXT_PRIMARY_COLOR: "#48413b"
+    TEXT_PRIMARY_COLOR: "#48413b",
+    RGBA_BLACK: "rgba(36, 33, 30, 0.8)",
+
   };

@@ -1,6 +1,10 @@
 import { View, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
-import { animationDuration, PLACE, SHIPPING_METHODS } from "../../consts/shared";
+import {
+  animationDuration,
+  PLACE,
+  SHIPPING_METHODS,
+} from "../../consts/shared";
 import { useContext, useEffect, useState } from "react";
 import isStoreSupportAction from "../../helpers/is-store-support-action";
 import theme from "../../styles/theme.style";
@@ -33,7 +37,6 @@ export const AddressCMP = ({
   const [region, setRegion] = useState(null);
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
-    
 
   const [recipetSupportText, setRecipetSupportText] = useState({
     text: "",
@@ -53,14 +56,14 @@ export const AddressCMP = ({
 
   const onPlaceChange = (placeValue) => {
     setPlace(placeValue);
-    onPlaceChangeFN(placeValue)
+    onPlaceChangeFN(placeValue);
     // if(placeValue === PLACE.other){
     //   setIsOpenConfirmActiondDialog(true);
     // }
   };
   const onChangeTextAddress = (textAddressValue) => {
     setTextAddress(textAddressValue);
-    onTextAddressChange(textAddressValue)
+    onTextAddressChange(textAddressValue);
   };
   const onGEOChange = (locationValue, regionValue) => {
     console.log("onGEOChange");
@@ -76,25 +79,33 @@ export const AddressCMP = ({
   return (
     <View style={{}}>
       <View>
-        <ShippingMethodPick onChange={onShippingMethodChange} shippingMethodValue={shippingMethod}/>
+        <ShippingMethodPick
+          onChange={onShippingMethodChange}
+          shippingMethodValue={shippingMethod}
+        />
       </View>
       {shippingMethod === SHIPPING_METHODS.shipping && (
         <View style={{ alignItems: "center" }}>
-          <Animatable.View animation="fadeInLeft" duration={animationDuration}
+          <Animatable.View
+            animation="fadeInLeft"
+            duration={animationDuration}
             style={{
               height: 60,
               marginTop: 10,
-              width: "70%",
+              width: "90%",
               alignItems: "center",
             }}
           >
-            <PlacePickCmp onChnage={onPlaceChange} selectedPlace={place}/>
+            <PlacePickCmp onChnage={onPlaceChange} selectedPlace={place} />
           </Animatable.View>
           {place === PLACE.current && (
             <View style={{ width: "100%" }}>
               <GEOAddress onChange={onGEOChange} />
-              <Animatable.View animation="fadeInLeft" duration={animationDuration}
- style={{ width: "100%", marginTop: 10 }}>
+              <Animatable.View
+                animation="fadeInLeft"
+                duration={animationDuration}
+                style={{ width: "100%", marginTop: 10 }}
+              >
                 {location && region && (
                   <MapViewAddress location={location} region={region} />
                 )}
@@ -102,7 +113,10 @@ export const AddressCMP = ({
             </View>
           )}
           {place === PLACE.other && (
-            <Animatable.View animation="fadeInLeft"style={{ marginTop: 10, width: "100%" }}>
+            <Animatable.View
+              animation="fadeInLeft"
+              style={{ marginTop: 10, width: "100%" }}
+            >
               <TextAddress onChange={onChangeTextAddress} />
             </Animatable.View>
           )}

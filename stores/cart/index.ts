@@ -80,11 +80,9 @@ const prodcutExtrasAdapter = (extras) => {
     return productExtras;
   }
   Object.keys(extras).map((key) => {
-    if (key !== "orderList") {
-      return extras[key].map((extra) => {
-        if (extra.available_on_app) {
+    const extra = extras[key];
           if (extra.type === "CHOICE" && !extra.multiple_choice) {
-            if (extra.value !== false) {
+            if (extra.default !== extra.value) {
               productExtras.push({
                 id: extra.id,
                 name: extra.name,
@@ -102,7 +100,7 @@ const prodcutExtrasAdapter = (extras) => {
             }
           }
           if (extra.type === "CHOICE" && extra.multiple_choice) {
-            if (extra.isdefault !== extra.value) {
+            if (extra.default !== extra.value) {
               productExtras.push({
                 id: extra.id,
                 name: extra.name,
@@ -110,9 +108,6 @@ const prodcutExtrasAdapter = (extras) => {
               });
             }
           }
-        }
-      });
-    }
   });
   return productExtras;
 };
@@ -134,20 +129,10 @@ const produtsAdapter = (order) => {
       name: product.data.nameHE,
       nameAR: product.data.nameAR,
       nameHE: product.data.nameHE,
-      qty: product.data.extras.counter.value,
-      weight: product.data?.extras?.weight?.value,
+      qty: product.others.qty,
       note: product.others.note,
-      toName: product.others.toName,
-      toAge: product.others.toAge,
-      size: product.data.extras.size.value,
-      clienImage: product.data.extras.image?.value,
-      suggestedImage: product.data.extras.suggestedImage?.value,
-      taste: product.data.extras.taste?.value,
-      halfOne: product.data.extras.halfOne?.value,
-      halfTwo: product.data.extras.halfTwo?.value,
-      onTop: product.data.extras.onTop?.value,
-      price: getPriceBySize(product) || product.data.price,
-      data: prodcutExtrasAdapter(product.extras),
+      price: product.data.price,
+      data: prodcutExtrasAdapter(product.data.extras),
     };
     finalProducts.push(finalProduct);
   });
@@ -233,10 +218,9 @@ class CartStore {
   updateProductCount = (productId, count) => {
     this.cartItems = this.cartItems.map((item, index) => {
       if (item.data._id.toString() + index === productId) {
-        console.log("item.data._id.toString() + index",item.data._id.toString() + index)
 
         // item.data.price = item.data.price + ((count - item.data.extras.counter.value) * (item.data.price / item.data.extras.counter.value));
-        item.data.extras.counter.value = count;
+        item.others.qty = count;
       }
       return item;
     });
@@ -247,7 +231,7 @@ class CartStore {
     let count = 0;
     this.cartItems.forEach((product) => {
       if (product) {
-        count += Number(product?.others?.count);
+        count += Number(product?.others?.qty);
       }
     });
     return count;
@@ -387,7 +371,6 @@ class CartStore {
     // formData.append("images", JSON.stringify(imagesList));
     if (imagesList.length > 0) {
       imagesList.forEach((image) => {
-        console.log("image", image);
         if (
           (image?.path && !image?.path?.includes("orders")) ||
           (image?.uri && !image?.uri?.includes("orders"))
@@ -401,7 +384,6 @@ class CartStore {
         }
       });
     }
-    console.log("order", cartData.order.items);
 
     return axiosInstance
       .post(

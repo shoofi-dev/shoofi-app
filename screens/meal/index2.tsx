@@ -11,7 +11,7 @@ import {
 import Text from "../../components/controls/Text";
 import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react";
-import { isEmpty } from "lodash";
+import { groupBy, isEmpty } from "lodash";
 import * as Animatable from "react-native-animatable";
 
 import GradiantRow from "../../components/gradiant-row";
@@ -34,6 +34,7 @@ import {
 import CustomFastImage from "../../components/custom-fast-image";
 
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
+import Counter from "../../components/controls/counter";
 
 const MealScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -60,7 +61,7 @@ const MealScreen = ({ route }) => {
       if (isEmpty(tmpProduct)) {
         tmpProduct.data = JSON.parse(JSON.stringify(product));
       }
-      tmpProduct.others = { count: 1, note: "" };
+      tmpProduct.others = { qty: 1, note: "" };
     }
     if (index !== null && index !== undefined) {
       setIsEdit(true);
@@ -78,10 +79,7 @@ const MealScreen = ({ route }) => {
   }, [index, product]);
 
   const onAddToCart = () => {
-    if (
-      (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore)
- 
-    ) {
+    if (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) {
       setConfirmActiondDialogText(
         getOutOfStockMessage() || "call-store-to-order"
       );
@@ -134,7 +132,7 @@ const MealScreen = ({ route }) => {
     }
   }, [meal?.data.extras]);
 
-  const updateMeal = (value, tag, type) => {
+  const updateMeal3 = (value, tag, type) => {
     setMeal({
       ...meal,
       data: {
@@ -143,6 +141,65 @@ const MealScreen = ({ route }) => {
           ...meal.data.extras,
           [tag]: { ...meal.data.extras[tag], value: value },
         },
+      },
+    });
+  };
+
+  const updateMeal = (value, extraData, type) => {
+    let extraPrice = 0;
+
+    switch (type) {
+      case "COUNTER":
+        extraPrice =
+          value > extraData.value
+            ? extraPrice + extraData.price * meal.others.qty
+            : extraPrice - extraData.price * meal.others.qty;
+        break;
+      case "oneChoice":
+        if (!extraData.multiple_choice) {
+          // const currentTag = currentExtraType.find(
+          //   (tagItem) => tagItem.value === true
+          // );
+          // if (currentTag) {
+          //   const tagDeltaPrice = extraData.price - currentTag.price;
+          //   extraPrice = extraPrice + tagDeltaPrice;
+          // }
+        } else {
+          extraPrice = value
+            ? extraPrice + extraData.price * meal.others.qty
+            : extraPrice - extraData.price * meal.others.qty;
+        }
+        break;
+      case "CHOICE":
+        if (!extraData.multiple_choice) {
+          // const currentTag = currentExtraType.find(
+          //   (tagItem) => tagItem.value === true
+          // );
+          // if (currentTag) {
+          if (value === true) {
+            extraPrice = extraPrice + extraData.price;
+          } else {
+            extraPrice = extraPrice + extraData.price * -1;
+          }
+          // }
+        } else {
+          extraPrice = value
+            ? extraPrice + extraData.price * meal.others.count
+            : extraPrice - extraData.price * meal.others.count;
+        }
+        break;
+      default:
+        break;
+    }
+
+    extraData.value = value;
+    // meal.extras[type] = extraData;
+    setMeal({
+      ...meal,
+      data: { ...meal.data, price: meal.data.price + extraPrice },
+      extras: {
+        ...meal.data.extras,
+        [extraData.name]: { ...meal.data.extras[extraData.name], value: value },
       },
     });
   };
@@ -156,8 +213,8 @@ const MealScreen = ({ route }) => {
           case "COUNTER":
             extraPrice =
               value > tagItem.value
-                ? extraPrice + tagItem.price * meal.others.count
-                : extraPrice - tagItem.price * meal.others.count;
+                ? extraPrice + tagItem.price * meal.others.qty
+                : extraPrice - tagItem.price * meal.others.qty;
             break;
           case "oneChoice":
             if (!tag.multiple_choice) {
@@ -170,8 +227,8 @@ const MealScreen = ({ route }) => {
               }
             } else {
               extraPrice = value
-                ? extraPrice + tagItem.price * meal.others.count
-                : extraPrice - tagItem.price * meal.others.count;
+                ? extraPrice + tagItem.price * meal.others.qty
+                : extraPrice - tagItem.price * meal.others.qty;
             }
             break;
           case "CHOICE":
@@ -185,8 +242,8 @@ const MealScreen = ({ route }) => {
               }
             } else {
               extraPrice = value
-                ? extraPrice + tagItem.price * meal.others.count
-                : extraPrice - tagItem.price * meal.others.count;
+                ? extraPrice + tagItem.price * meal.others.qty
+                : extraPrice - tagItem.price * meal.others.qty;
             }
             break;
           default:
@@ -211,14 +268,14 @@ const MealScreen = ({ route }) => {
   };
 
   const updateOthers = (value, key, type) => {
-    if (key === "count") {
+    if (key === "qty") {
       const updatedPrice =
         meal.data.price +
-        (value - meal.others.count) * (meal.data.price / meal.others.count);
+        (value - meal.others.qty) * (meal.data.price / meal.others.qty);
       setMeal({
         ...meal,
         [type]: { ...meal[type], [key]: value },
-        data: { ...meal.data },
+        data: { ...meal.data, price: updatedPrice },
       });
     } else {
       setMeal({ ...meal, [type]: { ...meal[type], [key]: value } });
@@ -261,6 +318,13 @@ const MealScreen = ({ route }) => {
   const isValidMeal = () => {
     return true;
   };
+
+  const groupExtrasByCategory = () => {
+    const extras = groupBy(meal?.data?.extras, (x) => x.categoryId);
+    return extras;
+  };
+
+  const extasByCategory: any = groupExtrasByCategory();
 
   if (!meal) {
     return null;
@@ -360,20 +424,20 @@ const MealScreen = ({ route }) => {
           borderWidth: 0,
           padding: 5,
           alignItems: "center",
-          marginTop: 50,
+          marginTop: 20,
         }}
       >
         <CustomFastImage
           style={{
             width: "100%",
-            height: 250,
+            height: 150,
           }}
           source={{ uri: `${cdnUrl}${meal.data.img[0].uri}` }}
           cacheKey={`${APP_NAME}_${meal.data.img[0].uri.split(/[\\/]/).pop()}`}
           resizeMode="contain"
         />
       </View>
-      <ScrollView ref={scrollRef} style={{ height: "100%" }}>
+      <ScrollView ref={scrollRef} style={{ height: "100%", marginBottom: 120 }}>
         <KeyboardAvoidingView
           keyboardVerticalOffset={100}
           behavior="position"
@@ -393,27 +457,91 @@ const MealScreen = ({ route }) => {
               padding: 20,
             }}
           >
-            {/* <View
+            <View
               style={{
                 alignSelf: "center",
-                zIndex: isSelectOpen ? 0 : 1,
               }}
             >
               <Counter
-                value={meal.data.extras.counter.value}
+                value={meal.data.others.qty}
                 minValue={1}
                 onCounterChange={(value) => {
-                  updateMeal(value, "counter", meal.data.extras.counter.type);
+                  updateOthers(value, "qty", "others");
                 }}
                 variant={"colors"}
               />
-            </View> */}
+            </View>
+
+            <View
+              style={{
+                width: "100%",
+                alignSelf: "center",
+              }}
+            >
+              {extasByCategory &&
+                Object.keys(extasByCategory)?.map((extraCategoryId) => {
+                  return (
+                    <View
+                      style={{
+                        marginBottom: 15,
+                        borderRadius: 10,
+                      }}
+                    >
+                      {Object.keys(extasByCategory[extraCategoryId]).map(
+                        (key) => (
+                          <View
+                            style={{
+                              marginBottom: 10,
+                              width: "100%",
+                              padding: 10,
+                              paddingVertical: 10,
+                              borderRadius: 10,
+                            }}
+                          >
+                            <GradiantRow
+                              onChangeFn={(value) => {
+                                updateMeal(
+                                  value,
+                                  extasByCategory[extraCategoryId][key],
+                                  extasByCategory[extraCategoryId][key].type
+                                );
+                              }}
+                              type={extasByCategory[extraCategoryId][key].type}
+                              value={
+                                extasByCategory[extraCategoryId][key].value
+                              }
+                              title={t(
+                                extasByCategory[extraCategoryId][key].name
+                              )}
+                              stepValue={
+                                extasByCategory[extraCategoryId][key].stepValue
+                              }
+                              options={
+                                extasByCategory[extraCategoryId][key].options
+                              }
+                              minValue={1}
+                              fontSize={20}
+                              color={themeStyle.SECONDARY_COLOR}
+                              variant={"colors"}
+                            />
+                          </View>
+                        )
+                      )}
+                    </View>
+                  );
+                })}
+            </View>
             <View
               style={{
                 position: "relative",
+                // backgroundColor: themeStyle.RGBA_BLACK,
+                borderRadius: 10,
+                // borderWidth: 1,
+                // borderColor: themeStyle.SECONDARY_COLOR,
+                padding: 10,
               }}
             >
-              <View>
+              {/* <View>
                 <GradiantRow
                   onChangeFn={(value) => {
                     updateMeal(value, "weight", meal.data?.extras?.weight);
@@ -430,9 +558,9 @@ const MealScreen = ({ route }) => {
                   color={themeStyle.SECONDARY_COLOR}
                   icon="scale"
                 />
-              </View>
+              </View> */}
 
-              <View style={{ marginTop: 40 }}>
+              <View style={{}}>
                 <View style={{ flexDirection: "column", width: "100%" }}>
                   <Text
                     style={{
@@ -542,7 +670,7 @@ const MealScreen = ({ route }) => {
             type="number"
           >
             {" "}
-            ₪{meal.data.price * meal.data.extras.counter.value}
+            ₪{meal.data.price * meal.data.others.qty}
           </Text>
         </View>
         <View style={{ width: "90%", marginTop: 10 }}>

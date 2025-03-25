@@ -32,6 +32,7 @@ type TProps = {
   categoryId?: any;
   variant?: any;
   color?: any;
+  isOneChoice?: any;
 };
 
 export default function GradiantRow({
@@ -54,6 +55,7 @@ export default function GradiantRow({
   categoryId,
   variant,
   color,
+  isOneChoice
 }: TProps) {
   const { t } = useTranslation();
 
@@ -79,7 +81,7 @@ export default function GradiantRow({
     onChangeFn(newValue === value ? null : newValue);
   };
 
-  const getInputByType = (type, valuex, minValue) => {
+  const getInputByType = (type, valuex, minValue, color) => {
     switch (type) {
       case "COUNTER":
         return (
@@ -94,7 +96,7 @@ export default function GradiantRow({
       case "CHOICE":
         return (
           <View style={{ paddingLeft: 8 }}>
-            <CheckBox onChange={onChange} value={valuex} />
+            <CheckBox onChange={onChange} value={valuex} color={color}/>
           </View>
         );
     }
@@ -107,8 +109,8 @@ export default function GradiantRow({
           onChange={onChange}
           value={value}
           title={title}
-          variant={"button"}
-          isOneChoice
+          isOneChoice={isOneChoice}
+          color={color}
         />
       </View>
     );
