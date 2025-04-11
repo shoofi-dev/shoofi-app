@@ -42,7 +42,7 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
     let tmpOrderPrice = 0;
     cartStore.cartItems.forEach((item) => {
       if (item) {
-        tmpOrderPrice += item.data.price * item.data.others.qty;
+        tmpOrderPrice += item.data.price * item.others.qty;
       }
     });
     setItemsPrice(tmpOrderPrice);

@@ -546,20 +546,17 @@ const NewOrdersListScreen = ({ route }) => {
     return extras.map((extra) => {
       return (
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={{ marginRight: 2, paddingBottom: 4 }}>+</Text>
-          {extra.value === false && (
-            <Text
-              style={{
-                fontFamily: `${getCurrentLang()}-SemiBold`,
-                marginRight: 2,
-              }}
-            >
-              {t("without")}
-            </Text>
-          )}
-          <Text>
-            {menuStore.translate(extra.name)} {extra.value}
+          <Text
+            style={{
+              fontSize: 20,
+            }}
+          >
+            {t(extra.name)}
+            {" : "}
           </Text>
+          <Text style={{
+              fontSize: 20,
+            }}>{extra.value}{" "}</Text>
         </View>
       );
     });
@@ -668,140 +665,23 @@ const NewOrdersListScreen = ({ route }) => {
                     : meal.nameHE}
                 </Text>
               </View>
-
               <View style={{ marginTop: 15 }}>
-                {(item?.halfOne || item?.halfTwo) && (
-                  <View
+                <View
+                  style={{
+                    flexDirection: "row",
+                  }}
+                >
+                  <Text
                     style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      width: "60%",
-                      marginBottom: 30,
+                      fontSize: 20,
+                      color: themeStyle.TEXT_PRIMARY_COLOR,
                     }}
                   >
-                    <View style={{}}>
-                      {item?.halfOne && (
-                        <View
-                          style={{
-                            borderBottomWidth: 1,
-                            paddingVertical: 6,
-                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              textAlign: "left",
-                              fontSize: 20,
-                            }}
-                          >
-                            {t("halfOne")}
-                          </Text>
-                        </View>
-                      )}
-                      {item?.halfOne.length > 0 ? (
-                        Object.keys(item?.halfOne).map((key) => {
-                          return (
-                            <View style={{}}>
-                              <View style={{ flexDirection: "row" }}>
-                                <Text
-                                  style={{
-                                    textAlign: "left",
-                                    fontSize: 20,
-                                    marginTop: 10,
-                                  }}
-                                  type="number"
-                                >
-                                  {`${Number(key) + 1}`}
-                                </Text>
-                                <Text
-                                  style={{
-                                    textAlign: "left",
-                                    fontSize: 20,
-                                    marginTop: 10,
-                                  }}
-                                >
-                                  {" "}
-                                  - {t(item?.halfOne[key])}
-                                </Text>
-                              </View>
-                            </View>
-                          );
-                        })
-                      ) : (
-                        <Text
-                          style={{
-                            textAlign: "left",
-                            fontSize: 20,
-                            marginTop: 10,
-                          }}
-                        >
-                          من غير اضافات
-                        </Text>
-                      )}
+                    <View style={{ alignItems: "flex-start" }}>
+                      {renderOrderItemsExtras(item.data)}
                     </View>
-
-                    <View style={{}}>
-                      {item?.halfTwo && (
-                        <View
-                          style={{
-                            borderBottomWidth: 1,
-                            paddingVertical: 6,
-                            borderColor: themeStyle.TEXT_PRIMARY_COLOR,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              textAlign: "left",
-                              fontSize: 20,
-                            }}
-                          >
-                            {t("halfTwo")}
-                          </Text>
-                        </View>
-                      )}
-                      {item?.halfTwo.length > 0 ? (
-                        Object.keys(item?.halfTwo).map((key) => {
-                          return (
-                            <View style={{ marginTop: 10 }}>
-                              <View style={{ flexDirection: "row" }}>
-                                <Text
-                                  style={{
-                                    textAlign: "left",
-                                    fontSize: 20,
-                                    marginTop: 10,
-                                  }}
-                                  type="number"
-                                >
-                                  {`${Number(key) + 1}`}
-                                </Text>
-                                <Text
-                                  style={{
-                                    textAlign: "left",
-                                    fontSize: 20,
-                                    marginTop: 10,
-                                  }}
-                                >
-                                  {" "}
-                                  - {t(item?.halfTwo[key])}
-                                </Text>
-                              </View>
-                            </View>
-                          );
-                        })
-                      ) : (
-                        <Text
-                          style={{
-                            textAlign: "left",
-                            fontSize: 20,
-                            marginTop: 10,
-                          }}
-                        >
-                          من غير اضافات
-                        </Text>
-                      )}
-                    </View>
-                  </View>
-                )}
+                  </Text>
+                </View>
               </View>
               {/* <DashedLine
               dashLength={5}

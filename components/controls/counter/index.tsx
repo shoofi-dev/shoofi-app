@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import themeStyle from "../../../styles/theme.style";
 import * as Haptics from "expo-haptics";
 
-export default function Counter({ onCounterChange, value, stepValue = 1, minValue = 0, isVertical = false, variant = null, size = 45 }) {
+export default function Counter({ onCounterChange, value, stepValue = 1, minValue = 0, isVertical = false, variant = null, size = 35 }) {
   const [couter, setCounter] = useState(value || 0);
   const onBtnClick = (value) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -62,7 +62,7 @@ export default function Counter({ onCounterChange, value, stepValue = 1, minValu
           </TouchableOpacity>
         </View>
         <View style={[styles.counterValue, {width:80}]}>
-          <Text style={{ fontSize: 20,color:themeStyle.WHITE_COLOR}}>{couter}</Text>
+          <Text style={{ fontSize: 18,color:themeStyle.WHITE_COLOR}}>{couter}</Text>
         </View>
         <View>
           <TouchableOpacity
@@ -170,12 +170,12 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
   },
   btnTextGreen: {
-    fontSize: 22,
+    fontSize: 18,
     color: themeStyle.SUCCESS_COLOR,
     fontFamily: "Poppins-Regular",
   },
   btnTextRed: {
-    fontSize: 22,
+    fontSize: 18,
     color: themeStyle.ERROR_COLOR,
     fontFamily: "Poppins-Regular",
   },

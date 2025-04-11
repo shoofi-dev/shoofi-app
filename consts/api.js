@@ -3,8 +3,8 @@ export const BASE_URL = "https://sari-apps-lcibm.ondigitalocean.app/api";
 export const WS_URL = "wss://sari-apps-lcibm.ondigitalocean.app";
 
 //DEV
-//  export const BASE_URL = "http://192.168.68.68:1111/api";
-//  export const WS_URL = "ws://192.168.68.68:1111";
+//  export const BASE_URL = "http://192.168.68.59:1111/api";
+//  export const WS_URL = "ws://192.168.68.59:1111";
 
 // export const BASE_URL = "http://192.168.0.100:1111/api";
 // export const WS_URL = "ws://192.168.0.100:1111";
@@ -51,6 +51,7 @@ export const MENU_API = {
     ADMIN_UPDATE_IS_IN_STORE_PRODUCT_API : "admin/product/update/isInStore",
     ADMIN_UPDATE_IS_IN_STORE_BY_CATEGORY_PRODUCT_API : "admin/product/update/isInStore/byCategory",
     ADMIN_DELETE_PRODUCT_API : "admin/product/delete",
+    ADMIN_GET_EXTRAS_API : "admin/product/extras",
     GET_IMAGES_BY_CATEGORY : "images",
 };
 export const ORDER_API = {

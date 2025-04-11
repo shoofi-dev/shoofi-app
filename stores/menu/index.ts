@@ -141,6 +141,21 @@ class MenuStore {
       });
     });
   };
+  getExrasListFromServer = () => {
+    return axiosInstance
+      .get(`${MENU_API.ADMIN_GET_EXTRAS_API}`)
+      .then(function (response) {
+        return response?.data;
+      });
+  };
+
+  getExrasList = () => {
+    return new Promise((resolve) => {
+      this.getExrasListFromServer().then((res) => {
+          resolve(res);
+      });
+    });
+  };
 
   getImagesByCategoryFromServer = (categoryType: string) => {
     const body = {
@@ -285,32 +300,21 @@ class MenuStore {
     }
 
     product.categoryId && formData.append("categoryId", product.categoryId);
-    product.subCategoryId && formData.append("subCategoryId", product.subCategoryId);
-    product.cakeLevels && formData.append("cakeLevels", product.cakeLevels.toString());
 
     formData.append("descriptionAR", product.descriptionAR);
     formData.append("descriptionHE", product.descriptionHE);
 
     product.notInStoreDescriptionAR && formData.append("notInStoreDescriptionAR", product.notInStoreDescriptionAR);
     product.notInStoreDescriptionAR && formData.append("notInStoreDescriptionHE", product.notInStoreDescriptionHE);
-
-
-    formData.append("mediumPrice", product.mediumPrice.toString());
-    product.largePrice && formData.append("largePrice", product.largePrice.toString());
-    formData.append("mediumCount", product.mediumCount.toString());
-    product.largeCount && formData.append("largeCount", product.largeCount.toString());
     formData.append("isInStore", product.isInStore.toString());
-    formData.append("isToNameAndAge", product.isToNameAndAge.toString());
-    formData.append("isUploadImage", product.isUploadImage.toString());
-    product.isWeight && formData.append("isWeight", product.isWeight.toString());
+    product.extras && formData.append("extras", JSON.stringify(product.extras));
+    product.others && formData.append("others", JSON.stringify(product.others));
 
-    product?.activeTastes && formData.append("activeTastes", product.activeTastes.toString());
     // return axios
     //   .post(process.env.REACT_APP_API+"admin/product/insert",formData,{})
     //   .then(function (response) {
     //       return response.data;
     //   });
-
     return axiosInstance
       .post(
         `${

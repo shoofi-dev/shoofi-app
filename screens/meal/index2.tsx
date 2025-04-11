@@ -457,20 +457,7 @@ const MealScreen = ({ route }) => {
               padding: 20,
             }}
           >
-            <View
-              style={{
-                alignSelf: "center",
-              }}
-            >
-              <Counter
-                value={meal.data.others.qty}
-                minValue={1}
-                onCounterChange={(value) => {
-                  updateOthers(value, "qty", "others");
-                }}
-                variant={"colors"}
-              />
-            </View>
+
 
             <View
               style={{
@@ -661,10 +648,24 @@ const MealScreen = ({ route }) => {
           shadowRadius: 10,
           alignItems: "center",
           borderWidth: 0,
-          height: 120,
+          height: 130,
         }}
       >
-        <View>
+        <View style={{flexDirection:'row', justifyContent:'space-around', width:"70%", alignItems:'center'}}>
+        <View
+              style={{
+                alignSelf: "center",
+              }}
+            >
+              <Counter
+                value={meal.data.others.qty}
+                minValue={1}
+                onCounterChange={(value) => {
+                  updateOthers(value, "qty", "others");
+                }}
+                variant={"colors"}
+              />
+            </View>
           <Text
             style={{ fontSize: 22, color: themeStyle.WHITE_COLOR }}
             type="number"

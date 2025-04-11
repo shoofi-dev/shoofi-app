@@ -34,6 +34,8 @@ export type TProduct = {
   isInStore: boolean;
   isWeight?: boolean;
   isHidden?: boolean;
+  extras?: any;
+  others?: any;
 };
 
 const AddProductScreen = ({ route }) => {
@@ -41,7 +43,8 @@ const AddProductScreen = ({ route }) => {
   const navigation = useNavigation();
   const { categoryId, product } = route.params;
 
-  const { menuStore, languageStore, userDetailsStore, storeDataStore } = useContext(StoreContext);
+  const { menuStore, languageStore, userDetailsStore, storeDataStore } =
+    useContext(StoreContext);
 
   const [isEditMode, setIdEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,8 +52,9 @@ const AddProductScreen = ({ route }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState();
   const [selectedProduct, setSelectedProduct] = useState<TProduct>();
   const [image, setImage] = useState();
+  const [extrasList, setExtrasList] = useState([]);
 
-  const initNewProduct = () => {
+  const initNewProduct = (extrasData) => {
     return {
       categoryId: "",
       nameAR: "",
@@ -62,16 +66,18 @@ const AddProductScreen = ({ route }) => {
       notInStoreDescriptionHE: "",
       price: 0,
       mediumPrice: 0,
-      largePrice:  0,
+      largePrice: 0,
       mediumCount: 0,
-      largeCount:  0,
+      largeCount: 0,
       isInStore: true,
       isWeight: true,
-      isHidden: false
+      isHidden: false,
+      extras: extrasData,
+      others: {
+        qty: 1
+      }
     };
   };
-
-
 
   const isValidForm = () => {
     return (
@@ -110,14 +116,41 @@ const AddProductScreen = ({ route }) => {
       };
       setSelectedProduct(tmpProduct);
     } else {
-      setSelectedProduct(initNewProduct());
+      //setSelectedProduct(initNewProduct());
     }
+  }, []);
+
+  const getExtrasLit = async () => {
+    const extrasListRes: any = await menuStore.getExrasList();
+    setExtrasList(extrasListRes);
+    // const extrasData = extrasListRes.map((extra)=>{
+    //   if(extra.isActive){
+    //     return {
+    //       [extra.name]: {
+    //         ...extra
+    //       }
+    //     }
+    //   }
+    // })
+
+    const extrasDataFiltered = extrasListRes.filter((extra)=> extra.isActive)
+    const extrasData = {};
+    extrasDataFiltered.forEach(extra => {
+      extrasData[extra.name] = {
+        ...extra
+      }
+    });
+    console.log("extrasData", extrasData);
+    setSelectedProduct(initNewProduct(extrasData));
+
+  };
+  useEffect(() => {
+    getExtrasLit();
   }, []);
 
   const onImageSelect = async () => {
     const result = await launchImageLibrary({
       mediaType: "photo",
-
     });
     setImage(result.assets[0]);
   };
@@ -127,7 +160,10 @@ const AddProductScreen = ({ route }) => {
   };
 
   const handlAddClick = () => {
-    if (selectedProduct && (isEditMode || image || selectedProduct.categoryId == '8')) {
+    if (
+      selectedProduct &&
+      (isEditMode || image || selectedProduct.categoryId == "8")
+    ) {
       setIsLoading(true);
       //uploadImage(imgFile).then((res) => {
       let updatedData: TProduct = null;
@@ -171,7 +207,6 @@ const AddProductScreen = ({ route }) => {
     setCategoryList(mappedCategories);
   };
 
-
   useEffect(() => {
     getMenu();
   }, []);
@@ -181,22 +216,28 @@ const AddProductScreen = ({ route }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={{right:15, position:'absolute',             width: 40,
-                  height: 35,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginVertical: 10,
-                  marginLeft: 10,
-                  backgroundColor: "rgba(36, 33, 30, 0.8)",
-                  paddingHorizontal: 5,
-                  borderRadius: 10,
-}}>
-      <BackButton />
-
+      <View
+        style={{
+          right: 15,
+          position: "absolute",
+          width: 40,
+          height: 35,
+          alignItems: "center",
+          justifyContent: "center",
+          marginVertical: 10,
+          marginLeft: 10,
+          backgroundColor: "rgba(36, 33, 30, 0.8)",
+          paddingHorizontal: 5,
+          borderRadius: 10,
+        }}
+      >
+        <BackButton />
       </View>
 
       <View style={styles.inputsContainer}>
-        <Text style={{  fontSize: 30, color: themeStyle.WHITE_COLOR }}>{t("add-product")}</Text>
+        <Text style={{ fontSize: 30, color: themeStyle.WHITE_COLOR }}>
+          {t("add-product")}
+        </Text>
 
         <View
           style={{
@@ -239,7 +280,6 @@ const AddProductScreen = ({ route }) => {
               value={selectedProduct?.nameHE}
               isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
               color={themeStyle.WHITE_COLOR}
-
             />
             {!selectedProduct?.nameHE && (
               <Text style={{ color: themeStyle.ERROR_COLOR }}>
@@ -261,7 +301,13 @@ const AddProductScreen = ({ route }) => {
             onChange={(e) => handleInputChange(e, "isInStore")}
             value={selectedProduct?.isInStore}
           />
-          <Text style={{ fontSize: 20, marginLeft: 10,color: themeStyle.WHITE_COLOR }}>
+          <Text
+            style={{
+              fontSize: 20,
+              marginLeft: 10,
+              color: themeStyle.WHITE_COLOR,
+            }}
+          >
             {t("هل متوفر حاليا")}
           </Text>
         </View>
@@ -278,7 +324,13 @@ const AddProductScreen = ({ route }) => {
         >
           {categoryList && (
             <View style={{ alignItems: "flex-start" }}>
-              <Text style={{ fontSize: 16, marginBottom: 10, color: themeStyle.WHITE_COLOR }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  marginBottom: 10,
+                  color: themeStyle.WHITE_COLOR,
+                }}
+              >
                 اختر القسم :
               </Text>
               <View style={{ zIndex: 11 }}>
@@ -341,6 +393,42 @@ const AddProductScreen = ({ route }) => {
               )}
             </View>
           </View>
+          <View
+            style={{
+              width: "100%",
+              marginTop: 40, // justifyContent: "space-around",
+              alignItems:'flex-start'
+            }}
+          >
+            <View>
+              <Text
+                style={{
+                  fontSize: 20,
+                  marginBottom: 10,
+                  color: themeStyle.WHITE_COLOR,
+                }}
+              >
+                قائمة الاضافات:
+              </Text>
+            </View>
+            <View>
+              {extrasList?.map((extra) => {
+                return (
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        marginBottom: 10,
+                        color: themeStyle.WHITE_COLOR,
+                      }}
+                    >
+                      {t(extra.name)}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
         </View>
 
         <View style={{ marginTop: 60 }}>
@@ -350,7 +438,7 @@ const AddProductScreen = ({ route }) => {
               textAlign: "center",
               width: "100%",
               textDecorationLine: "underline",
-              color: themeStyle.WHITE_COLOR
+              color: themeStyle.WHITE_COLOR,
             }}
           >
             {t("product-description")}
@@ -364,7 +452,13 @@ const AddProductScreen = ({ route }) => {
             alignItems: "flex-start",
           }}
         >
-          <Text style={{ fontSize: 16, marginBottom: 10, color: themeStyle.WHITE_COLOR }}>
+          <Text
+            style={{
+              fontSize: 16,
+              marginBottom: 10,
+              color: themeStyle.WHITE_COLOR,
+            }}
+          >
             {t("insert-discription-ar")}
           </Text>
           <TextInput
@@ -387,7 +481,7 @@ const AddProductScreen = ({ route }) => {
               padding: 10,
               height: 80,
               width: "100%",
-              opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5
+              opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5,
               // fontFamily: `${getCurrentLang()}-SemiBold`,
             }}
           />
@@ -405,7 +499,13 @@ const AddProductScreen = ({ route }) => {
             alignItems: "flex-start",
           }}
         >
-          <Text style={{ fontSize: 16, marginBottom: 10, color: themeStyle.WHITE_COLOR }}>
+          <Text
+            style={{
+              fontSize: 16,
+              marginBottom: 10,
+              color: themeStyle.WHITE_COLOR,
+            }}
+          >
             {t("insert-discription-he")}
           </Text>
           <TextInput
@@ -428,7 +528,7 @@ const AddProductScreen = ({ route }) => {
               padding: 10,
               height: 80,
               width: "100%",
-              opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5
+              opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5,
               // fontFamily: `${getCurrentLang()}-SemiBold`,
             }}
           />
@@ -555,28 +655,31 @@ const AddProductScreen = ({ route }) => {
                 style={{ width: 300, height: 400 }}
                 resizeMode="contain"
               />
-              <View style={{                  opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5
-}}>
-              <TouchableOpacity
-                onPress={onImageSelect}
+              <View
                 style={{
-                  marginTop: 10,
-                  borderWidth: 1,
-                  padding: 10,
-                  backgroundColor: themeStyle.ORANGE_COLOR,
+                  opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5,
                 }}
-                disabled={!userDetailsStore.isAdmin(ROLES.all)}
               >
-                <Text
+                <TouchableOpacity
+                  onPress={onImageSelect}
                   style={{
-                    fontSize: 20,
-                    textAlign: "center",
-                    textDecorationLine: "underline",
+                    marginTop: 10,
+                    borderWidth: 1,
+                    padding: 10,
+                    backgroundColor: themeStyle.ORANGE_COLOR,
                   }}
+                  disabled={!userDetailsStore.isAdmin(ROLES.all)}
                 >
-                  {t("replace-image")}
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      textAlign: "center",
+                      textDecorationLine: "underline",
+                    }}
+                  >
+                    {t("replace-image")}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           )}

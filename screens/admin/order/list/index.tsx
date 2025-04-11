@@ -168,7 +168,6 @@ const OrdersListScreen = ({ route }) => {
     let daysRequired = 14;
     const multiple = storeDataStore.storeData.isOrderLaterSupport ? 1 : -1;
     for (let i = 0; i < daysRequired; i++) {
-      
       let day = moment().add(i * multiple, "days");
       days.push({
         dayId: i,
@@ -230,7 +229,7 @@ const OrdersListScreen = ({ route }) => {
   const getOrders = (pageNum) => {
     if (authStore.isLoggedIn() && selectedDay?.date) {
       setIsloading(true);
-      console.log("selectedDay?.date?.format()",selectedDay?.date?.format())
+      console.log("selectedDay?.date?.format()", selectedDay?.date?.format());
       ordersStore.getOrders(
         userDetailsStore.isAdmin(),
         [selectedStatus],
@@ -249,7 +248,6 @@ const OrdersListScreen = ({ route }) => {
   });
 
   useEffect(() => {
-    
     if (lastJsonMessage && lastJsonMessage.type === "delivery delay") {
       schedulePushNotificationDeliveryDelay({
         data: {
@@ -311,13 +309,12 @@ const OrdersListScreen = ({ route }) => {
       const result = ordersStore.statusCount.find((item) => {
         return item._id == id;
       });
-      if(result){
+      if (result) {
         return result?.count || 0;
       }
       return 0;
     }
   };
-
 
   useEffect(() => {
     // const orderdList = getUpdatedOrderList();
@@ -534,15 +531,17 @@ const OrdersListScreen = ({ route }) => {
             <View style={{ marginBottom: 0 }}>
               <Text style={styles.dateRawText}>{t("collect-date")}</Text>
             </View>
-            {storeDataStore.storeData.isOrderLaterSupport && <Text
-            style={{
-              fontSize: 30,
-              fontFamily: `${getCurrentLang()}-Bold`,
-              color: themeStyle.ERROR_COLOR,
-            }}
-          >
-            {t(moment(order.orderDate).format("dddd"))}
-          </Text>}
+            {storeDataStore.storeData.isOrderLaterSupport && (
+              <Text
+                style={{
+                  fontSize: 30,
+                  fontFamily: `${getCurrentLang()}-Bold`,
+                  color: themeStyle.ERROR_COLOR,
+                }}
+              >
+                {t(moment(order.orderDate).format("dddd"))}
+              </Text>
+            )}
             <Text
               style={{
                 fontSize: 30,
@@ -623,17 +622,21 @@ const OrdersListScreen = ({ route }) => {
                   )}
                 </View>
               </View>
-              {oOrder.receipt_method === SHIPPING_METHODS.shipping &&<View style={{ flexDirection: "row" }}>
-                <View>
-                  <Text style={styles.totalPriceText}>{t("delivery-price")}:</Text>
+              {oOrder.receipt_method === SHIPPING_METHODS.shipping && (
+                <View style={{ flexDirection: "row" }}>
+                  <View>
+                    <Text style={styles.totalPriceText}>
+                      {t("delivery-price")}:
+                    </Text>
+                  </View>
+                  <View>
+                    <Text style={styles.totalPriceText}>
+                      ₪{storeDataStore?.storeData?.delivery_price}{" "}
+                      {order.isShippingPaid && " - مدفوع"}
+                    </Text>
+                  </View>
                 </View>
-                <View>
-                  <Text style={styles.totalPriceText}>
-                    ₪{storeDataStore?.storeData?.delivery_price}{" "}
-                    {order.isShippingPaid && " - مدفوع"}
-                  </Text>
-                </View>
-              </View>}
+              )}
               {order.orderDate && (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <View>
@@ -797,20 +800,17 @@ const OrdersListScreen = ({ route }) => {
     return extras.map((extra) => {
       return (
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={{ marginRight: 2, paddingBottom: 4 }}>+</Text>
-          {extra.value === false && (
-            <Text
-              style={{
-                fontFamily: `${getCurrentLang()}-SemiBold`,
-                marginRight: 2,
-              }}
-            >
-              {t("without")}
-            </Text>
-          )}
-          <Text>
-            {menuStore.translate(extra.name)} {extra.value}
+          <Text
+            style={{
+              fontSize: 20,
+            }}
+          >
+            {t(extra.name)}
+            {" : "}
           </Text>
+          <Text style={{
+              fontSize: 20,
+            }}>{extra.value}{" "}</Text>
         </View>
       );
     });
@@ -834,7 +834,10 @@ const OrdersListScreen = ({ route }) => {
       if (isEmpty(meal)) {
         return;
       }
-      const extrasSorted = sortPizzaExtras(item?.halfOne ? [...item?.halfOne] : undefined, item?.halfTwo ? [...item?.halfTwo] : undefined);
+      const extrasSorted = sortPizzaExtras(
+        item?.halfOne ? [...item?.halfOne] : undefined,
+        item?.halfTwo ? [...item?.halfTwo] : undefined
+      );
 
       return (
         <View style={{ marginTop: 10 }}>
@@ -869,8 +872,7 @@ const OrdersListScreen = ({ route }) => {
                       handleShowImage(`${cdnUrl}${meal.img[0].uri}`)
                     }
                   >
-           
-                             <CustomFastImage
+                    <CustomFastImage
                       style={{
                         width: "100%",
                         height: "100%",
@@ -887,9 +889,6 @@ const OrdersListScreen = ({ route }) => {
                     />
                   </TouchableOpacity>
                 </View>
-                {/* <View style={{ alignItems: "flex-start" }}>
-                    {renderOrderItemsExtras(item.data)}
-                  </View> */}
               </View>
             </View>
             <View
@@ -923,40 +922,22 @@ const OrdersListScreen = ({ route }) => {
               </View>
 
               <View style={{ marginTop: 15 }}>
-              <View
-                                    style={{
-                                      flexDirection: "row",
-                                    }}
-                                  >
-                                    <Text
-                                      style={{
-                                        fontSize: 20,
-                                        color: themeStyle.TEXT_PRIMARY_COLOR,
-                                      }}
-                                    >
-                                      <View style={{marginRight:10}}>
-                                      <Icon
-                                        icon="scale"
-                                        size={20}
-                                        style={{
-                                          color: themeStyle.TEXT_PRIMARY_COLOR,
-                                        }}
-                                      />
-                                      </View>
-                          
-                                      {t("weight")} :{" "}
-                                      {item?.weight}
-                                      <Text
-                                        style={{
-                                          fontSize: 20,
-                                          color: themeStyle.TEXT_PRIMARY_COLOR,
-                                        }}
-                                      >
-                                        {" "}
-                                        {t("gram")}
-                                      </Text>
-                                    </Text>
-                                  </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      color: themeStyle.TEXT_PRIMARY_COLOR,
+                    }}
+                  >
+                    <View style={{ alignItems: "flex-start" }}>
+                      {renderOrderItemsExtras(item.data)}
+                    </View>
+                  </Text>
+                </View>
               </View>
               {/* <DashedLine
               dashLength={5}
@@ -990,7 +971,7 @@ const OrdersListScreen = ({ route }) => {
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginTop:15
+                  marginTop: 15,
                 }}
               >
                 <Text
@@ -1034,7 +1015,6 @@ const OrdersListScreen = ({ route }) => {
                     marginTop: 15,
                     alignItems: "flex-start",
                     width: "100%",
-                    
                   }}
                 >
                   <Text
@@ -1314,7 +1294,9 @@ const OrdersListScreen = ({ route }) => {
           return (
             <TouchableOpacity
               style={{
-                backgroundColor: isSelectedDay ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR,
+                backgroundColor: isSelectedDay
+                  ? themeStyle.PRIMARY_COLOR
+                  : themeStyle.WHITE_COLOR,
                 padding: 10,
                 borderRadius: 10,
                 // borderWidth: isSelectedDay ? 2 : 0,
@@ -1355,7 +1337,13 @@ const OrdersListScreen = ({ route }) => {
                 </View>
               )} */}
               <Text
-                style={{ fontSize: 20, fontFamily: `${getCurrentLang()}-Bold`, color: isSelectedDay ? themeStyle.WHITE_COLOR : themeStyle.PRIMARY_COLOR }}
+                style={{
+                  fontSize: 20,
+                  fontFamily: `${getCurrentLang()}-Bold`,
+                  color: isSelectedDay
+                    ? themeStyle.WHITE_COLOR
+                    : themeStyle.PRIMARY_COLOR,
+                }}
               >
                 {t(day?.dayName)}
               </Text>
@@ -1363,7 +1351,9 @@ const OrdersListScreen = ({ route }) => {
                 style={{
                   fontSize: 18,
                   fontFamily: `${getCurrentLang()}-American-bold`,
-                  color: isSelectedDay ? themeStyle.WHITE_COLOR : themeStyle.PRIMARY_COLOR
+                  color: isSelectedDay
+                    ? themeStyle.WHITE_COLOR
+                    : themeStyle.PRIMARY_COLOR,
                 }}
               >
                 {moment(day.date).format("DD/MM")}
@@ -1392,11 +1382,11 @@ const OrdersListScreen = ({ route }) => {
                 zIndex: 10,
                 top: -10,
                 borderRadius: 20,
-                alignItems:'center',
-                justifyContent:'center'
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Text style={{fontSize: 20,}}>{getStatusCountById("1")}</Text>
+              <Text style={{ fontSize: 20 }}>{getStatusCountById("1")}</Text>
             </View>
             <Button
               text={t("in-progress")}
@@ -1414,21 +1404,21 @@ const OrdersListScreen = ({ route }) => {
           </View>
         </View>
         <View style={{ width: 150 }}>
-        <View
-              style={{
-                position: "absolute",
-                backgroundColor: themeStyle.SECONDARY_COLOR,
-                height: 30,
-                width: 30,
-                zIndex: 10,
-                top: -10,
-                borderRadius: 20,
-                alignItems:'center',
-                justifyContent:'center'
-              }}
-            >
-              <Text style={{fontSize: 20,}}>{getStatusCountById("3")}</Text>
-            </View>
+          <View
+            style={{
+              position: "absolute",
+              backgroundColor: themeStyle.SECONDARY_COLOR,
+              height: 30,
+              width: 30,
+              zIndex: 10,
+              top: -10,
+              borderRadius: 20,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>{getStatusCountById("3")}</Text>
+          </View>
           <Button
             text={t("ارسالية")}
             fontSize={17}
@@ -1444,21 +1434,21 @@ const OrdersListScreen = ({ route }) => {
           />
         </View>
         <View style={{ width: 150 }}>
-        <View
-              style={{
-                position: "absolute",
-                backgroundColor: themeStyle.SECONDARY_COLOR,
-                height: 30,
-                width: 30,
-                zIndex: 10,
-                top: -10,
-                borderRadius: 20,
-                alignItems:'center',
-                justifyContent:'center'
-              }}
-            >
-              <Text style={{fontSize: 20,}}>{getStatusCountById("2")}</Text>
-            </View>
+          <View
+            style={{
+              position: "absolute",
+              backgroundColor: themeStyle.SECONDARY_COLOR,
+              height: 30,
+              width: 30,
+              zIndex: 10,
+              top: -10,
+              borderRadius: 20,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>{getStatusCountById("2")}</Text>
+          </View>
           <Button
             text={t("ready")}
             fontSize={17}
@@ -1475,21 +1465,21 @@ const OrdersListScreen = ({ route }) => {
         </View>
 
         <View style={{ width: 150 }}>
-        <View
-              style={{
-                position: "absolute",
-                backgroundColor: themeStyle.SECONDARY_COLOR,
-                height: 30,
-                width: 30,
-                zIndex: 10,
-                top: -10,
-                borderRadius: 20,
-                alignItems:'center',
-                justifyContent:'center'
-              }}
-            >
-              <Text style={{fontSize: 20,}}>{getStatusCountById("4")}</Text>
-            </View>
+          <View
+            style={{
+              position: "absolute",
+              backgroundColor: themeStyle.SECONDARY_COLOR,
+              height: 30,
+              width: 30,
+              zIndex: 10,
+              top: -10,
+              borderRadius: 20,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 20 }}>{getStatusCountById("4")}</Text>
+          </View>
           <Button
             text={t("canceled")}
             fontSize={17}
