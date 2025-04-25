@@ -81,12 +81,12 @@ const DashboardScreen = () => {
           key: "store-management",
           role: undefined,
         },
-        // {
-        //   title: "calander",
-        //   icon: "calendar",
-        //   key: "calander",
-        //   role: ROLES.all,
-        // },
+        {
+          title: "calander",
+          icon: "calendar",
+          key: "calander",
+          role: ROLES.all,
+        },
         {
           title: "menu",
           icon: "orders-icon",

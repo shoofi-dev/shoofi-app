@@ -15,35 +15,53 @@ import Button from "../../../../components/controls/button/button";
 import { StoreContext } from "../../../../stores";
 import OrderDetailsdDialog from "../../../../components/dialogs/order-details";
 import { getCurrentLang } from "../../../../translations/i18n";
-import { closeHour, openHour } from "../../../../consts/shared";
+import { closeHour, openHour, ORDER_TYPE } from "../../../../consts/shared";
 
 export type TProps = {
   data: any;
 };
 
-const initDeafaulHours = () => {
-  const deafultDayH = {};
-  for (let hour = openHour; hour <= closeHour; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      const formattedHour = hour.toString();
-      const formattedMinute = minute == 0 ? "00" : minute.toString();
-      // const hour2 = i < 10 ? "0" + i : i;
-      deafultDayH[`${formattedHour}:${formattedMinute}`] = {
-        orders: [],
-        isDisabled: false,
-      };
-    }
-  }
-  return deafultDayH;
-};
-const deafultDayHours = initDeafaulHours();
+
 
 const OrderDayItem = ({ data }: TProps) => {
-  const { calanderStore } = useContext(StoreContext);
+  const { calanderStore, ordersStore, storeDataStore } = useContext(StoreContext);
   const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState();
-  const [dayHours, setDayhours] = useState(deafultDayHours);
+  const [dayHours, setDayhours] = useState({});
   const [isLoading, setIsloading] = useState(false);
+
+  const initDeafaulHours = () => {
+    const deafultDayH = {};
+            const endTime =
+          ordersStore.orderType === ORDER_TYPE.now
+            ? storeDataStore.storeData.orderNowEndTime
+            : storeDataStore.storeData.orderLaterEndTime;
+            const closeHour = endTime.split(":")[0];
+            const openHour = storeDataStore.storeData.start.split(":")[0];
+    for (let hour = openHour; hour <= closeHour; hour++) {
+      for (let minute = 0; minute < storeDataStore.storeData.minTimeToOrder; minute += storeDataStore.storeData.minTimeToOrder) {
+        const formattedHour = hour.toString();
+        const formattedMinute = minute == 0 ? "00" : minute.toString();
+        // const hour2 = i < 10 ? "0" + i : i;
+        deafultDayH[`${formattedHour}:${formattedMinute}`] = {
+          orders: [],
+          isDisabled: false,
+        };
+      }
+    }
+    return deafultDayH;
+  };
+  const initData = () => {
+    const deafultDayHours = initDeafaulHours();
+    setDayhours(deafultDayHours);
+    // setIsDayHoursReady(true);
+  };
+
+
+
+  useEffect(() => {
+    initData();
+  }, []);
 
   useEffect(() => {
     // console.log("yy", data?.items)
@@ -60,7 +78,7 @@ const OrderDayItem = ({ data }: TProps) => {
     calanderStore.getDisabledHoursByDate(data?.selectedDate).then((res) => {
       //updateDisabledHours(res);
       if ((data?.items).length == 0) {
-        setDayhours(deafultDayHours);
+        // setDayhours(deafultDayHours);
         initDayOrders(res);
       } else {
         initDayOrders(res);
@@ -182,7 +200,7 @@ const OrderDayItem = ({ data }: TProps) => {
           />
         </View>
       )}
-      {/* <View  style={{  alignSelf: "center", marginVertical: 10, flexDirection:'row', justifyContent:'space-around', width:"100%" }}>
+      <View  style={{  alignSelf: "center", marginVertical: 10, flexDirection:'row', justifyContent:'space-around', width:"100%" }}>
       <View
         style={{flexBasis:"30%"   }}
       >
@@ -211,7 +229,7 @@ const OrderDayItem = ({ data }: TProps) => {
           textColor={themeStyle.WHITE_COLOR}
         />
       </View>
-      </View> */}
+      </View>
 
       <ScrollView>
         <View>
@@ -270,7 +288,7 @@ const OrderDayItem = ({ data }: TProps) => {
                         );
                       })}
                     </View>
-                    {/* <View style={{ flexDirection: "row", marginTop: 15 }}>
+                    <View style={{ flexDirection: "row", marginTop: 15 }}>
                       {!dayHours[key]?.isDisabled && (
                         <View style={{ left: 0, width: 100 }}>
                           <Button
@@ -300,7 +318,7 @@ const OrderDayItem = ({ data }: TProps) => {
                           />
                         </View>
                       )}
-                    </View> */}
+                    </View>
                   </View>
                 </View>
               </View>

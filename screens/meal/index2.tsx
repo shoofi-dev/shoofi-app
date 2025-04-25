@@ -113,24 +113,24 @@ const MealScreen = ({ route }) => {
     navigation.goBack();
   };
 
-  useEffect(() => {
-    if (meal && meal?.data?.extras?.weight) {
-      const mealPrice =
-        meal?.data?.extras?.weight?.price *
-        (meal?.data?.extras?.weight?.value /
-          meal?.data?.extras?.weight.minValue);
+  // useEffect(() => {
+  //   if (meal && meal?.data?.extras?.weight) {
+  //     const mealPrice =
+  //       meal?.data?.extras?.weight?.price *
+  //       (meal?.data?.extras?.weight?.value /
+  //         meal?.data?.extras?.weight.minValue);
 
-      let finalPrice = mealPrice;
+  //     let finalPrice = mealPrice;
 
-      setMeal({
-        ...meal,
-        data: {
-          ...meal.data,
-          price: finalPrice,
-        },
-      });
-    }
-  }, [meal?.data.extras]);
+  //     setMeal({
+  //       ...meal,
+  //       data: {
+  //         ...meal.data,
+  //         price: finalPrice,
+  //       },
+  //     });
+  //   }
+  // }, [meal?.data.extras]);
 
   const updateMeal3 = (value, tag, type) => {
     setMeal({
@@ -152,8 +152,8 @@ const MealScreen = ({ route }) => {
       case "COUNTER":
         extraPrice =
           value > extraData.value
-            ? extraPrice + extraData.price * meal.others.qty
-            : extraPrice - extraData.price * meal.others.qty;
+            ? extraPrice + extraData.price
+            : extraPrice - extraData.price;
         break;
       case "oneChoice":
         if (!extraData.multiple_choice) {
@@ -166,8 +166,8 @@ const MealScreen = ({ route }) => {
           // }
         } else {
           extraPrice = value
-            ? extraPrice + extraData.price * meal.others.qty
-            : extraPrice - extraData.price * meal.others.qty;
+            ? extraPrice + extraData.price
+            : extraPrice - extraData.price;
         }
         break;
       case "CHOICE":
@@ -184,8 +184,8 @@ const MealScreen = ({ route }) => {
           // }
         } else {
           extraPrice = value
-            ? extraPrice + extraData.price * meal.others.count
-            : extraPrice - extraData.price * meal.others.count;
+            ? extraPrice + extraData.price
+            : extraPrice - extraData.price;
         }
         break;
       default:
@@ -198,8 +198,8 @@ const MealScreen = ({ route }) => {
       ...meal,
       data: { ...meal.data, price: meal.data.price + extraPrice },
       extras: {
-        ...meal.data.extras,
-        [extraData.name]: { ...meal.data.extras[extraData.name], value: value },
+        ...meal.data?.extras,
+        [extraData.name]: { ...meal.data.extras[extraData?.name], value: value },
       },
     });
   };
@@ -213,8 +213,8 @@ const MealScreen = ({ route }) => {
           case "COUNTER":
             extraPrice =
               value > tagItem.value
-                ? extraPrice + tagItem.price * meal.others.qty
-                : extraPrice - tagItem.price * meal.others.qty;
+                ? extraPrice + tagItem.price
+                : extraPrice - tagItem.price;
             break;
           case "oneChoice":
             if (!tag.multiple_choice) {
@@ -227,8 +227,8 @@ const MealScreen = ({ route }) => {
               }
             } else {
               extraPrice = value
-                ? extraPrice + tagItem.price * meal.others.qty
-                : extraPrice - tagItem.price * meal.others.qty;
+                ? extraPrice + tagItem.price
+                : extraPrice - tagItem.price;
             }
             break;
           case "CHOICE":
@@ -242,8 +242,8 @@ const MealScreen = ({ route }) => {
               }
             } else {
               extraPrice = value
-                ? extraPrice + tagItem.price * meal.others.qty
-                : extraPrice - tagItem.price * meal.others.qty;
+                ? extraPrice + tagItem.price
+                : extraPrice - tagItem.price;
             }
             break;
           default:
@@ -272,10 +272,11 @@ const MealScreen = ({ route }) => {
       const updatedPrice =
         meal.data.price +
         (value - meal.others.qty) * (meal.data.price / meal.others.qty);
+        console.log("valuevalue",value, key, type)
       setMeal({
         ...meal,
         [type]: { ...meal[type], [key]: value },
-        data: { ...meal.data, price: updatedPrice },
+        // data: { ...meal.data, price: updatedPrice },
       });
     } else {
       setMeal({ ...meal, [type]: { ...meal[type], [key]: value } });
@@ -547,7 +548,41 @@ const MealScreen = ({ route }) => {
                 />
               </View> */}
 
-              <View style={{}}>
+              
+
+              {/* <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 30,
+                }}
+              >
+                <View
+                  style={{
+                    width: "100%",
+                  }}
+                >
+                  {Object.keys(meal.data.extras).map((key) => (
+                    <View style={{ marginBottom: 20, width: "100%" }}>
+                      <GradiantRow
+                        onChangeFn={(value) => {
+                          updateMeal(value, key, meal.data.extras[key].type);
+                        }}
+                        type={meal.data.extras[key].type}
+                        value={meal.data.extras[key].value}
+                        title={key}
+                        options={meal.data.extras[key].options}
+                        minValue={1}
+                      />
+                    </View>
+                  ))}
+                </View>
+              </View> */}
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </ScrollView>
+      <View style={{bottom:150, marginHorizontal:20}}>
                 <View style={{ flexDirection: "column", width: "100%" }}>
                   <Text
                     style={{
@@ -593,39 +628,6 @@ const MealScreen = ({ route }) => {
                   {/* <Text>{meal.others["note"]}</Text> */}
                 </View>
               </View>
-
-              {/* <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 30,
-                }}
-              >
-                <View
-                  style={{
-                    width: "100%",
-                  }}
-                >
-                  {Object.keys(meal.data.extras).map((key) => (
-                    <View style={{ marginBottom: 20, width: "100%" }}>
-                      <GradiantRow
-                        onChangeFn={(value) => {
-                          updateMeal(value, key, meal.data.extras[key].type);
-                        }}
-                        type={meal.data.extras[key].type}
-                        value={meal.data.extras[key].value}
-                        title={key}
-                        options={meal.data.extras[key].options}
-                        minValue={1}
-                      />
-                    </View>
-                  ))}
-                </View>
-              </View> */}
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </ScrollView>
       <Animatable.View
         animation="fadeInUp"
         duration={animationDuration}
@@ -658,7 +660,7 @@ const MealScreen = ({ route }) => {
               }}
             >
               <Counter
-                value={meal.data.others.qty}
+                value={meal.others.qty}
                 minValue={1}
                 onCounterChange={(value) => {
                   updateOthers(value, "qty", "others");
@@ -671,7 +673,7 @@ const MealScreen = ({ route }) => {
             type="number"
           >
             {" "}
-            ₪{meal.data.price * meal.data.others.qty}
+            ₪{meal.data.price * meal.others.qty}
           </Text>
         </View>
         <View style={{ width: "90%", marginTop: 10 }}>

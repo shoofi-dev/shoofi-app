@@ -309,6 +309,7 @@ class MenuStore {
     formData.append("isInStore", product.isInStore.toString());
     product.extras && formData.append("extras", JSON.stringify(product.extras));
     product.others && formData.append("others", JSON.stringify(product.others));
+    product.price && formData.append("price", JSON.stringify(product.price));
 
     // return axios
     //   .post(process.env.REACT_APP_API+"admin/product/insert",formData,{})

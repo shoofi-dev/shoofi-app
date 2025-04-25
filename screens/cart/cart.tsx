@@ -801,7 +801,7 @@ const CartScreen = ({ route }) => {
                                           }}
                                           type="number"
                                         >
-                                          {(getPriceBySize(product) ||
+                                          {(
                                             product.data.price) *
                                             product?.others.qty}
                                         </Text>

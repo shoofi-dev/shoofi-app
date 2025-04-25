@@ -312,7 +312,7 @@ const App = () => {
         .then(async (res) => {
           const notPrintedOrderds = res;
           if (notPrintedOrderds?.length > 0) {
-            setPrintOrdersQueue(notPrintedOrderds);
+            setPrintOrdersQueue(notPrintedOrderds.slice(0, 5));
           } else {
             setIsPrinting(false);
           }

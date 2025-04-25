@@ -53,6 +53,7 @@ const AddProductScreen = ({ route }) => {
   const [selectedProduct, setSelectedProduct] = useState<TProduct>();
   const [image, setImage] = useState();
   const [extrasList, setExtrasList] = useState([]);
+  const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
 
   const initNewProduct = (extrasData) => {
     return {
@@ -74,8 +75,8 @@ const AddProductScreen = ({ route }) => {
       isHidden: false,
       extras: extrasData,
       others: {
-        qty: 1
-      }
+        qty: 1,
+      },
     };
   };
 
@@ -122,6 +123,7 @@ const AddProductScreen = ({ route }) => {
 
   const getExtrasLit = async () => {
     const extrasListRes: any = await menuStore.getExrasList();
+
     setExtrasList(extrasListRes);
     // const extrasData = extrasListRes.map((extra)=>{
     //   if(extra.isActive){
@@ -133,20 +135,54 @@ const AddProductScreen = ({ route }) => {
     //   }
     // })
 
-    const extrasDataFiltered = extrasListRes.filter((extra)=> extra.isActive)
+    const extrasDataFiltered = extrasListRes.filter((extra) => extra.isActive);
     const extrasData = {};
-    extrasDataFiltered.forEach(extra => {
+    extrasDataFiltered.forEach((extra) => {
       extrasData[extra.name] = {
-        ...extra
-      }
+        ...extra,
+      };
     });
-    console.log("extrasData", extrasData);
     setSelectedProduct(initNewProduct(extrasData));
-
   };
   useEffect(() => {
     getExtrasLit();
   }, []);
+
+  const updateExtraField = (extraName, field, value) => {
+    setSelectedProduct((prev) => ({
+      ...prev,
+      extras: {
+        ...prev.extras,
+        [extraName]: {
+          ...prev.extras?.[extraName],
+          [field]: value,
+        },
+      },
+    }));
+  };
+
+  const toggleExtraSelection = (extraName: string) => {
+    setSelectedExtras((prev) => {
+      const isSelected = prev.includes(extraName);
+      const updated = isSelected
+        ? prev.filter((name) => name !== extraName)
+        : [...prev, extraName];
+
+      // Also update isActive in selectedProduct
+      setSelectedProduct((old) => ({
+        ...old,
+        extras: {
+          ...old.extras,
+          [extraName]: {
+            ...old.extras?.[extraName],
+            isActive: !isSelected,
+          },
+        },
+      }));
+
+      return updated;
+    });
+  };
 
   const onImageSelect = async () => {
     const result = await launchImageLibrary({
@@ -210,6 +246,15 @@ const AddProductScreen = ({ route }) => {
   useEffect(() => {
     getMenu();
   }, []);
+
+  const chunkArray = (array: string[], size: number): string[][] => {
+    const result: string[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
+  };
+  
   if (!selectedProduct) {
     return;
   }
@@ -397,7 +442,7 @@ const AddProductScreen = ({ route }) => {
             style={{
               width: "100%",
               marginTop: 40, // justifyContent: "space-around",
-              alignItems:'flex-start'
+              alignItems: "flex-start",
             }}
           >
             <View>
@@ -413,17 +458,73 @@ const AddProductScreen = ({ route }) => {
             </View>
             <View>
               {extrasList?.map((extra) => {
+                const extraData = selectedProduct?.extras?.[extra.name] || {};
+                const isSelected = selectedExtras.includes(extra.name);
+
                 return (
-                  <View>
-                    <Text
+                  <View key={extra._id} style={{ marginBottom: 20 }}>
+                    <TouchableOpacity
                       style={{
-                        fontSize: 18,
+                        flexDirection: "row",
+                        alignItems: "center",
                         marginBottom: 10,
-                        color: themeStyle.WHITE_COLOR,
                       }}
+                      onPress={() => toggleExtraSelection(extra.name)}
                     >
-                      {t(extra.name)}
-                    </Text>
+                      <View
+                        style={{
+                          height: 20,
+                          width: 20,
+                          borderRadius: 4,
+                          borderWidth: 2,
+                          borderColor: themeStyle.WHITE_COLOR,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginRight: 10,
+                        }}
+                      >
+                        {isSelected && (
+                          <View
+                            style={{
+                              height: 12,
+                              width: 12,
+                              borderRadius: 2,
+                              backgroundColor: themeStyle.WHITE_COLOR,
+                            }}
+                          />
+                        )}
+                      </View>
+                      <Text
+                        style={{ color: themeStyle.WHITE_COLOR, fontSize: 18 }}
+                      >
+                        {t(extra.name)}
+                      </Text>
+                    </TouchableOpacity>
+{isSelected && (
+  <View style={{ gap: 15 }}>
+    {chunkArray(
+      ["value", "minValue", "maxValue", "price", "defaultValue", "stepValue"].filter(
+        (field) => extra[field] !== undefined
+      ),
+      3
+    ).map((row, rowIndex) => (
+      <View key={rowIndex} style={{ flexDirection: "row", justifyContent: "space-around",width:"100%", marginBottom:20 }}>
+        {row.map((field) => (
+          <View key={field} style={{ flexBasis: "30%" }}>
+            <InputText
+              label={field}
+              value={extraData?.[field]?.toString() || ""}
+              onChange={(val) => updateExtraField(extra.name, field, Number(val))}
+              keyboardType="numeric"
+              color={themeStyle.WHITE_COLOR}
+            />
+          </View>
+        ))}
+      </View>
+    ))}
+  </View>
+)}
+
                   </View>
                 );
               })}
