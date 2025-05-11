@@ -161,7 +161,7 @@ const MenuScreen = () => {
   
       }).start(()=>{
         Animated.timing(anim.current, {
-          toValue: 25,
+          toValue: 0,
           duration: 600,
           useNativeDriver: true,
     
@@ -216,18 +216,26 @@ const MenuScreen = () => {
   return (
     <View style={{ height: "100%", marginTop: 0 }}>
       <View style={styles.container}>
-        <View
-          style={{ height: "100%", width: "100%",flexDirection:'row', alignItems:'center', justifyContent:'center',  paddingTop:15,
-      }}
+      <ScrollView
+          ref={scrollRef}
+          style={{ height: "100%", width: "100%", }}
+                    horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          decelerationRate={0.5}
         >
           {/* {userDetailsStore.isAdmin() && <View style={{ width: 120, height: 96, flexBasis: 90 }}>
             <AddMenuItem onItemSelect={onAddCategory} />
+                      style={{ height: "100%", width: "100%",flexDirection:'row', alignItems:'center', justifyContent:'center',  paddingTop:15,}}
+
           </View>} */}
           {/* <Animated.View style={{flexDirection:'row'}}> */}
           <Animated.View style={{flexDirection:'row', transform:[{translateX: anim.current}]}}> 
 
        
-          {categoryList.map((category) => (
+          {[...categoryList]
+              .filter((category) => !category.isHidden)
+              .sort((a, b) => a.order - b.order)
+              .map((category) => (
             <View
               style={{
                 width: 100,
@@ -245,7 +253,7 @@ const MenuScreen = () => {
             </View>
           ))}
               </Animated.View>
-        </View>
+        </ScrollView>
       </View>
       {/* <LinearGradient
         colors={[
@@ -275,21 +283,26 @@ const MenuScreen = () => {
                 category.categoryId === tmpSelectedCategory?.categoryId
                   ? "flex"
                   : "none",
-                  marginTop:60,
+                  marginTop:25,
                   
             }}
           >
-                              <Animatable.View
-                     animation="fadeInUp"
-                     duration={animationDuration}
-                     style={{ height: "100%" }}
-                     ref={(ref) => (animationRefs.current[category.categoryId] = ref)}
-   
-                   >
-            <CategoryItemsList
-              productsList={category.products}
-              category={category}
-            />
+            <Animatable.View
+              animation="fadeInUp"
+              duration={animationDuration}
+              style={{ height: "100%" }}
+              ref={(ref) => (animationRefs.current[category.categoryId] = ref)}
+            >
+              {category.products && category.products.length > 0 ? (
+                <CategoryItemsList
+                  productsList={category.products}
+                  category={category}
+                />
+              ) : (
+                <View style={styles.emptyStateContainer}>
+                  <Text style={styles.emptyStateText}>{t("empty-category")}</Text>
+                </View>
+              )}
             </Animatable.View>
           </View>
         ))}
@@ -304,14 +317,15 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     flexDirection: "row",
-    height: 115,
+    height: 135,
     paddingHorizontal: 5,
+    marginTop:10,
     // backgroundColor: "#F1F1F1",
   },
   categoryItem: {},
   iconContainer: {},
   itemsListConainer: {
-    top: 120,
+    top: 100,
     position: "absolute",
     alignSelf: "center",
   },
@@ -322,5 +336,16 @@ const styles = StyleSheet.create({
     top: 10,
     bottom: 0,
     zIndex: -1,
+  },
+  emptyStateContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop:100,
+  },
+  emptyStateText: {
+    fontSize: themeStyle.FONT_SIZE_2XL,
+    color: themeStyle.SECONDARY_COLOR,
+    textAlign: 'center',
+    fontWeight: themeStyle.FONT_WEIGHT_MEDIUM,
   },
 });

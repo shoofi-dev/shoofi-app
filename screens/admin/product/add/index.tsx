@@ -55,8 +55,8 @@ const AddProductScreen = ({ route }) => {
   const [extrasList, setExtrasList] = useState([]);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
 
-  const initNewProduct = (extrasData) => {
-    return {
+  const initNewProduct = (defaultExtrasData, editProductData) => {
+    let defaultProductData = {
       categoryId: "",
       nameAR: "",
       nameHE: "",
@@ -73,10 +73,19 @@ const AddProductScreen = ({ route }) => {
       isInStore: true,
       isWeight: true,
       isHidden: false,
-      extras: extrasData,
+      extras: defaultExtrasData,
       others: {
         qty: 1,
       },
+    };
+    if (editProductData) {
+      defaultProductData = {
+        ...defaultProductData,
+        ...editProductData,
+      };
+    }
+    return {
+      ...defaultProductData,
     };
   };
 
@@ -110,11 +119,10 @@ const AddProductScreen = ({ route }) => {
       setSelectedCategoryId(Number(product.categoryId));
       let tmpProduct = {
         ...product,
-        mediumPrice: product?.extras?.size?.options["medium"]?.price,
-        mediumCount: product?.extras?.size?.options["medium"].count,
-        largePrice: product?.extras?.size?.options["large"]?.price,
-        largeCount: product?.extras?.size?.options["large"]?.count,
       };
+      if (product.extras) {
+        setSelectedExtras(Object.keys(product.extras));
+      }
       setSelectedProduct(tmpProduct);
     } else {
       //setSelectedProduct(initNewProduct());
@@ -142,7 +150,11 @@ const AddProductScreen = ({ route }) => {
         ...extra,
       };
     });
-    setSelectedProduct(initNewProduct(extrasData));
+    let tmpProduct = null;
+    if (product) {
+      tmpProduct = { ...product };
+    }
+    setSelectedProduct(initNewProduct(extrasData, tmpProduct));
   };
   useEffect(() => {
     getExtrasLit();
@@ -159,28 +171,57 @@ const AddProductScreen = ({ route }) => {
         },
       },
     }));
+
+    if (field === "value") {
+      setSelectedProduct((prev) => ({
+        ...prev,
+        extras: {
+          ...prev.extras,
+          [extraName]: {
+            ...prev.extras?.[extraName],
+            ["defaultValue"]: value,
+          },
+        },
+      }));
+    }
   };
 
   const toggleExtraSelection = (extraName: string) => {
     setSelectedExtras((prev) => {
       const isSelected = prev.includes(extraName);
-      const updated = isSelected
+
+      // Update selectedExtras list
+      const updatedSelectedExtras = isSelected
         ? prev.filter((name) => name !== extraName)
         : [...prev, extraName];
 
-      // Also update isActive in selectedProduct
-      setSelectedProduct((old) => ({
-        ...old,
-        extras: {
-          ...old.extras,
-          [extraName]: {
-            ...old.extras?.[extraName],
-            isActive: !isSelected,
-          },
-        },
-      }));
+      // Update selectedProduct.extras
+      setSelectedProduct((old) => {
+        const newExtras = { ...old.extras };
 
-      return updated;
+        if (isSelected) {
+          // If unselected, REMOVE the extra completely
+          delete newExtras[extraName];
+        } else {
+          // If selected, ADD it (you can copy from extrasList if needed)
+          const extraFromList = extrasList.find(
+            (extra) => extra.name === extraName
+          );
+          if (extraFromList) {
+            newExtras[extraName] = {
+              ...extraFromList,
+              isActive: true,
+            };
+          }
+        }
+
+        return {
+          ...old,
+          extras: newExtras,
+        };
+      });
+
+      return updatedSelectedExtras;
     });
   };
 
@@ -254,7 +295,7 @@ const AddProductScreen = ({ route }) => {
     }
     return result;
   };
-  
+
   if (!selectedProduct) {
     return;
   }
@@ -424,14 +465,14 @@ const AddProductScreen = ({ route }) => {
               }}
             >
               <InputText
-                onChange={(e) => handleInputChange(e, "mediumPrice")}
+                onChange={(e) => handleInputChange(e, "price")}
                 label={t("medium-price")}
-                value={selectedProduct?.mediumPrice?.toString()}
+                value={selectedProduct?.price?.toString()}
                 keyboardType="numeric"
                 isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
                 color={themeStyle.WHITE_COLOR}
               />
-              {selectedProduct?.mediumPrice == undefined && (
+              {selectedProduct?.price == undefined && (
                 <Text style={{ color: themeStyle.ERROR_COLOR }}>
                   {t("invalid-medium-price")}
                 </Text>
@@ -500,31 +541,53 @@ const AddProductScreen = ({ route }) => {
                         {t(extra.name)}
                       </Text>
                     </TouchableOpacity>
-{isSelected && (
-  <View style={{ gap: 15 }}>
-    {chunkArray(
-      ["value", "minValue", "maxValue", "price", "defaultValue", "stepValue"].filter(
-        (field) => extra[field] !== undefined
-      ),
-      3
-    ).map((row, rowIndex) => (
-      <View key={rowIndex} style={{ flexDirection: "row", justifyContent: "space-around",width:"100%", marginBottom:20 }}>
-        {row.map((field) => (
-          <View key={field} style={{ flexBasis: "30%" }}>
-            <InputText
-              label={field}
-              value={extraData?.[field]?.toString() || ""}
-              onChange={(val) => updateExtraField(extra.name, field, Number(val))}
-              keyboardType="numeric"
-              color={themeStyle.WHITE_COLOR}
-            />
-          </View>
-        ))}
-      </View>
-    ))}
-  </View>
-)}
-
+                    {isSelected && (
+                      <View style={{paddingHorizontal:10}}>
+                        {chunkArray(
+                          [
+                            "price",
+                            "stepValue",
+                            "value",
+                            "minValue",
+                            "maxValue",
+                          ].filter((field) => extra[field] !== undefined),
+                          2 // now it's 2 in a row
+                        ).map((row, rowIndex) => (
+                          <View
+                            key={rowIndex}
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              width: "100%",
+                              marginBottom: 20,
+                            }}
+                          >
+                            {row.map((field) => (
+                              <View
+                                key={field}
+                                style={{
+                                  flexBasis: "49%", // 🔥 important: ~half the row, with margin between
+                                }}
+                              >
+                                <InputText
+                                  label={t(field)}
+                                  value={extraData?.[field]?.toString() || ""}
+                                  onChange={(val) =>
+                                    updateExtraField(
+                                      extra.name,
+                                      field,
+                                      Number(val)
+                                    )
+                                  }
+                                  keyboardType="numeric"
+                                  color={themeStyle.WHITE_COLOR}
+                                />
+                              </View>
+                            ))}
+                          </View>
+                        ))}
+                      </View>
+                    )}
                   </View>
                 );
               })}
