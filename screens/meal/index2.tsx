@@ -7,6 +7,8 @@ import {
   KeyboardAvoidingView,
   Dimensions,
   Platform,
+  useWindowDimensions,
+  ScaledSize,
 } from "react-native";
 import Text from "../../components/controls/Text";
 import { useNavigation } from "@react-navigation/native";
@@ -50,6 +52,10 @@ const MealScreen = ({ route }) => {
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
   const [confirmActiondDialogText, setConfirmActiondDialogText] = useState("");
+
+  const { width, height } = useWindowDimensions();
+  const isTablet = width >= 768; // Common tablet breakpoint
+  const isPad = width >= 1024; // iPad/larger tablet breakpoint
 
   useEffect(() => {
     let tmpProduct: any = {};
@@ -199,7 +205,10 @@ const MealScreen = ({ route }) => {
       data: { ...meal.data, price: meal.data.price + extraPrice },
       extras: {
         ...meal.data?.extras,
-        [extraData.name]: { ...meal.data.extras[extraData?.name], value: value },
+        [extraData.name]: {
+          ...meal.data.extras[extraData?.name],
+          value: value,
+        },
       },
     });
   };
@@ -272,7 +281,7 @@ const MealScreen = ({ route }) => {
       const updatedPrice =
         meal.data.price +
         (value - meal.others.qty) * (meal.data.price / meal.others.qty);
-        console.log("valuevalue",value, key, type)
+      console.log("valuevalue", value, key, type);
       setMeal({
         ...meal,
         [type]: { ...meal[type], [key]: value },
@@ -344,14 +353,13 @@ const MealScreen = ({ route }) => {
             zIndex: 1,
             position: "absolute",
             right: 0,
-            width: 45,
+            width: isTablet ? 60 : 45,
             padding: 0,
             alignItems: "center",
-            height: 40,
+            height: isTablet ? 55 : 40,
             justifyContent: "center",
             top: 10,
             backgroundColor: "rgba(36, 33, 30, 0.8)",
-
             borderTopStartRadius: 50,
             borderBottomStartRadius: 50,
             alignSelf: "center",
@@ -366,7 +374,12 @@ const MealScreen = ({ route }) => {
             borderWidth: 0,
           }}
         >
-          <Text style={{ color: themeStyle.SECONDARY_COLOR, fontSize: 30 }}>
+          <Text
+            style={{
+              color: themeStyle.SECONDARY_COLOR,
+              fontSize: isTablet ? 40 : 30,
+            }}
+          >
             X
           </Text>
         </TouchableOpacity>
@@ -378,14 +391,13 @@ const MealScreen = ({ route }) => {
               zIndex: 1,
               position: "absolute",
               left: 0,
-              width: 45,
+              width: isTablet ? 60 : 45,
               padding: 9,
               alignItems: "center",
-              height: 45,
+              height: isTablet ? 60 : 45,
               justifyContent: "center",
               top: 10,
               backgroundColor: "rgba(36, 33, 30, 0.8)",
-
               borderTopEndRadius: 50,
               borderBottomEndRadius: 50,
               alignSelf: "center",
@@ -404,7 +416,7 @@ const MealScreen = ({ route }) => {
         >
           <Icon
             icon="grill"
-            size={40}
+            size={isTablet ? 50 : 40}
             style={{ color: themeStyle.SECONDARY_COLOR }}
           />
 
@@ -431,35 +443,43 @@ const MealScreen = ({ route }) => {
         <CustomFastImage
           style={{
             width: "100%",
-            height: 150,
+            height: isTablet ? 300 : 200,
           }}
           source={{ uri: `${cdnUrl}${meal.data.img[0].uri}` }}
           cacheKey={`${APP_NAME}_${meal.data.img[0].uri.split(/[\\/]/).pop()}`}
           resizeMode="contain"
         />
       </View>
-      <ScrollView ref={scrollRef} style={{ height: "100%", marginBottom: 120 }}>
+      <View style={{ alignSelf: "center", marginTop: 10 }}>
+        <Text
+          style={{ fontSize: isTablet ? 30 : 25, color: themeStyle.SECONDARY_COLOR }}
+        >
+          {languageStore.selectedLang === "ar"
+            ? meal.data.nameAR
+            : meal.data.nameHE}
+        </Text>
+      </View>
+      <ScrollView
+        ref={scrollRef}
+        style={{
+          height: "100%",
+          marginBottom: isTablet ? 150 : 120,
+        }}
+      >
         <KeyboardAvoidingView
           keyboardVerticalOffset={100}
-          behavior="position"
+          behavior={"position"}
           style={{ flex: 1 }}
         >
           <View
             style={{
-              width: "100%",
+              width: isTablet ? "80%" : "100%",
               height: "100%",
-
               alignSelf: "center",
-              minHeight:
-                Platform.OS === "ios"
-                  ? "100%"
-                  : Dimensions.get("window").height -
-                    (Dimensions.get("window").height * 70) / 100,
-              padding: 20,
+              minHeight: height - (height * 70) / 100,
+              padding: isTablet ? 30 : 20,
             }}
           >
-
-
             <View
               style={{
                 width: "100%",
@@ -548,8 +568,6 @@ const MealScreen = ({ route }) => {
                 />
               </View> */}
 
-              
-
               {/* <View
                 style={{
                   flexDirection: "row",
@@ -582,52 +600,58 @@ const MealScreen = ({ route }) => {
           </View>
         </KeyboardAvoidingView>
       </ScrollView>
-      <View style={{bottom:150, marginHorizontal:20}}>
-                <View style={{ flexDirection: "column", width: "100%" }}>
-                  <Text
-                    style={{
-                      marginBottom: 5,
-                      textAlign: "center",
-                      fontSize: 26,
-                      color: themeStyle.SECONDARY_COLOR,
-                    }}
-                  >
-                    {t("insert-note")}
-                  </Text>
+      <View
+        style={{
+          bottom: isTablet ? 180 : 150,
+          marginHorizontal: isTablet ? 40 : 20,
+          width: isTablet ? "60%" : "90%",
+          alignSelf: "center",
+        }}
+      >
+        <View style={{ flexDirection: "column", width: "100%" }}>
+          <Text
+            style={{
+              marginBottom: 5,
+              textAlign: "center",
+              fontSize: isTablet ? 32 : 26,
+              color: themeStyle.SECONDARY_COLOR,
+            }}
+          >
+            {t("insert-note")}
+          </Text>
 
-                  <TextInput
-                    onChange={(e) => {
-                      updateOthers(e.nativeEvent.text, "note", "others");
-                    }}
-                    value={meal.others["note"]}
-                    placeholderTextColor={themeStyle.GRAY_600}
-                    multiline={true}
-                    selectionColor="black"
-                    underlineColorAndroid="transparent"
-                    numberOfLines={5}
-                    style={{
-                      backgroundColor: "white",
-                      textAlignVertical: "top",
-                      textAlign: "right",
-                      padding: 10,
-                      height: 80,
-                      width: "100%",
-                      borderRadius: 10,
-                      shadowColor: themeStyle.SECONDARY_COLOR,
-                      shadowOffset: {
-                        width: 2,
-                        height: 2,
-                      },
-                      shadowOpacity: 1,
-                      shadowRadius: 2,
-                      alignItems: "center",
-                      borderWidth: 0,
-                      // fontFamily: `${getCurrentLang()}-SemiBold`,
-                    }}
-                  />
-                  {/* <Text>{meal.others["note"]}</Text> */}
-                </View>
-              </View>
+          <TextInput
+            onChange={(e) => {
+              updateOthers(e.nativeEvent.text, "note", "others");
+            }}
+            value={meal.others["note"]}
+            placeholderTextColor={themeStyle.GRAY_600}
+            multiline={true}
+            selectionColor="black"
+            underlineColorAndroid="transparent"
+            numberOfLines={5}
+            style={{
+              backgroundColor: "white",
+              textAlignVertical: "top",
+              textAlign: "right",
+              padding: isTablet ? 15 : 10,
+              height: isTablet ? 100 : 80,
+              width: "100%",
+              borderRadius: 10,
+              shadowColor: themeStyle.SECONDARY_COLOR,
+              shadowOffset: {
+                width: 2,
+                height: 2,
+              },
+              shadowOpacity: 1,
+              shadowRadius: 2,
+              alignItems: "center",
+              borderWidth: 0,
+              fontSize: isTablet ? 18 : 16,
+            }}
+          />
+        </View>
+      </View>
       <Animatable.View
         animation="fadeInUp"
         duration={animationDuration}
@@ -637,8 +661,7 @@ const MealScreen = ({ route }) => {
           left: 0,
           right: 0,
           backgroundColor: themeStyle.SECONDARY_COLOR,
-
-          padding: 20,
+          padding: isTablet ? 30 : 20,
           borderTopStartRadius: 30,
           borderTopEndRadius: 30,
           shadowColor: themeStyle.SECONDARY_COLOR,
@@ -650,37 +673,47 @@ const MealScreen = ({ route }) => {
           shadowRadius: 10,
           alignItems: "center",
           borderWidth: 0,
-          height: 130,
+          height: isTablet ? 160 : 130,
         }}
       >
-        <View style={{flexDirection:'row', justifyContent:'space-around', width:"70%", alignItems:'center'}}>
         <View
-              style={{
-                alignSelf: "center",
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+            width: isTablet ? "50%" : "70%",
+            alignItems: "center",
+          }}
+        >
+          <View style={{ alignSelf: "center" }}>
+            <Counter
+              value={meal.others.qty}
+              minValue={1}
+              onCounterChange={(value) => {
+                updateOthers(value, "qty", "others");
               }}
-            >
-              <Counter
-                value={meal.others.qty}
-                minValue={1}
-                onCounterChange={(value) => {
-                  updateOthers(value, "qty", "others");
-                }}
-                variant={"colors"}
-              />
-            </View>
+              variant={"colors"}
+            />
+          </View>
           <Text
-            style={{ fontSize: 22, color: themeStyle.WHITE_COLOR }}
+            style={{
+              fontSize: isTablet ? 28 : 22,
+              color: themeStyle.WHITE_COLOR,
+            }}
             type="number"
           >
-            {" "}
             ₪{meal.data.price * meal.others.qty}
           </Text>
         </View>
-        <View style={{ width: "90%", marginTop: 10 }}>
+        <View
+          style={{
+            width: isTablet ? "60%" : "90%",
+            marginTop: isTablet ? 15 : 10,
+          }}
+        >
           <Button
             text={isEdit ? t("save") : t("add-to-cart")}
             icon="shopping-bag-plus"
-            fontSize={17}
+            fontSize={isTablet ? 22 : 17}
             onClickFn={isEdit ? onUpdateCartProduct : onAddToCart}
             textColor={themeStyle.WHITE_COLOR}
             fontFamily={`${getCurrentLang()}-Bold`}
