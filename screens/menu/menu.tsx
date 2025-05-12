@@ -32,6 +32,7 @@ import { useNavigation } from "@react-navigation/native";
 import _useWebSocketUrl from "../../hooks/use-web-socket-url";
 import { animationDuration } from "../../consts/shared";
 import * as Animatable from "react-native-animatable";
+import { useResponsive } from "../../hooks/useResponsive";
 
 export function toBase64(input) {
   return Buffer.from(input, "utf-8").toString("base64");
@@ -44,6 +45,7 @@ export function fromBase64(encoded) {
 const MenuScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const { isTablet, isPad, scale, fontSize, height } = useResponsive();
 
   const scrollRef = useRef();
   const animationRefs = useRef({});
@@ -215,7 +217,7 @@ const MenuScreen = () => {
   }
   return (
     <View style={{ height: "100%", marginTop: 0 }}>
-      <View style={styles.container}>
+      <View style={[styles.container, { marginTop: isTablet ? 40 : 10 }]}>
       <ScrollView
           ref={scrollRef}
           style={{ height: "100%", width: "100%", }}
@@ -319,7 +321,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 135,
     paddingHorizontal: 5,
-    marginTop:10,
     // backgroundColor: "#F1F1F1",
   },
   categoryItem: {},

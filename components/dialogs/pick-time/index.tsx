@@ -15,9 +15,11 @@ import { useNavigation } from "@react-navigation/native";
 import { StoreContext } from "../../../stores";
 import { cartStore } from "../../../stores/cart";
 import { storeDataStore } from "../../../stores/store";
+import { useResponsive } from "../../../hooks/useResponsive";
 // import ExpandableCalendarScreen from "./clander-container";
 
 export default function PickTimeCMP() {
+  const { isTablet, isPad, scale, fontSize, height } = useResponsive();
 
   const navigation = useNavigation();
   const { cartStore, ordersStore } = useContext(StoreContext);
@@ -48,7 +50,7 @@ export default function PickTimeCMP() {
     }
   };
   return (
-    <View style={{ marginTop: 10 }}>
+    <View style={{ marginTop: isTablet ? 30 : 10 }}>
       <CalanderContainerUser
         handleSelectedDate={handleSelectedDate}
         minDeltaMinutes={minDeltaMinutes}

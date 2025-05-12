@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useContext } from "react";
 import { observer } from "mobx-react";
 import {
@@ -39,6 +40,7 @@ import {
 } from "../../consts/shared";
 import CustomFastImage from "../../components/custom-fast-image";
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
+import { useResponsive } from "../../hooks/useResponsive";
 const barcodeString = "https://onelink.to/zky772";
 
 const hideExtras = ["counter"];
@@ -56,6 +58,14 @@ const icons = {
   ccOff: require("../../assets/pngs/card-off.png"),
 };
 
+type RootStackParamList = {
+  homeScreen: undefined;
+  meal: { index: number };
+  cart: undefined;
+  'pick-time-screen': undefined;
+  'checkout-screen': undefined;
+};
+
 const CartScreen = ({ route }) => {
   const { t } = useTranslation();
 
@@ -68,7 +78,8 @@ const CartScreen = ({ route }) => {
     adminCustomerStore,
     menuStore,
   } = useContext(StoreContext);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { isTablet, scale, fontSize } = useResponsive();
 
   const [itemsPrice, setItemsPrice] = React.useState(0);
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
@@ -355,22 +366,23 @@ const CartScreen = ({ route }) => {
         end={{ x: 1, y: 1 }}
         style={[styles.background]}
       /> */}
-      <ScrollView style={{ height: "100%", marginBottom: 110 }}>
+      <ScrollView style={{ height: "100%", marginBottom: scale(110) }}>
         <View style={{ ...styles.container }}>
-          <View style={{ paddingHorizontal: 20 }}>
+          <View style={{ paddingHorizontal: scale(20) }}>
             <View style={styles.backContainer}>
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
                   backgroundColor: "rgba(36, 33, 30, 0.8)",
-                  paddingHorizontal: 5,
+                  paddingHorizontal: scale(10),
                   borderRadius: 10,
+                  padding: scale(8),
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: fontSize(20),
                     color: themeStyle.SECONDARY_COLOR,
                   }}
                 >
@@ -378,7 +390,7 @@ const CartScreen = ({ route }) => {
                 </Text>
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: fontSize(20),
                     color: themeStyle.SECONDARY_COLOR,
                     fontFamily: `${getCurrentLang()}-American-bold`,
                   }}
@@ -388,14 +400,14 @@ const CartScreen = ({ route }) => {
               </View>
               <View
                 style={{
-                  width: 40,
-                  height: 35,
+                  width: scale(40),
+                  height: scale(35),
                   alignItems: "center",
                   justifyContent: "center",
-                  marginVertical: 10,
-                  marginLeft: 10,
+                  marginVertical: scale(10),
+                  marginLeft: scale(10),
                   backgroundColor: "rgba(36, 33, 30, 0.8)",
-                  paddingHorizontal: 5,
+                  paddingHorizontal: scale(5),
                   borderRadius: 10,
                 }}
               >
@@ -403,33 +415,20 @@ const CartScreen = ({ route }) => {
               </View>
             </View>
 
-            <View style={{ marginTop: 10 }}>
-              {/* <LinearGradient
-                colors={[
-                  "rgba(239, 238, 238, 0)",
-                  "rgba(239, 238, 238, 0.6)",
-
-                  "rgba(239, 238, 238, 0.6)",
-                  "rgba(239, 238, 238, 0.6)",
-
-                  "rgba(239, 238, 238, 0)",
-                ]}
-                start={{ x: 1, y: 0 }}
-                end={{ x: 0, y: 0 }}
-                style={[
-                  styles.background,
-                  { marginTop: 30, marginBottom: -30 },
-                ]}
-              /> */}
+            <View style={{ 
+              marginTop: scale(20), 
+              width: isTablet ? "80%" : "100%", 
+              alignSelf: "center",
+              paddingBottom: scale(20)
+            }}>
               {cartStore.cartItems.map((product, index) => {
                 const moveBy = (1 - 1 / 1) * index;
-
                 return (
                   product && (
                     <Animated.View
                       style={{
-                        borderRadius: 20,
-                        marginTop: index != 0 ? 15 : 0,
+                        borderRadius: scale(20),
+                        marginTop: index != 0 ? scale(20) : 0,
                         shadowColor: "black",
                         shadowOffset: {
                           width: 0,
@@ -440,17 +439,11 @@ const CartScreen = ({ route }) => {
                         elevation: 5,
                         borderWidth: 0,
                         backgroundColor: "transparent",
-
+                        overflow: "hidden",
                         opacity: value.current.interpolate({
-                          inputRange:
-                            index === 0
-                              ? [-1, 0, 1, 2]
-                              : [
-                                  index - 1 - moveBy,
-                                  index - moveBy,
-                                  index + 1 - moveBy,
-                                  index + 2 - moveBy,
-                                ],
+                          inputRange: index === 0
+                            ? [-1, 0, 1, 2]
+                            : [index - 1 - moveBy, index - moveBy, index + 1 - moveBy, index + 2 - moveBy],
                           outputRange: [0, 0, 1, 1],
                           extrapolate: "clamp",
                         }),
@@ -458,458 +451,213 @@ const CartScreen = ({ route }) => {
                     >
                       <Animated.View
                         style={[
-                          getProductIndexId(product, index) === itemToRemove
-                            ? animatedStyle
-                            : null,
+                          getProductIndexId(product, index) === itemToRemove ? animatedStyle : null,
                           {
                             backgroundColor: themeStyle.SECONDARY_COLOR,
-                            borderRadius: 20,
+                            borderRadius: scale(20),
+                            padding: 0,
+                            position: 'relative',
                           },
                         ]}
                       >
-                        {/* <LinearGradient
-                          colors={[
-                            "rgba(207, 207, 207, 0.4)",
-                            "rgba(246,246,247, 0.8)",
-                            "rgba(246,246,247, 0.8)",
-                            "rgba(207, 207, 207, 0.4)",
-                          ]}
-                          start={{ x: 1, y: 0 }}
-                          end={{ x: 1, y: 1 }}
-                          style={[styles.background]}
-                        /> */}
                         <View
                           ref={itemRefs[getProductIndexId(product, index)]}
                           style={{
-                            // borderColor: "#707070",
-                            // borderColor: "rgba(112,112,112,0.1)",
-                            // shadowColor: "#C19A6B",
-                            // shadowOffset: {
-                            //   width: 0,
-                            //   height: 2,
-                            // },
-                            // shadowOpacity: 0.1,
-                            // shadowRadius: 3.84,
-                            // elevation: 8,
-                            borderRadius: 20,
-                            overflow: "hidden",
-                            // backgroundColor: "#c1bab3"
-                            // "radial-gradient(circle, rgba(121,117,119,0.5) 100%, rgba(88,88,88,0.5) 100%)",
+                            borderRadius: scale(20),
+                            padding: scale(15),
                           }}
                           key={getProductIndexId(product, index)}
                         >
-                          {/* <View
-                                style={{
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <View
-                                  style={{
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <Text
-                                    style={{
-                                      textAlign: "left",
-                                      fontFamily: `${getCurrentLang()}-Bold`,
-                                      fontSize: 20,
-                                      marginLeft: isBcoinProduct(product)
-                                        ? 10
-                                        : 0,
-                                      color: themeStyle.BROWN_700,
-                                    }}
-                                  >
-                                    {
-                                      product.data.name
-                                    }
-                                  </Text>
-                                </View>
-                              </View> */}
                           <View
                             style={{
                               flexDirection: "row",
-                              alignItems: "center",
+                              alignItems: "flex-start",
                               justifyContent: "space-between",
                             }}
                           >
+                            {/* Product Image */}
                             <View
                               style={{
-                                width: "100%",
-                                flexDirection: "row",
-                                paddingTop: 5,
+                                width: scale(100),
+                                height: scale(100),
+                                borderRadius: scale(15),
+                                overflow: "hidden",
+                                shadowColor: "black",
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.9,
+                                shadowRadius: 6,
+                                elevation: 5,
                               }}
                             >
-                              <View
+                              <CustomFastImage
                                 style={{
-                                  width: 80,
-                                  height: 80,
-                                  padding: 5,
-                                  shadowColor: "black",
-                                  shadowOffset: {
-                                    width: 0,
-                                    height: 2,
-                                  },
-                                  shadowOpacity: 0.9,
-                                  shadowRadius: 6,
-                                  elevation: 0,
-                                  borderWidth: 0,
+                                  width: "100%",
+                                  height: "100%",
+                                  borderRadius: scale(15),
                                 }}
-                              >
-                                <CustomFastImage
-                                  style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    marginLeft: 0,
-                                    borderRadius: 20,
-                                  }}
-                                  source={{
-                                    uri: `${cdnUrl}${product.data.img[0].uri}`,
-                                  }}
-                                  cacheKey={`${APP_NAME}_${product.data.img[0].uri
-                                    .split(/[\\/]/)
-                                    .pop()}`}
-                                />
-                              </View>
-                              <View
-                                style={{
-                                  flexDirection: "row",
-                                  marginLeft: 5,
-                                  marginTop: 10,
-                                  marginBottom: 10,
+                                source={{
+                                  uri: `${cdnUrl}${product.data.img[0].uri}`,
                                 }}
-                              >
-                                <View
+                                cacheKey={`${APP_NAME}_${product.data.img[0].uri.split(/[\\/]/).pop()}`}
+                              />
+                            </View>
+
+                            {/* Product Details */}
+                            <View style={{ 
+                              flex: 1, 
+                              marginLeft: scale(15),
+                              paddingRight: scale(45),
+                            }}>
+                              <View style={{
+                                borderColor: themeStyle.PRIMARY_COLOR,
+                                alignItems: "center",
+                                borderTopWidth: 1,
+                                borderBottomWidth: 1,
+                                justifyContent: "center",
+                                paddingVertical: scale(8),
+                                marginBottom: scale(10),
+                                marginRight: scale(20),
+                              }}>
+                                <Text
                                   style={{
-                                    marginTop: -5,
-                                    flexDirection: "column",
-                                    justifyContent: "space-between",
-                                    flexBasis: "65%",
+                                    fontSize: fontSize(18),
+                                    color: themeStyle.TEXT_PRIMARY_COLOR,
+                                    fontFamily: `${getCurrentLang()}-Bold`,
+                                    textAlign: "center",
                                   }}
                                 >
-                                  <View
-                                    style={{
-                                      borderColor: themeStyle.PRIMARY_COLOR,
-                                      alignItems: "center",
-                                      borderTopWidth: 1,
-                                      borderBottomWidth: 1,
-                                      justifyContent: "center",
-                                      paddingTop: 8,
-                                      paddingBottom: 5,
-                                    }}
-                                  >
-                                    <Text
-                                      style={{
-                                        textAlign: "left",
-                                        fontSize: 18,
-                                        color: themeStyle.TEXT_PRIMARY_COLOR,
-                                        fontFamily: `${getCurrentLang()}-Bold`,
-                                      }}
-                                    >
-                                      {languageStore.selectedLang === "ar"
-                                        ? product.data.nameAR
-                                        : product.data.nameHE}
-                                    </Text>
-                                  </View>
-                                  {/* 
-                                  <View
-                                    style={{
-                                      flexDirection: "row",
-                                      justifyContent: "space-between",
-                                      marginTop: 15,
-                                    }}
-                                  ></View>
-                                  <View
-                                    style={{
-                                      flexDirection: "row",
-                                    }}
-                                  >
-                                    <Text
-                                      style={{
-                                        fontSize: 18,
-                                        color: themeStyle.TEXT_PRIMARY_COLOR,
-                                      }}
-                                    >
-                                      <View style={{ marginRight: 10 }}>
-                                        <Icon
-                                          icon="scale"
-                                          size={20}
-                                          style={{
-                                            color:
-                                              themeStyle.TEXT_PRIMARY_COLOR,
-                                          }}
-                                        />
-                                      </View>
-                                      {t("weight")} :{" "}
-                                      {t(product?.data?.extras?.weight?.value)}
-                                      <Text
-                                        style={{
-                                          fontSize: 16,
-                                          color: themeStyle.TEXT_PRIMARY_COLOR,
-                                        }}
-                                      >
-                                        {" "}
-                                        {t("gram")}
-                                      </Text>
-                                    </Text>
-                                  </View> */}
+                                  {languageStore.selectedLang === "ar"
+                                    ? product.data.nameAR
+                                    : product.data.nameHE}
+                                </Text>
+                              </View>
 
-                                  <View
-                                    style={{ marginTop: 15, marginLeft: 5 }}
-                                  >
-                                    {Object.keys(product?.data?.extras).map(
-                                      (key) => {
-                                        if (
-                                          (product?.data?.extras[key].value ===
-                                            product?.data?.extras[key]
-                                              .defaultValue ||
-                                          hideExtras.indexOf(
-                                            product?.data?.extras[key]
-                                              .categoryId
-                                          ) > -1) && !product?.data?.extras[key].forceShowInCart
-                                        ) {
-                                          return null;
-                                        }
-                                        return (
-                                          <View
-                                            style={{
-                                              flexDirection: "row",
-                                              alignItems: "center",
-                                            }}
-                                          >
-                                            <Text
-                                              style={{
-                                                fontSize: 18,
-                                              }}
-                                            >{"- "}
-                                              {t(
-                                                product?.data?.extras[key].name
-                                              )}
-                                            </Text>
-
-                                            <Text
-                                              style={{
-                                                fontSize: 18,
-                                              }}
-                                            >
-                                              {product?.data?.extras[
-                                                key
-                                              ].value?.toString()}
-                                              {" :"}
-                                            </Text>
-                                          </View>
-                                        );
-                                      }
-                                    )}
-                                  </View>
-
-                                  {product?.others?.note && (
-                                    <View
-                                      style={{
-                                        flexDirection: "row",
-                                        marginTop: 15,
-                                      }}
-                                    >
-                                      <View>
-                                        <Icon
-                                          icon="file-text2"
-                                          size={20}
-                                          style={{
-                                            color: themeStyle.PRIMARY_COLOR,
-                                            marginRight: 10,
-                                          }}
-                                        />
-                                      </View>
-
-                                      <View
-                                        style={{
-                                          // flexDirection: "row",
-                                          alignSelf: "flex-start",
-                                        }}
-                                      >
-                                        <Text
-                                          style={{
-                                            fontSize: 18,
-                                            alignSelf: "flex-start",
-                                          }}
-                                        >
-                                          {t("note")}:
-                                        </Text>
-                                        <Text
-                                          style={{
-                                            fontSize: 18,
-                                            color:
-                                              themeStyle.TEXT_PRIMARY_COLOR,
-                                            alignSelf: "flex-start",
-                                          }}
-                                        >
-                                          {product.others.note}
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  )}
-
+                              {/* Extras */}
+                              {Object.keys(product?.data?.extras).map((key) => {
+                                if (
+                                  (product?.data?.extras[key].value === product?.data?.extras[key].defaultValue ||
+                                    hideExtras.indexOf(product?.data?.extras[key].categoryId) > -1) &&
+                                  !product?.data?.extras[key].forceShowInCart
+                                ) {
+                                  return null;
+                                }
+                                return (
                                   <View
                                     style={{
                                       flexDirection: "row",
                                       alignItems: "center",
-                                      justifyContent: "center",
-                                      marginTop: 25,
+                                      marginBottom: scale(5),
                                     }}
                                   >
-                                    <View
-                                      style={{
-                                        flexDirection: "row",
-                                      }}
-                                    >
-                                      <View style={{}}>
-                                        <Counter
-                                          value={
-                                            product?.others.qty
-                                          }
-                                          minValue={1}
-                                          onCounterChange={(value) => {
-                                            onCounterChange(
-                                              product,
-                                              index,
-                                              value
-                                            );
-                                          }}
-                                          variant={"colors"}
-                                          size={30}
-                                        />
-                                      </View>
-                                    </View>
-                                    <View
-                                      style={{
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        marginLeft: 15,
-                                      }}
-                                    >
-                                      <View
-                                        style={{
-                                          flexDirection: "row",
-                                          alignItems: "center",
-                                        }}
-                                      >
-                                        <Text
-                                          style={{
-                                            fontSize: 20,
-                                            fontWeight: "bold",
-                                            color: themeStyle.PRIMARY_COLOR,
-                                          }}
-                                          type="number"
-                                        >
-                                          {(
-                                            product.data.price) *
-                                            product?.others.qty}
-                                        </Text>
-                                        <Text
-                                          style={{
-                                            fontWeight: "bold",
-                                            fontSize: 17,
-                                            color: themeStyle.PRIMARY_COLOR,
-                                          }}
-                                        >
-                                          ₪
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </View>
-
-                                  {/* {product.extras &&
-                                      Object.keys(product.extras).map(
-                                        (key, extraIndex) => {
-                                          if (key === "orderList") {
-                                            return;
-                                          }
-                                          const filteredExtras = filterMealExtras(
-                                            product.extras[key]
-                                          );
-                                          return (
-                                            filteredExtras.length > 0 &&
-                                            renderExtras(
-                                              filteredExtras,
-                                              Object.keys(product.extras)
-                                                .length,
-                                              key
-                                            )
-                                          );
-                                        }
-                                      )} */}
-                                </View>
-                              </View>
-                              <View
-                                style={{
-                                  position: "absolute",
-                                  right: -10,
-                                  top: -10,
-                                }}
-                              >
-                                <View>
-                                  <TouchableOpacity
-                                    style={{
-                                      backgroundColor: themeStyle.ERROR_COLOR,
-                                      height: 40,
-                                      borderRadius: 10,
-                                      width: 40,
-                                      alignItems: "flex-end",
-                                    }}
-                                    onPress={() => {
-                                      onRemoveProduct(product, index);
-                                    }}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: themeStyle.WHITE_COLOR,
-                                        right: 20,
-                                        top: 15,
-                                        fontSize: 18,
-                                        fontWeight: "900",
-                                        fontFamily: `${getCurrentLang()}-GS-Black-Bold`,
-                                      }}
-                                    >
-                                      X
+                                    <Text style={{ fontSize: fontSize(16) }}>
+                                      {t(product?.data?.extras[key].name)}
+                                      {": "}
+                                      {product?.data?.extras[key].value?.toString()}
                                     </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              </View>
+                                  </View>
+                                );
+                              })}
 
-                              <View
-                                style={{
-                                  position: "absolute",
-                                  right: -14,
-                                  bottom: -8,
-                                }}
-                              >
-                                <View>
-                                  <TouchableOpacity
-                                    style={{
-                                      backgroundColor: themeStyle.SUCCESS_COLOR,
-                                      height: 40,
-                                      borderRadius: 10,
-                                      width: 45,
-                                      alignItems: "flex-end",
-                                    }}
-                                    onPress={() => {
-                                      //onRemoveProduct(product, index);
-                                      onEditProduct(index);
-                                    }}
-                                  >
-                                    <Icon
-                                      icon="pencil"
-                                      size={15}
-                                      style={{
-                                        right: 22,
-                                        top: 8,
-                                        color: themeStyle.WHITE_COLOR,
-                                      }}
-                                    />
-                                  </TouchableOpacity>
+                              {/* Note */}
+                              {product?.others?.note && (
+                                <View style={{ marginTop: scale(10) }}>
+                                  <Text style={{ fontSize: fontSize(16) }}>
+                                    {t("note")}: {product.others.note}
+                                  </Text>
                                 </View>
+                              )}
+
+                              {/* Counter and Price */}
+                              <View style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                marginTop: scale(15),
+                              }}>
+                                <Counter
+                                  value={product?.others.qty}
+                                  minValue={1}
+                                  onCounterChange={(value) => onCounterChange(product, index, value)}
+                                  variant="colors"
+                                  size={scale(30)}
+                                />
+                                <Text
+                                  style={{
+                                    fontSize: fontSize(20),
+                                    fontWeight: "bold",
+                                    color: themeStyle.PRIMARY_COLOR,
+                                  }}
+                                >
+                                  ₪{product.data.price * product?.others.qty}
+                                </Text>
                               </View>
                             </View>
+                          </View>
+                        </View>
+
+                        {/* Action Buttons - Moved outside the padded container */}
+                        <View style={{
+                          position: "absolute",
+                          right: -10,
+                          top: -10,
+                        }}>
+                          <View>
+                            <TouchableOpacity
+                              style={{
+                                backgroundColor: themeStyle.ERROR_COLOR,
+                                height: 40,
+                                borderRadius: 10,
+                                width: 40,
+                                alignItems: "flex-end",
+                              }}
+                              onPress={() => {
+                                onRemoveProduct(product, index);
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: themeStyle.WHITE_COLOR,
+                                  right: 20,
+                                  top: 15,
+                                  fontSize: 18,
+                                  fontWeight: "900",
+                                  fontFamily: `${getCurrentLang()}-GS-Black-Bold`,
+                                }}
+                              >
+                                X
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+
+                        <View style={{
+                          position: "absolute",
+                          right: -14,
+                          bottom: -8,
+                        }}>
+                          <View>
+                            <TouchableOpacity
+                              style={{
+                                backgroundColor: themeStyle.SUCCESS_COLOR,
+                                height: 40,
+                                borderRadius: 10,
+                                width: 45,
+                                alignItems: "flex-end",
+                              }}
+                              onPress={() => {
+                                onEditProduct(index);
+                              }}
+                            >
+                              <Icon
+                                icon="pencil"
+                                size={15}
+                                style={{
+                                  right: 22,
+                                  top: 8,
+                                  color: themeStyle.WHITE_COLOR,
+                                }}
+                              />
+                            </TouchableOpacity>
                           </View>
                         </View>
                       </Animated.View>
@@ -921,6 +669,8 @@ const CartScreen = ({ route }) => {
           </View>
         </View>
       </ScrollView>
+
+      {/* Bottom Bar */}
       <Animatable.View
         animation="fadeInUp"
         duration={animationDuration}
@@ -932,29 +682,22 @@ const CartScreen = ({ route }) => {
           backgroundColor: themeStyle.SECONDARY_COLOR,
           flexDirection: "row",
           justifyContent: "space-between",
-          padding: 20,
-          borderTopStartRadius: 30,
-          borderTopEndRadius: 30,
+          padding: scale(20),
+          borderTopStartRadius: scale(30),
+          borderTopEndRadius: scale(30),
           shadowColor: themeStyle.PRIMARY_COLOR,
-          shadowOffset: {
-            width: 2,
-            height: 2,
-          },
+          shadowOffset: { width: 2, height: 2 },
           shadowOpacity: 1,
           shadowRadius: 15,
           alignItems: "center",
-          height: 100,
+          height: scale(100),
         }}
       >
-        <View style={{ width: "50%" }}>
+        <View style={{ width: isTablet ? "40%" : "50%" }}>
           <Button
             onClickFn={handleSubmintButton}
-            text={
-              storeDataStore.storeData.isOrderLaterSupport
-                ? t("pick-time")
-                : t("continue-to-pay")
-            }
-            fontSize={18}
+            text={storeDataStore.storeData.isOrderLaterSupport ? t("pick-time") : t("continue-to-pay")}
+            fontSize={fontSize(18)}
             textColor={theme.WHITE_COLOR}
             borderRadious={50}
             textPadding={0}
@@ -962,25 +705,20 @@ const CartScreen = ({ route }) => {
         </View>
 
         <View style={{ alignItems: "center", justifyContent: "center" }}>
-          <View>
-            <Text style={{ fontSize: 18, color: themeStyle.PRIMARY_COLOR }}>
-              {t("price")}
-            </Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 22 }} type="number">
-              ₪{itemsPrice}
-            </Text>
-          </View>
+          <Text style={{ fontSize: fontSize(18), color: themeStyle.PRIMARY_COLOR }}>
+            {t("price")}
+          </Text>
+          <Text style={{ fontSize: fontSize(22) }} type="number">
+            ₪{itemsPrice}
+          </Text>
         </View>
       </Animatable.View>
+
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}
         isOpen={isOpenConfirmActiondDialog}
         text={"pick-time-note"}
         positiveText="ok"
-        isLoop
-        isAnimateText
       />
     </View>
   );
