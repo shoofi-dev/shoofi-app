@@ -5,10 +5,7 @@ import {
   DeviceEventEmitter,
   TextInput,
   KeyboardAvoidingView,
-  Dimensions,
   Platform,
-  useWindowDimensions,
-  ScaledSize,
 } from "react-native";
 import Text from "../../components/controls/Text";
 import { useNavigation } from "@react-navigation/native";
@@ -37,6 +34,7 @@ import CustomFastImage from "../../components/custom-fast-image";
 
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 import Counter from "../../components/controls/counter";
+import { useResponsive } from "../../hooks/useResponsive";
 
 const MealScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -53,9 +51,7 @@ const MealScreen = ({ route }) => {
     useState(false);
   const [confirmActiondDialogText, setConfirmActiondDialogText] = useState("");
 
-  const { width, height } = useWindowDimensions();
-  const isTablet = width >= 768; // Common tablet breakpoint
-  const isPad = width >= 1024; // iPad/larger tablet breakpoint
+  const { isTablet, isPad, scale, fontSize, height } = useResponsive();
 
   useEffect(() => {
     let tmpProduct: any = {};
