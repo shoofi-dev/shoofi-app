@@ -161,13 +161,19 @@ const AddProductScreen = ({ route }) => {
   }, []);
 
   const updateExtraField = (extraName, field, value) => {
+    // Allow decimal input by validating the string format
+    const isValidNumber = /^\d*\.?\d*$/.test(value);
+    if (!isValidNumber && value !== "") {
+      return;
+    }
+
     setSelectedProduct((prev) => ({
       ...prev,
       extras: {
         ...prev.extras,
         [extraName]: {
           ...prev.extras?.[extraName],
-          [field]: value,
+          [field]: value === "" ? "" : value,
         },
       },
     }));
@@ -179,7 +185,7 @@ const AddProductScreen = ({ route }) => {
           ...prev.extras,
           [extraName]: {
             ...prev.extras?.[extraName],
-            ["defaultValue"]: value,
+            ["defaultValue"]: value === "" ? "" : value,
           },
         },
       }));
@@ -203,7 +209,7 @@ const AddProductScreen = ({ route }) => {
           // If unselected, REMOVE the extra completely
           delete newExtras[extraName];
         } else {
-          // If selected, ADD it (you can copy from extrasList if needed)
+          // If selected, ADD it with the product's price
           const extraFromList = extrasList.find(
             (extra) => extra.name === extraName
           );
@@ -211,6 +217,7 @@ const AddProductScreen = ({ route }) => {
             newExtras[extraName] = {
               ...extraFromList,
               isActive: true,
+              price: old.price?.toString() || "0", // Set the extra's price to match the product's price
             };
           }
         }
@@ -241,15 +248,31 @@ const AddProductScreen = ({ route }) => {
       selectedProduct &&
       (isEditMode || image || selectedProduct.categoryId == "8")
     ) {
-      setIsLoading(true);
-      //uploadImage(imgFile).then((res) => {
-      let updatedData: TProduct = null;
-      if (image) {
-        updatedData = { ...selectedProduct, img: image };
-      } else {
-        updatedData = { ...selectedProduct };
-      }
+      // Convert string values to numbers before sending to API
+      const processedProduct = {
+        ...selectedProduct,
+        extras: Object.keys(selectedProduct.extras || {}).reduce(
+          (acc, extraName) => {
+            const extra = selectedProduct.extras[extraName];
+            acc[extraName] = {
+              ...extra,
+              price: parseFloat(extra.price) || 0,
+              value: parseFloat(extra.value) || 0,
+              stepValue: parseFloat(extra.stepValue) || 0,
+              minValue: parseFloat(extra.minValue) || 0,
+              maxValue: parseFloat(extra.maxValue) || 0,
+              defaultValue: parseFloat(extra.defaultValue) || 0,
+            };
+            return acc;
+          },
+          {}
+        ),
+      };
 
+      setIsLoading(true);
+      let updatedData = image
+        ? { ...processedProduct, img: image }
+        : processedProduct;
       setSelectedProduct(updatedData);
       menuStore
         .addOrUpdateProduct(updatedData, isEditMode, image)
@@ -258,8 +281,6 @@ const AddProductScreen = ({ route }) => {
           setIsLoading(false);
           navigateToMenu();
         });
-
-      //});
     }
   };
 
@@ -542,14 +563,14 @@ const AddProductScreen = ({ route }) => {
                       </Text>
                     </TouchableOpacity>
                     {isSelected && (
-                      <View style={{paddingHorizontal:10}}>
+                      <View style={{ paddingHorizontal: 10 }}>
                         {chunkArray(
                           [
                             "price",
-                            "stepValue",
                             "value",
                             "minValue",
                             "maxValue",
+                            "stepValue",
                           ].filter((field) => extra[field] !== undefined),
                           2 // now it's 2 in a row
                         ).map((row, rowIndex) => (
@@ -573,13 +594,9 @@ const AddProductScreen = ({ route }) => {
                                   label={t(field)}
                                   value={extraData?.[field]?.toString() || ""}
                                   onChange={(val) =>
-                                    updateExtraField(
-                                      extra.name,
-                                      field,
-                                      Number(val)
-                                    )
+                                    updateExtraField(extra.name, field, val)
                                   }
-                                  keyboardType="numeric"
+                                  keyboardType="decimal-pad"
                                   color={themeStyle.WHITE_COLOR}
                                 />
                               </View>

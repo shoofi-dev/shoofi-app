@@ -523,7 +523,7 @@ const MealScreen = ({ route }) => {
                               options={
                                 extasByCategory[extraCategoryId][key].options
                               }
-                              minValue={1}
+                              minValue={extasByCategory[extraCategoryId][key].minValue}
                               fontSize={20}
                               color={themeStyle.SECONDARY_COLOR}
                               variant={"colors"}
