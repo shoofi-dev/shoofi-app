@@ -150,7 +150,6 @@ export default function Button({
               fontSize: fontSize,
               color: textColor || theme.WHITE_COLOR,
               padding: textPadding,
-              top:3
 
             }}
           >

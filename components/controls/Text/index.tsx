@@ -10,12 +10,12 @@ export type TProps = {
 
 const Text = ({ children, style,type }: TProps) => {
   if (!style?.color) {
-    style = { ...style, color: themeStyle.TEXT_PRIMARY_COLOR };
+    style = { ...style, color: themeStyle.TEXT_PRIMARY_COLOR,  };
   }
   if (!style?.fontFamily ) {
     style = { ...style, fontFamily: getCurrentLang() == 'ar' ? 'ar-SemiBold':  `he-SemiBold`};
   }
-  const customStyles = { ...style };
+  const customStyles = { ...style, direction: 'ltr' };
 
   return <ReactText style={customStyles}>{children}</ReactText>;
 };

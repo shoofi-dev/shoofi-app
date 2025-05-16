@@ -549,7 +549,7 @@ const HomeScreen = ({ navigation }) => {
                 }}
               >
                 <Text style={{ color: themeStyle.WHITE_COLOR, fontSize: 20 }}>
-                  او
+                  {t("or")}
                 </Text>
               </View>}
               {storeDataStore.storeData.isOrderLaterSupport && (

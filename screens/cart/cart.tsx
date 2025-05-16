@@ -485,8 +485,8 @@ const CartScreen = ({ route }) => {
                                 shadowColor: "black",
                                 shadowOffset: { width: 0, height: 2 },
                                 shadowOpacity: 0.9,
-                                shadowRadius: 6,
                                 elevation: 5,
+                                padding:5
                               }}
                             >
                               <CustomFastImage
@@ -498,6 +498,8 @@ const CartScreen = ({ route }) => {
                                 source={{
                                   uri: `${cdnUrl}${product.data.img[0].uri}`,
                                 }}
+                                resizeMode="contain"
+
                                 cacheKey={`${APP_NAME}_${product.data.img[0].uri.split(/[\\/]/).pop()}`}
                               />
                             </View>

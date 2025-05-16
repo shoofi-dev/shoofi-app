@@ -52,6 +52,7 @@ import themeStyle from "./styles/theme.style";
 import { isLatestGreaterThanCurrent } from "./helpers/check-version";
 import moment from "moment";
 import "moment/locale/ar"; // without this line it didn't work
+import "moment/locale/he"; // without this line it didn't work
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import i18n, { setTranslations } from "./translations/i18n";
 import {
