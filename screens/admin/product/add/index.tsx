@@ -36,6 +36,9 @@ export type TProduct = {
   isHidden?: boolean;
   extras?: any;
   others?: any;
+  hasDiscount?: boolean;
+  discountQuantity?: string;
+  discountPrice?: string;
 };
 
 const AddProductScreen = ({ route }) => {
@@ -77,6 +80,9 @@ const AddProductScreen = ({ route }) => {
       others: {
         qty: 1,
       },
+      hasDiscount: false,
+      discountQuantity: "",
+      discountPrice: "",
     };
     if (editProductData) {
       defaultProductData = {
@@ -251,6 +257,9 @@ const AddProductScreen = ({ route }) => {
       // Convert string values to numbers before sending to API
       const processedProduct = {
         ...selectedProduct,
+        // Convert discount fields to numbers if discount is enabled
+        discountQuantity: selectedProduct.hasDiscount ? parseFloat(selectedProduct.discountQuantity) || 0 : 0,
+        discountPrice: selectedProduct.hasDiscount ? parseFloat(selectedProduct.discountPrice) || 0 : 0,
         extras: Object.keys(selectedProduct.extras || {}).reduce(
           (acc, extraName) => {
             const extra = selectedProduct.extras[extraName];
@@ -500,10 +509,51 @@ const AddProductScreen = ({ route }) => {
               )}
             </View>
           </View>
+
+          {/* Add Discount Section */}
+          <View style={{ width: "100%", marginTop: 40 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 15 }}>
+              <CheckBox
+                onChange={(e) => handleInputChange(e, "hasDiscount")}
+                value={selectedProduct?.hasDiscount}
+              />
+              <View style={{marginLeft: 10}}>
+              <Text style={{ fontSize: 16,  color: themeStyle.WHITE_COLOR }}>
+                {t("enable_bulk_discount")}
+              </Text></View>
+            </View>
+
+            {selectedProduct?.hasDiscount && (
+              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                <View style={{ flexBasis: "48%" }}>
+                  <InputText
+                    onChange={(e) => handleInputChange(e, "discountQuantity")}
+                    label={t("discount_quantity_kg")}
+                    value={selectedProduct?.discountQuantity?.toString()}
+                    keyboardType="decimal-pad"
+                    isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
+                    color={themeStyle.WHITE_COLOR}
+                  />
+                </View>
+                <View style={{ flexBasis: "48%" }}>
+                  <InputText
+                    onChange={(e) => handleInputChange(e, "discountPrice")}
+                    label={t("discount_total_price")}
+                    value={selectedProduct?.discountPrice?.toString()}
+                    keyboardType="decimal-pad"
+                    isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
+                    color={themeStyle.WHITE_COLOR}
+                  />
+                </View>
+              </View>
+            )}
+          </View>
+          {/* End Discount Section */}
+
           <View
             style={{
               width: "100%",
-              marginTop: 40, // justifyContent: "space-around",
+              marginTop: 40,
               alignItems: "flex-start",
             }}
           >

@@ -46,6 +46,7 @@ const MealScreen = ({ route }) => {
     useContext(StoreContext);
   const [meal, setMeal] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
+  const [isDiscountApplied, setIsDiscountApplied] = useState(false);
 
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
@@ -57,22 +58,31 @@ const MealScreen = ({ route }) => {
     let tmpProduct: any = {};
     if (product) {
       setIsEdit(false);
-      // tmpProduct = menuStore.getMealByKey(product.id);
       tmpProduct.data = JSON.parse(JSON.stringify(product));
-      // for products without constants
-      if (isEmpty(tmpProduct)) {
-        tmpProduct.data = JSON.parse(JSON.stringify(product));
-      }
       tmpProduct.others = { qty: 1, note: "" };
+
+      // Initialize price based on initial weight if it's a weight-based product
+      if (tmpProduct.data?.extras) {
+        Object.keys(tmpProduct.data.extras).forEach((key) => {
+          const extra = tmpProduct.data.extras[key];
+          if (extra.categoryId === "weight" && extra.value) {
+            const pricePerKg = tmpProduct.data.price;
+            const weightInKg = extra.value;
+            tmpProduct.data.price = pricePerKg * weightInKg;
+          }
+        });
+      }
     }
     if (index !== null && index !== undefined) {
       setIsEdit(true);
       tmpProduct = cartStore.getProductByIndex(index);
+      // Ensure discount fields are properly copied
+      if (product?.hasDiscount) {
+        tmpProduct.data.hasDiscount = product.hasDiscount;
+        tmpProduct.data.discountQuantity = product.discountQuantity;
+        tmpProduct.data.discountPrice = product.discountPrice;
+      }
     }
-    // DeviceEventEmitter.emit(`update-meal-uri`, {
-    //   imgUrl: `${cdnUrl}${tmpProduct.data.img[0].uri}`,
-    //   cacheKey: `${cdnUrl}${tmpProduct.data.img[0].uri}`.split(/[\\/]/).pop(),
-    // });
 
     setMeal(tmpProduct);
     return () => {
@@ -149,13 +159,28 @@ const MealScreen = ({ route }) => {
 
   const updateMeal = (value, extraData, type) => {
     let extraPrice = 0;
-
+    console.log("value", value);
     switch (type) {
       case "COUNTER":
-        extraPrice =
-          value > extraData.value
-            ? extraPrice + extraData.price
-            : extraPrice - extraData.price;
+        if (extraData.categoryId === "weight") { // "משקל" means "weight" in Hebrew
+          // Calculate price per kg (extraData.price is price per kg)
+          const pricePerKg = product.price;
+          // Convert weight from grams to kg for calculation
+          const weightInKg = 0.5;
+          // Calculate new total price based on weight
+          const newPrice = pricePerKg * weightInKg;
+          console.log("newPrice", newPrice);
+          extraPrice = newPrice; // The difference to add/subtract from current price
+          extraPrice =
+            value > extraData.value
+              ? newPrice
+              : newPrice * -1;
+        } else {
+          extraPrice =
+            value > extraData.value
+              ? extraPrice + extraData.price
+              : extraPrice - extraData.price;
+        }
         break;
       case "oneChoice":
         if (!extraData.multiple_choice) {
@@ -208,6 +233,32 @@ const MealScreen = ({ route }) => {
       },
     });
   };
+
+  const calculatediscount = () => {
+    if (meal?.data?.hasDiscount) {
+      const totalWeight = meal?.others?.qty * meal?.data?.extras?.weight?.value;
+      const discountQuantity = parseFloat(meal?.data?.discountQuantity);
+      // Calculate complete sets using Math.floor
+      const completeSets = Math.floor(totalWeight / discountQuantity);
+      const priceWithSests = completeSets * (meal?.data?.discountPrice);
+      const totalWeightMinusSets = totalWeight - (completeSets * discountQuantity);
+      const totalWeightMinusSetsPrice = totalWeightMinusSets * product?.price;
+      const totalPrice = priceWithSests + totalWeightMinusSetsPrice;
+      if(completeSets > 0){
+        setIsDiscountApplied(true);
+      }else{
+        setIsDiscountApplied(false);
+      }
+      setMeal({
+        ...meal,
+        data: { ...meal.data, price: totalPrice },
+      });
+    }
+  }
+
+  useEffect(() => {
+    calculatediscount();
+  }, [meal?.others?.qty,meal?.data?.extras?.weight?.value]);
 
   const updateMeal2 = (value, tag, type) => {
     let extraPrice = 0;
@@ -446,14 +497,27 @@ const MealScreen = ({ route }) => {
           resizeMode="contain"
         />
       </View>
-      <View style={{ alignSelf: "center", marginTop: 10 }}>
+      <View style={{ alignSelf: "center", marginTop: 10,alignItems: "center" }}>
         <Text
-          style={{ fontSize: isTablet ? 30 : 25, color: themeStyle.SECONDARY_COLOR }}
+          style={{ fontSize: isTablet ? 30 : themeStyle.FONT_SIZE_4XL, color: themeStyle.SECONDARY_COLOR }}
         >
           {languageStore.selectedLang === "ar"
             ? meal.data.nameAR
             : meal.data.nameHE}
         </Text>
+        {meal.data.hasDiscount && (
+          <Text
+            style={{
+              fontSize: isTablet ? 20 : 16,
+              color: themeStyle.SUCCESS_LIGHT_COLOR,
+              textAlign: "center",
+              marginTop: 5,
+              opacity: 0.8
+            }}
+          >
+            {t("special_offer")} : {meal.data.discountQuantity} {t("kg")} {t("for")} ₪{meal.data.discountPrice}
+          </Text>
+        )}
       </View>
       <ScrollView
         ref={scrollRef}
@@ -690,15 +754,32 @@ const MealScreen = ({ route }) => {
               variant={"colors"}
             />
           </View>
-          <Text
+          <View style={{alignItems: "center"}}>
+            <View>
+              <Text
             style={{
               fontSize: isTablet ? 28 : 22,
               color: themeStyle.WHITE_COLOR,
             }}
             type="number"
           >
-            ₪{meal.data.price * meal.others.qty}
+            ₪{meal?.data?.hasDiscount ? meal.data.price : meal.data.price * meal.others.qty }
           </Text>
+          </View>
+          <View>  
+          {isDiscountApplied && (
+            <Text
+              style={{
+                fontSize: isTablet ? 16 : 14,
+                color: themeStyle.SUCCESS_LIGHT_COLOR,
+                textAlign: "center",
+              }}
+            >
+              {t("discount_applied")}
+            </Text>
+          )}
+          </View>
+          </View>
         </View>
         <View
           style={{

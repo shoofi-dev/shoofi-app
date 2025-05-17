@@ -311,11 +311,13 @@ class MenuStore {
     product.others && formData.append("others", JSON.stringify(product.others));
     product.price && formData.append("price", JSON.stringify(product.price));
 
-    // return axios
-    //   .post(process.env.REACT_APP_API+"admin/product/insert",formData,{})
-    //   .then(function (response) {
-    //       return response.data;
-    //   });
+    // Add discount fields
+    formData.append("hasDiscount", product.hasDiscount?.toString() || "false");
+    if (product.hasDiscount) {
+      formData.append("discountQuantity", product.discountQuantity?.toString() || "0");
+      formData.append("discountPrice", product.discountPrice?.toString() || "0");
+    }
+
     return axiosInstance
       .post(
         `${

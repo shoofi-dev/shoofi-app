@@ -6,6 +6,7 @@ export default {
   FONT_SIZE_XL: 20,
   FONT_SIZE_2XL: 24,
   FONT_SIZE_3XL: 26,
+  FONT_SIZE_4XL: 30,
   PRIMARY_COLOR: "#48413b",
   ERROR_COLOR: "red",
   SECONDARY_COLOR: "#a9916d",
