@@ -81,7 +81,7 @@ const chargeCreditCard = ({ token, totalPrice, orderId, id, email, cvv, phone,us
         // }
     };
     // if (email) {
-        body.CustomerEmail = 'abdelhai.butcher.dev@gmail.com';
+        body.CustomerEmail = 'shoofi.dev@gmail.com';
     //}
     return axios
         .post(

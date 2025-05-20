@@ -1,4 +1,4 @@
-export const APP_NAME = 'abdelhai-butcher';
+export const APP_NAME = 'shoofi';
 export const SHIPPING_METHODS = {
   shipping: "DELIVERY",
   takAway: "TAKEAWAY",

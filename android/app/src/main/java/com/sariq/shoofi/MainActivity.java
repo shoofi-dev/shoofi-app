@@ -1,4 +1,4 @@
-package com.sariq.abdelhai.butcher;
+package com.sariq.shoofi;
 
 import android.os.Build;
 import android.os.Bundle;

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "אטליז עבד אלחי",
-    "slug": "Abdelhai butcher",
+    "name": "shoofi",
+    "slug": "shoofi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -34,7 +34,7 @@
     "ios": {
       "buildNumber": "1.0.0",
       "supportsTablet": true,
-      "bundleIdentifier": "com.sariq.abdelhai.butcher"
+      "bundleIdentifier": "com.sariq.shoofi"
     },
     "android": {
       "versionCode": 1,
@@ -47,7 +47,7 @@
         "backgroundColor": "#FFFFFF",
         "resizeMode":"cover"
       },
-      "package": "com.sariq.abdelhai.butcher",
+      "package": "com.sariq.shoofi",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyD0CSVYW-UxSDEnderEtAB9YDmYYZLu8q8"

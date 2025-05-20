@@ -1,15 +1,15 @@
 {
   "project_info": {
     "project_number": "202867785400",
-    "project_id": "abdelhai-butcher",
-    "storage_bucket": "abdelhai-butcher.appspot.com"
+    "project_id": "shoofi",
+    "storage_bucket": "shoofi.appspot.com"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:202867785400:android:5de48f627f468259f57e4d",
         "android_client_info": {
-          "package_name": "com.sariq.abdelhai.butcher"
+          "package_name": "com.sariq.shoofi"
         }
       },
       "oauth_client": [],

@@ -1,4 +1,4 @@
-package com.sariq.abdelhai.butcher.newarchitecture.modules;
+package com.sariq.shoofi.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;
