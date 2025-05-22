@@ -43,7 +43,7 @@ import StoreIsCloseDialog from "../../components/dialogs/store-is-close";
 import StoreErrorMsgDialog from "../../components/dialogs/store-errot-msg";
 import moment from "moment";
 import StoresCategoryList from "./categories/list";
-
+import ExploreScreen from "../explore";
 const HomeScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const [isAppReady, setIsAppReady] = useState(false);
@@ -304,38 +304,7 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <View
-      style={{
-        height: "100%",
-        backgroundColor: "transparent",
-        display: isHideScreen ? "none" : "flex",
-        
-        marginTop:20
-      }}
-    >
-      <View style={{flexDirection:'column', alignItems:'flex-start', marginHorizontal:20,}}>
-      <View>
-        <Text style={{fontWeight:'900', fontSize:25}}>
-        {t('ברוכים הבאים')},
-        </Text>
-      </View>
-      <View>
-      <Text style={{fontWeight:'500', fontSize:20}}>
-                {t('לאפליקצית טירה שופ')}.
-        </Text>
-      </View>
-      </View>
-      <View
-        style={{
-          alignItems: "center",
-          paddingTop: 20,
-          paddingBottom: 20,
-          // backgroundColor: "rgba(255,255,255,0.6)",
-        }}
-      >
-        <StoresCategoryList categoryList={categoryList} />
-      </View>
-    </View>
+<ExploreScreen  />
   );
   return (
     <View
