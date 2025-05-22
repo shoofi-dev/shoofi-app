@@ -98,6 +98,23 @@ const MealScreen = ({ route }) => {
     useState(false);
   const [confirmActiondDialogText, setConfirmActiondDialogText] = useState("");
 
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // Animated image height and opacity
+  const IMAGE_MAX_HEIGHT = 180;
+  const IMAGE_MIN_HEIGHT = 0;
+
+  const imageHeight = scrollY.interpolate({
+    inputRange: [0, 120],
+    outputRange: [IMAGE_MAX_HEIGHT, IMAGE_MIN_HEIGHT],
+    extrapolate: "clamp",
+  });
+  const imageOpacity = scrollY.interpolate({
+    inputRange: [0, 120],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
   useEffect(() => {
     let tmpProduct: any = {};
     if (product) {
@@ -519,119 +536,96 @@ const MealScreen = ({ route }) => {
   }
 
   return (
-    <View style={{ height: "100%" }}>
-      {/* <ScrollView ref={scrollRef} style={{ height: "100%",borderWidth:1 }}> */}
-      {/* <KeyboardAvoidingView
-          keyboardVerticalOffset={100}
-          behavior="position"
-          style={{ height:"100%" }}
-        > */}
-      <View
-        style={{
-          height: "50%",
-          marginHorizontal: 5,
-          shadowColor: themeStyle.SHADOW_COLOR,
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.9,
-          shadowRadius: 6,
-          elevation: 20,
-          borderWidth: 0,
-        }}
+    <View style={{ flex: 1, height: "100%" }}>
+      <Animated.ScrollView
+        ref={scrollRef}
+        style={{ flex: 1 }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 110 }}
       >
-        <View
+        <Animated.View
           style={{
-            height: "100%",
-            width: "100%",
-            alignSelf: "center",
+            height: imageHeight,
+            opacity: imageOpacity,
+            marginHorizontal: 5,
+            shadowColor: themeStyle.SHADOW_COLOR,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.9,
+            shadowRadius: 6,
+            elevation: 20,
+            borderWidth: 0,
+            overflow: "hidden",
+            borderRadius: 20,
+            backgroundColor: "transparent",
           }}
         >
-          <View
+          <CustomFastImage
             style={{
-              backgroundColor: "transparent",
+              width: "100%",
+              height: "100%",
+              borderRadius: 20,
             }}
-          >
-            <CustomFastImage
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-              source={{ uri: `${cdnUrl}${meal.data.img[0].uri}` }}
-              cacheKey={`${meal.data.img[0].uri.split(/[\\/]/).pop()}`}
-            />
+            source={{ uri: `${cdnUrl}${meal.data.img[0].uri}` }}
+            cacheKey={`${meal.data.img[0].uri.split(/[\\/]/).pop()}`}
+          />
+        </Animated.View>
+        <View
+          style={{
+            width: "100%",
+            minHeight: 400,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            zIndex: 2,
+            top: -30,
+            backgroundColor: themeStyle.PRIMARY_COLOR,
+            padding: 20,
+            shadowColor: themeStyle.SHADOW_COLOR,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.9,
+            shadowRadius: 6,
+            elevation: 20,
+            borderWidth: 0,
+          }}
+        >
+          <View style={{ height: "100%", flexDirection: "column" }}>
+            <View>
+              <ProductHeader product={meal.data} updateMeal={updateMeal} />
+            </View>
+            <View style={{ marginTop: 15 }}>
+              <ProductDescription product={meal.data} />
+            </View>
           </View>
         </View>
-      </View>
+      </Animated.ScrollView>
       <View
         style={{
-          width: "100%",
-          height: "50%",
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: themeStyle.PRIMARY_COLOR,
+          padding: 10,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          zIndex: 2,
-          top: -30,
-          backgroundColor: themeStyle.PRIMARY_COLOR,
-          padding: 20,
           shadowColor: themeStyle.SHADOW_COLOR,
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.9,
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.2,
           shadowRadius: 6,
-          elevation: 20,
-          borderWidth: 0,
+          elevation: 10,
         }}
       >
-        <View
-          style={{
-            height: "100%",
-            flexDirection: "column",
-          }}
-        >
-          <View>
-            <ProductHeader product={meal.data} updateMeal={updateMeal}/>
-          </View>
-          <View style={{ marginTop: 15 }}>
-            <ProductDescription product={meal.data} />
-          </View>
-          <View style={{ marginTop: 15, bottom: 0, position: "absolute" }}>
-            <ProductFooter
-              isEdit={isEdit}
-              isValidForm={isValidMeal()}
-              onAddToCart={onAddToCart}
-              onUpdateCartProduct={onUpdateCartProduct}
-              price={
-                (getPriceBySize() || meal.data.price) 
-              }
-            />
-          </View>
-        </View>
+        <ProductFooter
+          isEdit={isEdit}
+          isValidForm={isValidMeal()}
+          onAddToCart={onAddToCart}
+          onUpdateCartProduct={onUpdateCartProduct}
+          price={getPriceBySize() || meal.data.price}
+        />
       </View>
-      {/* </KeyboardAvoidingView> */}
-      {/* </ScrollView> */}
-      {/* <View style={styles.buttonContainer}>
-        <View
-          style={{
-            width: "60%",
-            alignSelf: "center",
-            alignItems: "center",
-          }}
-        >
-          <Button
-            text={isEdit ? t("save") : t("add-to-cart")}
-            icon="shopping-bag-plus"
-            fontSize={17}
-            onClickFn={isEdit ? onUpdateCartProduct : onAddToCart}
-            textColor={themeStyle.WHITE_COLOR}
-            fontFamily={`${getCurrentLang()}-Bold`}
-            borderRadious={19}
-            disabled={!isValidMeal()}
-          />
-        </View>
-      </View> */}
       {meal.data.subCategoryId == "1" && (
         <PickImagedDialog
           isOpen={isPickImageDialogOpen}
