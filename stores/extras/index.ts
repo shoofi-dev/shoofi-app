@@ -6,8 +6,8 @@ class ExtrasStore {
     makeAutoObservable(this);
   }
   setSelection(extraId, value) {
-    console.log("setSelection", extraId, value);
     this.selections[extraId] = value;
+    this.selections = {...this.selections};
   }
   getSelection(extraId) {
     return this.selections[extraId];
@@ -16,6 +16,9 @@ class ExtrasStore {
     this.selections = {};
   }
   validate(extras) {
+    if(!extras){
+        return true;
+    }
     for (const extra of extras) {
       const val = this.selections[extra.id];
       if (extra.required) {

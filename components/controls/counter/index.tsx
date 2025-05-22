@@ -127,8 +127,9 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor:themeStyle.PRIMARY_COLOR,
-    borderRadius:10
+    backgroundColor:themeStyle.SECONDARY_COLOR,
+    borderRadius:10,
+    width:40
   },
   btn: {
     // backgroundColor: themeStyle.PRIMARY_COLOR,
@@ -166,12 +167,12 @@ const styles = StyleSheet.create({
   },
   btnTextGray: {
     fontSize: 25,
-    color: themeStyle.WHITE_COLOR,
+    color: themeStyle.SECONDARY_COLOR,
     fontFamily: "Poppins-Regular",
   },
   btnTextGreen: {
     fontSize: 18,
-    color: themeStyle.SUCCESS_COLOR,
+    color: themeStyle.SECONDARY_COLOR,
     fontFamily: "Poppins-Regular",
   },
   btnTextRed: {

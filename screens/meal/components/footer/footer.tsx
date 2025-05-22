@@ -14,13 +14,15 @@ export type TProps = {
   onAddToCart: () => void;
   onUpdateCartProduct: () => void;
   price: number;
+  qty: number;
 };
 const ProductFooter = ({
   isEdit,
   onAddToCart,
   onUpdateCartProduct,
   isValidForm,
-  price
+  price,
+  qty
 }: TProps) => {
   const { t } = useTranslation();
   let { languageStore } = useContext(StoreContext);
@@ -32,7 +34,7 @@ const ProductFooter = ({
         alignItems: "center",
       }}
     >
-      <Text>{price}</Text>
+      <Text>{price*qty}</Text>
         <Button
           text={isEdit ? t("save") : t("add-to-cart")}
           icon="shopping-bag-plus"

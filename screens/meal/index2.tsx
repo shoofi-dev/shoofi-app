@@ -38,10 +38,7 @@ import {
   shmareemId,
   TASETS_LIST,
 } from "../../consts/shared";
-import CheckBox from "../../components/controls/checkbox";
-import Counter from "../../components/controls/counter";
-import PickImagedDialog from "../../components/dialogs/pick-image";
-import DropDown from "../../components/controls/dropdown";
+
 import CustomFastImage from "../../components/custom-fast-image";
 import PickImageNotificationDialog from "../../components/dialogs/pick-image-notification/pick-image-notification";
 import OutOfStockDialog from "../../components/dialogs/out-of-stock/out-of-stock";
@@ -124,7 +121,7 @@ const MealScreen = ({ route }) => {
       if (isEmpty(tmpProduct)) {
         tmpProduct.data = product;
       }
-      tmpProduct.others = { count: 1, note: "" };
+      tmpProduct.others = { qty: 1, note: "" };
     }
     if (index !== null && index !== undefined) {
       setIsEdit(true);
@@ -157,6 +154,21 @@ const MealScreen = ({ route }) => {
     }, 1000);
   }, []);
 
+  // Update meal price when extras change
+  useEffect(() => {
+    if (meal && meal.data && meal.data.price !== undefined && meal.data.extras) {
+      const basePrice = product.price;
+      const extrasPrice = extrasStore.calculateExtrasPrice(meal.data.extras);
+      setMeal((prev) => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          price: basePrice + extrasPrice,
+        },
+      }));
+    }
+  }, [extrasStore?.selections]);
+
   const onAddToCart = () => {
     if (
       (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) ||
@@ -188,86 +200,21 @@ const MealScreen = ({ route }) => {
     }, 1000);
   };
 
-  const handlePickImageAnswer = (value: any) => {
-    if (value?.clientImage) {
-      updateMealClientImage(
-        value?.clientImage,
-        "image",
-        null,
-        "suggestedImage"
-      );
-    }
-    if (value?.suggestedImage) {
-      updateMealClientImage(
-        value?.suggestedImage,
-        "suggestedImage",
-        null,
-        "image"
-      );
-    }
-    setIsPickImageDialogOpen(false);
-  };
 
-  const handlePickNotificationAnswer = (value: any) => {
-    setIsPickImageNotificationDialogOpen(false);
-    setTimeout(() => {
-      shake();
-    }, 500);
-  };
+
 
   const handleConfirmActionAnswer = (answer: string) => {
     setConfirmActiondDialogText("");
     setIsOpenConfirmActiondDialog(false);
   };
 
-  const updateMealClientImage = (value1, tag1, value2, tag2) => {
-    setMeal({
-      ...meal,
-      data: {
-        ...meal.data,
-        extras: {
-          ...meal.data.extras,
-          [tag1]: { ...meal.data.extras[tag1], value: value1 },
-          [tag2]: { ...meal.data.extras[tag2], value: value2 },
-        },
-      },
-    });
-  };
+
 
   const onClose = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     navigation.goBack();
   };
 
-  // useEffect(() => {
-  //   if (meal) {
-  //     const sizePrice =
-  //       meal?.data?.extras?.size?.options[meal?.data?.extras?.size?.value]
-  //         .price;
-  //     let imagePrice =
-  //       meal.data.extras["image"] || meal.data.extras["suggestedImage"]
-  //         ? 10
-  //         : 0;
-  //     if (ordersStore.editOrderData) {
-  //       imagePrice =
-  //         meal.data.extras["image"]?.value?.uri ||
-  //         meal.data.extras["suggestedImage"]?.value
-  //           ? 10
-  //           : 0;
-  //     }
-  //     let finalPrice = sizePrice;
-  //     if (meal.data?.categoryId != "8") {
-  //       finalPrice = finalPrice + imagePrice;
-  //     }
-  //     setMeal({
-  //       ...meal,
-  //       data: {
-  //         ...meal.data,
-  //         price: finalPrice,
-  //       },
-  //     });
-  //   }
-  // }, [meal?.data.extras]);
 
   const updateMeal = (value, tag, type) => {
     setMeal({
@@ -282,15 +229,6 @@ const MealScreen = ({ route }) => {
     });
   };
 
-  const customCakeUpdateMealPrice = (price) => {
-    setMeal({
-      ...meal,
-      data: {
-        ...meal.data,
-        price: price,
-      },
-    });
-  };
 
   const tasteScorll = () => {
     scrollRef.current?.scrollTo({
@@ -299,83 +237,14 @@ const MealScreen = ({ route }) => {
     });
   };
 
-  const updateMeal2 = (value, tag, type) => {
-    let extraPrice = 0;
-    const currentExtraType = meal.extras[type];
-    const extrasType = meal.extras[type].map((tagItem) => {
-      if (tagItem.id === tag.id) {
-        switch (tag.type) {
-          case "COUNTER":
-            extraPrice =
-              value > tagItem.value
-                ? extraPrice + tagItem.price * meal.others.count
-                : extraPrice - tagItem.price * meal.others.count;
-            break;
-          case "oneChoice":
-            if (!tag.multiple_choice) {
-              const currentTag = currentExtraType.find(
-                (tagItem) => tagItem.value === true
-              );
-              if (currentTag) {
-                const tagDeltaPrice = tagItem.price - currentTag.price;
-                extraPrice = extraPrice + tagDeltaPrice;
-              }
-            } else {
-              extraPrice = value
-                ? extraPrice + tagItem.price * meal.others.count
-                : extraPrice - tagItem.price * meal.others.count;
-            }
-            break;
-          case "CHOICE":
-            if (!tag.multiple_choice) {
-              const currentTag = currentExtraType.find(
-                (tagItem) => tagItem.value === true
-              );
-              if (currentTag) {
-                const tagDeltaPrice = tagItem.price - currentTag.price;
-                extraPrice = extraPrice + tagDeltaPrice;
-              }
-            } else {
-              extraPrice = value
-                ? extraPrice + tagItem.price * meal.others.count
-                : extraPrice - tagItem.price * meal.others.count;
-            }
-            break;
-          default:
-            break;
-        }
-        tagItem.value = value;
-      } else {
-        if (tag.type === "CHOICE" && !tag.multiple_choice) {
-          tagItem.value = false;
-        }
-      }
-      return tagItem;
-    });
-    if (extraPrice !== 0) {
-      meal.extras[type] = extrasType;
-      setMeal({
-        ...meal,
-        data: { ...meal.data, price: meal.data.price + extraPrice },
-        extras: meal.extras,
-      });
-    }
-  };
 
   const updateOthers = (value, key, type) => {
-    if (key === "count") {
-      const updatedPrice =
-        meal.data.price +
-        (value - meal.others.count) * (meal.data.price / meal.others.count);
-      setMeal({
-        ...meal,
-        [type]: { ...meal[type], [key]: value },
-        data: { ...meal.data },
-      });
-    } else {
+    console.log("updateOthers", value, key, type);
       setMeal({ ...meal, [type]: { ...meal[type], [key]: value } });
-    }
   };
+
+  
+
 
   const isAvailableOnApp = (key: string) => {
     let isAvailable = false;
@@ -388,98 +257,7 @@ const MealScreen = ({ route }) => {
     return isAvailable;
   };
 
-  const isOneChoiceTag = (tags) => {
-    const result = tags.find((tag) => tag.multiple_choice === false);
-    return !!result;
-  };
-  const isOneChoiceTagStyle = (tags) => {
-    const result = isOneChoiceTag(tags);
-    const rowStyle = {
-      flexDirection: "row",
-      justifyContent: "space-evenly",
-    };
-    return result ? rowStyle : {};
-  };
 
-  const orderList = (index: any) => {
-    const result = Object.keys(meal.extras.orderList).find(
-      (key) => meal.extras.orderList[key] === index
-    );
-    return result;
-  };
-  const sizes = {
-    medium: true,
-    large: false,
-  };
-
-  const [sizesOptions, setSizeOptions] = useState(sizes);
-
-  const onSizeChange = (value, key) => {
-    const updatesSizeOptions = sizes;
-    Object.keys(sizesOptions).forEach((size) => {
-      updatesSizeOptions[size] = size === key;
-    });
-    setSizeOptions(updatesSizeOptions);
-  };
-
-  const getPriceBySize = () => {
-    return null;
-    let finalPrice = 0;
-    if (
-      meal.data.extras?.image?.value ||
-      meal.data.extras?.suggestedImage?.value
-    ) {
-      finalPrice = finalPrice + 10;
-    }
-    finalPrice =
-      finalPrice +
-      meal.data.extras.size.options[meal.data.extras.size.value].price;
-
-    return finalPrice;
-
-    const size = meal.data.extras.size.options?.filter(
-      (size) => size.title === meal.data.extras.size.value
-    )[0];
-    return size.price;
-  };
-
-  const onSelectToggle = (value: boolean) => {
-    setIsSelectOpen(value);
-  };
-
-  const isValidMeal = () => {
-    return isTasteValid();
-  };
-
-  const isTasteValid = () => {
-    if (meal.data.extras["taste"] && meal.data.extras["taste"].options) {
-      let isValid = true;
-      if (
-        !isEmpty(meal.data.extras["taste"].value) &&
-        Object.keys(meal.data.extras["taste"].value).length ==
-          Object.keys(meal.data.extras["taste"].options).length
-      ) {
-        Object.keys(meal.data.extras["taste"].value).forEach((tasteKey) => {
-          if (!meal.data.extras["taste"].value[tasteKey]) {
-            isValid = false;
-          }
-        });
-      } else {
-        return false;
-      }
-
-      return isValid;
-    } else {
-      return true;
-    }
-  };
-
-  const initShmareemTastes = (list) => {
-    const tmpList = list.filter(
-      (taste) => meal.data.activeTastes.indexOf(taste.value) > -1
-    );
-    return tmpList;
-  };
 
   const getOutOfStockMessage = () => {
     if (
@@ -493,12 +271,6 @@ const MealScreen = ({ route }) => {
     return null;
   };
 
-  const handleCustomCakeInputChange = (value, key) => {
-    setCustomCakeData({
-      ...customCakeData,
-      [key]: value,
-    });
-  };
   const anim = useRef(new Animated.Value(0));
 
   const shake = useCallback(() => {
@@ -527,19 +299,11 @@ const MealScreen = ({ route }) => {
     ).start();
   }, []);
 
-  const handlePickImage = () => {
-    if (storeDataStore.storeData.image_support) {
-      setIsPickImageDialogOpen(true);
-    } else {
-      setConfirmActiondDialogText(t("image-not-supported"));
-      setIsOpenConfirmActiondDialog(true);
-    }
-  };
+
 
   if (!meal) {
     return null;
   }
-  console.log("meal.data.price", meal.data);
   return (
     <View style={{ height: "100%" }}>
       <Animated.ScrollView
@@ -598,7 +362,7 @@ const MealScreen = ({ route }) => {
         >
           <View style={{ height: "100%", flexDirection: "column" }}>
             <View>
-              <ProductHeader product={meal.data} updateMeal={updateMeal} />
+              <ProductHeader product={meal} updateOthers={updateOthers} />
             </View>
             <View style={{ marginTop: 15 }}>
               <ProductDescription product={meal.data} />
@@ -630,29 +394,14 @@ const MealScreen = ({ route }) => {
       >
         <ProductFooter
           isEdit={isEdit}
-          isValidForm={isValidMeal()}
+          isValidForm={true}
           onAddToCart={onAddToCart}
           onUpdateCartProduct={onUpdateCartProduct}
           price={meal.data.price}
+          qty={meal.others.qty}
         />
       </View>
-      {meal.data.subCategoryId == "1" && (
-        <PickImagedDialog
-          isOpen={isPickImageDialogOpen}
-          handleAnswer={handlePickImageAnswer}
-        />
-      )}
-      {meal.data.categoryId == "8" && (
-        <AddCustomImagedDialog
-          isOpen={isPickImageDialogOpen}
-          handleAnswer={handlePickImageAnswer}
-        />
-      )}
-      <PickImageNotificationDialog
-        isOpen={isPickImageNotificationDialogOpen}
-        handleAnswer={handlePickNotificationAnswer}
-        text={pickImageNotificationDialogText}
-      />
+    
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}
         isOpen={isOpenConfirmActiondDialog}

@@ -12,7 +12,6 @@ export type ExtraGroupProps = {
 };
 
 const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
-  console.log("ExtraGroup value:", value);
   return (
     <View style={{ marginBottom: 20,}}>
       <View style={{flexDirection: "row",marginBottom: 10}}>
