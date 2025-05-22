@@ -118,7 +118,8 @@ const App = () => {
     menuStore,
     storeDataStore,
     languageStore,
-    shoofiAdminStore
+    shoofiAdminStore,
+    extrasStore
   } = useContext(StoreContext);
   // const { t } = useTranslation();
   // const invoiceRef = useRef();
@@ -791,6 +792,7 @@ const App = () => {
             adminCustomerStore: adminCustomerStore,
             errorHandlerStore: errorHandlerStore,
             shoofiAdminStore: shoofiAdminStore,
+            extrasStore: extrasStore,
           }}
         >
           <View style={{ height: "100%" }}>

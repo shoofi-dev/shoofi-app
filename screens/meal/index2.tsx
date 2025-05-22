@@ -48,6 +48,7 @@ import OutOfStockDialog from "../../components/dialogs/out-of-stock/out-of-stock
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 import InputText from "../../components/controls/input";
 import AddCustomImagedDialog from "../../components/dialogs/add-custom-image";
+import MealExtras from "./extras/Extras";
 
 const showCakeNoteList = ["3", "5"];
 
@@ -79,7 +80,7 @@ const MealScreen = ({ route }) => {
     ordersStore,
     languageStore,
     storeDataStore,
-    userDetailsStore,
+    extrasStore,
   } = useContext(StoreContext);
   const [meal, setMeal] = useState(null);
   const [clientImage, setClientImage] = useState();
@@ -146,11 +147,15 @@ const MealScreen = ({ route }) => {
       setIsPickImageNotificationDialogOpen(true);
     }
     setMeal(tmpProduct);
+    // Initialize extrasStore for this product
+    extrasStore.reset();
+    if (tmpProduct.data.extras) {
+      // Optionally: set default values for required extras here
+    }
     setTimeout(() => {
       tasteScorll();
     }, 1000);
   }, []);
-
 
   const onAddToCart = () => {
     if (
@@ -234,35 +239,35 @@ const MealScreen = ({ route }) => {
     navigation.goBack();
   };
 
-  useEffect(() => {
-    if (meal) {
-      const sizePrice =
-        meal?.data?.extras?.size?.options[meal?.data?.extras?.size?.value]
-          .price;
-      let imagePrice =
-        meal.data.extras["image"] || meal.data.extras["suggestedImage"]
-          ? 10
-          : 0;
-      if (ordersStore.editOrderData) {
-        imagePrice =
-          meal.data.extras["image"]?.value?.uri ||
-          meal.data.extras["suggestedImage"]?.value
-            ? 10
-            : 0;
-      }
-      let finalPrice = sizePrice;
-      if (meal.data?.categoryId != "8") {
-        finalPrice = finalPrice + imagePrice;
-      }
-      setMeal({
-        ...meal,
-        data: {
-          ...meal.data,
-          price: finalPrice,
-        },
-      });
-    }
-  }, [meal?.data.extras]);
+  // useEffect(() => {
+  //   if (meal) {
+  //     const sizePrice =
+  //       meal?.data?.extras?.size?.options[meal?.data?.extras?.size?.value]
+  //         .price;
+  //     let imagePrice =
+  //       meal.data.extras["image"] || meal.data.extras["suggestedImage"]
+  //         ? 10
+  //         : 0;
+  //     if (ordersStore.editOrderData) {
+  //       imagePrice =
+  //         meal.data.extras["image"]?.value?.uri ||
+  //         meal.data.extras["suggestedImage"]?.value
+  //           ? 10
+  //           : 0;
+  //     }
+  //     let finalPrice = sizePrice;
+  //     if (meal.data?.categoryId != "8") {
+  //       finalPrice = finalPrice + imagePrice;
+  //     }
+  //     setMeal({
+  //       ...meal,
+  //       data: {
+  //         ...meal.data,
+  //         price: finalPrice,
+  //       },
+  //     });
+  //   }
+  // }, [meal?.data.extras]);
 
   const updateMeal = (value, tag, type) => {
     setMeal({
@@ -534,12 +539,12 @@ const MealScreen = ({ route }) => {
   if (!meal) {
     return null;
   }
-
+  console.log("meal.data.price", meal.data);
   return (
-    <View style={{ flex: 1, height: "100%" }}>
+    <View style={{ height: "100%" }}>
       <Animated.ScrollView
         ref={scrollRef}
-        style={{ flex: 1 }}
+        style={{  height: "100%", borderWidth: 1,  }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
@@ -576,7 +581,7 @@ const MealScreen = ({ route }) => {
         <View
           style={{
             width: "100%",
-            minHeight: 400,
+            minHeight: "100%",
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             zIndex: 2,
@@ -598,6 +603,11 @@ const MealScreen = ({ route }) => {
             <View style={{ marginTop: 15 }}>
               <ProductDescription product={meal.data} />
             </View>
+            {meal.data.extras && meal.data.extras.length > 0 && (
+              <View style={{ marginTop: 15, }}>
+                <MealExtras extras={meal.data.extras} />
+              </View>
+            )}
           </View>
         </View>
       </Animated.ScrollView>
@@ -623,7 +633,7 @@ const MealScreen = ({ route }) => {
           isValidForm={isValidMeal()}
           onAddToCart={onAddToCart}
           onUpdateCartProduct={onUpdateCartProduct}
-          price={getPriceBySize() || meal.data.price}
+          price={meal.data.price}
         />
       </View>
       {meal.data.subCategoryId == "1" && (

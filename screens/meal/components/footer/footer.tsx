@@ -32,7 +32,7 @@ const ProductFooter = ({
         alignItems: "center",
       }}
     >
-
+      <Text>{price}</Text>
         <Button
           text={isEdit ? t("save") : t("add-to-cart")}
           icon="shopping-bag-plus"
