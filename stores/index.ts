@@ -10,7 +10,7 @@ import { calanderStore } from "./calander";
 import { translationsStore } from "./translations";
 import { adminCustomerStore } from "./admin-customer";
 import { errorHandlerStore } from "./error-handler";
-
+import { shoofiAdminStore } from "./shoofi-admin";
 export const StoreContext = createContext({ 
     cartStore: cartStore, 
     authStore: authStore, 
@@ -22,5 +22,7 @@ export const StoreContext = createContext({
     calanderStore: calanderStore,
     translationsStore: translationsStore,
     adminCustomerStore: adminCustomerStore,
-    errorHandlerStore: errorHandlerStore
+    errorHandlerStore: errorHandlerStore,
+    shoofiAdminStore: shoofiAdminStore
+
 });

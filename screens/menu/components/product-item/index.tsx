@@ -16,18 +16,12 @@ import themeStyle from "../../../../styles/theme.style";
 import { getCurrentLang } from "../../../../translations/i18n";
 import * as Haptics from "expo-haptics";
 import Button from "../../../../components/controls/button/button";
-import {
-  cdnUrl,
-  ORDER_TYPE,
-  devicesType,
-} from "../../../../consts/shared";
+import { cdnUrl, ORDER_TYPE, devicesType } from "../../../../consts/shared";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import _useDeviceType from "../../../../hooks/use-device-type";
 import CustomFastImage from "../../../../components/custom-fast-image";
-import Icon from "../../../../components/icon";
-import header from "../../../../components/layout/header/header";
-const addToCartIcon = require("../../../../assets/add-to-cart.png");
+
 export type TProps = {
   item: any;
   onItemSelect: (item: any) => void;
@@ -42,30 +36,22 @@ const ProductItem = ({
 }: TProps) => {
   const { t } = useTranslation();
 
-  const {
-    userDetailsStore,
-    languageStore,
-    cartStore,
-    ordersStore,
-    storeDataStore,
-  } = useContext(StoreContext);
+  const { userDetailsStore, languageStore, cartStore, ordersStore,storeDataStore } =
+    useContext(StoreContext);
   const { deviceType } = _useDeviceType();
 
   const isDisabled = (item) => {
-    return !isInStore(item);
+    return !userDetailsStore.isAdmin() && item.count == 0;
   };
   const isInStore = (item) => {
-    if (
-      (ordersStore.orderType == ORDER_TYPE.now && !item.isInStore)
-    ) {
+    if ((ordersStore.orderType == ORDER_TYPE.now && !item.isInStore)) {
       return false;
     }
     return true;
   };
 
   const getOutOfStockMessage = (item) => {
-
-    if (item?.notInStoreDescriptionAR || item?.notInStoreDescriptionHE) {
+    if (item.notInStoreDescriptionAR || item.notInStoreDescriptionHE) {
       return languageStore.selectedLang === "ar"
         ? item.notInStoreDescriptionAR
         : item.notInStoreDescriptionHE;
@@ -78,172 +64,109 @@ const ProductItem = ({
     //   imgUrl: meal.data.img,
     // });
     // cartStore.resetCart();
-    onItemSelect(prodcut);
-
-    // let tmpProduct: any = {};
-    // tmpProduct.others = { count: 1, note: "" };
-    // tmpProduct.data = prodcut;
-    // cartStore.addProductToCart(tmpProduct);
+    let tmpProduct: any = {};
+    tmpProduct.others = { count: 1, note: "" };
+    tmpProduct.data = prodcut;
+    cartStore.addProductToCart(tmpProduct);
   };
 
   return (
     <View
       style={{
-        borderRadius: 10,
-        // backgroundColor: themeStyle.SECONDARY_COLOR,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-
-        width: "90%",
-        alignSelf: "center",
-        opacity: !isInStore(item) ? 1 : 1,
-        overflow:'hidden'
-        // shadowColor: 'rgba(46, 46, 46, 0.6)',
-        //       shadowOffset: {
-        //         width: 2,
-        //         height: 2,
-        //       },
-        //       shadowOpacity: 1,
-        //       shadowRadius: 20,
-        //       elevation: 0,
-        //       borderWidth: 0,
-      
+        height: deviceType === devicesType.tablet ? 420 : 250,
+        borderRadius: 20,
+        overflow: "hidden",
+        // shadowColor: "#C19A6B",
+        // shadowOffset: {
+        //   width: 0,
+        //   height: 2,
+        // },
+        // shadowOpacity: 0.9,
+        // shadowRadius: 6,
+        // elevation: 10,
+        // borderWidth:0,
+        // backgroundColor:'transparent',
       }}
     >
-                {!isInStore(item) && (
-            <View
-              style={{ position: "absolute", width: "100%", bottom:"50%", backgroundColor:themeStyle.SECONDARY_COLOR, zIndex:10}}
-            >
-          
-              <Text
-                style={{
-                  color: themeStyle.WHITE_COLOR,
-                  fontFamily: `${getCurrentLang()}-SemiBold`,
-                  fontSize: 20,
-                  alignSelf: "center",
-                  
-                }}
-              >
-                {getOutOfStockMessage(item)}
-              </Text>
-            </View>
-          )}
-      {/* <LinearGradient
-        colors={[
-          "rgba(207, 207, 207, 0.9)",
-          "rgba(232, 232, 230, 0.8)",
-          "rgba(232, 232, 230, 0.8)",
-          "rgba(232, 232, 230, 0.8)",
-          "rgba(207, 207, 207, 0.9)",
-        ]}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.background,{borderRadius:30}]}
-      /> */}
       <TouchableOpacity
-        style={[
-          styles.categoryItem,
-          {
-            opacity: isDisabled(item) ? 0.3 : 1,
-            height: "100%",
-            overflow: "hidden",width:"100%"
-          },
-        ]}
+        style={[styles.categoryItem, { opacity: isDisabled(item) ? 0.4 : 1 }]}
         delayPressIn={30}
         onPress={() => {
-          onAddToCart(item);
+          onItemSelect(item);
         }}
         key={item.id}
         disabled={isDisabled(item)}
       >
-        {/* <View
-          style={{
-            backgroundColor: themeStyle.PRIMARY_COLOR,
-            position: "absolute",
-            alignSelf: "center",
-            top: -35,
-            padding: 10,
-            borderRadius: 20,
-            zIndex: 1,
-          }}
-        >
-          <Icon
-            icon="shopping-bag-plus"
-            size={25}
-            style={{ color: themeStyle.SECONDARY_COLOR }}
-          />plus-add-icon
-        </View> */}
-        <View style={{height:"75%"}}>
-
-        <ImageBackground
-          source={require("../../../../assets/pngs/gray-veg-bg.png")}
-          resizeMode="cover"
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            padding:10
-
-          }}
-        >
+        <View style={{ height: deviceType === devicesType.tablet ? 350 : 250 }}>
           <CustomFastImage
             style={{
-              width: "60%",
-              height: "100%",
-              left:20,
-              shadowColor: 'black',
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.9,
-              shadowRadius: 6,
-              elevation: 0,
-              borderWidth: 0,
-              
+              height: deviceType === devicesType.tablet ? 350 : 250,
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              right: 0,
+              left: 0,
             }}
             source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
             cacheKey={`${item.img[0].uri.split(/[\\/]/).pop()}`}
-            resizeMode="contain"
+            resizeMode={item.subCategoryId == '2' ? 'stretch' : null}
           />
-        </ImageBackground>
-        </View>
+          {/* <ImageBackground
+          source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
+          resizeMode={"cover"}
+        > */}
+          <View
+            style={{
+              backgroundColor: "rgba(247,247,247,0.6)",
+              alignItems: "center",
+              padding: 5,
+              bottom:0,
+              position:'absolute',
+              width:"100%"
+            }}
+          >
+            <Text
+              style={{
+                color: themeStyle.GRAY_700,
+                marginTop: 5,
+                fontSize: 18,
+                fontFamily: `${getCurrentLang()}-SemiBold`,
+                textAlign: "center",
+              }}
+            >
+              {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
+            </Text>
+          </View>
+          {/* <LinearGradient
+          colors={["rgba(250, 249, 248,1)", "rgba(250, 249, 248,1)"]}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.background]}
+        /> */}
 
-        <View
-          style={{
-            // height: deviceType === devicesType.tablet ? 90 :90,
-            
-            alignItems: "center",
-            height: "25%",
-            justifyContent:'center'
-          }}
-        >
+          {/* <View style={[styles.iconContainer]}>
+          <Image
+            style={{
+              width: "100%",
+              height: "100%",
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+            }}
+            source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
+            resizeMode="stretch"
+          />
+        </View> */}
+
           <View
             style={{
               flexDirection: "row",
-              width: "100%",
-              justifyContent:'space-between',
-              paddingHorizontal:15,
-              paddingVertical:10,
-              alignItems:'center',
-   
+              marginTop: 8,
+              alignItems: "center",
+              justifyContent: "center",
+              paddingHorizontal: 8 / -2,
             }}
           >
-       
-            <View
-              style={{
-                justifyContent: "center",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                }}
-              >
-                <Text style={{  fontSize: 22, color: themeStyle.SECONDARY_COLOR }}>
-                  {languageStore.selectedLang === "ar"
-                    ? item.nameAR
-                    : item.nameHE}
-                </Text>
-                {/* <View style={{ paddingHorizontal: 8 / 2 }}>
+            {/* <View style={{ paddingHorizontal: 8 / 2 }}>
             <Text
               style={{
                 color: themeStyle.GRAY_700,
@@ -254,7 +177,7 @@ const ProductItem = ({
               ₪{item.price}
             </Text>
           </View> */}
-                {/* {userDetailsStore.isAdmin() && item.count > 0 && (
+            {/* {userDetailsStore.isAdmin() && item.count > 0 && (
               <View style={{ paddingHorizontal: 8 / 2 }}>
                 <Text
                   style={{
@@ -268,7 +191,7 @@ const ProductItem = ({
               </View>
             )} */}
 
-                {/* {isInStore(item) && (
+            {/* {isInStore(item) && (
             <View>
               {!userDetailsStore.isAdmin() && (
                 <Button
@@ -286,28 +209,35 @@ const ProductItem = ({
               )}
             </View>
           )} */}
-              </View>
-              {/* <View
+          </View>
+          {!isInStore(item) && (
+            <View
+              style={{ position: "absolute", bottom: "50%", width: "100%" }}
+            >
+              <LinearGradient
+                colors={[
+                  "rgba(207, 207, 207, 0.9)",
+                  "rgba(232, 232, 230, 0.9)",
+                  "rgba(232, 232, 230, 0.9)",
+                  "rgba(232, 232, 230, 0.9)",
+                  "rgba(207, 207, 207, 0.9)",
+                ]}
+                start={{ x: 1, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.background, { borderRadius: 0 }]}
+              />
+              <Text
                 style={{
-                  width: "100%",
-                  flexDirection: "row",
+                  color: themeStyle.GRAY_700,
+                  fontFamily: `${getCurrentLang()}-SemiBold`,
+                  fontSize: 20,
+                  alignSelf: "center",
                 }}
               >
-                <Text style={{ fontSize: 22 }}>{item.price}10 ₪</Text>
-              </View> */}
+{getOutOfStockMessage(item)}
+              </Text>
             </View>
-            {/* <Image
-              source={addToCartIcon}
-              style={{ alignSelf: "center", width: 35, height: 32 }}
-            /> */}
-
-<Icon
-            icon="plus-add-icon"
-            size={35}
-            style={{ color: themeStyle.SECONDARY_COLOR }}
-          />
-          </View>
-
+          )}
           {userDetailsStore.isAdmin() && (
             <View
               style={{
@@ -401,8 +331,10 @@ const styles = StyleSheet.create({
     // height:"100%"
   },
   categoryItem: {
-    width: "100%",
+    width: "95%",
+    overflow: "hidden",
     //height: 280,
+    borderRadius: 0,
     // backgroundColor: "rgba(255, 255, 255, 0.7)",
     borderColor: "rgba(0, 0, 0, 0.1)",
 
@@ -425,6 +357,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 4,
     height: "100%",
+    shadowColor: "black",
     width: 150,
   },
   background: {
@@ -433,6 +366,6 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    borderRadius: 30,
+    borderRadius: 0,
   },
 });

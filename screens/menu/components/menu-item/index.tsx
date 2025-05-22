@@ -101,8 +101,8 @@ const MenuItem = ({
             width: "100%",
             height: "100%",
           }}
-          source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
-          cacheKey={`${APP_NAME}_${item.img[0].uri.split(/[\\/]/).pop()}`}
+          source={{ uri: `${cdnUrl}${item?.img[0]?.uri}` }}
+          cacheKey={`${APP_NAME}_${item?.img[0]?.uri?.split(/[\\/]/).pop()}`}
         />
 
             {/* <Image

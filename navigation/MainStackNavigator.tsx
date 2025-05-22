@@ -33,6 +33,7 @@ import BookDeliveryScreen from "../screens/book-delivery";
 import CustomDeliveryListScreen from "../screens/book-delivery/list";
 import CheckoutScreen from "../screens/checkout";
 import PickTimeCMP from "../components/dialogs/pick-time";
+import StoresScreen from "../screens/stores/stores";
 
 const Stack = createStackNavigator();
 const TransitionScreen = {
@@ -121,6 +122,8 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="custom-delivery-list" component={CustomDeliveryListScreen} />
       <Stack.Screen name="checkout-screen" component={CheckoutScreen} initialParams={{ selectedDate: null }}/>
       <Stack.Screen name="pick-time-screen" component={PickTimeCMP} />
+      <Stack.Screen name="stores-screen" component={StoresScreen} initialParams={{ categoryId: null }}/>
+
       <Stack.Screen 
         name="order-submitted"
         component={OrderSubmittedScreen}

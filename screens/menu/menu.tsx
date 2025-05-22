@@ -26,14 +26,10 @@ import * as Haptics from "expo-haptics";
 import MenuItem from "./components/menu-item/index";
 import AddMenuItem from "./components/menu-item/add";
 import useWebSocket from "react-use-websocket";
+import { WS_URL } from "../../consts/api";
 import { ActivityIndicator } from "react-native-paper";
 import { adminCustomerStore } from "../../stores/admin-customer";
-import { useNavigation } from "@react-navigation/native";
-import _useWebSocketUrl from "../../hooks/use-web-socket-url";
-import { animationDuration } from "../../consts/shared";
-import * as Animatable from "react-native-animatable";
-import { useResponsive } from "../../hooks/useResponsive";
-
+import CategoryList from "./components/category/category-list";
 export function toBase64(input) {
   return Buffer.from(input, "utf-8").toString("base64");
 }
@@ -44,12 +40,7 @@ export function fromBase64(encoded) {
 
 const MenuScreen = () => {
   const { t } = useTranslation();
-  const navigation = useNavigation();
-  const { isTablet, isPad, scale, fontSize, height } = useResponsive();
-
   const scrollRef = useRef();
-  const animationRefs = useRef({});
-
 
   const { menuStore, languageStore, userDetailsStore } =
     useContext(StoreContext);
@@ -57,11 +48,8 @@ const MenuScreen = () => {
 
   useEffect(() => {}, [languageStore]);
 
-  const { webScoketURL } = _useWebSocketUrl();
-
-  const { lastJsonMessage } = useWebSocket(webScoketURL, {
+  const { lastJsonMessage } = useWebSocket(WS_URL, {
     share: true,
-    shouldReconnect: (closeEvent) => true,
   });
 
   useEffect(() => {
@@ -81,27 +69,13 @@ const MenuScreen = () => {
 
   const [selectedCategoryKey, setSelectedCategoryKey] = useState("BURGERS");
 
-  useEffect(()=>{
-    if(animationRefs.current && animationRefs.current[tmpSelectedCategory?.categoryId]){
-      animationRefs.current[tmpSelectedCategory?.categoryId].fadeInRight(1000);
-
-    }
-  },[tmpSelectedCategory?.categoryId])
-
   const onCategorySelect = (category) => {
-
     if (category.categoryId != selectedCategory.categoryId) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setTmpSelectedCategoryProg(true);
       setIsDisabledCatItem(true);
-      menuStore.updateSelectedCategory(category.categoryId);
       setSelectedCategory(category);
       setTmpSelectedCategory(undefined);
-      // console.log("cate",category)
-      // if(category?.categoryId == "1"){
-      //   navigation.navigate("meal", { product: category.products[0], category });
-
-      // }
     }
   };
   const onAddCategory = () => {
@@ -111,7 +85,6 @@ const MenuScreen = () => {
   useEffect(() => {
     //if (selectedCats.indexOf(selectedCategory) > -1) {
     setTmpSelectedCategoryProg(false);
-    menuStore.updateSelectedCategory(selectedCategory?.categoryId);
     setTmpSelectedCategory(selectedCategory);
     setIsDisabledCatItem(false);
     return;
@@ -129,8 +102,6 @@ const MenuScreen = () => {
   const getMenu = () => {
     const categories = menuStore.categories;
     setCategoryList(categories);
-    menuStore.updateSelectedCategory(selectedCategory?.categoryId || categories[0]?.categoryId);
-
     setSelectedCategory(selectedCategory || categories[0]);
   };
 
@@ -146,7 +117,6 @@ const MenuScreen = () => {
     });
 };
 
-  const anim = useRef(new Animated.Value(10));
 
   const handleMenuAnimScrollEnd = () => {
 
@@ -154,6 +124,7 @@ const MenuScreen = () => {
       productsAnimate();
 
   }
+  const anim = useRef(new Animated.Value(10));
 
   const tasteScorll = ()=> {
       Animated.timing(anim.current, {
@@ -163,7 +134,7 @@ const MenuScreen = () => {
   
       }).start(()=>{
         Animated.timing(anim.current, {
-          toValue: 0,
+          toValue:-10,
           duration: 600,
           useNativeDriver: true,
     
@@ -217,32 +188,23 @@ const MenuScreen = () => {
   }
   return (
     <View style={{ height: "100%", marginTop: 0 }}>
-      <View style={[styles.container, { marginTop: isTablet ? 40 : 10 }]}>
-      <ScrollView
-          ref={scrollRef}
-          style={{ height: "100%", width: "100%", }}
-                    horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          decelerationRate={0.5}
-        >
-          {/* {userDetailsStore.isAdmin() && <View style={{ width: 120, height: 96, flexBasis: 90 }}>
-            <AddMenuItem onItemSelect={onAddCategory} />
-                      style={{ height: "100%", width: "100%",flexDirection:'row', alignItems:'center', justifyContent:'center',  paddingTop:15,}}
+            <CategoryList categoryList={categoryList} onCategorySelect={onCategorySelect} selectedCategory={selectedCategory} isDisabledCatItem={isDisabledCatItem} />
 
-          </View>} */}
-          {/* <Animated.View style={{flexDirection:'row'}}> */}
-          <Animated.View style={{flexDirection:'row', transform:[{translateX: anim.current}]}}> 
+      {/* <View style={styles.container}>
+        <ScrollView
+          ref={scrollRef}
+          style={{ height: "100%", width: "100%" }}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          decelerationRate={0.5}          
+        >
+          <Animated.View style={{flexDirection:'row', transform:[{translateX: anim.current}]}}>
 
        
-          {[...categoryList]
-              .filter((category) => !category.isHidden)
-              .sort((a, b) => a.order - b.order)
-              .map((category) => (
+          {categoryList.map((category) => (
             <View
               style={{
-                width: 100,
-                height:100,
-                marginHorizontal:5
+                width: selectedCategory._id === category._id ? 70 : 70,
               }}
               key={category._id}
             >
@@ -254,9 +216,9 @@ const MenuScreen = () => {
                 />
             </View>
           ))}
-              </Animated.View>
+          </Animated.View>
         </ScrollView>
-      </View>
+      </View> */}
       {/* <LinearGradient
         colors={[
           "rgba(239, 238, 238, 0.04)",
@@ -285,27 +247,12 @@ const MenuScreen = () => {
                 category.categoryId === tmpSelectedCategory?.categoryId
                   ? "flex"
                   : "none",
-                  marginTop:25,
-                  
             }}
           >
-            <Animatable.View
-              animation="fadeInUp"
-              duration={animationDuration}
-              style={{ height: "100%" }}
-              ref={(ref) => (animationRefs.current[category.categoryId] = ref)}
-            >
-              {category.products && category.products.length > 0 ? (
-                <CategoryItemsList
-                  productsList={category.products}
-                  category={category}
-                />
-              ) : (
-                <View style={styles.emptyStateContainer}>
-                  <Text style={styles.emptyStateText}>{t("empty-category")}</Text>
-                </View>
-              )}
-            </Animatable.View>
+            <CategoryItemsList
+              productsList={category.products}
+              category={category}
+            />
           </View>
         ))}
       </View>
@@ -319,14 +266,15 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     flexDirection: "row",
-    height: 135,
+    paddingTop: 10,
+    height: 115,
     paddingHorizontal: 5,
     // backgroundColor: "#F1F1F1",
   },
   categoryItem: {},
   iconContainer: {},
   itemsListConainer: {
-    top: 100,
+    top: 120,
     position: "absolute",
     alignSelf: "center",
   },
@@ -337,16 +285,5 @@ const styles = StyleSheet.create({
     top: 10,
     bottom: 0,
     zIndex: -1,
-  },
-  emptyStateContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop:100,
-  },
-  emptyStateText: {
-    fontSize: themeStyle.FONT_SIZE_2XL,
-    color: themeStyle.SECONDARY_COLOR,
-    textAlign: 'center',
-    fontWeight: themeStyle.FONT_WEIGHT_MEDIUM,
   },
 });

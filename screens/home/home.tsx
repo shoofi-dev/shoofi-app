@@ -42,6 +42,7 @@ import { duration } from "moment";
 import StoreIsCloseDialog from "../../components/dialogs/store-is-close";
 import StoreErrorMsgDialog from "../../components/dialogs/store-errot-msg";
 import moment from "moment";
+import StoresCategoryList from "./categories/list";
 
 const HomeScreen = ({ navigation }) => {
   const { t } = useTranslation();
@@ -66,7 +67,9 @@ const HomeScreen = ({ navigation }) => {
     authStore,
     storeDataStore,
     adminCustomerStore,
+    shoofiAdminStore
   } = useContext(StoreContext);
+  const [categoryList, setCategoryList] = useState(null);
 
   const displayTemrsAndConditions = async () => {
     if (!userDetailsStore.isAcceptedTerms) {
@@ -119,10 +122,13 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     goToAdminDashboard();
     displayTemrsAndConditions();
-    const imagesList = storeDataStore.storeData.home_sliders.map(
-      (img) => `${img}`
-    );
-    setHomeSlides(imagesList);
+    // const imagesList = storeDataStore.storeData.home_sliders.map(
+    //   (img) => `${img}`
+    // );
+    // setHomeSlides(imagesList);
+    if (shoofiAdminStore?.categoryList) {
+      setCategoryList(shoofiAdminStore.categoryList);
+    }
   }, [storeDataStore.storeData?.id]);
 
   useEffect(() => {
@@ -293,9 +299,44 @@ const HomeScreen = ({ navigation }) => {
     }, 1000);
   }, []);
 
-  if (!isAppReady || !storeDataStore.storeData) {
+  if (!isAppReady || !shoofiAdminStore?.categoryList) {
     return;
   }
+
+  return (
+    <View
+      style={{
+        height: "100%",
+        backgroundColor: "transparent",
+        display: isHideScreen ? "none" : "flex",
+        
+        marginTop:20
+      }}
+    >
+      <View style={{flexDirection:'column', alignItems:'flex-start', marginHorizontal:20,}}>
+      <View>
+        <Text style={{fontWeight:'900', fontSize:25}}>
+        {t('ברוכים הבאים')},
+        </Text>
+      </View>
+      <View>
+      <Text style={{fontWeight:'500', fontSize:20}}>
+                {t('לאפליקצית טירה שופ')}.
+        </Text>
+      </View>
+      </View>
+      <View
+        style={{
+          alignItems: "center",
+          paddingTop: 20,
+          paddingBottom: 20,
+          // backgroundColor: "rgba(255,255,255,0.6)",
+        }}
+      >
+        <StoresCategoryList categoryList={categoryList} />
+      </View>
+    </View>
+  );
   return (
     <View
       style={{

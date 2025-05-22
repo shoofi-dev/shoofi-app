@@ -1,0 +1,48 @@
+import { useTranslation } from "react-i18next";
+import { View } from "react-native";
+import { observer } from "mobx-react";
+import { useContext } from "react";
+import { StoreContext } from "../../../../stores";
+import Text from "../../../../components/controls/Text";
+import Button from "../../../../components/controls/button/button";
+import themeStyle from "../../../../styles/theme.style";
+import { getCurrentLang } from "../../../../translations/i18n";
+
+export type TProps = {
+  isEdit: boolean;
+  isValidForm: boolean;
+  onAddToCart: () => void;
+  onUpdateCartProduct: () => void;
+  price: number;
+};
+const ProductFooter = ({
+  isEdit,
+  onAddToCart,
+  onUpdateCartProduct,
+  isValidForm,
+  price
+}: TProps) => {
+  const { t } = useTranslation();
+  let { languageStore } = useContext(StoreContext);
+
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
+
+        <Button
+          text={isEdit ? t("save") : t("add-to-cart")}
+          icon="shopping-bag-plus"
+          fontSize={17}
+          onClickFn={isEdit ? onUpdateCartProduct : onAddToCart}
+          fontFamily={`${getCurrentLang()}-Bold`}
+          disabled={!isValidForm}
+        />
+    </View>
+  );
+};
+
+export default observer(ProductFooter);

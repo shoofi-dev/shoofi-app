@@ -118,6 +118,7 @@ const App = () => {
     menuStore,
     storeDataStore,
     languageStore,
+    shoofiAdminStore
   } = useContext(StoreContext);
   // const { t } = useTranslation();
   // const invoiceRef = useRef();
@@ -513,12 +514,14 @@ const App = () => {
       await Font.loadAsync(customARFonts);
       setIsFontReady(true);
 
-      const fetchMenu = menuStore.getMenu();
+      // const fetchMenu = menuStore.getMenu();
       //const fetchHomeSlides = menuStore.getSlides();
-      const fetchStoreDataStore = storeDataStore.getStoreData();
+      // const fetchStoreDataStore = storeDataStore.getStoreData();
+      const fetchStoresList = shoofiAdminStore.getStoresListData();
+      const fetchCategoryList = shoofiAdminStore.getCategoryListData();
       const fetchTranslations = translationsStore.getTranslations();
 
-      Promise.all([fetchMenu, fetchStoreDataStore, fetchTranslations]).then(
+      Promise.all([fetchStoresList, fetchCategoryList, fetchTranslations]).then(
         async (responses) => {
           // const tempHomeSlides = storeDataStore.storeData.home_sliders.map(
           //   (slide) => {
@@ -543,7 +546,16 @@ const App = () => {
             Promise.all([
               fetchUserDetails,
               // fetchOrders,
-            ]).then((res) => {
+            ]).then(async (res: any) => {
+              const store = res[0];
+              if(store.storeId){
+                const storeData = shoofiAdminStore.getStoreById(store.storeId);
+                await shoofiAdminStore.setStoreDBName(storeData.dbName);
+                await menuStore.getMenu();
+                await storeDataStore.getStoreData();
+                console.log("storeId", store.storeId)
+                
+              }
               setTimeout(() => {
                 setAppIsReady(true);
               }, 2000);
@@ -778,6 +790,7 @@ const App = () => {
             translationsStore: translationsStore,
             adminCustomerStore: adminCustomerStore,
             errorHandlerStore: errorHandlerStore,
+            shoofiAdminStore: shoofiAdminStore,
           }}
         >
           <View style={{ height: "100%" }}>

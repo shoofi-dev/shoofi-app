@@ -185,7 +185,7 @@ const ProductCarousleItem = ({
               position: "absolute",
             }}
             source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
-            cacheKey={`${item.img[0].uri.split(/[\\/]/).pop()}`}
+            cacheKey={`${item.img[0]?.uri?.split(/[\\/]/).pop()}`}
           />
           <View
             style={{

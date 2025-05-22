@@ -41,7 +41,11 @@ class StoreDataStore {
   
   isUpdateAppVersionFromServer = async () => {
     return axiosInstance
-      .get(`${STORE_API.IS_UPDATE_VERSION_STORE_API}`)
+      .get(`${STORE_API.IS_UPDATE_VERSION_STORE_API}`, {
+        headers: {
+          "db-name": "shoofi"
+        }
+      })
       .then(function (response) {
         const res = response;
         return res;

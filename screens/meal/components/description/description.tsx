@@ -1,0 +1,37 @@
+import { useTranslation } from "react-i18next";
+import { View } from "react-native";
+import { observer } from "mobx-react";
+import { useContext } from "react";
+import { StoreContext } from "../../../../stores";
+import Text from "../../../../components/controls/Text";
+
+export type TProps = {
+  product: any;
+};
+const ProductDescription = ({ product }: TProps) => {
+  const { t } = useTranslation();
+  let { languageStore } = useContext(StoreContext);
+
+  return (
+    <View
+      style={{
+        alignItems:'flex-start'
+      }}
+    >
+      <View>
+        <Text style={{ fontSize: 18 }}>
+            {t('description')}
+        </Text>
+      </View>
+      <View style={{marginTop:10}}>
+      <Text style={{ fontSize: 18, textAlign: 'left' }}>
+      {languageStore.selectedLang === "ar"
+                    ? product.descriptionAR
+                    : product.descriptionHE}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+export default observer(ProductDescription);

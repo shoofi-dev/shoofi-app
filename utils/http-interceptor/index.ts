@@ -25,7 +25,10 @@ axiosInstance.interceptors.request.use(
     const version = Constants.nativeAppVersion;
     config.headers["app-version"] = version;
     
-    config.headers["app-name"] = APP_NAME;
+    // config.headers["app-name"] = APP_NAME;
+    const storeDB = await AsyncStorage.getItem("@storage_storeDB")
+    config.headers["app-name"] = config.headers["db-name"] || storeDB || "shoofi";
+
 
     return config;
   },

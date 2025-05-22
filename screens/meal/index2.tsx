@@ -1,17 +1,24 @@
 import {
   StyleSheet,
   View,
+  Image,
   TouchableOpacity,
   DeviceEventEmitter,
   TextInput,
   KeyboardAvoidingView,
+  Animated,
+  Dimensions,
   Platform,
 } from "react-native";
+import ProductHeader from "./components/header/header";
+import ProductDescription from "./components/description/description";
+import ProductFooter from "./components/footer/footer";
+
 import Text from "../../components/controls/Text";
+import BirthdayImagesList from "../../components/birthday-images-list";
 import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react";
-import { groupBy, isEmpty } from "lodash";
-import * as Animatable from "react-native-animatable";
+import { isEmpty } from "lodash";
 
 import GradiantRow from "../../components/gradiant-row";
 import Button from "../../components/controls/button/button";
@@ -22,19 +29,44 @@ import themeStyle from "../../styles/theme.style";
 import Icon from "../../components/icon";
 import { getCurrentLang } from "../../translations/i18n";
 import { useTranslation } from "react-i18next";
+import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import {
-  animationDuration,
-  APP_NAME,
+  canOrderOutOfStock,
   cdnUrl,
   ORDER_TYPE,
+  shmareemId,
+  TASETS_LIST,
 } from "../../consts/shared";
-
-import CustomFastImage from "../../components/custom-fast-image";
-
-import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
+import CheckBox from "../../components/controls/checkbox";
 import Counter from "../../components/controls/counter";
-import { useResponsive } from "../../hooks/useResponsive";
+import PickImagedDialog from "../../components/dialogs/pick-image";
+import DropDown from "../../components/controls/dropdown";
+import CustomFastImage from "../../components/custom-fast-image";
+import PickImageNotificationDialog from "../../components/dialogs/pick-image-notification/pick-image-notification";
+import OutOfStockDialog from "../../components/dialogs/out-of-stock/out-of-stock";
+import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
+import InputText from "../../components/controls/input";
+import AddCustomImagedDialog from "../../components/dialogs/add-custom-image";
+
+const showCakeNoteList = ["3", "5"];
+
+const gradiantColors =
+  Platform.OS === "ios"
+    ? [
+        "rgba(199, 199, 199, 0.9)",
+        "rgba(254, 254, 254, 0.9)",
+        "rgba(254, 254, 254, 0.9)",
+        "rgba(254, 254, 254, 0.9)",
+        "rgba(199, 199, 199, 0.9)",
+      ]
+    : [
+        "rgba(199, 199, 199, 0.5)",
+        "rgba(254, 254, 254, 0.1)",
+        "rgba(254, 254, 254, 0.1)",
+        "rgba(254, 254, 254, 0.1)",
+        "rgba(199, 199, 199, 0.1)",
+      ];
 
 const MealScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -42,56 +74,75 @@ const MealScreen = ({ route }) => {
 
   const { product, index, category } = route.params;
   const navigation = useNavigation();
-  let { cartStore, ordersStore, languageStore, storeDataStore, authStore } =
-    useContext(StoreContext);
+  let {
+    cartStore,
+    ordersStore,
+    languageStore,
+    storeDataStore,
+    userDetailsStore,
+  } = useContext(StoreContext);
   const [meal, setMeal] = useState(null);
+  const [clientImage, setClientImage] = useState();
+  const [suggestedImage, setSuggestedImage] = useState();
   const [isEdit, setIsEdit] = useState(false);
-  const [isDiscountApplied, setIsDiscountApplied] = useState(false);
-
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const [customCakeData, setCustomCakeData] = useState(null);
+  const [isPickImageDialogOpen, setIsPickImageDialogOpen] = useState(false);
+  const [
+    isPickImageNotificationDialogOpen,
+    setIsPickImageNotificationDialogOpen,
+  ] = useState(false);
+  const [pickImageNotificationDialogText, setPickImageNotificationDialogText] =
+    useState("");
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
   const [confirmActiondDialogText, setConfirmActiondDialogText] = useState("");
-
-  const { isTablet, isPad, scale, fontSize, height } = useResponsive();
 
   useEffect(() => {
     let tmpProduct: any = {};
     if (product) {
       setIsEdit(false);
-      tmpProduct.data = JSON.parse(JSON.stringify(product));
-      tmpProduct.others = { qty: 1, note: "" };
-
-      // Initialize price based on initial weight if it's a weight-based product
-      if (tmpProduct.data?.extras) {
-        Object.keys(tmpProduct.data.extras).forEach((key) => {
-          const extra = tmpProduct.data.extras[key];
-          if (extra.categoryId === "weight" && extra.value) {
-            const pricePerKg = tmpProduct.data.price;
-            const weightInKg = extra.value;
-            tmpProduct.data.price = pricePerKg * weightInKg;
-          }
-        });
+      tmpProduct.data = product;
+      if (isEmpty(tmpProduct)) {
+        tmpProduct.data = product;
       }
+      tmpProduct.others = { count: 1, note: "" };
     }
     if (index !== null && index !== undefined) {
       setIsEdit(true);
       tmpProduct = cartStore.getProductByIndex(index);
-      // Ensure discount fields are properly copied
-      if (product?.hasDiscount) {
-        tmpProduct.data.hasDiscount = product.hasDiscount;
-        tmpProduct.data.discountQuantity = product.discountQuantity;
-        tmpProduct.data.discountPrice = product.discountPrice;
-      }
     }
-
+    DeviceEventEmitter.emit(`update-meal-uri`, {
+      imgUrl: `${cdnUrl}${tmpProduct.data.img[0].uri}`,
+      cacheKey: `${cdnUrl}${tmpProduct.data.img[0].uri}`.split(/[\\/]/).pop(),
+    });
+    if (
+      tmpProduct.data.subCategoryId == "1" ||
+      tmpProduct.data.categoryId == "8"
+    ) {
+      if (tmpProduct.data.subCategoryId == "1") {
+        setPickImageNotificationDialogText(t("you-can-pick-image"));
+      }
+      if (tmpProduct.data.categoryId == "8") {
+        setPickImageNotificationDialogText(t("you-can-add-image-custom-cake"));
+      }
+      setIsPickImageNotificationDialogOpen(true);
+    }
     setMeal(tmpProduct);
-    return () => {
-      setMeal(null);
-    };
-  }, [index, product]);
+    setTimeout(() => {
+      tasteScorll();
+    }, 1000);
+  }, []);
+
 
   const onAddToCart = () => {
-    if (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) {
+    if (
+      (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) ||
+      (storeDataStore.storeData.isInStoreOrderLaterCats.indexOf(
+        meal?.data?.categoryId
+      ) > -1 &&
+        !meal.data.isInStore)
+    ) {
       setConfirmActiondDialogText(
         getOutOfStockMessage() || "call-store-to-order"
       );
@@ -99,13 +150,13 @@ const MealScreen = ({ route }) => {
       return;
     }
     DeviceEventEmitter.emit(`add-to-cart-animate`, {
-      imgUrl: meal.data.img,
+      imgUrl: `${cdnUrl}${meal.data.img[0].uri}`,
     });
 
     cartStore.addProductToCart(meal);
     setTimeout(() => {
       navigation.goBack();
-    }, 1000);
+    }, 1600);
   };
 
   const onUpdateCartProduct = () => {
@@ -115,9 +166,50 @@ const MealScreen = ({ route }) => {
     }, 1000);
   };
 
+  const handlePickImageAnswer = (value: any) => {
+    if (value?.clientImage) {
+      updateMealClientImage(
+        value?.clientImage,
+        "image",
+        null,
+        "suggestedImage"
+      );
+    }
+    if (value?.suggestedImage) {
+      updateMealClientImage(
+        value?.suggestedImage,
+        "suggestedImage",
+        null,
+        "image"
+      );
+    }
+    setIsPickImageDialogOpen(false);
+  };
+
+  const handlePickNotificationAnswer = (value: any) => {
+    setIsPickImageNotificationDialogOpen(false);
+    setTimeout(() => {
+      shake();
+    }, 500);
+  };
+
   const handleConfirmActionAnswer = (answer: string) => {
     setConfirmActiondDialogText("");
     setIsOpenConfirmActiondDialog(false);
+  };
+
+  const updateMealClientImage = (value1, tag1, value2, tag2) => {
+    setMeal({
+      ...meal,
+      data: {
+        ...meal.data,
+        extras: {
+          ...meal.data.extras,
+          [tag1]: { ...meal.data.extras[tag1], value: value1 },
+          [tag2]: { ...meal.data.extras[tag2], value: value2 },
+        },
+      },
+    });
   };
 
   const onClose = () => {
@@ -125,26 +217,37 @@ const MealScreen = ({ route }) => {
     navigation.goBack();
   };
 
-  // useEffect(() => {
-  //   if (meal && meal?.data?.extras?.weight) {
-  //     const mealPrice =
-  //       meal?.data?.extras?.weight?.price *
-  //       (meal?.data?.extras?.weight?.value /
-  //         meal?.data?.extras?.weight.minValue);
+  useEffect(() => {
+    if (meal) {
+      const sizePrice =
+        meal?.data?.extras?.size?.options[meal?.data?.extras?.size?.value]
+          .price;
+      let imagePrice =
+        meal.data.extras["image"] || meal.data.extras["suggestedImage"]
+          ? 10
+          : 0;
+      if (ordersStore.editOrderData) {
+        imagePrice =
+          meal.data.extras["image"]?.value?.uri ||
+          meal.data.extras["suggestedImage"]?.value
+            ? 10
+            : 0;
+      }
+      let finalPrice = sizePrice;
+      if (meal.data?.categoryId != "8") {
+        finalPrice = finalPrice + imagePrice;
+      }
+      setMeal({
+        ...meal,
+        data: {
+          ...meal.data,
+          price: finalPrice,
+        },
+      });
+    }
+  }, [meal?.data.extras]);
 
-  //     let finalPrice = mealPrice;
-
-  //     setMeal({
-  //       ...meal,
-  //       data: {
-  //         ...meal.data,
-  //         price: finalPrice,
-  //       },
-  //     });
-  //   }
-  // }, [meal?.data.extras]);
-
-  const updateMeal3 = (value, tag, type) => {
+  const updateMeal = (value, tag, type) => {
     setMeal({
       ...meal,
       data: {
@@ -157,108 +260,22 @@ const MealScreen = ({ route }) => {
     });
   };
 
-  const updateMeal = (value, extraData, type) => {
-    let extraPrice = 0;
-    console.log("value", value);
-    switch (type) {
-      case "COUNTER":
-        if (extraData.categoryId === "weight") { // "משקל" means "weight" in Hebrew
-          // Calculate price per kg (extraData.price is price per kg)
-          const pricePerKg = product.price;
-          // Convert weight from grams to kg for calculation
-          const weightInKg = 0.5;
-          // Calculate new total price based on weight
-          const newPrice = pricePerKg * weightInKg;
-          console.log("newPrice", newPrice);
-          extraPrice = newPrice; // The difference to add/subtract from current price
-          extraPrice =
-            value > extraData.value
-              ? newPrice
-              : newPrice * -1;
-        } else {
-          extraPrice =
-            value > extraData.value
-              ? extraPrice + extraData.price
-              : extraPrice - extraData.price;
-        }
-        break;
-      case "oneChoice":
-        if (!extraData.multiple_choice) {
-          // const currentTag = currentExtraType.find(
-          //   (tagItem) => tagItem.value === true
-          // );
-          // if (currentTag) {
-          //   const tagDeltaPrice = extraData.price - currentTag.price;
-          //   extraPrice = extraPrice + tagDeltaPrice;
-          // }
-        } else {
-          extraPrice = value
-            ? extraPrice + extraData.price
-            : extraPrice - extraData.price;
-        }
-        break;
-      case "CHOICE":
-        if (!extraData.multiple_choice) {
-          // const currentTag = currentExtraType.find(
-          //   (tagItem) => tagItem.value === true
-          // );
-          // if (currentTag) {
-          if (value === true) {
-            extraPrice = extraPrice + extraData.price;
-          } else {
-            extraPrice = extraPrice + extraData.price * -1;
-          }
-          // }
-        } else {
-          extraPrice = value
-            ? extraPrice + extraData.price
-            : extraPrice - extraData.price;
-        }
-        break;
-      default:
-        break;
-    }
-
-    extraData.value = value;
-    // meal.extras[type] = extraData;
+  const customCakeUpdateMealPrice = (price) => {
     setMeal({
       ...meal,
-      data: { ...meal.data, price: meal.data.price + extraPrice },
-      extras: {
-        ...meal.data?.extras,
-        [extraData.name]: {
-          ...meal.data.extras[extraData?.name],
-          value: value,
-        },
+      data: {
+        ...meal.data,
+        price: price,
       },
     });
   };
 
-  const calculatediscount = () => {
-    if (meal?.data?.hasDiscount) {
-      const totalWeight = meal?.others?.qty * meal?.data?.extras?.weight?.value;
-      const discountQuantity = parseFloat(meal?.data?.discountQuantity);
-      // Calculate complete sets using Math.floor
-      const completeSets = Math.floor(totalWeight / discountQuantity);
-      const priceWithSests = completeSets * (meal?.data?.discountPrice);
-      const totalWeightMinusSets = totalWeight - (completeSets * discountQuantity);
-      const totalWeightMinusSetsPrice = totalWeightMinusSets * product?.price;
-      const totalPrice = priceWithSests + totalWeightMinusSetsPrice;
-      if(completeSets > 0){
-        setIsDiscountApplied(true);
-      }else{
-        setIsDiscountApplied(false);
-      }
-      setMeal({
-        ...meal,
-        data: { ...meal.data, price: totalPrice },
-      });
-    }
-  }
-
-  useEffect(() => {
-    calculatediscount();
-  }, [meal?.others?.qty,meal?.data?.extras?.weight?.value]);
+  const tasteScorll = () => {
+    scrollRef.current?.scrollTo({
+      y: 500,
+      animated: true,
+    });
+  };
 
   const updateMeal2 = (value, tag, type) => {
     let extraPrice = 0;
@@ -269,8 +286,8 @@ const MealScreen = ({ route }) => {
           case "COUNTER":
             extraPrice =
               value > tagItem.value
-                ? extraPrice + tagItem.price
-                : extraPrice - tagItem.price;
+                ? extraPrice + tagItem.price * meal.others.count
+                : extraPrice - tagItem.price * meal.others.count;
             break;
           case "oneChoice":
             if (!tag.multiple_choice) {
@@ -283,8 +300,8 @@ const MealScreen = ({ route }) => {
               }
             } else {
               extraPrice = value
-                ? extraPrice + tagItem.price
-                : extraPrice - tagItem.price;
+                ? extraPrice + tagItem.price * meal.others.count
+                : extraPrice - tagItem.price * meal.others.count;
             }
             break;
           case "CHOICE":
@@ -298,8 +315,8 @@ const MealScreen = ({ route }) => {
               }
             } else {
               extraPrice = value
-                ? extraPrice + tagItem.price
-                : extraPrice - tagItem.price;
+                ? extraPrice + tagItem.price * meal.others.count
+                : extraPrice - tagItem.price * meal.others.count;
             }
             break;
           default:
@@ -324,15 +341,14 @@ const MealScreen = ({ route }) => {
   };
 
   const updateOthers = (value, key, type) => {
-    if (key === "qty") {
+    if (key === "count") {
       const updatedPrice =
         meal.data.price +
-        (value - meal.others.qty) * (meal.data.price / meal.others.qty);
-      console.log("valuevalue", value, key, type);
+        (value - meal.others.count) * (meal.data.price / meal.others.count);
       setMeal({
         ...meal,
         [type]: { ...meal[type], [key]: value },
-        // data: { ...meal.data, price: updatedPrice },
+        data: { ...meal.data },
       });
     } else {
       setMeal({ ...meal, [type]: { ...meal[type], [key]: value } });
@@ -350,6 +366,99 @@ const MealScreen = ({ route }) => {
     return isAvailable;
   };
 
+  const isOneChoiceTag = (tags) => {
+    const result = tags.find((tag) => tag.multiple_choice === false);
+    return !!result;
+  };
+  const isOneChoiceTagStyle = (tags) => {
+    const result = isOneChoiceTag(tags);
+    const rowStyle = {
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+    };
+    return result ? rowStyle : {};
+  };
+
+  const orderList = (index: any) => {
+    const result = Object.keys(meal.extras.orderList).find(
+      (key) => meal.extras.orderList[key] === index
+    );
+    return result;
+  };
+  const sizes = {
+    medium: true,
+    large: false,
+  };
+
+  const [sizesOptions, setSizeOptions] = useState(sizes);
+
+  const onSizeChange = (value, key) => {
+    const updatesSizeOptions = sizes;
+    Object.keys(sizesOptions).forEach((size) => {
+      updatesSizeOptions[size] = size === key;
+    });
+    setSizeOptions(updatesSizeOptions);
+  };
+
+  const getPriceBySize = () => {
+    return null;
+    let finalPrice = 0;
+    if (
+      meal.data.extras?.image?.value ||
+      meal.data.extras?.suggestedImage?.value
+    ) {
+      finalPrice = finalPrice + 10;
+    }
+    finalPrice =
+      finalPrice +
+      meal.data.extras.size.options[meal.data.extras.size.value].price;
+
+    return finalPrice;
+
+    const size = meal.data.extras.size.options?.filter(
+      (size) => size.title === meal.data.extras.size.value
+    )[0];
+    return size.price;
+  };
+
+  const onSelectToggle = (value: boolean) => {
+    setIsSelectOpen(value);
+  };
+
+  const isValidMeal = () => {
+    return isTasteValid();
+  };
+
+  const isTasteValid = () => {
+    if (meal.data.extras["taste"] && meal.data.extras["taste"].options) {
+      let isValid = true;
+      if (
+        !isEmpty(meal.data.extras["taste"].value) &&
+        Object.keys(meal.data.extras["taste"].value).length ==
+          Object.keys(meal.data.extras["taste"].options).length
+      ) {
+        Object.keys(meal.data.extras["taste"].value).forEach((tasteKey) => {
+          if (!meal.data.extras["taste"].value[tasteKey]) {
+            isValid = false;
+          }
+        });
+      } else {
+        return false;
+      }
+
+      return isValid;
+    } else {
+      return true;
+    }
+  };
+
+  const initShmareemTastes = (list) => {
+    const tmpList = list.filter(
+      (taste) => meal.data.activeTastes.indexOf(taste.value) > -1
+    );
+    return tmpList;
+  };
+
   const getOutOfStockMessage = () => {
     if (
       meal.data.notInStoreDescriptionAR ||
@@ -362,435 +471,159 @@ const MealScreen = ({ route }) => {
     return null;
   };
 
-  const handleCartClick = () => {
-    if (authStore.isLoggedIn()) {
-      if (cartStore.getProductsCount() > 0) {
-        navigation.navigate("cart");
-      }
+  const handleCustomCakeInputChange = (value, key) => {
+    setCustomCakeData({
+      ...customCakeData,
+      [key]: value,
+    });
+  };
+  const anim = useRef(new Animated.Value(0));
+
+  const shake = useCallback(() => {
+    // makes the sequence loop
+    Animated.loop(
+      // runs the animation array in sequence
+      Animated.sequence([
+        // shift element to the left by 2 units
+        Animated.timing(anim.current, {
+          toValue: 1,
+          duration: 200,
+        }),
+        // shift element to the right by 2 units
+        Animated.timing(anim.current, {
+          toValue: 1.2,
+          duration: 200,
+        }),
+        // bring the element back to its original position
+        Animated.timing(anim.current, {
+          toValue: 1,
+          duration: 200,
+        }),
+      ]),
+      // loops the above animation config 2 times
+      { iterations: 2 }
+    ).start();
+  }, []);
+
+  const handlePickImage = () => {
+    if (storeDataStore.storeData.image_support) {
+      setIsPickImageDialogOpen(true);
     } else {
-      navigation.navigate("login");
+      setConfirmActiondDialogText(t("image-not-supported"));
+      setIsOpenConfirmActiondDialog(true);
     }
   };
-
-  const isValidMeal = () => {
-    return true;
-  };
-
-  const groupExtrasByCategory = () => {
-    const extras = groupBy(meal?.data?.extras, (x) => x.categoryId);
-    return extras;
-  };
-
-  const extasByCategory: any = groupExtrasByCategory();
 
   if (!meal) {
     return null;
   }
 
   return (
-    <Animatable.View
-      animation="fadeInUp"
-      duration={animationDuration}
-      style={{ height: "100%" }}
-    >
-      <View style={{ zIndex: 10 }}>
-        <TouchableOpacity
-          onPress={onClose}
-          style={{
-            zIndex: 1,
-            position: "absolute",
-            right: 0,
-            width: isTablet ? 60 : 45,
-            padding: 0,
-            alignItems: "center",
-            height: isTablet ? 55 : 40,
-            justifyContent: "center",
-            top: 10,
-            backgroundColor: "rgba(36, 33, 30, 0.8)",
-            borderTopStartRadius: 50,
-            borderBottomStartRadius: 50,
-            alignSelf: "center",
-            shadowColor: themeStyle.SECONDARY_COLOR,
-            shadowOffset: {
-              width: 0,
-              height: 3,
-            },
-            shadowOpacity: 1,
-            shadowRadius: 15,
-            elevation: 5,
-            borderWidth: 0,
-          }}
-        >
-          <Text
-            style={{
-              color: themeStyle.SECONDARY_COLOR,
-              fontSize: isTablet ? 40 : 30,
-            }}
-          >
-            X
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View style={{ zIndex: 10 }}>
-        <TouchableOpacity
-          style={[
-            {
-              zIndex: 1,
-              position: "absolute",
-              left: 0,
-              width: isTablet ? 60 : 45,
-              padding: 9,
-              alignItems: "center",
-              height: isTablet ? 60 : 45,
-              justifyContent: "center",
-              top: 10,
-              backgroundColor: "rgba(36, 33, 30, 0.8)",
-              borderTopEndRadius: 50,
-              borderBottomEndRadius: 50,
-              alignSelf: "center",
-              shadowColor: themeStyle.SECONDARY_COLOR,
-              shadowOffset: {
-                width: 0,
-                height: 3,
-              },
-              shadowOpacity: 1,
-              shadowRadius: 15,
-              elevation: 5,
-              borderWidth: 0,
-            },
-          ]}
-          onPress={handleCartClick}
-        >
-          <Icon
-            icon="grill"
-            size={isTablet ? 50 : 40}
-            style={{ color: themeStyle.SECONDARY_COLOR }}
-          />
-
-          <Text style={styles.cartCount}>{cartStore.getProductsCount()}</Text>
-        </TouchableOpacity>
-      </View>
-
+    <View style={{ height: "100%" }}>
+      {/* <ScrollView ref={scrollRef} style={{ height: "100%",borderWidth:1 }}> */}
+      {/* <KeyboardAvoidingView
+          keyboardVerticalOffset={100}
+          behavior="position"
+          style={{ height:"100%" }}
+        > */}
       <View
         style={{
-          shadowColor: "black",
+          height: "50%",
+          marginHorizontal: 5,
+          shadowColor: themeStyle.SHADOW_COLOR,
           shadowOffset: {
             width: 0,
             height: 2,
           },
           shadowOpacity: 0.9,
           shadowRadius: 6,
-          elevation: 0,
+          elevation: 20,
           borderWidth: 0,
-          padding: 5,
-          alignItems: "center",
-          marginTop: 20,
         }}
       >
-        <CustomFastImage
+        <View
           style={{
+            height: "100%",
             width: "100%",
-            height: isTablet ? 300 : 200,
+            alignSelf: "center",
           }}
-          source={{ uri: `${cdnUrl}${meal.data.img[0].uri}` }}
-          cacheKey={`${APP_NAME}_${meal.data.img[0].uri.split(/[\\/]/).pop()}`}
-          resizeMode="contain"
-        />
-      </View>
-      <View style={{ alignSelf: "center", marginTop: 10,alignItems: "center" }}>
-        <Text
-          style={{ fontSize: isTablet ? 30 : themeStyle.FONT_SIZE_4XL, color: themeStyle.SECONDARY_COLOR }}
-        >
-          {languageStore.selectedLang === "ar"
-            ? meal.data.nameAR
-            : meal.data.nameHE}
-        </Text>
-        {meal.data.hasDiscount && (
-          <Text
-            style={{
-              fontSize: isTablet ? 20 : 16,
-              color: themeStyle.SUCCESS_LIGHT_COLOR,
-              textAlign: "center",
-              marginTop: 5,
-              opacity: 0.8
-            }}
-          >
-            {t("special_offer")} : {meal.data.discountQuantity} {t("kg")} {t("for")} ₪{meal.data.discountPrice}
-          </Text>
-        )}
-      </View>
-      <ScrollView
-        ref={scrollRef}
-        style={{
-          height: "100%",
-          marginBottom: isTablet ? 150 : 120,
-        }}
-      >
-        <KeyboardAvoidingView
-          keyboardVerticalOffset={100}
-          behavior={"position"}
-          style={{ flex: 1 }}
         >
           <View
             style={{
-              width: isTablet ? "80%" : "100%",
-              height: "100%",
-              alignSelf: "center",
-              minHeight: height - (height * 70) / 100,
-              padding: isTablet ? 30 : 20,
+              backgroundColor: "transparent",
             }}
           >
-            <View
+            <CustomFastImage
               style={{
                 width: "100%",
-                alignSelf: "center",
+                height: "100%",
               }}
-            >
-              {extasByCategory &&
-                Object.keys(extasByCategory)?.map((extraCategoryId) => {
-                  return (
-                    <View
-                      style={{
-                        marginBottom: 15,
-                        borderRadius: 10,
-                      }}
-                    >
-                      {Object.keys(extasByCategory[extraCategoryId]).map(
-                        (key) => (
-                          <View
-                            style={{
-                              marginBottom: 10,
-                              width: "100%",
-                              padding: 10,
-                              paddingVertical: 10,
-                              borderRadius: 10,
-                            }}
-                          >
-                            <GradiantRow
-                              onChangeFn={(value) => {
-                                updateMeal(
-                                  value,
-                                  extasByCategory[extraCategoryId][key],
-                                  extasByCategory[extraCategoryId][key].type
-                                );
-                              }}
-                              type={extasByCategory[extraCategoryId][key].type}
-                              value={
-                                extasByCategory[extraCategoryId][key].value
-                              }
-                              title={t(
-                                extasByCategory[extraCategoryId][key].name
-                              )}
-                              stepValue={
-                                extasByCategory[extraCategoryId][key].stepValue
-                              }
-                              options={
-                                extasByCategory[extraCategoryId][key].options
-                              }
-                              minValue={extasByCategory[extraCategoryId][key].minValue}
-                              fontSize={20}
-                              color={themeStyle.SECONDARY_COLOR}
-                              variant={"colors"}
-                            />
-                          </View>
-                        )
-                      )}
-                    </View>
-                  );
-                })}
-            </View>
-            <View
-              style={{
-                position: "relative",
-                // backgroundColor: themeStyle.RGBA_BLACK,
-                borderRadius: 10,
-                // borderWidth: 1,
-                // borderColor: themeStyle.SECONDARY_COLOR,
-                padding: 10,
-              }}
-            >
-              {/* <View>
-                <GradiantRow
-                  onChangeFn={(value) => {
-                    updateMeal(value, "weight", meal.data?.extras?.weight);
-                  }}
-                  // type={tag.type}
-                  title={t("weight")}
-                  price={meal.data?.extras?.weight?.price}
-                  minValue={500}
-                  stepValue={500}
-                  value={meal.data?.extras?.weight?.value}
-                  type={"COUNTER"}
-                  variant={"colors"}
-                  fontSize={26}
-                  color={themeStyle.SECONDARY_COLOR}
-                  icon="scale"
-                />
-              </View> */}
-
-              {/* <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 30,
-                }}
-              >
-                <View
-                  style={{
-                    width: "100%",
-                  }}
-                >
-                  {Object.keys(meal.data.extras).map((key) => (
-                    <View style={{ marginBottom: 20, width: "100%" }}>
-                      <GradiantRow
-                        onChangeFn={(value) => {
-                          updateMeal(value, key, meal.data.extras[key].type);
-                        }}
-                        type={meal.data.extras[key].type}
-                        value={meal.data.extras[key].value}
-                        title={key}
-                        options={meal.data.extras[key].options}
-                        minValue={1}
-                      />
-                    </View>
-                  ))}
-                </View>
-              </View> */}
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </ScrollView>
-      <View
-        style={{
-          bottom: isTablet ? 180 : 150,
-          marginHorizontal: isTablet ? 40 : 20,
-          width: isTablet ? "60%" : "90%",
-          alignSelf: "center",
-        }}
-      >
-        <View style={{ flexDirection: "column", width: "100%" }}>
-          <Text
-            style={{
-              marginBottom: 5,
-              textAlign: "center",
-              fontSize: isTablet ? 32 : 26,
-              color: themeStyle.SECONDARY_COLOR,
-            }}
-          >
-            {t("insert-note")}
-          </Text>
-
-          <TextInput
-            onChange={(e) => {
-              updateOthers(e.nativeEvent.text, "note", "others");
-            }}
-            value={meal.others["note"]}
-            placeholderTextColor={themeStyle.GRAY_600}
-            multiline={true}
-            selectionColor="black"
-            underlineColorAndroid="transparent"
-            numberOfLines={5}
-            style={{
-              backgroundColor: "white",
-              textAlignVertical: "top",
-              textAlign: "right",
-              padding: isTablet ? 15 : 10,
-              height: isTablet ? 100 : 80,
-              width: "100%",
-              borderRadius: 10,
-              shadowColor: themeStyle.SECONDARY_COLOR,
-              shadowOffset: {
-                width: 2,
-                height: 2,
-              },
-              shadowOpacity: 1,
-              shadowRadius: 2,
-              alignItems: "center",
-              borderWidth: 0,
-              fontSize: isTablet ? 18 : 16,
-            }}
-          />
-        </View>
-      </View>
-      <Animatable.View
-        animation="fadeInUp"
-        duration={animationDuration}
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: themeStyle.SECONDARY_COLOR,
-          padding: isTablet ? 30 : 20,
-          borderTopStartRadius: 30,
-          borderTopEndRadius: 30,
-          shadowColor: themeStyle.SECONDARY_COLOR,
-          shadowOffset: {
-            width: 2,
-            height: 2,
-          },
-          shadowOpacity: 1,
-          shadowRadius: 10,
-          alignItems: "center",
-          borderWidth: 0,
-          height: isTablet ? 160 : 130,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            width: isTablet ? "50%" : "70%",
-            alignItems: "center",
-          }}
-        >
-          <View style={{ alignSelf: "center" }}>
-            <Counter
-              value={meal.others.qty}
-              minValue={1}
-              onCounterChange={(value) => {
-                updateOthers(value, "qty", "others");
-              }}
-              variant={"colors"}
+              source={{ uri: `${cdnUrl}${meal.data.img[0].uri}` }}
+              cacheKey={`${meal.data.img[0].uri.split(/[\\/]/).pop()}`}
             />
           </View>
-          <View style={{alignItems: "center"}}>
-            <View>
-              <Text
-            style={{
-              fontSize: isTablet ? 28 : 22,
-              color: themeStyle.WHITE_COLOR,
-            }}
-            type="number"
-          >
-            ₪{meal?.data?.hasDiscount ? meal.data.price : meal.data.price * meal.others.qty }
-          </Text>
-          </View>
-          <View>  
-          {isDiscountApplied && (
-            <Text
-              style={{
-                fontSize: isTablet ? 16 : 14,
-                color: themeStyle.SUCCESS_LIGHT_COLOR,
-                textAlign: "center",
-              }}
-            >
-              {t("discount_applied")}
-            </Text>
-          )}
-          </View>
-          </View>
         </View>
+      </View>
+      <View
+        style={{
+          width: "100%",
+          height: "50%",
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          zIndex: 2,
+          top: -30,
+          backgroundColor: themeStyle.PRIMARY_COLOR,
+          padding: 20,
+          shadowColor: themeStyle.SHADOW_COLOR,
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.9,
+          shadowRadius: 6,
+          elevation: 20,
+          borderWidth: 0,
+        }}
+      >
         <View
           style={{
-            width: isTablet ? "60%" : "90%",
-            marginTop: isTablet ? 15 : 10,
+            height: "100%",
+            flexDirection: "column",
+          }}
+        >
+          <View>
+            <ProductHeader product={meal.data} updateMeal={updateMeal}/>
+          </View>
+          <View style={{ marginTop: 15 }}>
+            <ProductDescription product={meal.data} />
+          </View>
+          <View style={{ marginTop: 15, bottom: 0, position: "absolute" }}>
+            <ProductFooter
+              isEdit={isEdit}
+              isValidForm={isValidMeal()}
+              onAddToCart={onAddToCart}
+              onUpdateCartProduct={onUpdateCartProduct}
+              price={
+                (getPriceBySize() || meal.data.price) 
+              }
+            />
+          </View>
+        </View>
+      </View>
+      {/* </KeyboardAvoidingView> */}
+      {/* </ScrollView> */}
+      {/* <View style={styles.buttonContainer}>
+        <View
+          style={{
+            width: "60%",
+            alignSelf: "center",
+            alignItems: "center",
           }}
         >
           <Button
             text={isEdit ? t("save") : t("add-to-cart")}
             icon="shopping-bag-plus"
-            fontSize={isTablet ? 22 : 17}
+            fontSize={17}
             onClickFn={isEdit ? onUpdateCartProduct : onAddToCart}
             textColor={themeStyle.WHITE_COLOR}
             fontFamily={`${getCurrentLang()}-Bold`}
@@ -798,15 +631,31 @@ const MealScreen = ({ route }) => {
             disabled={!isValidMeal()}
           />
         </View>
-      </Animatable.View>
-
+      </View> */}
+      {meal.data.subCategoryId == "1" && (
+        <PickImagedDialog
+          isOpen={isPickImageDialogOpen}
+          handleAnswer={handlePickImageAnswer}
+        />
+      )}
+      {meal.data.categoryId == "8" && (
+        <AddCustomImagedDialog
+          isOpen={isPickImageDialogOpen}
+          handleAnswer={handlePickImageAnswer}
+        />
+      )}
+      <PickImageNotificationDialog
+        isOpen={isPickImageNotificationDialogOpen}
+        handleAnswer={handlePickNotificationAnswer}
+        text={pickImageNotificationDialogText}
+      />
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}
         isOpen={isOpenConfirmActiondDialog}
         text={confirmActiondDialogText}
         positiveText="ok"
       />
-    </Animatable.View>
+    </View>
   );
 };
 export default observer(MealScreen);
@@ -827,7 +676,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   sectionContainer: {
-    backgroundColor: "white",
+    backgroundColor: themeStyle.PRIMARY_COLOR,
     marginTop: 25,
     shadowColor: "#F1F1F1",
     shadowOffset: {
@@ -837,7 +686,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 30,
     elevation: 0,
-    borderWidth: 0,
   },
   background: {
     position: "absolute",
@@ -845,6 +693,9 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
+
     // borderRadius: 50,
   },
   backgroundAddCart: {
@@ -879,17 +730,8 @@ const styles = StyleSheet.create({
     width: 180,
     transform: [{ rotate: "45deg" }],
     // backgroundColor: themeStyle.PRIMARY_COLOR,
-    color: "white",
+    color: themeStyle.PRIMARY_COLOR,
     padding: 8,
     textAlign: "center",
-  },
-  cartCount: {
-    position: "absolute",
-    top: Platform.OS === "ios" ? 0 : 0,
-    fontSize: 15,
-
-    alignItems: "center",
-    justifyContent: "center",
-    color: themeStyle.SECONDARY_COLOR,
   },
 });

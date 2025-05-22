@@ -91,8 +91,8 @@ const ProductsOrderList = ({
                 height: 150,
                 width: 100,
               }}
-              source={{ uri: `${cdnUrl}${item.img[0].uri}` }}
-              cacheKey={`${item.img[0].uri.split(/[\\/]/).pop()}`}
+              source={{ uri: `${cdnUrl}${item?.img[0]?.uri}` }}
+              cacheKey={`${item?.img[0]?.uri?.split(/[\\/]/).pop()}`}
               resizeMode={item.subCategoryId == "2" ? "stretch" : null}
             />
           </View>
