@@ -549,7 +549,7 @@ const App = () => {
               // fetchOrders,
             ]).then(async (res: any) => {
               const store = res[0];
-              if(store.storeId){
+              if(store?.storeId){
                 const storeData = shoofiAdminStore.getStoreById(store.storeId);
                 await shoofiAdminStore.setStoreDBName(storeData.dbName);
                 await menuStore.getMenu();

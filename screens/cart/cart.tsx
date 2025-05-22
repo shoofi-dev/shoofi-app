@@ -41,6 +41,7 @@ import {
 import CustomFastImage from "../../components/custom-fast-image";
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 import { useResponsive } from "../../hooks/useResponsive";
+import CartExtras from "./components/Extras";
 const barcodeString = "https://onelink.to/zky772";
 
 const hideExtras = ["counter"];
@@ -77,6 +78,7 @@ const CartScreen = ({ route }) => {
     ordersStore,
     adminCustomerStore,
     menuStore,
+    extrasStore,
   } = useContext(StoreContext);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { isTablet, scale, fontSize } = useResponsive();
@@ -423,6 +425,7 @@ const CartScreen = ({ route }) => {
             }}>
               {cartStore.cartItems.map((product, index) => {
                 const moveBy = (1 - 1 / 1) * index;
+                console.log("product.selectedExtras",product.selectedExtras)
                 return (
                   product && (
                     <Animated.View
@@ -535,30 +538,13 @@ const CartScreen = ({ route }) => {
                               </View>
 
                               {/* Extras */}
-                              {Object.keys(product?.data?.extras).map((key) => {
-                                if (
-                                  (product?.data?.extras[key].value === product?.data?.extras[key].defaultValue ||
-                                    hideExtras.indexOf(product?.data?.extras[key].categoryId) > -1) &&
-                                  !product?.data?.extras[key].forceShowInCart
-                                ) {
-                                  return null;
-                                }
-                                return (
-                                  <View
-                                    style={{
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      marginBottom: scale(5),
-                                    }}
-                                  >
-                                    <Text style={{ fontSize: fontSize(16) }}>
-                                      {t(product?.data?.extras[key].name)}
-                                      {": "}
-                                      {product?.data?.extras[key].value?.toString()}
-                                    </Text>
-                                  </View>
-                                );
-                              })}
+                              <CartExtras
+                                extrasDef={product.data.extras}
+                                selectedExtras={product.selectedExtras}
+                                fontSize={fontSize}
+                                basePrice={product.data.basePrice !== undefined ? product.data.basePrice : product.data.price - extrasStore.calculateExtrasPrice(product.data.extras, product.selectedExtras)}
+                                qty={product.others.qty}
+                              />
 
                               {/* Note */}
                               {product?.others?.note && (

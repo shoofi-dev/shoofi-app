@@ -6,7 +6,11 @@ class ExtrasStore {
     makeAutoObservable(this);
   }
   setSelection(extraId, value) {
-    this.selections[extraId] = value;
+    if (this.selections[extraId] === value) {
+      delete this.selections[extraId];
+    } else {
+      this.selections[extraId] = value;
+    }
     this.selections = {...this.selections};
   }
   getSelection(extraId) {
@@ -31,10 +35,10 @@ class ExtrasStore {
     }
     return true;
   }
-  calculateExtrasPrice(extras) {
+  calculateExtrasPrice(extras, selected = this.selections) {
     let total = 0;
     for (const extra of extras) {
-      const val = this.selections[extra.id];
+      const val = selected[extra.id];
       if (extra.type === "single" && extra.options) {
         const opt = extra.options.find(o => o.id === val);
         if (opt && opt.price) total += opt.price;
@@ -54,3 +58,4 @@ class ExtrasStore {
 }
 
 export const extrasStore = new ExtrasStore();
+export { ExtrasStore };

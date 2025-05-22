@@ -46,6 +46,7 @@ import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 import InputText from "../../components/controls/input";
 import AddCustomImagedDialog from "../../components/dialogs/add-custom-image";
 import MealExtras from "./extras/Extras";
+import { useResponsive } from "../../hooks/useResponsive";
 
 const showCakeNoteList = ["3", "5"];
 
@@ -113,51 +114,55 @@ const MealScreen = ({ route }) => {
     extrapolate: "clamp",
   });
 
+  const { isTablet } = useResponsive();
+
   useEffect(() => {
+    extrasStore.reset();
+
     let tmpProduct: any = {};
     if (product) {
       setIsEdit(false);
-      tmpProduct.data = product;
-      if (isEmpty(tmpProduct)) {
-        tmpProduct.data = product;
-      }
+      tmpProduct.data = JSON.parse(JSON.stringify(product));
       tmpProduct.others = { qty: 1, note: "" };
+      // Store the base price when first adding an item
+      tmpProduct.data.basePrice = tmpProduct.data.price;
+
+      // Initialize price based on initial weight if it's a weight-based product
+      if (tmpProduct.data?.extras) {
+        Object.keys(tmpProduct.data.extras).forEach((key) => {
+          const extra = tmpProduct.data.extras[key];
+          if (extra.categoryId === "weight" && extra.value) {
+            const pricePerKg = tmpProduct.data.price;
+            const weightInKg = extra.value;
+            tmpProduct.data.price = pricePerKg * weightInKg;
+            tmpProduct.data.basePrice = tmpProduct.data.price;
+          }
+        });
+      }
     }
     if (index !== null && index !== undefined) {
       setIsEdit(true);
       tmpProduct = cartStore.getProductByIndex(index);
-    }
-    DeviceEventEmitter.emit(`update-meal-uri`, {
-      imgUrl: `${cdnUrl}${tmpProduct.data.img[0].uri}`,
-      cacheKey: `${cdnUrl}${tmpProduct.data.img[0].uri}`.split(/[\\/]/).pop(),
-    });
-    if (
-      tmpProduct.data.subCategoryId == "1" ||
-      tmpProduct.data.categoryId == "8"
-    ) {
-      if (tmpProduct.data.subCategoryId == "1") {
-        setPickImageNotificationDialogText(t("you-can-pick-image"));
+      // Calculate base price by subtracting extras price from total price
+      if (tmpProduct.selectedExtras) {
+        const extrasPrice = extrasStore.calculateExtrasPrice(tmpProduct.data.extras, tmpProduct.selectedExtras);
+        tmpProduct.data.basePrice = tmpProduct.data.price - extrasPrice;
+        extrasStore.reset();
+        Object.entries(tmpProduct.selectedExtras).forEach(([key, value]) => {
+          extrasStore.setSelection(key, value);
+        });
       }
-      if (tmpProduct.data.categoryId == "8") {
-        setPickImageNotificationDialogText(t("you-can-add-image-custom-cake"));
-      }
-      setIsPickImageNotificationDialogOpen(true);
     }
     setMeal(tmpProduct);
-    // Initialize extrasStore for this product
-    extrasStore.reset();
-    if (tmpProduct.data.extras) {
-      // Optionally: set default values for required extras here
-    }
-    setTimeout(() => {
-      tasteScorll();
-    }, 1000);
-  }, []);
+    return () => {
+      setMeal(null);
+    };
+  }, [index, product]);
 
   // Update meal price when extras change
   useEffect(() => {
     if (meal && meal.data && meal.data.price !== undefined && meal.data.extras) {
-      const basePrice = product.price;
+      const basePrice = meal.data.basePrice || meal.data.price;
       const extrasPrice = extrasStore.calculateExtrasPrice(meal.data.extras);
       setMeal((prev) => ({
         ...prev,
@@ -170,13 +175,7 @@ const MealScreen = ({ route }) => {
   }, [extrasStore?.selections]);
 
   const onAddToCart = () => {
-    if (
-      (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) ||
-      (storeDataStore.storeData.isInStoreOrderLaterCats.indexOf(
-        meal?.data?.categoryId
-      ) > -1 &&
-        !meal.data.isInStore)
-    ) {
+    if (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) {
       setConfirmActiondDialogText(
         getOutOfStockMessage() || "call-store-to-order"
       );
@@ -184,37 +183,37 @@ const MealScreen = ({ route }) => {
       return;
     }
     DeviceEventEmitter.emit(`add-to-cart-animate`, {
-      imgUrl: `${cdnUrl}${meal.data.img[0].uri}`,
+      imgUrl: meal.data.img,
     });
 
-    cartStore.addProductToCart(meal);
-    setTimeout(() => {
-      navigation.goBack();
-    }, 1600);
-  };
-
-  const onUpdateCartProduct = () => {
-    cartStore.updateCartProduct(index, meal);
+    cartStore.addProductToCart({
+      ...meal,
+      selectedExtras: { ...extrasStore.selections },
+    });
     setTimeout(() => {
       navigation.goBack();
     }, 1000);
   };
 
-
-
+  const onUpdateCartProduct = () => {
+    cartStore.updateCartProduct(index, {
+      ...meal,
+      selectedExtras: { ...extrasStore.selections },
+    });
+    setTimeout(() => {
+      navigation.goBack();
+    }, 1000);
+  };
 
   const handleConfirmActionAnswer = (answer: string) => {
     setConfirmActiondDialogText("");
     setIsOpenConfirmActiondDialog(false);
   };
 
-
-
   const onClose = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     navigation.goBack();
   };
-
 
   const updateMeal = (value, tag, type) => {
     setMeal({
@@ -229,7 +228,6 @@ const MealScreen = ({ route }) => {
     });
   };
 
-
   const tasteScorll = () => {
     scrollRef.current?.scrollTo({
       y: 500,
@@ -237,14 +235,10 @@ const MealScreen = ({ route }) => {
     });
   };
 
-
   const updateOthers = (value, key, type) => {
     console.log("updateOthers", value, key, type);
-      setMeal({ ...meal, [type]: { ...meal[type], [key]: value } });
+    setMeal({ ...meal, [type]: { ...meal[type], [key]: value } });
   };
-
-  
-
 
   const isAvailableOnApp = (key: string) => {
     let isAvailable = false;
@@ -256,8 +250,6 @@ const MealScreen = ({ route }) => {
     });
     return isAvailable;
   };
-
-
 
   const getOutOfStockMessage = () => {
     if (
@@ -299,13 +291,49 @@ const MealScreen = ({ route }) => {
     ).start();
   }, []);
 
-
-
   if (!meal) {
     return null;
   }
   return (
     <View style={{ height: "100%" }}>
+      <View style={{ zIndex: 10 }}>
+        <TouchableOpacity
+          onPress={onClose}
+          style={{
+            zIndex: 1,
+            position: "absolute",
+            left: 0,
+            width: isTablet ? 60 : 45,
+            padding: 0,
+            alignItems: "center",
+            height: isTablet ? 55 : 40,
+            justifyContent: "center",
+            top: 10,
+            backgroundColor: "rgba(36, 33, 30, 0.8)",
+            borderTopEndRadius: 50,
+            borderBottomEndRadius: 50,
+            alignSelf: "center",
+            shadowColor: themeStyle.SECONDARY_COLOR,
+            shadowOffset: {
+              width: 0,
+              height: 3,
+            },
+            shadowOpacity: 1,
+            shadowRadius: 15,
+            elevation: 5,
+            borderWidth: 0,
+          }}
+        >
+          <Text
+            style={{
+              color: themeStyle.SECONDARY_COLOR,
+              fontSize: isTablet ? 40 : 30,
+            }}
+          >
+            X
+          </Text>
+        </TouchableOpacity>
+      </View>
       <Animated.ScrollView
         ref={scrollRef}
         style={{  height: "100%", borderWidth: 1,  }}
