@@ -6,6 +6,7 @@ import { StoreContext } from "../../../../stores";
 import Text from "../../../../components/controls/Text";
 import Counter from "../../../../components/controls/counter";
 import { getCurrentLang } from "../../../../translations/i18n";
+import themeStyle from "../../../../styles/theme.style";
 
 export type TProps = {
   product: any;
@@ -14,7 +15,6 @@ export type TProps = {
 const ProductHeader = ({ product, updateOthers }: TProps) => {
   const { t } = useTranslation();
   let { languageStore } = useContext(StoreContext);
-
   return (
     <View
       style={{
@@ -26,14 +26,14 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
       <View>
         <Text
           style={{
-            fontSize: 18,
+            fontSize: themeStyle.FONT_SIZE_2XL,
             fontWeight: "600",
             fontFamily: `${getCurrentLang()}-Bold`,
           }}
         >
           {languageStore.selectedLang === "ar"
-            ? product.nameAR
-            : product.nameHE}
+            ? product.data.nameAR
+            : product.data.nameHE}
           
         </Text>
       </View>

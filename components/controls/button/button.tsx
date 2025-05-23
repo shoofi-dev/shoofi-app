@@ -148,7 +148,7 @@ export default function Button({
             style={{
               marginHorizontal: marginH !== undefined ? marginH : 15,
               fontSize: fontSize,
-              color: textColor || theme.WHITE_COLOR,
+              color: textColor || theme.SECONDARY_COLOR,
               padding: textPadding,
 
             }}
