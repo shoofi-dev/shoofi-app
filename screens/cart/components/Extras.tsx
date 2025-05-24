@@ -2,9 +2,10 @@ import React from "react";
 import { View } from "react-native";
 import Text from "../../../components/controls/Text";
 import { extrasStore } from "../../../stores/extras";
+import { isEmpty } from "lodash";
 
 const CartExtras = ({ extrasDef, selectedExtras, fontSize, basePrice, qty }) => {
-  if (!extrasDef || !selectedExtras) return null;
+  if (!extrasDef || !selectedExtras || isEmpty(extrasDef)) return null;
   const extrasPrice = extrasStore.calculateExtrasPrice(extrasDef, selectedExtras);
   const totalPrice = (basePrice + extrasPrice) * (qty || 1);
   return (

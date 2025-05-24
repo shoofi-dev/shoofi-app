@@ -20,11 +20,11 @@ const OrderItems = ({ order }) => {
 
   const renderOrderItems = (order) => {
     return order.order.items?.map((item, index) => {
-      const meal = menuStore.getFromCategoriesMealByKey(item.item_id);
+      // const meal = menuStore.getFromCategoriesMealByKey(item.item_id);
 
-      if (isEmpty(meal)) {
-        return;
-      }
+      // if (isEmpty(meal)) {
+      //   return;
+      // }
 
       return (
         <View style={{}}>
@@ -54,11 +54,11 @@ const OrderItems = ({ order }) => {
                     marginVertical: 10,
                   }}
                 >
-                  <Image
+                  {/* <Image
                     style={{ width: "100%", height: "100%" }}
                     source={{ uri: `${cdnUrl}${meal.img[0].uri}` }}
                     resizeMode="contain"
-                  />
+                  /> */}
                 </View>
                 {/* <View style={{ alignItems: "flex-start" }}>
                         {renderOrderItemsExtras(item.data)}
@@ -84,9 +84,9 @@ const OrderItems = ({ order }) => {
                     textDecorationLine: "underline",
                   }}
                 >
-                  {languageStore.selectedLang === "ar"
+                  {/* {languageStore.selectedLang === "ar"
                     ? meal.nameAR
-                    : meal.nameHE}
+                    : meal.nameHE} */}
                 </Text>
               </View>
               {isShowSize(item.item_id) && (

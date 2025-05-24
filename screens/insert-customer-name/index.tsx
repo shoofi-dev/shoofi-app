@@ -14,6 +14,7 @@ import { toBase64 } from "../../helpers/convert-base64";
 import Text from "../../components/controls/Text";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
+import { APP_NAME } from "../../consts/shared";
 
 const InsertCustomerNameScreen = ({route}) => {
   const { t } = useTranslation();
@@ -55,7 +56,10 @@ const InsertCustomerNameScreen = ({route}) => {
       axiosInstance
         .post(
           `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.UPDATE_CUSTOMER_NAME_API}`,
-          body
+          body,
+          {
+            headers: { "Content-Type": "application/json", "app-name": APP_NAME }
+          }
         )
         .then(function (response) {
           DeviceEventEmitter.emit(`PREPARE_APP`);

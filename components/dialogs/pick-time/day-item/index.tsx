@@ -84,6 +84,7 @@ const OrderDayItem = ({
   }, [lastJsonMessage]);
 
   const checkIsBeforeDayAndAfterSeven = (hour) => {
+    console.log("storeDataStore.storeData", storeDataStore.storeData)
     var selectedDay = moment(
       moment(data?.selectedDate).format("MM/D/YYYY"),
       "MM/D/YYYY"
@@ -169,7 +170,7 @@ const OrderDayItem = ({
         deafultDayH[`${formattedHour}:${formattedMinute}`] = {
           isDisabled:
             !userDetailsStore.isAdmin() &&
-            ((!isAfter && isSameDay) ||
+            (false  && (!isAfter && isSameDay) ||
               isSameDayAndFirstTwoHours(isSameDay, formattedHour) ||
               checkIsBeforeDayAndAfterSeven(formattedHour) ||
               isSameDayAndAfterSeven(isSameDay, formattedHour)),
@@ -589,7 +590,7 @@ const OrderDayItem = ({
                   style={{
                     fontSize: 18,
                     fontFamily: `${getCurrentLang()}-American-bold`,
-                    color:themeStyle.PRIMARY_COLOR
+                    color:themeStyle.SECONDARY_COLOR
                   }}
                 >
                   {item}

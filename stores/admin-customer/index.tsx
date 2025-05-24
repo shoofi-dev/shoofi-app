@@ -3,6 +3,7 @@ import { axiosInstance } from "../../utils/http-interceptor";
 import { AUTH_API, CUSTOMER_API } from "../../consts/api";
 import { fromBase64, toBase64 } from "../../helpers/convert-base64";
 import { menuStore } from "../menu";
+import { APP_NAME } from "../../consts/shared";
 
 type TUserDetails = {
   name: string;
@@ -24,7 +25,9 @@ class AdminCustomerStore {
 
   getUserDetailsFromServer = () => {
     return axiosInstance
-      .get(`${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.GET_USER_DETAILS}`)
+      .get(`${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.GET_USER_DETAILS}`, {
+        headers: { "Content-Type": "application/json", "app-name": APP_NAME }
+      })
       .then(function (response) {
         //const res = JSON.parse(fromBase64(response.data));
         return response.data;

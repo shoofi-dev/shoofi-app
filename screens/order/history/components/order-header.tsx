@@ -26,6 +26,8 @@ const OrderHeader = ({ order }) => {
             <View style={{ flexDirection: "row" }}>
               <View>
                 <Text style={styles.dateRawText}>{t("order-number")}:</Text>
+                <Text style={styles.dateRawText}>{order?.appName}</Text>
+
               </View>
               <View>
                 <Text style={styles.dateRawText}>

@@ -162,7 +162,7 @@ const OrdersListScreen = ({ route }) => {
   const handleSelectDay = (day) => {
     setSelectedDay(day);
   };
-
+  console.log("storeDataStore.storeData", storeDataStore.storeData)
   const getNext7Days = () => {
     let days = [];
     let daysRequired = 14;

@@ -55,6 +55,7 @@ const Header = () => {
     adminCustomerStore,
     storeDataStore,
     ordersStore,
+    shoofiAdminStore
   } = useContext(StoreContext);
   const [cartItemsLenght, setCartItemsLength] = useState();
   const [bgColor, setBgColor] = useState(themeStyle.PRIMARY_COLOR);
@@ -215,7 +216,9 @@ const Header = () => {
     navigation.navigate("admin-dashboard");
   };
 
-  const onLogoClick = () => {
+  const onLogoClick = async () => {
+    await shoofiAdminStore.setStoreDBName("");
+
     if (
       navigation?.getCurrentRoute()?.name === "terms-and-conditions" ||
       navigation?.getCurrentRoute()?.name === "insert-customer-name"

@@ -174,7 +174,7 @@ const ProfileScreen = () => {
               </View>
               {item.key == "contact-us" && (
                 <View style={{justifyContent:"flex-start", flex:1}}>
-                  <Text type="number" style={{fontSize: 18, color:themeStyle.SECONDARY_COLOR}}>{storeDataStore.storeData.storePhone}</Text>
+                  <Text type="number" style={{fontSize: 18, color:themeStyle.SECONDARY_COLOR}}>{storeDataStore.storeData?.storePhone}</Text>
                 </View>
               )}
               {item.key == "phone" && (

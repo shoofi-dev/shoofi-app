@@ -5,11 +5,11 @@ import { APP_NAME } from '../consts/shared';
 
 
 const _useWebSocketUrl = () => {
-    const { userDetailsStore } =
+    const { userDetailsStore, storeDataStore } =
       useContext(StoreContext);
   const [webScoketURL, setWebSocketUrl] = useState<any>(null);
   const initURL = async () =>{
-    setWebSocketUrl(userDetailsStore.userDetails?.customerId ? `${WS_URL}?customerId=${APP_NAME}${userDetailsStore.isAdmin() ? '__admin' : '' }__${userDetailsStore.userDetails?.customerId}` : null)
+    setWebSocketUrl(userDetailsStore.userDetails?.customerId ? `${WS_URL}?customerId=${userDetailsStore.isAdmin() ? storeDataStore.storeData?.appName : APP_NAME}${userDetailsStore.isAdmin() ? '__admin' : '' }__${userDetailsStore.userDetails?.customerId}` : null)
   }
   useEffect(()=>{
     initURL()

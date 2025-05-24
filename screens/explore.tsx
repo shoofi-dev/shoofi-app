@@ -12,6 +12,12 @@ const ExploreScreen = () => {
   const { shoofiAdminStore } = useContext(StoreContext);
   const [loading, setLoading] = useState(true);
 
+  const resetStoreDBName = async () => {
+    await shoofiAdminStore.setStoreDBName(storeData.appName);
+  }
+  useEffect(() => {
+    resetStoreDBName();
+  }, [])
   useEffect(() => {
     const fetchData = async () => {
       if (!shoofiAdminStore.categoryList) {

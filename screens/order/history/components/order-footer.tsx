@@ -15,7 +15,7 @@ const OrderFooter = ({ order }) => {
   const { storeDataStore } = useContext(StoreContext);
 
   const getCollectDate = () =>{
-    if(storeDataStore.storeData.isOrderLaterSupport){
+    if(order.orderType){
       return (
         <Text style={styles.dateText}>
         {t(moment(order.orderDate).format("dddd"))}{" - "}

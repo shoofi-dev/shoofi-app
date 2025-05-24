@@ -4,6 +4,7 @@ import { STORE_API, SHOOFI_ADMIN_API } from "../../consts/api";
 import { fromBase64, toBase64 } from "../../helpers/convert-base64";
 import moment from "moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { APP_NAME } from "../../consts/shared";
 
 export type TStore = {
     storeName: string;
@@ -31,7 +32,7 @@ class ShoofiAdminStore {
         body,
         {
           headers: {
-            "db-name": "shoofi"
+            "app-name": APP_NAME
           }
         }
       )
@@ -63,7 +64,7 @@ class ShoofiAdminStore {
         body,
         {
           headers: {
-            "db-name": "shoofi"
+            "app-name": APP_NAME
           }
         }
       )
@@ -91,8 +92,11 @@ class ShoofiAdminStore {
   };
 
   getStoreById = (storeId) => {
-    const store = this.storesList?.find((store)=> store._id === storeId);
-    console.log("storesList",store)
+    console.log("storesList",this.storesList)
+    console.log("storeId",storeId)
+    const store = this.storesList?.find((store)=> store.appName === storeId);
+    console.log("store",store)
+
     return store;
   }
 }

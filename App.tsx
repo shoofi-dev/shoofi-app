@@ -60,7 +60,7 @@ import {
   schedulePushNotification,
 } from "./utils/notification";
 import { testPrint } from "./helpers/printer/print";
-import { ROLES, SHIPPING_METHODS, cdnUrl } from "./consts/shared";
+import { APP_NAME, ROLES, SHIPPING_METHODS, cdnUrl } from "./consts/shared";
 import _useAppCurrentState from "./hooks/use-app-current-state";
 import OrderInvoiceCMP from "./components/order-invoice";
 import { axiosInstance } from "./utils/http-interceptor";
@@ -212,7 +212,10 @@ const App = () => {
         axiosInstance
           .post(
             `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.UPDATE_CUSTOMER_NOTIFIVATION_TOKEN}`,
-            { notificationToken: token }
+            { notificationToken: token },
+            {
+              headers: { "Content-Type": "application/json", "app-name": APP_NAME }
+            }
           )
           .then(function (response) {
             return setExpoPushToken(token);
@@ -548,13 +551,14 @@ const App = () => {
               fetchUserDetails,
               // fetchOrders,
             ]).then(async (res: any) => {
+              console.log("res", res)
               const store = res[0];
-              if(store?.storeId){
-                const storeData = shoofiAdminStore.getStoreById(store.storeId);
-                await shoofiAdminStore.setStoreDBName(storeData.dbName);
+              if(store?.appName){
+                const storeData = shoofiAdminStore.getStoreById(store.appName);
+                await shoofiAdminStore.setStoreDBName(storeData.appName);
                 await menuStore.getMenu();
                 await storeDataStore.getStoreData();
-                console.log("storeId", store.storeId)
+                console.log("storeId", store.appName)
                 
               }
               setTimeout(() => {

@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toBase64 } from "../../helpers/convert-base64";
 import Text from "../../components/controls/Text";
 import { LinearGradient } from "expo-linear-gradient";
-import { arabicNumbers, reg_arNumbers, ROLES } from "../../consts/shared";
+import { APP_NAME, arabicNumbers, reg_arNumbers, ROLES } from "../../consts/shared";
 import { ScrollView } from "react-native-gesture-handler";
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 
@@ -78,7 +78,7 @@ const LoginScreen = () => {
         .post(
           `${CUSTOMER_API.CONTROLLER}/${userDetailsStore.isAdmin() ? CUSTOMER_API.ADMIN_CUSTOMER_CREATE_API :  CUSTOMER_API.CUSTOMER_CREATE_API}`,
           body,
-          { headers: { "Content-Type": "application/json" } }
+          
         )
         .then(async function (response: any) {
           setIsLoading(false);

@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { isEmpty } from "lodash";
 
 class ExtrasStore {
   selections = {};
@@ -37,6 +38,10 @@ class ExtrasStore {
   }
   calculateExtrasPrice(extras, selected = this.selections) {
     let total = 0;
+    console.log("extrasextras",extras)
+    if(!extras || extras.length === 0 || isEmpty(extras)){
+        return total;
+    }
     for (const extra of extras) {
       const val = selected[extra.id];
       if (extra.type === "single" && extra.options) {

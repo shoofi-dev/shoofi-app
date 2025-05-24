@@ -353,7 +353,7 @@ const CartScreen = ({ route }) => {
   };
 
   const handleSubmintButton = () => {
-    if (storeDataStore.storeData.isOrderLaterSupport) {
+    if (storeDataStore.storeData?.isOrderLaterSupport) {
       onPickTime();
     } else {
       navigation.navigate("checkout-screen");
@@ -684,7 +684,7 @@ const CartScreen = ({ route }) => {
         <View style={{ width: isTablet ? "40%" : "50%" }}>
           <Button
             onClickFn={handleSubmintButton}
-            text={storeDataStore.storeData.isOrderLaterSupport ? t("pick-time") : t("continue-to-pay")}
+            text={storeDataStore.storeData?.isOrderLaterSupport ? t("pick-time") : t("continue-to-pay")}
             fontSize={fontSize(18)}
             textColor={theme.WHITE_COLOR}
             borderRadious={50}

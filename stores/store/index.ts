@@ -3,6 +3,7 @@ import { axiosInstance } from "../../utils/http-interceptor";
 import { STORE_API } from "../../consts/api";
 import { fromBase64, toBase64 } from "../../helpers/convert-base64";
 import moment from "moment";
+import { APP_NAME } from "../../consts/shared";
 
 class StoreDataStore {
   paymentCredentials = null;
@@ -32,6 +33,7 @@ class StoreDataStore {
   getStoreData = () => {
     return this.getStoreDataFromServer().then((res:any) => {
       runInAction(() => {
+        console.log("resSSStore", res)
         this.storeData = res[0];
         this.paymentCredentials = res[0].credentials;
       })
@@ -43,7 +45,7 @@ class StoreDataStore {
     return axiosInstance
       .get(`${STORE_API.IS_UPDATE_VERSION_STORE_API}`, {
         headers: {
-          "db-name": "shoofi"
+          "app-name": APP_NAME
         }
       })
       .then(function (response) {

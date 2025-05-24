@@ -35,6 +35,7 @@ import { toBase64 } from "../../helpers/convert-base64";
 import React from "react";
 import AnimatedExample from "../../components/verify-code";
 import { LinearGradient } from "expo-linear-gradient";
+import { APP_NAME } from "../../consts/shared";
 const CELL_COUNT = 4;
 const reg_arNumbers = /^[\u0660-\u0669]{4}$/;
 const arabicNumbers = [
@@ -149,7 +150,7 @@ const VerifyCodeScreen = ({ route }) => {
       };
       axiosInstance
         .post(`${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.VERIFY_API}`, body, {
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "app-name": APP_NAME },
         })
         .then(async function (response: any) {
           await AsyncStorage.removeItem("@storage_verifyCode");
