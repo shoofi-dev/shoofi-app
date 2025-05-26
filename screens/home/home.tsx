@@ -44,6 +44,8 @@ import StoreErrorMsgDialog from "../../components/dialogs/store-errot-msg";
 import moment from "moment";
 import StoresCategoryList from "./categories/list";
 import ExploreScreen from "../explore";
+import CitiesList from '../../components/CitiesList';
+
 const HomeScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const [isAppReady, setIsAppReady] = useState(false);
@@ -60,6 +62,7 @@ const HomeScreen = ({ navigation }) => {
     useState(false);
   const [isShowChangeOrderTypeDialog, setIsShowChangeOrderTypeDialog] =
     useState(false);
+  const [selectedCity, setSelectedCity] = useState(null);
   let {
     userDetailsStore,
     cartStore,
@@ -70,6 +73,9 @@ const HomeScreen = ({ navigation }) => {
     shoofiAdminStore
   } = useContext(StoreContext);
   const [categoryList, setCategoryList] = useState(null);
+
+  // Get cities from shoofiAdminStore.storeData.cities
+  const cities = shoofiAdminStore?.storeData?.cities || [];
 
   const displayTemrsAndConditions = async () => {
     if (!userDetailsStore.isAcceptedTerms) {
@@ -299,12 +305,30 @@ const HomeScreen = ({ navigation }) => {
     }, 1000);
   }, []);
 
+  const handleCitySelect = (city) => {
+    setSelectedCity(city);
+    if (city?.location?.lat && city?.location?.lng) {
+      shoofiAdminStore.getStoresListData({
+        lat: parseFloat(city.location.lat),
+        lng: parseFloat(city.location.lng)
+      });
+    }
+  };
+
   if (!isAppReady || !shoofiAdminStore?.categoryList) {
     return;
   }
 
   return (
-<ExploreScreen  />
+    <View
+      style={{
+        height: "100%",
+        backgroundColor: "transparent",
+      }}
+    >
+      <CitiesList cities={Array.isArray(cities) ? cities : []} onCitySelect={handleCitySelect} selectedCity={selectedCity} />
+      <ExploreScreen  />
+    </View>
   );
   return (
     <View

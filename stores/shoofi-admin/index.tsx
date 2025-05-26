@@ -24,8 +24,8 @@ class ShoofiAdminStore {
 
   }
 
-  getStoresListDataFromServer = async () => {
-    const body = { date: moment().format()}
+  getStoresListDataFromServer = async (location) => {
+    const body = { date: moment().format(), location}
     return axiosInstance
       .post(
         `${SHOOFI_ADMIN_API.CONTROLLER}/${SHOOFI_ADMIN_API.GET_STORES_LIST_API}`,
@@ -45,8 +45,8 @@ class ShoofiAdminStore {
       })
   };
 
-  getStoresListData = () => {
-    return this.getStoresListDataFromServer().then((res:any) => {
+  getStoresListData = (location) => {
+    return this.getStoresListDataFromServer(location).then((res:any) => {
       runInAction(() => {
 
         this.storesList = res;
@@ -99,6 +99,37 @@ class ShoofiAdminStore {
 
     return store;
   }
+
+  getStoreDataFromServer = async () => {
+    const body = { date: moment().format()}
+    return axiosInstance
+      .post(
+        `${STORE_API.GET_STORE_API}`,
+        body,
+        {
+          headers: {
+            "app-name": APP_NAME
+          }
+        }
+      )
+      .then(function (response) {
+        const res = response.data;
+        return res;
+      }).catch((error) => {
+        console.log(error);
+      })
+  };
+
+  getStoreData = () => {
+    return this.getStoreDataFromServer().then((res:any) => {
+      runInAction(() => {
+        console.log("resSSStore", res)
+        this.storeData = res[0];
+        this.paymentCredentials = res[0].credentials;
+      })
+      return res[0];
+    })
+  };
 }
 
 export const shoofiAdminStore = new ShoofiAdminStore();

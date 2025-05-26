@@ -66,6 +66,7 @@ import OrderInvoiceCMP from "./components/order-invoice";
 import { axiosInstance } from "./utils/http-interceptor";
 import getPizzaCount from "./helpers/get-pizza-count";
 import _useWebSocketUrl from "./hooks/use-web-socket-url";
+import { useLocation } from "./hooks/useLocation";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -124,6 +125,20 @@ const App = () => {
   // const { t } = useTranslation();
   // const invoiceRef = useRef();
   const invoicesRef = useRef([]);
+
+  const {
+    latitude,
+    longitude,
+    errorMsg,
+    isLoading,
+    requestLocationPermission,
+    getCurrentLocation
+  } = useLocation();
+
+  // Request permission and get location when component mounts
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
 
   const [assetsIsReady, setAssetsIsReady] = useState(false);
   const [appIsReady, setAppIsReady] = useState(false);
@@ -517,15 +532,17 @@ const App = () => {
       // Pre-load fonts, make any API calls you need to do here
       await Font.loadAsync(customARFonts);
       setIsFontReady(true);
+      
 
       // const fetchMenu = menuStore.getMenu();
       //const fetchHomeSlides = menuStore.getSlides();
       // const fetchStoreDataStore = storeDataStore.getStoreData();
-      const fetchStoresList = shoofiAdminStore.getStoresListData();
+      const fetchShoofiStoreData = shoofiAdminStore.getStoreData();
+      const fetchStoresList = shoofiAdminStore.getStoresListData(latitude && longitude ? {lat: latitude, lng: longitude} : null);
       const fetchCategoryList = shoofiAdminStore.getCategoryListData();
       const fetchTranslations = translationsStore.getTranslations();
 
-      Promise.all([fetchStoresList, fetchCategoryList, fetchTranslations]).then(
+      Promise.all([fetchShoofiStoreData, fetchStoresList, fetchCategoryList, fetchTranslations]).then(
         async (responses) => {
           // const tempHomeSlides = storeDataStore.storeData.home_sliders.map(
           //   (slide) => {
@@ -554,8 +571,9 @@ const App = () => {
               console.log("res", res)
               const store = res[0];
               if(store?.appName){
+                console.log("storexxx", store)
                 const storeData = shoofiAdminStore.getStoreById(store.appName);
-                await shoofiAdminStore.setStoreDBName(storeData.appName);
+                await shoofiAdminStore.setStoreDBName(storeData?.appName || store?.appName);
                 await menuStore.getMenu();
                 await storeDataStore.getStoreData();
                 console.log("storeId", store.appName)
@@ -604,8 +622,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    prepare();
-  }, []);
+    if(!appIsReady && latitude && longitude){
+      prepare();
+    }
+  }, [latitude]);
 
   useEffect(() => {
     const ExpDatePicjkerChange = DeviceEventEmitter.addListener(

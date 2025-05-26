@@ -33,7 +33,7 @@ const hideHHeaderScreens = [
 ];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];
-const hideLogo = ["homeScreen"];
+const hideLogo = [""];
 
 const hideProfile = ["terms-and-conditions"];
 const hideProfileScreens = [
@@ -326,7 +326,7 @@ const Header = () => {
               animatedStyle,
               {
                 left: 10,
-                backgroundColor: "rgba(36, 33, 30, 0.8)",
+                backgroundColor: themeStyle.PRIMARY_COLOR,
     
                 borderTopStartRadius: 50,
                 borderBottomStartRadius: 50,
@@ -338,7 +338,7 @@ const Header = () => {
                   height: 3,
                 },
                 shadowOpacity: 1,
-                shadowRadius: 15,
+                shadowRadius: 6,
                 elevation: 5,
                 borderWidth: 0,
                 
@@ -441,6 +441,8 @@ const Header = () => {
             {
               height: "100%",
               alignItems: "center",
+              alignSelf:"center",
+              justifyContent:"center",
             },
           ]}
           onPress={onLogoClick}
@@ -451,7 +453,7 @@ const Header = () => {
             style={{ color: theme.GRAY_700,  width:100 }}
           /> */}
           <Image
-            style={{ maxWidth: "50%", maxHeight: "150%" }}
+            style={{ maxWidth: "50%", maxHeight: "30%" }}
             source={require("../../../assets/icon4.png")}
           />
         </TouchableOpacity>
@@ -527,7 +529,7 @@ const Header = () => {
           animatedStyle,
           {
             left: 20,
-            backgroundColor: "rgba(36, 33, 30, 0.8)",
+            backgroundColor: themeStyle.PRIMARY_COLOR,
 
             borderTopEndRadius: 50,
             borderBottomEndRadius: 50,
@@ -539,7 +541,7 @@ const Header = () => {
               height: 3,
             },
             shadowOpacity: 1,
-            shadowRadius: 15,
+            shadowRadius: 6,
             elevation: 5,
             borderWidth: 0,
           },

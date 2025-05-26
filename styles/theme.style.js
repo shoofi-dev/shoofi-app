@@ -7,9 +7,9 @@ export default {
   FONT_SIZE_2XL: 24,
   FONT_SIZE_3XL: 26,
   FONT_SIZE_4XL: 30,
-  PRIMARY_COLOR: "white",
+  PRIMARY_COLOR: "#c1e300",
   ERROR_COLOR: "red",
-  SECONDARY_COLOR: "black",
+  SECONDARY_COLOR: "#4E2E53",
   WHITE_COLOR: "white",
   BLACK_COLOR: "black",
   WHITE_COLOR_300: "#F9F9F9",
@@ -24,6 +24,6 @@ export default {
   FONT_WEIGHT_MEDIUM: "600",
   FONT_WEIGHT_HEAVY: "800",
 
-  TEXT_PRIMARY_COLOR: "#48413b",
+  TEXT_PRIMARY_COLOR: "#194b42",
   RGBA_BLACK: "rgba(36, 33, 30, 0.8)",
 };

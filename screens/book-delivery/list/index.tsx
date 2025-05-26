@@ -95,7 +95,7 @@ export default function CustomDeliveryListScreen() {
               padding: 8,
           
               fontSize: 20,
-              color: themeStyle.WHITE_COLOR,
+              color: themeStyle.SECONDARY_COLOR,
               alignSelf: "center",
               borderRightWidth: 1,
               borderColor: "#ccc",
@@ -118,7 +118,7 @@ export default function CustomDeliveryListScreen() {
               padding: 8,
           
               fontSize: 20,
-              color: themeStyle.WHITE_COLOR,
+              color: themeStyle.SECONDARY_COLOR,
               alignSelf: "center",
               borderRightWidth: 1,
               borderColor: "#ccc",
@@ -145,7 +145,7 @@ export default function CustomDeliveryListScreen() {
             onClickFn={() => {
               handleDeliverySent(item);
             }}
-            textColor={themeStyle.WHITE_COLOR}
+            textColor={themeStyle.SECONDARY_COLOR}
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
             bgColor={themeStyle.SUCCESS_COLOR}
@@ -167,7 +167,7 @@ export default function CustomDeliveryListScreen() {
             onClickFn={() => {
               handleDeliveryCanceled(item);
             }}
-            textColor={themeStyle.WHITE_COLOR}
+            textColor={themeStyle.SECONDARY_COLOR}
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
             bgColor={themeStyle.ERROR_COLOR}
@@ -178,7 +178,7 @@ export default function CustomDeliveryListScreen() {
             style={{
               fontSize: 20,
               alignSelf: "center",
-              color: themeStyle.WHITE_COLOR,
+              color: themeStyle.SECONDARY_COLOR,
             }}
           >
             الغيت
@@ -201,7 +201,7 @@ export default function CustomDeliveryListScreen() {
         <View>
           <Text
             style={{
-              color: themeStyle.WHITE_COLOR,
+              color: themeStyle.SECONDARY_COLOR,
               fontSize: 20,
             }}
           >
@@ -224,7 +224,7 @@ export default function CustomDeliveryListScreen() {
                 borderWidth: 1,
                 borderColor: "#ccc",
                 fontSize: 22,
-                color: themeStyle.WHITE_COLOR,
+                color: themeStyle.SECONDARY_COLOR,
                 alignSelf: "center",
               }}
             >
@@ -238,7 +238,7 @@ export default function CustomDeliveryListScreen() {
                 borderWidth: 1,
                 borderColor: "#ccc",
                 fontSize: 22,
-                color: themeStyle.WHITE_COLOR,
+                color: themeStyle.SECONDARY_COLOR,
                 alignSelf: "center",
               }}>السعر</Text>
             <Text
@@ -249,7 +249,7 @@ export default function CustomDeliveryListScreen() {
                 borderWidth: 1,
                 borderColor: "#ccc",
                 fontSize: 22,
-                color: themeStyle.WHITE_COLOR,
+                color: themeStyle.SECONDARY_COLOR,
                 alignSelf: "center",
               }}
             >
@@ -263,7 +263,7 @@ export default function CustomDeliveryListScreen() {
                 borderWidth: 0,
                 borderColor: "#ccc",
                 fontSize: 22,
-                color: themeStyle.WHITE_COLOR,
+                color: themeStyle.SECONDARY_COLOR,
                 alignSelf: "center",
               }}
             >
@@ -277,7 +277,7 @@ export default function CustomDeliveryListScreen() {
                 borderWidth: 0,
                 borderColor: "#ccc",
                 fontSize: 22,
-                color: themeStyle.WHITE_COLOR,
+                color: themeStyle.SECONDARY_COLOR,
                 alignSelf: "center",
               }}
             >
@@ -302,7 +302,7 @@ export default function CustomDeliveryListScreen() {
             text={t("approve")}
             fontSize={20}
             onClickFn={bookDelivery}
-            textColor={themeStyle.WHITE_COLOR}
+            textColor={themeStyle.SECONDARY_COLOR}
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
             bgColor={themeStyle.SUCCESS_COLOR}
@@ -320,7 +320,7 @@ export default function CustomDeliveryListScreen() {
             text={t("cancel")}
             fontSize={20}
             onClickFn={cancelBook}
-            textColor={themeStyle.WHITE_COLOR}
+            textColor={themeStyle.SECONDARY_COLOR}
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
           />
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     fontSize: 22,
-    color: themeStyle.WHITE_COLOR,
+    color: themeStyle.SECONDARY_COLOR,
     alignSelf: "center",
   },
   cellData: {
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     padding: 8,
 
     fontSize: 20,
-    color: themeStyle.WHITE_COLOR,
+    color: themeStyle.SECONDARY_COLOR,
     alignSelf: "center",
     borderRightWidth: 1,
     borderColor: "#ccc",
