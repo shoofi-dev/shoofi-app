@@ -55,7 +55,6 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
       orderDate,
       orderType: ordersStore.orderType,
     };
-
     if (
       userDetailsStore.isAdmin() &&
       adminCustomerStore?.userDetails?.customerId

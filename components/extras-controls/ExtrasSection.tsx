@@ -1,15 +1,29 @@
 import React from "react";
 import { View } from "react-native";
 import ExtraGroup from "./ExtraGroup";
+import PizzaToppingGroup from "./PizzaToppingGroup";
+
+export type AreaOption = {
+  id: string; // e.g. "full", "left", "right"
+  name: string;
+  price: number;
+};
+
+export type PizzaToppingOption = {
+  id: string;
+  name: string;
+  price?: number; // fallback
+  areaOptions?: AreaOption[];
+};
 
 export type Extra = {
   id: string;
-  type: "single" | "multi" | "counter";
+  type: "single" | "multi" | "counter" | "pizza-topping";
   title: string;
   required?: boolean;
   min?: number;
   max?: number;
-  options?: { id: string; name: string; price?: number }[];
+  options?: PizzaToppingOption[];
   price?: number; // for counter
 };
 
@@ -21,14 +35,26 @@ export type ExtrasSectionProps = {
 
 const ExtrasSection = ({ extras, selections, onChange }: ExtrasSectionProps) => (
   <View>
-    {extras.map((extra) => (
-      <ExtraGroup
-        key={extra.id}
-        extra={extra}
-        value={selections[extra.id]}
-        onChange={(val) => onChange(extra.id, val)}
-      />
-    ))}
+    {extras.map((extra) => {
+      if (extra.type === "pizza-topping") {
+        return (
+          <PizzaToppingGroup
+            key={extra.id}
+            extra={extra}
+            value={selections[extra.id] || {}}
+            onChange={(val) => onChange(extra.id, val)}
+          />
+        );
+      }
+      return (
+        <ExtraGroup
+          key={extra.id}
+          extra={extra}
+          value={selections[extra.id]}
+          onChange={(val) => onChange(extra.id, val)}
+        />
+      );
+    })}
   </View>
 );
 

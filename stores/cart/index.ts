@@ -132,8 +132,7 @@ const produtsAdapter = (order) => {
       qty: product.others.qty,
       note: product.others.note,
       price: product.data.price,
-      data: prodcutExtrasAdapter(product.data.extras),
-    };
+      selectedExtras: product.selectedExtras    };
     finalProducts.push(finalProduct);
   });
   return finalProducts;

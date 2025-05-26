@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { isEmpty } from "lodash";
+import { AreaOption } from "../../components/extras-controls/ExtrasSection";
 
 class ExtrasStore {
   selections = {};
@@ -30,6 +31,10 @@ class ExtrasStore {
         if (extra.type === "single" && !val) return false;
         if (extra.type === "multi" && (!val || val.length < (extra.min || 1))) return false;
         if (extra.type === "counter" && (val === undefined || val < (extra.min || 0))) return false;
+        if (extra.type === "pizza-topping") {
+          // At least one topping must be selected
+          if (!val || Object.keys(val).length === 0) return false;
+        }
       }
       if (extra.type === "multi" && extra.max && val && val.length > extra.max) return false;
       if (extra.type === "counter" && extra.max && val > extra.max) return false;
@@ -38,7 +43,6 @@ class ExtrasStore {
   }
   calculateExtrasPrice(extras, selected = this.selections) {
     let total = 0;
-    console.log("extrasextras",extras)
     if(!extras || extras.length === 0 || isEmpty(extras)){
         return total;
     }
@@ -56,6 +60,23 @@ class ExtrasStore {
       }
       if (extra.type === "counter" && extra.price && val) {
         total += extra.price * val;
+      }
+      if (extra.type === "pizza-topping" && extra.options) {
+        // val is { [toppingId]: areaId }
+        for (const toppingId in val) {
+          const areaId = val[toppingId];
+          const topping = extra.options.find(o => o.id === toppingId);
+          if (topping && topping.areaOptions) {
+            const area = topping.areaOptions.find(a => a.id === areaId);
+            if (area && area.price) {
+              total += area.price;
+            } else if (topping.price) {
+              total += topping.price;
+            }
+          } else if (topping && topping.price) {
+            total += topping.price;
+          }
+        }
       }
     }
     return total;

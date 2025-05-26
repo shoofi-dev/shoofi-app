@@ -1,17 +1,13 @@
 import React from "react";
 import { View } from "react-native";
-import Text from "../../../components/controls/Text";
-import { extrasStore } from "../../../stores/extras";
-import { isEmpty } from "lodash";
+import Text from "../controls/Text";
 
-const CartExtras = ({ extrasDef, selectedExtras, fontSize, basePrice, qty }) => {
-  if (!extrasDef || !selectedExtras || isEmpty(extrasDef)) return null;
-  const extrasPrice = extrasStore.calculateExtrasPrice(extrasDef, selectedExtras);
-  const totalPrice = (basePrice + extrasPrice) * (qty || 1);
+const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
+  if (!extrasDef || !selectedExtras || extrasDef.length === 0) return null;
   return (
     <View style={{ marginTop: 5 }}>
       {extrasDef.map((extra) => {
-        const value = selectedExtras[extra.id];
+        const value = selectedExtras?.[extra.id];
         if (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0)) return null;
         // Single choice
         if (extra.type === "single") {
@@ -67,20 +63,8 @@ const CartExtras = ({ extrasDef, selectedExtras, fontSize, basePrice, qty }) => 
         }
         return null;
       })}
-      {/* Show extras price if any */}
-      {extrasPrice > 0 && (
-        <Text style={{ fontSize: fontSize(14), color: "#007aff", marginTop: 2 }}>
-          {`Extras: +₪${extrasPrice}`}
-        </Text>
-      )}
-      {/* Show total price if basePrice is provided */}
-      {basePrice !== undefined && (
-        <Text style={{ fontSize: fontSize(14), color: "white", fontWeight: "bold", marginTop: 2 }}>
-          {`Total: ₪${totalPrice}`}
-        </Text>
-      )}
     </View>
   );
 };
 
-export default CartExtras; 
+export default OrderExtrasDisplay; 

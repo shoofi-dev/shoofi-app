@@ -49,6 +49,7 @@ import isShowSize from "../../../../helpers/is-show-size";
 import sortPizzaExtras from "../../../../helpers/sort-pizza-extras";
 import _useWebSocketUrl from "../../../../hooks/use-web-socket-url";
 import CustomFastImage from "../../../../components/custom-fast-image";
+import OrderExtrasDisplay from '../../../../components/shared/OrderExtrasDisplay';
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -796,25 +797,6 @@ const OrdersListScreen = ({ route }) => {
       </View>
     ) : null;
   };
-  const renderOrderItemsExtras = (extras) => {
-    return extras.map((extra) => {
-      return (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text
-            style={{
-              fontSize: 20,
-            }}
-          >
-            {t(extra.name)}
-            {" : "}
-          </Text>
-          <Text style={{
-              fontSize: 20,
-            }}>{extra.value}{" "}</Text>
-        </View>
-      );
-    });
-  };
 
   const downloadImage = (item) => {
     if (item?.clienImage?.uri) {
@@ -830,15 +812,9 @@ const OrdersListScreen = ({ route }) => {
   const renderOrderItems = (order) => {
     return order.order.items?.map((item, index) => {
       const meal = menuStore.getFromCategoriesMealByKey(item.item_id);
-
       if (isEmpty(meal)) {
         return;
       }
-      const extrasSorted = sortPizzaExtras(
-        item?.halfOne ? [...item?.halfOne] : undefined,
-        item?.halfTwo ? [...item?.halfTwo] : undefined
-      );
-
       return (
         <View style={{ marginTop: 10 }}>
           {index !== 0 && (
@@ -920,33 +896,13 @@ const OrdersListScreen = ({ route }) => {
                     : meal.nameHE}
                 </Text>
               </View>
-
               <View style={{ marginTop: 15 }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      color: themeStyle.TEXT_PRIMARY_COLOR,
-                    }}
-                  >
-                    <View style={{ alignItems: "flex-start" }}>
-                      {renderOrderItemsExtras(item.data)}
-                    </View>
-                  </Text>
-                </View>
+                <OrderExtrasDisplay
+                  extrasDef={meal.extras}
+                  selectedExtras={item.selectedExtras}
+                  fontSize={(v) => v}
+                />
               </View>
-              {/* <DashedLine
-              dashLength={5}
-              dashThickness={2}
-              dashGap={10}
-              dashColor={themeStyle.GRAY_600}
-              style={{ marginTop: 15, width:"100%" }}
-            /> */}
-
               {isShowSize(item.item_id) && (
                 <View
                   style={{
@@ -999,16 +955,6 @@ const OrdersListScreen = ({ route }) => {
                   {t("price")} : ₪{item.price * item.qty}
                 </Text>
               </View>
-              {/* <View style={{ marginTop: 2, alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                  }}
-                >
-                  {t("price")}: ₪
-                  {(item.item_id === 3027 ? item.price : item.price) * item.qty}
-                </Text>
-              </View> */}
               {item.note && (
                 <View
                   style={{
