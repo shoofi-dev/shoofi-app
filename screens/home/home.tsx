@@ -326,7 +326,7 @@ const HomeScreen = ({ navigation }) => {
         backgroundColor: "transparent",
       }}
     >
-      <CitiesList cities={Array.isArray(cities) ? cities : []} onCitySelect={handleCitySelect} selectedCity={selectedCity} />
+      {/* <CitiesList cities={Array.isArray(cities) ? cities : []} onCitySelect={handleCitySelect} selectedCity={selectedCity} /> */}
       <ExploreScreen  />
     </View>
   );
