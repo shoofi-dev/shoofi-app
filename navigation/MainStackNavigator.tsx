@@ -1,11 +1,13 @@
 import React from "react";
-import { createStackNavigator, CardStyleInterpolators, TransitionSpecs, HeaderStyleInterpolators, TransitionPresets } from "@react-navigation/stack";
-import FooterTabs from "../components/layout/footer-tabs/FooterTabs";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import BottomTabBar from "../components/layout/footer-tabs/BottomTabBar";
+import HomeScreen from "../screens/home/home";
+import OrdersStatusScreen from "../screens/order/status";
+import ProfileScreen from "../screens/profile";
 import CartScreen from "../screens/cart/cart";
 import TermsAndConditionsScreen from "../screens/terms-and-conditions";
 import MealScreen from "../screens/meal/index2";
-import ProfileScreen from "../screens/profile";
-import OrdersStatusScreen from "../screens/order/status";
 import InvoicesScreen from "../screens/order/invoices";
 import BcoinScreen from "../screens/b-coin";
 import LoginScreen from "../screens/login";
@@ -22,7 +24,6 @@ import NewOrdersListScreen from "../screens/admin/order/new-orders/list";
 import AddProductScreen from "../screens/admin/product/add";
 import CalanderContainer from "../screens/admin/calander/clander-container";
 import DashboardScreen from "../screens/admin/dashboard/main";
-import HomeScreen from "../screens/home/home";
 import MenuScreen from "../screens/menu/menu";
 import uploadImages from "../screens/admin/upload-images/upload-images";
 import EditTranslationsScreen from "../screens/admin/edit-translations";
@@ -36,64 +37,33 @@ import PickTimeCMP from "../components/dialogs/pick-time";
 import StoresScreen from "../screens/stores/stores";
 
 const Stack = createStackNavigator();
-const TransitionScreen = {
-  gestureDirection: 'vertical',
-  transitionSpec: {
-      open: TransitionSpecs.TransitionIOSSpec,
-      close: TransitionSpecs.TransitionIOSSpec
-  },
-  cardStyleInterpolator: ({ current, next, layouts }) => {
-      return {
-          cardStyle: {
-              transform: [
-                  {
-                      translateX: current.progress.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [layouts.screen.width, 0]
-                      })
-                  },
-                  {
-                      translateX: next
-                          ? next.progress.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [0, -layouts.screen.width]
-                            })
-                          : 1
-                  }
-              ]
-          },
-          overlayStyle: {
-              opacity: current.progress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 0]
-              })
-          }
-      };
-  }
-};
+const Tab = createBottomTabNavigator();
+
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      initialRouteName="homeScreen"
+      tabBar={(props) => <BottomTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
+    >
+      <Tab.Screen name="homeScreen" component={HomeScreen} />
+      <Tab.Screen name="Orders" component={OrdersStatusScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
+}
 
 export const MainStackNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="homeScreen"
-      header={null}
-      presentation={"presentation"}
-
+      initialRouteName="MainTabs"
       screenOptions={{
         cardStyle: { backgroundColor: 'transparent' },
-        headerMode: false,
-        ...TransitionScreen,
- 
-        
+        headerShown: false,
       }}
     >
-       {/* name: "menuScreen",
-    title: "תפריט",
-    icon: "shopping-bag1",
-    iconSize: 30,
-    component: MenuScreen, */}
+      <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="menuScreen" component={MenuScreen} />
-      <Stack.Screen name="homeScreen" component={HomeScreen} />
       <Stack.Screen name="terms-and-conditions" component={TermsAndConditionsScreen} />
       <Stack.Screen name="orders-status" component={OrdersStatusScreen} />
       <Stack.Screen name="invoices-list" component={InvoicesScreen} />
@@ -104,7 +74,6 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="admin-add-product" component={AddProductScreen}  initialParams={{ categoryId: null, product: null }}/>
       <Stack.Screen name="becoin" component={BcoinScreen} />
       <Stack.Screen name="cart" component={CartScreen}/>
-      <Stack.Screen name="profile" component={ProfileScreen} />
       <Stack.Screen name="login" component={LoginScreen} />
       <Stack.Screen name="search-customer" component={SearchCustomerScreen} />
       <Stack.Screen name="insert-customer-name" component={insertCustomerName} initialParams={{ name: null }}/>
@@ -123,7 +92,6 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="checkout-screen" component={CheckoutScreen} initialParams={{ selectedDate: null }}/>
       <Stack.Screen name="pick-time-screen" component={PickTimeCMP} />
       <Stack.Screen name="stores-screen" component={StoresScreen} initialParams={{ categoryId: null }}/>
-
       <Stack.Screen 
         name="order-submitted"
         component={OrderSubmittedScreen}
@@ -133,25 +101,6 @@ export const MainStackNavigator = () => {
         name="meal"
         component={MealScreen}
         initialParams={{ product: null, categoryId: null }}
-        
-        options={{
-          presentation: 'modal',
-          ...TransitionPresets.ModalSlideFromBottomIOS,
-          detachPreviousScreen: true,
-          cardStyle: { opacity: 100, }, // Slide from bottom animation
-          
-          transitionSpec: {
-            open: {
-              animation: 'timing',
-              config: { duration: 300 }, // Adjust duration for a smoother animation
-            
-            },
-            close: {
-              animation: 'timing',
-              config: { duration: 300 },
-            },
-          },
-        }}
       />
       <Stack.Screen
         name="meal/edit"
