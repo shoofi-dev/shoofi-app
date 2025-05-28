@@ -13,7 +13,9 @@ import {
 import themeStyle from "../../../styles/theme.style";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { useNavigation, useNavigationState } from "@react-navigation/native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import TopBar from "../TopBar";
+import { StoreContext } from "../../../stores";
 
 import { Platform } from "expo-modules-core";
 import * as FileSystem from "expo-file-system";
@@ -25,6 +27,7 @@ const yellowBgBottomScreens = ["homeScreen", "menuScreen", "BCOINSScreen"];
 const AppContainer = () => {
   const navigation = useNavigation();
   const routeState = useNavigationState((state) => state);
+  const { userDetailsStore } = useContext(StoreContext);
   const [topBgColor, setTopBgColor] = useState(themeStyle.PRIMARY_COLOR);
   const [bottomBgColor, setBottomBgColor] = useState(themeStyle.PRIMARY_COLOR);
   const [isSendToCart, setIsSendToCart] = useState(false);
@@ -55,9 +58,10 @@ const AppContainer = () => {
   };
 
   const setTopColor = () => {
+    const currentRouteName = routeState?.routes?.[routeState.index]?.name;
     if (
-      navigation?.getCurrentRoute()?.name === undefined ||
-      yellowBgTopScreens.indexOf(navigation?.getCurrentRoute()?.name) > -1
+      !currentRouteName ||
+      yellowBgTopScreens.indexOf(currentRouteName) > -1
     ) {
       setTopBgColor(themeStyle.PRIMARY_COLOR);
     } else {
@@ -65,9 +69,10 @@ const AppContainer = () => {
     }
   };
   const setBottomColor = () => {
+    const currentRouteName = routeState?.routes?.[routeState.index]?.name;
     if (
-      navigation?.getCurrentRoute()?.name === undefined ||
-      yellowBgBottomScreens.indexOf(navigation?.getCurrentRoute()?.name) > -1
+      !currentRouteName ||
+      yellowBgBottomScreens.indexOf(currentRouteName) > -1
     ) {
       setBottomBgColor(themeStyle.PRIMARY_COLOR);
     } else {
@@ -222,7 +227,11 @@ const interpolateRotatingX = rotateAnimation.interpolate({
           style={{ height: "100%",  }}
         > */}
           <View style={{ flex: 1, paddingTop: 60, backgroundColor:'rgba(36, 33, 30, 0)' }}>
-            <Header />
+            {userDetailsStore.isAdmin() ? (
+              <Header />
+            ) : (
+              <TopBar address={"ארלוזורוב 135, תל-אביב"} />
+            )}
             <MainStackNavigator />
         {renderImage()}
                    
