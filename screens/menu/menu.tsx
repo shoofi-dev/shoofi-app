@@ -30,6 +30,8 @@ import { WS_URL } from "../../consts/api";
 import { ActivityIndicator } from "react-native-paper";
 import { adminCustomerStore } from "../../stores/admin-customer";
 import CategoryList from "./components/category/category-list";
+import StoreHeaderCard from "./components/StoreHeaderCard";
+
 export function toBase64(input) {
   return Buffer.from(input, "utf-8").toString("base64");
 }
@@ -42,7 +44,7 @@ const MenuScreen = () => {
   const { t } = useTranslation();
   const scrollRef = useRef();
 
-  const { menuStore, languageStore, userDetailsStore } =
+  const { menuStore, languageStore, userDetailsStore, storeDataStore } =
     useContext(StoreContext);
     const [menuAnimationDone, setMenuAnimationDone] = useState(false)
 
@@ -188,7 +190,8 @@ const MenuScreen = () => {
   }
   return (
     <View style={{ height: "100%", marginTop: 0 }}>
-            <CategoryList categoryList={categoryList} onCategorySelect={onCategorySelect} selectedCategory={selectedCategory} isDisabledCatItem={isDisabledCatItem} />
+      <StoreHeaderCard store={storeDataStore.storeData} />
+      <CategoryList categoryList={categoryList} onCategorySelect={onCategorySelect} selectedCategory={selectedCategory} isDisabledCatItem={isDisabledCatItem} />
 
       {/* <View style={styles.container}>
         <ScrollView
