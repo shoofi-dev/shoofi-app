@@ -44,7 +44,7 @@ const ExploreScreen = () => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={{ paddingVertical: 16, paddingHorizontal: 8, borderWidth:1 }}
+        style={{ paddingVertical: 16, paddingHorizontal: 8,marginBottom:10 }}
         contentContainerStyle={{ flexDirection: I18nManager.isRTL ? "row-reverse" : "row" }}
       >
         {categories.map((cat) => (
@@ -105,7 +105,7 @@ const ExploreScreen = () => {
                 </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingLeft: 15 }}>
                 {storesInCategory.map((store) => (
-                  <View key={store._id} style={{ marginRight: 15, width: 140, borderWidth:1 }}>
+                  <View key={store._id} style={{ marginRight: 15, width: 180 }}>
                     <StoreItem storeItem={store} />
                   </View>
                 ))}
