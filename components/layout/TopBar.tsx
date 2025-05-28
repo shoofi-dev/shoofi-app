@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: "absolute",
-    top: -4,
-    right: -4,
+    top: -8,
+    left: -5,
     backgroundColor: themeStyle.PRIMARY_COLOR,
     borderRadius: 10,
     minWidth: 18,
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   badgeText: {
-    color: "#fff",
+    color: "#3B3B3B",
     fontSize: 12,
     fontWeight: "bold",
   },

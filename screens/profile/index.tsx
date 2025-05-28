@@ -1,4 +1,4 @@
-import { Linking, StyleSheet, View } from "react-native";
+import { Linking, StyleSheet, View, I18nManager } from "react-native";
 import Icon from "../../components/icon";
 import BackButton from "../../components/back-button";
 import Text from "../../components/controls/Text";
@@ -9,374 +9,275 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import themeStyle from "../../styles/theme.style";
-import { getCurrentLang } from "../../translations/i18n";
-import { LinearGradient } from "expo-linear-gradient";
-import DashedLine from "react-native-dashed-line";
 import Constants from "expo-constants";
 
 const ProfileScreen = () => {
   const { t } = useTranslation();
   const version = Constants.nativeAppVersion;
-
-  const { userDetailsStore, authStore, storeDataStore } = useContext(StoreContext);
+  const { userDetailsStore, authStore, storeDataStore } =
+    useContext(StoreContext);
   const navigation = useNavigation();
 
-  const [itemsList, setItemsList] = useState([]);
+  // User info
+  const userName = userDetailsStore?.userDetails?.name || "";
+  const userAddress =
+    userDetailsStore?.userDetails?.address || "ארלוזורוב 135, תל אביב";
 
-  useEffect(() => {
-    if (userDetailsStore.userDetails) {
-      const items = [
-        {
-          title: userDetailsStore?.userDetails?.name,
-          icon: "profile-1",
-          key: "phone",
-        },
-        {
-          title: "order-list",
-          icon: "orders-icon",
-          key: "orders",
-        },
-        // {
-        //   title: "invoices-list",
-        //   icon: "file-text2",
-        //   key: "invoices-list",
-        // },
+  // Profile option groups
+  const profileGroups = [
+    [
+      {
+        key: "details",
+        label: t("פרטים כלליים"),
+        icon: "profile-1",
+        color: themeStyle.SECONDARY_COLOR,
+      },
+      {
+        key: "address",
+        label: t("כתובת"),
+        icon: "location",
+        color: themeStyle.SECONDARY_COLOR,
+      },
+      {
+        key: "language",
+        label: t("שפה"),
+        icon: "language",
+        color: themeStyle.SECONDARY_COLOR,
+      },
+    ],
+    [
+      {
+        key: "orders",
+        label: t("עגלה קניות"),
+        icon: "orders-icon",
+        color: themeStyle.SECONDARY_COLOR,
+      },
+      {
+        key: "favorites",
+        label: t("מועדפים"),
+        icon: "heart-outline",
+        color: themeStyle.SECONDARY_COLOR,
+      },
+      {
+        key: "notifications",
+        label: t("התראות"),
+        icon: "bell",
+        color: themeStyle.SECONDARY_COLOR,
+      },
+      {
+        key: "payments",
+        label: t("אמצעי תשלום"),
+        icon: "credit-card",
+        color: themeStyle.SECONDARY_COLOR,
+      },
+    ],
+    [
+      {
+        key: "faq",
+        label: t("שאלות ותשובות"),
+        icon: "help-circle",
+        color: themeStyle.SECONDARY_COLOR,
+      },
+      {
+        key: "user-reviews",
+        label: t("תגובות משתמשים"),
+        icon: "star",
+        color: themeStyle.SECONDARY_COLOR,
+      },
+    ],
+    [
+      {
+        key: "logout",
+        label: t("התנתק"),
+        icon: "logout-icon",
+        color: themeStyle.ERROR_COLOR,
+      },
+    ],
+  ];
 
-        {
-          title: "change-language",
-          icon: "language",
-          key: "language",
-        },
-        {
-          title: "about-us",
-          icon: "home1",
-          key: "about-us",
-        },
-        {
-          title: "contact-us",
-          icon: "phone_icon",
-          key: "contact-us",
-        },
-        {
-          title: "signout",
-          icon: "logout-icon",
-          key: "signout",
-        },
-      ];
-      setItemsList(items);
-    }
-  }, [userDetailsStore.userDetails]);
-
-  const actionHandler = (key: string) => {
+  const actionHandler = (key) => {
     switch (key) {
-      case "phone":
-        updateCustomerName();
+      case "details":
+        // Go to details
         break;
-      case "orders":
-        onGoToOrdersList();
-        break;
-      case "invoices-list":
-        onGoToInvoicesList();
-        break;
-      case "calander":
-        onGoToCalander();
-        break;
-      case "signout":
-        onLogOut();
-        break;
-      case "deleteAccount":
-        deletAccount();
-        break;
-      case "bcoin":
-        navigation.navigate("becoin");
+      case "address":
+        // Go to address
         break;
       case "language":
         navigation.navigate("language");
         break;
-      case "about-us":
-        navigation.navigate("about-us");
+      case "orders":
+        navigation.navigate("order-history");
         break;
-      case "contact-us":
-        onContactUs();
+      case "favorites":
+        // Go to favorites
         break;
-      case "upload-images":
-        navigation.navigate("upload-images");
+      case "notifications":
+        // Go to notifications
         break;
-      case "openTerms":
-        navigation.navigate("terms-and-conditions");
+      case "payments":
+        // Go to payments
+        break;
+      case "faq":
+        // Go to FAQ
+        break;
+      case "user-reviews":
+        // Go to user reviews
+        break;
+      case "logout":
+        authStore.logOut();
+        userDetailsStore.resetUser();
+        navigation.navigate("homeScreen");
         break;
     }
-  };
-  const updateCustomerName = () => {
-    navigation.navigate("insert-customer-name", {
-      name: userDetailsStore?.userDetails?.name,
-    });
-  };
-
-  const onContactUs = () => {
-    Linking.openURL(`tel:${storeDataStore.storeData.storePhone}`);
-
-  }
-
-  const deletAccount = () => {
-    authStore.deleteAccount();
-    navigation.navigate("homeScreen");
-  };
-  const onLogOut = () => {
-    authStore.logOut();
-    userDetailsStore.resetUser();
-    navigation.navigate("homeScreen");
-  };
-  const onGoToOrdersList = () => {
-    if (userDetailsStore.isAdmin()) {
-      navigation.navigate("admin-orders");
-    } else {
-      navigation.navigate("order-history");
-    }
-  };
-  const onGoToInvoicesList = () => {
-    navigation.navigate("invoices-list");
-  };
-  const onGoToCalander = () => {
-    navigation.navigate("admin-calander");
-  };
-
-  const renderItems = () => {
-    return itemsList.map((item, index) => (
-      <View>
-        <TouchableOpacity
-          onPress={() => actionHandler(item.key)}
-          style={styles.rowContainer}
-        >
-          <View style={styles.rowContainer}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View
-                style={{
-                  marginRight: 10,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: 30,
-                  padding: 10,
-                  borderWidth:2,
-                  borderColor: themeStyle.SECONDARY_COLOR
-                }}
-              >
-                <Icon
-                  icon={item.icon}
-                  size={30}
-                  style={{ color: themeStyle.SECONDARY_COLOR, opacity: 1 }}
-                />
-              </View>
-              <View>
-                <Text style={{ fontSize: 18, color: themeStyle.SECONDARY_COLOR }}>
-                  {t(item.title)}
-                </Text>
-              </View>
-              {item.key == "contact-us" && (
-                <View style={{justifyContent:"flex-start", flex:1}}>
-                  <Text type="number" style={{fontSize: 18, color:themeStyle.SECONDARY_COLOR}}>{storeDataStore.storeData?.storePhone}</Text>
-                </View>
-              )}
-              {item.key == "phone" && (
-                <View style={{justifyContent:"flex-end", flex:1, alignItems:'flex-end', paddingRight:20}}>
-                       <Icon
-                        icon="pencil"
-                        size={20}
-                        style={{
-                          color: themeStyle.PRIMARY_COLOR,
-                  
-                        }}
-                      />
-                </View>
-              )}
-            </View>
-
-            {/* <View>
-              <Text style={{ fontSize: 25, color: "#292d32" }}>
-                <Icon
-                  icon="small-arrow-right"
-                  size={15}
-                  style={{ color: "#292D32" }}
-                />
-              </Text>
-            </View> */}
-          </View>
-        </TouchableOpacity>
-        {index < itemsList.length - 1 && (
-          <DashedLine
-            dashLength={5}
-            dashThickness={1}
-            dashGap={0}
-            dashColor={themeStyle.TEXT_PRIMARY_COLOR}
-            style={{ paddingVertical: 15 }}
-          />
-        )}
-      </View>
-    ));
   };
 
   return (
-    <View
-      style={{
-        paddingHorizontal: 10,
-        height: "100%",
-      }}
-    >
-      <View style={{alignItems:'flex-end', width:'100%'}}>
-      <BackButton />
-      </View>
-
-      <ScrollView>
-
-
-      <View style={styles.container}>
-        {/* <LinearGradient
-          colors={[
-            "rgba(207, 207, 207, 0.6)",
-            "rgba(232, 232, 230, 0.5)",
-            "rgba(232, 232, 230, 0.4)",
-            "rgba(232, 232, 230, 0.4)",
-            "rgba(207, 207, 207, 0.6)",
-          ]}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.background]}
-        /> */}
-        <View style={{ alignItems: "center", width: "100%", marginTop: 5,  }}>
-          <Text
-            style={{
-              fontSize: 25,
-              color:themeStyle.SECONDARY_COLOR
-             }}
-             type="number"
-
-          >
-            {userDetailsStore?.userDetails?.phone}
-          </Text>
+    <View style={{ flex: 1, backgroundColor: "#F7F8FA" }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
+        {/* Top user info section */}
+        <View style={styles.topSection}>
+          <View style={styles.avatarCircle}>
+            <Icon icon="profile-1" size={48} style={{ color: "#fff" }} />
+          </View>
+          <View style={{ flexDirection: "column", alignItems: "flex-start", marginLeft: 16 }}>
+            <Text style={styles.userName}>{userName}</Text>
+            <Text style={styles.userAddress}>{userAddress}</Text>
+          </View>
         </View>
-        <View style={{ marginTop: 15 }}>{renderItems()}</View>
-      </View>
-
-      <View
-        style={{
-          alignItems: "center",
-          alignSelf: "center",
-          flexDirection: "row",
-          marginTop:10
-        }}
-      >
-        <View style={{}}>
-          <Text
-            style={{ textAlign: "center", color: themeStyle.SECONDARY_COLOR }}
-            type="number"
-          >
-            Version - {version}
-          </Text>
+        {/* Profile option groups */}
+        <View style={{ paddingHorizontal: 16 }}>
+          {profileGroups.map((group, idx) => (
+            <View key={idx} style={styles.cardGroup}>
+              {group.map((item, i) => (
+                <TouchableOpacity
+                  key={item.key}
+                  style={[
+                    styles.optionRow,
+                    i < group.length - 1 && styles.optionRowBorder,
+                  ]}
+                  onPress={() => actionHandler(item.key)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.rowRight}>
+                    <Text style={styles.optionLabel}>{item.label}</Text>
+                    <View
+                      style={[
+                        styles.iconCircle,
+                        {
+                          backgroundColor:
+                            item.color === themeStyle.ERROR_COLOR
+                              ? "#fff0f0"
+                              : "#f3f7e7",
+                        },
+                      ]}
+                    >
+                      <Icon
+                        icon={item.icon}
+                        size={22}
+                        style={{ color: item.color }}
+                      />
+                    </View>
+                  </View>
+                  <Icon
+                    icon={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+                    size={22}
+                    style={{ color: "#BDBDBD" }}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          ))}
         </View>
-      </View>
-
-      <View
-        style={{
-          alignItems: "center",
-          alignSelf: "center",
-          flexDirection: "row",
-        }}
-      >
-        <View>
-          <TouchableOpacity
-            onPress={() => actionHandler("openTerms")}
-            style={{ alignItems: "center", marginBottom: 20 }}
-          >
-            <Text style={{ color: themeStyle.SECONDARY_COLOR }}>
-              {t("open-terms")}
-            </Text>
-          </TouchableOpacity>
+        {/* App version and terms */}
+        <View style={styles.bottomSection}>
+          <Text style={styles.versionText}>גרסה {version}</Text>
         </View>
-        <View style={{ top: -10 }}>
-          <Text style={{ color: themeStyle.SECONDARY_COLOR}}>{"  |  "}</Text>
-        </View>
-        <View>
-          <TouchableOpacity
-            onPress={() => actionHandler("deleteAccount")}
-            style={{ alignItems: "center", marginBottom: 20 }}
-          >
-            <Text style={{ color: themeStyle.SECONDARY_COLOR }}>
-              {t("delete-account")}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View
-        style={{
-          alignItems: "center",
-          position: "absolute",
-          bottom: 5,
-          margin: "auto",
-          left: 0,
-          right: 105,
-        }}
-      ></View>
-      {/* <View
-        style={{
-          alignItems: "center",
-          position: "absolute",
-          bottom: 5,
-          margin: "auto",
-          left: 0,
-          right: 0,
-        }}
-      >
-        <Text
-         
-          style={{ alignItems: "center", marginBottom: 20 }}
-        >
-          <Text style={{ color: themeStyle.GRAY_700 }}>|</Text>
-        </Text>
-      </View>
-      <View
-        style={{
-          alignItems: "center",
-          position: "absolute",
-          bottom: 5,
-          margin: "auto",
-          left: 130,
-          right: 0,
-        }}
-      >
-
-      </View> */}
-          </ScrollView>
-
+      </ScrollView>
     </View>
-
   );
 };
 
-export default observer(ProfileScreen);
-
 const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    borderRadius: 10,
-    width: "100%",
-    borderColor: "rgba(112,112,112,0.1)",
-    backgroundColor: "rgba(36, 33, 30, 0.8)",
-    paddingBottom:20
-
-  },
-  rowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
+  topSection: {
     alignItems: "center",
-    // marginTop: 15,
+    marginTop: 32,
+    marginBottom: 24,
+    flexDirection: "row",
+    marginLeft:12
   },
-  background: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    borderRadius: 30,
+  avatarCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: themeStyle.SECONDARY_COLOR,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  userName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: themeStyle.SECONDARY_COLOR,
+    marginBottom: 2,
+    textAlign: "center",
+  },
+  userAddress: {
+    fontSize: 15,
+    color: "#888",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  cardGroup: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    marginBottom: 18,
+    paddingVertical: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  optionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+  },
+  optionRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+  rowRight: {
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+    alignItems: "center",
+  },
+  iconCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: I18nManager.isRTL ? 0 : 10,
+    marginRight: I18nManager.isRTL ? 10 : 0,
+  },
+  optionLabel: {
+    fontSize: 16,
+    color: themeStyle.SECONDARY_COLOR,
+    fontWeight: "500",
+    textAlign: "right",
+  },
+  bottomSection: {
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  versionText: {
+    color: "#BDBDBD",
+    fontSize: 14,
   },
 });
+
+export default observer(ProfileScreen);
