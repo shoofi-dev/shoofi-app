@@ -59,8 +59,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({ store, onBack, onFavo
 const styles = StyleSheet.create({
   cardWrapper: {
     backgroundColor: '#fff',
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+
     paddingBottom: 16,
     alignItems: 'center',
     marginBottom: 8,
@@ -73,8 +72,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     height: 210,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+
     overflow: 'hidden',
     position: 'relative',
     backgroundColor: '#eee',

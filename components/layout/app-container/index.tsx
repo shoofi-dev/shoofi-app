@@ -16,6 +16,7 @@ import { useNavigation, useNavigationState } from "@react-navigation/native";
 import { useState, useEffect, useContext } from "react";
 import TopBar from "../TopBar";
 import { StoreContext } from "../../../stores";
+import { hideHHeaderScreens } from "../header/header";
 
 import { Platform } from "expo-modules-core";
 import * as FileSystem from "expo-file-system";
@@ -197,6 +198,8 @@ const interpolateRotatingX = rotateAnimation.interpolate({
     }
   }
   
+  const currentRouteName = routeState?.routes?.[routeState.index]?.name;
+
   return (
     <SafeAreaProvider>
       <StatusBar translucent backgroundColor="transparent" />
@@ -227,10 +230,12 @@ const interpolateRotatingX = rotateAnimation.interpolate({
           style={{ height: "100%",  }}
         > */}
           <View style={{ flex: 1, paddingTop: 60, backgroundColor:'rgba(36, 33, 30, 0)' }}>
-            {userDetailsStore.isAdmin() ? (
-              <Header />
-            ) : (
-              <TopBar address={"ארלוזורוב 135, תל-אביב"} />
+            {(!hideHHeaderScreens.includes(currentRouteName)) && (
+              userDetailsStore.isAdmin() ? (
+                <Header />
+              ) : (
+                <TopBar address={"ארלוזורוב 135, תל-אביב"} />
+              )
             )}
             <MainStackNavigator />
         {renderImage()}

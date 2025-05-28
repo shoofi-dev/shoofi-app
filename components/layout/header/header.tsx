@@ -23,13 +23,14 @@ import Button from "../../controls/button/button";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import _useWebSocketUrl from "../../../hooks/use-web-socket-url";
 
-const hideHHeaderScreens = [
+export const hideHHeaderScreens = [
   "login",
   "verify-code",
   "meal",
   "terms-and-conditions",
   "checkout-screen",
   "cart",
+  "menuScreen",
 ];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];
