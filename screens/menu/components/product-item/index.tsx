@@ -17,7 +17,7 @@ import themeStyle from "../../../../styles/theme.style";
 import { getCurrentLang } from "../../../../translations/i18n";
 import * as Haptics from "expo-haptics";
 import Button from "../../../../components/controls/button/button";
-import { cdnUrl, ORDER_TYPE, devicesType } from "../../../../consts/shared";
+import { cdnUrl, ORDER_TYPE, devicesType, APP_NAME } from "../../../../consts/shared";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import _useDeviceType from "../../../../hooks/use-device-type";
@@ -80,12 +80,16 @@ const ProductItem = ({
     languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE;
   const price = item.price;
   const imageUrl = `${cdnUrl}${item.img[0].uri}`;
-
+  console.log("imageUrl", imageUrl);
   return (
     <TouchableOpacity style={styles.card} onPress={() => onItemSelect(item)}>
       {/* Product Image */}
       <View style={styles.imageWrapper}>
-        <CustomFastImage source={{ uri: imageUrl }} style={styles.image} />
+        <CustomFastImage
+          source={{ uri: imageUrl }}
+          style={styles.image}
+          cacheKey={`${APP_NAME}_${imageUrl.split(/[\\/]/).pop()}`}
+        />
       </View>
       {/* Price */}
       <Text style={styles.priceText}>₪{price}</Text>
