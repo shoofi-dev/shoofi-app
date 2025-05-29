@@ -8,7 +8,7 @@ import {
   Dimensions,
   ImageBackground,
   StatusBar,
-  Text
+  Text,
 } from "react-native";
 import themeStyle from "../../../styles/theme.style";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
@@ -20,7 +20,11 @@ import { hideHHeaderScreens } from "../header/header";
 
 import { Platform } from "expo-modules-core";
 import * as FileSystem from "expo-file-system";
-import { cacheImage, findImageInCache, getImgXtension } from "../../custom-fast-image";
+import {
+  cacheImage,
+  findImageInCache,
+  getImgXtension,
+} from "../../custom-fast-image";
 
 const yellowBgTopScreens = ["meal", "terms-and-conditions"];
 const yellowBgBottomScreens = ["homeScreen", "menuScreen", "BCOINSScreen"];
@@ -50,7 +54,7 @@ const AppContainer = () => {
 
   const updateMealUri = (data) => {
     // setProductMealUrl(data.imgUrl);
-   //loadImg(data.imgUrl,data.cacheKey);
+    //loadImg(data.imgUrl,data.cacheKey);
   };
   const addToCartAnimate = (data) => {
     setProductMealUrl(data.imgUrl);
@@ -91,7 +95,9 @@ const AppContainer = () => {
   };
 
   const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0));
-  const [heightAnimation, setHeightAnimation] = useState(new Animated.Value(300));
+  const [heightAnimation, setHeightAnimation] = useState(
+    new Animated.Value(300)
+  );
   const [widthAnimation, setWidthAnimation] = useState(new Animated.Value(200));
   const handleAnimation = () => {
     // @ts-ignore
@@ -106,34 +112,34 @@ const AppContainer = () => {
       setIsSendToCart(false);
     });
   };
-// const test = async (productImgUrlx)=>{
-//   if(productImgUrlx){
-//     const img = await findImageInCache(`${FileSystem.cacheDirectory}${productImgUrlx.split(/[\\/]/).pop()}`)
-//     console.log("findImageInCache",img)
-//     setProductMealUrlFast(img.img.uri)
-//   }
-// }
-//   useEffect(()=>{
-//     console.log("PWPWPWWP",productImgUrl)
-//     test(productImgUrl)
-//   },[productImgUrl])
+  // const test = async (productImgUrlx)=>{
+  //   if(productImgUrlx){
+  //     const img = await findImageInCache(`${FileSystem.cacheDirectory}${productImgUrlx.split(/[\\/]/).pop()}`)
+  //     console.log("findImageInCache",img)
+  //     setProductMealUrlFast(img.img.uri)
+  //   }
+  // }
+  //   useEffect(()=>{
+  //     console.log("PWPWPWWP",productImgUrl)
+  //     test(productImgUrl)
+  //   },[productImgUrl])
 
-const interpolateRotatingY = rotateAnimation.interpolate({
-  inputRange: [0, 1],
-  outputRange: [0, -Dimensions.get(getScreenOrWindow()).height + 140],
-});
-const interpolateRotatingX = rotateAnimation.interpolate({
-  inputRange: [0, 1],
-  outputRange: [-150, -10],
-});
-  const interpolateHeight = heightAnimation.interpolate({ 
-    inputRange: [0, 300], 
-    outputRange: [300, 0]
+  const interpolateRotatingY = rotateAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -Dimensions.get(getScreenOrWindow()).height + 140],
   });
-  const interpolateWidth = widthAnimation.interpolate({ 
-    inputRange: [0, 200], 
-    outputRange: [0, 0]
-  // <-- any value larger than your content's height
+  const interpolateRotatingX = rotateAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-150, -10],
+  });
+  const interpolateHeight = heightAnimation.interpolate({
+    inputRange: [0, 300],
+    outputRange: [300, 0],
+  });
+  const interpolateWidth = widthAnimation.interpolate({
+    inputRange: [0, 200],
+    outputRange: [0, 0],
+    // <-- any value larger than your content's height
   });
 
   const animatedStyle = {
@@ -142,39 +148,40 @@ const interpolateRotatingX = rotateAnimation.interpolate({
       { translateY: interpolateRotatingY },
       // { scaleX: interpolateHeight },
       // { scaleY: interpolateWidth },
-      
     ],
   };
 
   const animatedHeightStyle = {
     maxHeight: interpolateHeight,
-  }
+  };
   const animatedWidthStyle = {
-    maxWidth: interpolateWidth
-  }
+    maxWidth: interpolateWidth,
+  };
 
   const renderImage = () => {
-    return(
-      productImgUrl ? 
-      <Animated.Image 
-      source={{ uri: `${productImgUrl}` }}
+    return productImgUrl ? (
+      <Animated.Image
+        source={{ uri: `${productImgUrl}` }}
+        style={[
+          isSendToCart && animatedStyle,
+          isSendToCart && animatedHeightStyle,
+          isSendToCart && animatedWidthStyle,
 
-     style={[isSendToCart && animatedStyle,
-        isSendToCart && animatedHeightStyle,
-        isSendToCart && animatedWidthStyle,
-
-        {zIndex: 999,
-       position: "absolute",
-       bottom: 350,
-       height: 300,
-       width: 200,
-       maxHeight:heightAnimation,
-       maxWidth: widthAnimation,
-       display: isSendToCart ? "flex" : "none",
-       borderRadius:30,
-        }]}/>  : null
-    )
-  }
+          {
+            zIndex: 999,
+            position: "absolute",
+            bottom: 350,
+            height: 300,
+            width: 200,
+            maxHeight: heightAnimation,
+            maxWidth: widthAnimation,
+            display: isSendToCart ? "flex" : "none",
+            borderRadius: 30,
+          },
+        ]}
+      />
+    ) : null;
+  };
 
   async function loadImg(currentUri, cacheKey) {
     let imgXt = getImgXtension(currentUri);
@@ -197,7 +204,7 @@ const interpolateRotatingX = rotateAnimation.interpolate({
       }
     }
   }
-  
+
   const currentRouteName = routeState?.routes?.[routeState.index]?.name;
 
   return (
@@ -211,7 +218,7 @@ const interpolateRotatingX = rotateAnimation.interpolate({
           backgroundColor: topBgColor,
           marginBottom: 0,
           height: 0,
-          zIndex:10
+          zIndex: 10,
         }}
       />
 
@@ -229,18 +236,22 @@ const interpolateRotatingX = rotateAnimation.interpolate({
           resizeMode="cover"
           style={{ height: "100%",  }}
         > */}
-          <View style={{ flex: 1, paddingTop: 60, backgroundColor:'rgba(36, 33, 30, 0)' }}>
-            {(!hideHHeaderScreens.includes(currentRouteName)) && (
-              userDetailsStore.isAdmin() ? (
-                <Header />
-              ) : (
-                <TopBar address={"ארלוזורוב 135, תל-אביב"} />
-              )
-            )}
-            <MainStackNavigator />
-        {renderImage()}
-                   
-          </View>
+        <View
+          style={{
+            flex: 1,
+            paddingTop: 60,
+            backgroundColor: "rgba(36, 33, 30, 0)",
+          }}
+        >
+          {!hideHHeaderScreens.includes(currentRouteName) &&
+            (userDetailsStore.isAdmin() ? (
+              <Header />
+            ) : (
+              <TopBar address={"ארלוזורוב 135, תל-אביב"} />
+            ))}
+          <MainStackNavigator />
+          {renderImage()}
+        </View>
         {/* </ImageBackground> */}
       </SafeAreaView>
     </SafeAreaProvider>

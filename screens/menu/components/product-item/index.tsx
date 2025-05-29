@@ -37,15 +37,20 @@ const ProductItem = ({
 }: TProps) => {
   const { t } = useTranslation();
 
-  const { userDetailsStore, languageStore, cartStore, ordersStore,storeDataStore } =
-    useContext(StoreContext);
+  const {
+    userDetailsStore,
+    languageStore,
+    cartStore,
+    ordersStore,
+    storeDataStore,
+  } = useContext(StoreContext);
   const { deviceType } = _useDeviceType();
 
   const isDisabled = (item) => {
     return !userDetailsStore.isAdmin() && item.count == 0;
   };
   const isInStore = (item) => {
-    if ((ordersStore.orderType == ORDER_TYPE.now && !item.isInStore)) {
+    if (ordersStore.orderType == ORDER_TYPE.now && !item.isInStore) {
       return false;
     }
     return true;
@@ -71,7 +76,8 @@ const ProductItem = ({
     cartStore.addProductToCart(tmpProduct);
   };
 
-  const productName = languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE;
+  const productName =
+    languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE;
   const price = item.price;
   const imageUrl = `${cdnUrl}${item.img[0].uri}`;
 
@@ -93,9 +99,9 @@ export default observer(ProductItem);
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 18,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.18,
     shadowRadius: 16,
@@ -104,39 +110,39 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
     width: 210,
     height: 220,
-    overflow: 'hidden',
-    alignSelf: 'flex-start',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    overflow: "hidden",
+    alignSelf: "flex-start",
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   imageWrapper: {
-    width: '100%',
+    width: "100%",
     height: 110,
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
   },
   image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
   },
   priceText: {
-    color: '#B6D436',
+    color: "#B6D436",
     fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginTop: 12,
     marginBottom: 4,
   },
   productName: {
     color: themeStyle.GRAY_900,
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 0,
   },
 });

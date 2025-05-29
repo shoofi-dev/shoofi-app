@@ -49,7 +49,7 @@ import isShowSize from "../../../../helpers/is-show-size";
 import sortPizzaExtras from "../../../../helpers/sort-pizza-extras";
 import _useWebSocketUrl from "../../../../hooks/use-web-socket-url";
 import CustomFastImage from "../../../../components/custom-fast-image";
-import OrderExtrasDisplay from '../../../../components/shared/OrderExtrasDisplay';
+import OrderExtrasDisplay from "../../../../components/shared/OrderExtrasDisplay";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -163,7 +163,6 @@ const OrdersListScreen = ({ route }) => {
   const handleSelectDay = (day) => {
     setSelectedDay(day);
   };
-  console.log("storeDataStore.storeData", storeDataStore.storeData)
   const getNext7Days = () => {
     let days = [];
     let daysRequired = 14;

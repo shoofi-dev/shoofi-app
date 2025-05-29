@@ -44,7 +44,7 @@ import DropDown from "../../../../../components/controls/dropdown";
 import isShowSize from "../../../../../helpers/is-show-size";
 import _useWebSocketUrl from "../../../../../hooks/use-web-socket-url";
 import CustomFastImage from "../../../../../components/custom-fast-image";
-import OrderExtrasDisplay from '../../../../../components/shared/OrderExtrasDisplay';
+import OrderExtrasDisplay from "../../../../../components/shared/OrderExtrasDisplay";
 
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
@@ -81,7 +81,7 @@ const NewOrdersListScreen = ({ route }) => {
     userDetailsStore,
     languageStore,
     cartStore,
-    storeDataStore
+    storeDataStore,
   } = useContext(StoreContext);
   const [ordersList, setOrdersList] = useState([]);
   const [isLoading, setIsloading] = useState(false);
@@ -124,8 +124,11 @@ const NewOrdersListScreen = ({ route }) => {
     //   setOrderNoteText('')
     // }
   };
-  const updateViewedOrder = async (order, readyMinutes, isOrderLaterSupport) => {
-
+  const updateViewedOrder = async (
+    order,
+    readyMinutes,
+    isOrderLaterSupport
+  ) => {
     setIsloading(true);
     delete selectedTime[order.id];
     await ordersStore.updatOrderViewd(
@@ -340,33 +343,35 @@ const NewOrdersListScreen = ({ route }) => {
             {order?.customerDetails?.phone}{" "}
           </Text>
         </View>
-       {storeDataStore.storeData.isOrderLaterSupport &&  <View style={{ alignItems: "center" }}>
-          <View style={{ marginBottom: 10 }}>
-            <Text style={styles.dateRawText}>{t("collect-date")}</Text>
-          </View>
-          <Text
-            style={{
-              fontSize: 34,
-              fontFamily: `${getCurrentLang()}-Bold`,
-              color: themeStyle.ERROR_COLOR,
-            }}
-          >
-            {t(moment(order.orderDate).format("dddd"))}
-          </Text>
-          <Text
-            style={{
-              fontSize: 36,
-              fontFamily: `${getCurrentLang()}-American-bold`,
+        {storeDataStore.storeData.isOrderLaterSupport && (
+          <View style={{ alignItems: "center" }}>
+            <View style={{ marginBottom: 10 }}>
+              <Text style={styles.dateRawText}>{t("collect-date")}</Text>
+            </View>
+            <Text
+              style={{
+                fontSize: 34,
+                fontFamily: `${getCurrentLang()}-Bold`,
+                color: themeStyle.ERROR_COLOR,
+              }}
+            >
+              {t(moment(order.orderDate).format("dddd"))}
+            </Text>
+            <Text
+              style={{
+                fontSize: 36,
+                fontFamily: `${getCurrentLang()}-American-bold`,
 
-              color: themeStyle.SUCCESS_COLOR,
-            }}
-          >
-            {moment(order.orderDate).format("HH:mm")}
-          </Text>
-          {/* <Text style={styles.dateText}>
+                color: themeStyle.SUCCESS_COLOR,
+              }}
+            >
+              {moment(order.orderDate).format("HH:mm")}
+            </Text>
+            {/* <Text style={styles.dateText}>
               {moment(order.orderDate).format("DD/MM")}
             </Text> */}
-        </View>}
+          </View>
+        )}
       </View>
     );
   };
@@ -1063,71 +1068,75 @@ const NewOrdersListScreen = ({ route }) => {
                         />
                       </View> */}
 
-                     {!storeDataStore.storeData.isOrderLaterSupport &&  <View
-                        style={{
-                          marginVertical: 40,
-                          // alignItems: "flex-start",
-                          width: "100%",
-                        }}
-                      >
+                      {!storeDataStore.storeData.isOrderLaterSupport && (
                         <View
                           style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            width: "100%",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text style={{ fontSize: 22 }}>ستكون جاهزة خلال</Text>
-                        </View>
-
-                        <View
-                          style={{
-                            marginTop: 30,
+                            marginVertical: 40,
                             // alignItems: "flex-start",
-                            flexDirection: "row",
                             width: "100%",
-
-                            alignItems: "center",
-                            justifyContent: "center",
                           }}
                         >
-                          {deliveryTime.map((time) => {
-                            return (
-                              <TouchableOpacity
-                                onPress={() =>
-                                  updateSelectedTime(order._id, time.value)
-                                }
-                                style={{
-                                  width: 60,
-                                  borderWidth: 1,
-                                  height: 60,
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  marginRight: 20,
-                                  borderColor: themeStyle.TEXT_PRIMARY_COLOR,
-                                  backgroundColor:
-                                    selectedTime[order._id] === time.label
-                                      ? themeStyle.SUCCESS_COLOR
-                                      : "transparent",
-                                }}
-                              >
-                                <Text
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              width: "100%",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text style={{ fontSize: 22 }}>
+                              ستكون جاهزة خلال
+                            </Text>
+                          </View>
+
+                          <View
+                            style={{
+                              marginTop: 30,
+                              // alignItems: "flex-start",
+                              flexDirection: "row",
+                              width: "100%",
+
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {deliveryTime.map((time) => {
+                              return (
+                                <TouchableOpacity
+                                  onPress={() =>
+                                    updateSelectedTime(order._id, time.value)
+                                  }
                                   style={{
-                                    fontSize: 22,
-                                    color:
-                                      selectedTime[order._id] == time.value
-                                        ? themeStyle.WHITE_COLOR
-                                        : themeStyle.TEXT_PRIMARY_COLOR,
+                                    width: 60,
+                                    borderWidth: 1,
+                                    height: 60,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginRight: 20,
+                                    borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                                    backgroundColor:
+                                      selectedTime[order._id] === time.label
+                                        ? themeStyle.SUCCESS_COLOR
+                                        : "transparent",
                                   }}
                                 >
-                                  {time.label}
-                                </Text>
-                              </TouchableOpacity>
-                            );
-                          })}
+                                  <Text
+                                    style={{
+                                      fontSize: 22,
+                                      color:
+                                        selectedTime[order._id] == time.value
+                                          ? themeStyle.WHITE_COLOR
+                                          : themeStyle.TEXT_PRIMARY_COLOR,
+                                    }}
+                                  >
+                                    {time.label}
+                                  </Text>
+                                </TouchableOpacity>
+                              );
+                            })}
+                          </View>
                         </View>
-                      </View>}
+                      )}
 
                       <View
                         style={{
@@ -1140,12 +1149,19 @@ const NewOrdersListScreen = ({ route }) => {
                           text={t("approve")}
                           fontSize={22}
                           onClickFn={() =>
-                            updateViewedOrder(order, selectedTime[order._id],storeDataStore.storeData.isOrderLaterSupport)
+                            updateViewedOrder(
+                              order,
+                              selectedTime[order._id],
+                              storeDataStore.storeData.isOrderLaterSupport
+                            )
                           }
                           textColor={themeStyle.WHITE_COLOR}
                           fontFamily={`${getCurrentLang()}-Bold`}
                           borderRadious={19}
-                          disabled={!selectedTime[order._id] && !storeDataStore.storeData.isOrderLaterSupport}
+                          disabled={
+                            !selectedTime[order._id] &&
+                            !storeDataStore.storeData.isOrderLaterSupport
+                          }
                         />
                       </View>
                     </View>

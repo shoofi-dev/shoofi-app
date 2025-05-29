@@ -33,7 +33,11 @@ export type ExtrasSectionProps = {
   onChange: (extraId: string, value: any) => void;
 };
 
-const ExtrasSection = ({ extras, selections, onChange }: ExtrasSectionProps) => (
+const ExtrasSection = ({
+  extras,
+  selections,
+  onChange,
+}: ExtrasSectionProps) => (
   <View>
     {extras.map((extra) => {
       if (extra.type === "pizza-topping") {
@@ -58,4 +62,4 @@ const ExtrasSection = ({ extras, selections, onChange }: ExtrasSectionProps) => 
   </View>
 );
 
-export default ExtrasSection; 
+export default ExtrasSection;
