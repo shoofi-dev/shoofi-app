@@ -7,6 +7,7 @@ import i18n from "../../translations/index-x";
 import { setTranslations, getCurrentLang } from "../../translations/i18n";
 import { orderBy } from "lodash";
 import { TProduct } from "../../screens/admin/product/add";
+import { APP_NAME } from "../../consts/shared";
 
 class MenuStore {
   menu = null;
@@ -143,8 +144,13 @@ class MenuStore {
   };
   getExrasListFromServer = () => {
     return axiosInstance
-      .get(`${MENU_API.ADMIN_GET_EXTRAS_API}`)
+      .get(`${MENU_API.ADMIN_GET_EXTRAS_API}`, {
+        headers: {
+          'app-name': APP_NAME,
+        },
+      })
       .then(function (response) {
+        console.log("response", response);
         return response?.data;
       });
   };
@@ -351,6 +357,23 @@ class MenuStore {
   updateSelectedCategory = (categoryId) =>{
     this.selectedCategoryId = categoryId;
   }
+
+  createExtraFromServer = (extra) => {
+    // No explicit create endpoint found; using ADMIN_GET_EXTRAS_API with POST as fallback
+    return axiosInstance
+      .post(`${MENU_API.ADMIN_GET_EXTRAS_API}`, extra, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(function (response) {
+        return response.data;
+      });
+  };
+
+  createExtra = (extra) => {
+    return this.createExtraFromServer(extra);
+  };
 }
 
 export const menuStore = new MenuStore();

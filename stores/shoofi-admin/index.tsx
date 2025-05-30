@@ -133,6 +133,20 @@ class ShoofiAdminStore {
       return res[0];
     })
   };
+
+  getstoresCategories = async () => {
+    const body = { date: moment().format()}
+    return axiosInstance
+      .post(
+        `${SHOOFI_ADMIN_API.CONTROLLER}/${SHOOFI_ADMIN_API.GET_CATEGORY_LIST_API}`,
+        body,
+        {
+          headers: {
+            "app-name": APP_NAME
+          }
+        }
+      )
+  }
 }
 
 export const shoofiAdminStore = new ShoofiAdminStore();

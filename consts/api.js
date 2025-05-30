@@ -17,6 +17,7 @@ export const SHOOFI_ADMIN_API = {
     GET_STORES_LIST_API : "store/list",
     GET_CATEGORY_LIST_API : "category/list",
     UPDATE_STORE_API : "store/update",
+    GET_CATEGORIES_API : "/admin/categorie",
 };
 
 export const AUTH_API = {

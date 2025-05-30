@@ -16,6 +16,9 @@ import { cdnUrl, ROLES } from "../../../../consts/shared";
 import CheckBox from "../../../../components/controls/checkbox";
 import BackButton from "../../../../components/back-button";
 import type { Asset } from "react-native-image-picker";
+import ExtrasManager, { type Extra } from "../../../../components/admin/ExtrasManager";
+import { API_URL } from "../../../../config";
+import { useAuth } from "../../../../hooks/useAuth";
 
 export type TProduct = {
   id?: string;
@@ -47,8 +50,9 @@ const AddProductScreen = ({ route }) => {
   const navigation = useNavigation();
   const { categoryId, product } = route.params;
 
-  const { menuStore, languageStore, userDetailsStore, storeDataStore } =
+  const { menuStore, languageStore, userDetailsStore, storeDataStore, shoofiAdminStore } =
     useContext(StoreContext);
+
 
   const [isEditMode, setIdEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,8 +62,9 @@ const AddProductScreen = ({ route }) => {
   const [image, setImage] = useState<Asset | null>(null);
   const [extrasList, setExtrasList] = useState([]);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+  const [extras, setExtras] = useState<Extra[]>([]);
 
-  const initNewProduct = (defaultExtrasData, editProductData) => {
+  const initNewProduct = (editProductData) => {
     let defaultProductData = {
       categoryId: "",
       nameAR: "",
@@ -77,7 +82,7 @@ const AddProductScreen = ({ route }) => {
       isInStore: true,
       isWeight: true,
       isHidden: false,
-      extras: defaultExtrasData,
+      extras: [],
       others: {
         qty: 1,
       },
@@ -128,7 +133,7 @@ const AddProductScreen = ({ route }) => {
         ...product,
       };
       if (product.extras) {
-        setSelectedExtras(Object.keys(product.extras));
+        setSelectedExtras(product.extras);
       }
       setSelectedProduct(tmpProduct);
     } else {
@@ -137,9 +142,14 @@ const AddProductScreen = ({ route }) => {
   }, []);
 
   const getExtrasLit = async () => {
-    const extrasListRes: any = await menuStore.getExrasList();
+    const categories: any = await shoofiAdminStore.getstoresCategories();
+    console.log("sottttterrW", storeDataStore.storeData.categoryId)
+    console.log("sottttterrW", categories)
+    const categoryExtras = categories.find((c: any) => c._id === storeDataStore.storeData.categoryId);
+    console.log("categoryExtras", categoryExtras)
+    setExtrasList(categoryExtras?.extras);
+    // setExtrasList(extrasListRes);
 
-    setExtrasList(extrasListRes);
     // const extrasData = extrasListRes.map((extra)=>{
     //   if(extra.isActive){
     //     return {
@@ -150,18 +160,14 @@ const AddProductScreen = ({ route }) => {
     //   }
     // })
 
-    const extrasDataFiltered = extrasListRes.filter((extra) => extra.isActive);
+    // const extrasDataFiltered = extrasListRes.filter((extra) => extra.isActive);
     const extrasData = {};
-    extrasDataFiltered.forEach((extra) => {
-      extrasData[extra.name] = {
-        ...extra,
-      };
-    });
+
     let tmpProduct = null;
     if (product) {
       tmpProduct = { ...product };
     }
-    setSelectedProduct(initNewProduct(extrasData, tmpProduct));
+    setSelectedProduct(initNewProduct(tmpProduct));
   };
   useEffect(() => {
     getExtrasLit();
@@ -254,47 +260,53 @@ const AddProductScreen = ({ route }) => {
     setSelectedProduct({ ...selectedProduct, [name]: value });
   };
 
-  const handlAddClick = () => {
-    if (
-      selectedProduct &&
-      (isEditMode || image || selectedProduct.categoryId == "8")
-    ) {
-      // Convert string values to numbers before sending to API
-      const processedProduct = {
-        ...selectedProduct,
-        // Keep discount fields as strings for TProduct
-        discountQuantity: selectedProduct.hasDiscount ? selectedProduct.discountQuantity : "",
-        discountPrice: selectedProduct.hasDiscount ? selectedProduct.discountPrice : "",
-        extras: Object.keys(selectedProduct.extras || {}).reduce(
-          (acc, extraName) => {
-            const extra = selectedProduct.extras[extraName];
-            acc[extraName] = {
-              ...extra,
-              price: parseFloat(extra.price) || 0,
-              value: parseFloat(extra.value) || 0,
-              stepValue: parseFloat(extra.stepValue) || 0,
-              minValue: parseFloat(extra.minValue) || 0,
-              maxValue: parseFloat(extra.maxValue) || 0,
-              defaultValue: parseFloat(extra.defaultValue) || 0,
-            };
-            return acc;
-          },
-          {}
-        ),
-      };
+  const handleSaveExtras = (updatedExtras: Extra[]) => {
+    setExtras(updatedExtras);
+  };
 
-      setIsLoading(true);
-      let updatedData = image
-        ? { ...processedProduct, img: image }
-        : processedProduct;
-      setSelectedProduct(updatedData as TProduct);
-      menuStore
-        .addOrUpdateProduct(updatedData, isEditMode, !!image)
-        .then((res: any) => {
-          menuStore.getMenu();
-          setIsLoading(false);
-          navigateToMenu();
-        });
+  const handleCreateGlobalExtra = async (extra: Extra) => {
+    try {
+      const data = await menuStore.createExtra(extra);
+      return data;
+    } catch (error) {
+      console.error("Error creating global extra:", error);
+      throw error;
+    }
+  };
+
+  const handleAddOrUpdateProduct = async () => {
+    try {
+      if (
+        selectedProduct &&
+        (isEditMode || image || selectedProduct.categoryId == "8")
+      ) {
+        // Convert string values to numbers before sending to API
+        const processedProduct = {
+          ...selectedProduct,
+          // Keep discount fields as strings for TProduct
+          discountQuantity: selectedProduct.hasDiscount ? selectedProduct.discountQuantity : "",
+          discountPrice: selectedProduct.hasDiscount ? selectedProduct.discountPrice : "",
+          extras: extras
+        };
+
+        setIsLoading(true);
+        let updatedData = image
+          ? { ...processedProduct, img: image }
+          : processedProduct;
+        setSelectedProduct(updatedData as TProduct);
+        console.log("updatedData", updatedData)
+        
+        menuStore
+          .addOrUpdateProduct(updatedData, isEditMode, !!image)
+          .then((res: any) => {
+            menuStore.getMenu();
+            setIsLoading(false);
+            navigateToMenu();
+          });
+      }
+    } catch (error) {
+      console.error("Error adding or updating product:", error);
+      setIsLoading(false);
     }
   };
 
@@ -304,7 +316,7 @@ const AddProductScreen = ({ route }) => {
 
   const getMenu = () => {
     const categories = menuStore.categories;
-    const mappedCategories = categories.map((category, index) => {
+    const mappedCategories = categories?.map((category, index) => {
       if (categoryId && category.categoryId === categoryId) {
         setSelectedCategoryId(index);
       }
@@ -554,11 +566,22 @@ const AddProductScreen = ({ route }) => {
           />
         </View>
 
+        {/* Extras Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("extras")}</Text>
+          <ExtrasManager
+            assignedExtras={extras}
+            onSave={handleSaveExtras}
+            onCreateGlobalExtra={handleCreateGlobalExtra}
+            globalExtras={extrasList} 
+          />
+        </View>
+
         {/* Approve Button */}
         <Button
           text={t("approve")}
           fontSize={20}
-          onClickFn={handlAddClick}
+          onClickFn={handleAddOrUpdateProduct}
           isLoading={isLoading}
           disabled={isLoading || !isValidForm()}
         />
@@ -588,5 +611,14 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     bottom: 0,
+  },
+  section: {
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: themeStyle.TEXT_PRIMARY_COLOR,
   },
 });
