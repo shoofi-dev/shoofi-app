@@ -17,7 +17,12 @@ import themeStyle from "../../../../styles/theme.style";
 import { getCurrentLang } from "../../../../translations/i18n";
 import * as Haptics from "expo-haptics";
 import Button from "../../../../components/controls/button/button";
-import { cdnUrl, ORDER_TYPE, devicesType, APP_NAME } from "../../../../consts/shared";
+import {
+  cdnUrl,
+  ORDER_TYPE,
+  devicesType,
+  APP_NAME,
+} from "../../../../consts/shared";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import _useDeviceType from "../../../../hooks/use-device-type";
@@ -89,12 +94,14 @@ const ProductItem = ({
           source={{ uri: imageUrl }}
           style={styles.image}
           cacheKey={`${APP_NAME}_${imageUrl.split(/[\\/]/).pop()}`}
+          resizeMode="contain"
         />
       </View>
-      {/* Price */}
-      <Text style={styles.priceText}>₪{price}</Text>
-      {/* Product Name */}
-      <Text style={styles.productName}>{productName}</Text>
+    <View style={{marginTop:10}}>
+    <Text style={styles.productName}>{productName}</Text>
+    <Text style={styles.priceText}>₪{price}</Text>
+    </View>
+
     </TouchableOpacity>
   );
 };
@@ -112,12 +119,13 @@ const styles = StyleSheet.create({
     elevation: 8,
     marginBottom: 8,
     marginHorizontal: 0,
-    width: 210,
-    height: 220,
+    width: "100%",
+
     overflow: "hidden",
     alignSelf: "flex-start",
     justifyContent: "flex-start",
     alignItems: "center",
+    padding: 10,
   },
   imageWrapper: {
     width: "100%",
@@ -136,15 +144,14 @@ const styles = StyleSheet.create({
   },
   priceText: {
     color: "#B6D436",
-    fontSize: 22,
+    fontSize: themeStyle.FONT_SIZE_XL,
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: 12,
     marginBottom: 4,
   },
   productName: {
     color: themeStyle.GRAY_900,
-    fontSize: 18,
+    fontSize: themeStyle.FONT_SIZE_LG,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 0,

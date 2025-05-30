@@ -62,37 +62,17 @@ const CategoryList = ({
         showsHorizontalScrollIndicator={false}
         decelerationRate={0.5}
         horizontal={true}
+        contentContainerStyle={styles.scrollContent}
       >
-                  <Animated.View style={{flexDirection:'row', alignItems:'center',height:"100%", transform:[{translateX: anim.current}]}}>
-
-        <View
-          style={{
-            flex: 1,
-            flexWrap: "wrap",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            height:"100%",
-            paddingVertical:5
-          }}
-        >
-          {categoryList.map((category) => (
-            <View
-              style={{
-                // width: selectedCategory._id === category._id ? 70 : 70,
-              }}
-              key={category._id}
-            >
-              <CategoryItem
-                item={category}
-                onItemSelect={onCategorySelect}
-                selectedItem={selectedCategory}
-                isDisabledCatItem={isDisabledCatItem}
-              />
-            </View>
-          ))}
-        </View>
-        </Animated.View>
-
+        {categoryList.map((category) => (
+          <CategoryItem
+            key={category._id}
+            item={category}
+            onItemSelect={onCategorySelect}
+            selectedItem={selectedCategory}
+            isDisabledCatItem={isDisabledCatItem}
+          />
+        ))}
       </ScrollView>
     </View>
   );
@@ -103,10 +83,16 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     flexDirection: "row",
-    height: 50,
+    height: 56,
     width: "100%",
-    marginTop:15,
-    // backgroundColor: "#F1F1F1",
+    marginTop: 15,
+    backgroundColor: "transparent",
+    alignItems: "center",
+  },
+  scrollContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
   },
   categoryItem: {},
   iconContainer: {},

@@ -188,7 +188,7 @@ const MenuScreen = () => {
     return null;
   }
   return (
-    <View style={{ height: "100%", marginTop: 0 }}>
+    <View style={{ height: "100%", marginTop: 0,  }}>
               <StoreHeaderCard store={storeDataStore.storeData} />
 
             <CategoryList categoryList={categoryList} onCategorySelect={onCategorySelect} selectedCategory={selectedCategory} isDisabledCatItem={isDisabledCatItem} />
@@ -250,6 +250,7 @@ const MenuScreen = () => {
                 category.categoryId === tmpSelectedCategory?.categoryId
                   ? "flex"
                   : "none",
+                  
             }}
           >
             <CategoryItemsList
