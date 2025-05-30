@@ -31,7 +31,6 @@ import { ActivityIndicator } from "react-native-paper";
 import { adminCustomerStore } from "../../stores/admin-customer";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
-
 export function toBase64(input) {
   return Buffer.from(input, "utf-8").toString("base64");
 }
@@ -44,7 +43,7 @@ const MenuScreen = () => {
   const { t } = useTranslation();
   const scrollRef = useRef();
 
-  const { menuStore, languageStore, userDetailsStore, storeDataStore } =
+  const { menuStore, languageStore, storeDataStore } =
     useContext(StoreContext);
     const [menuAnimationDone, setMenuAnimationDone] = useState(false)
 
@@ -185,25 +184,81 @@ const MenuScreen = () => {
     getMenu();
   }, [menuStore.categories]);
 
-  if (!categoryList) {
+  if (!categoryList || !selectedCategory) {
     return null;
   }
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
-        <StoreHeaderCard store={storeDataStore.storeData} />
-        {categoryList.map((category) => (
-          <View key={category._id} style={{ marginBottom: 32, height: 200,  }}>
-            <Text style={{ fontSize: themeStyle.FONT_SIZE_LG, fontWeight: 'bold', color: '#222', marginHorizontal: 18, marginTop: 8, textAlign: 'left' }}>
-              {languageStore.selectedLang === 'ar' ? category.nameAR : category.nameHE}
-            </Text>
-            <View style={{ }}>
-            <CategoryItemsList productsList={category.products} category={category} />
+    <View style={{ height: "100%", marginTop: 0 }}>
+              <StoreHeaderCard store={storeDataStore.storeData} />
 
+            <CategoryList categoryList={categoryList} onCategorySelect={onCategorySelect} selectedCategory={selectedCategory} isDisabledCatItem={isDisabledCatItem} />
+
+      {/* <View style={styles.container}>
+        <ScrollView
+          ref={scrollRef}
+          style={{ height: "100%", width: "100%" }}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          decelerationRate={0.5}          
+        >
+          <Animated.View style={{flexDirection:'row', transform:[{translateX: anim.current}]}}>
+
+       
+          {categoryList.map((category) => (
+            <View
+              style={{
+                width: selectedCategory._id === category._id ? 70 : 70,
+              }}
+              key={category._id}
+            >
+                <MenuItem
+                  item={category}
+                  onItemSelect={onCategorySelect}
+                  selectedItem={selectedCategory}
+                  isDisabledCatItem={isDisabledCatItem}
+                />
             </View>
+          ))}
+          </Animated.View>
+        </ScrollView>
+      </View> */}
+      {/* <LinearGradient
+        colors={[
+          "rgba(239, 238, 238, 0.04)",
+          "rgba(239, 238, 238, 0.9)",
+          "rgba(239, 238, 238, 0.9)",
+          "rgba(239, 238, 238, 0.9)",
+          "rgba(239, 238, 238, 0.9)",
+          "rgba(239, 238, 238, 0.01)",
+        ]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.background]}
+      /> */}
+      {/* {(tmpSelectedCategory == undefined || tmpSelectedCategoryProg) && (
+        <View style={{ width: "20%", alignSelf: "center", marginTop: 100 }}>
+          <Image source={loaderGif} style={{ alignSelf: "center" }} />
+        </View>
+      )} */}
+
+      <View>
+        {/* { menuAnimationDone && categoryList.map((category, index) => ( */}
+        { categoryList.map((category, index) => (
+          <View
+            style={{
+              display:
+                category.categoryId === tmpSelectedCategory?.categoryId
+                  ? "flex"
+                  : "none",
+            }}
+          >
+            <CategoryItemsList
+              productsList={category.products}
+              category={category}
+            />
           </View>
         ))}
-      </ScrollView>
+      </View>
     </View>
   );
 };

@@ -45,7 +45,7 @@ const CategoryItemsList = ({ productsList, category }) => {
   const [tmpSelectedCategoryProg, setTmpSelectedCategoryProg] = useState(false);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
-  const [isProductAnimateDone, setIsProductAnimateDone] = useState(false);
+  const [isProductAnimateDone, setIsProductAnimateDone] = useState(true);
 
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
@@ -172,12 +172,96 @@ const CategoryItemsList = ({ productsList, category }) => {
 
   const filterBirthdayProducts = filterBirthday();
   return (
-    <View style={{ height: "100%", }}>
+    <View style={{ height: "100%" }}>
+      {false && (
+        <View>
+          {category.categoryId === 1 && (
+            <Animated.View
+              style={{ transform: [{ translateY: productsAnim.current }] }}
+            >
+              <Carousel
+                loop
+                width={Dimensions.get("window").width}
+                height={"100%"}
+                autoPlay={false}
+                data={productsList}
+                scrollAnimationDuration={500}
+                autoPlayInterval={3000}
+                mode="parallax"
+                modeConfig={{
+                  parallaxScrollingScale:
+                    deviceType == devicesType.tablet ? 0.9 : 0.8,
+                }}
+                style={{}}
+                renderItem={({ index }) => (
+                  <ProductCarousleItem
+                    item={productsList[index]}
+                    onItemSelect={onItemSelect}
+                    onDeleteProduct={onDeleteProduct}
+                    onEditProduct={onEditProduct}
+                  />
+                )}
+              />
+            </Animated.View>
+          )}
+          {category.categoryId != 1 &&
+            productsList.length > 1 &&
+            isProductAnimateDone && (
+              <View style={{ marginTop: 20, height: "100%" }}>
+                <Carousel
+                  loop
+                  width={Dimensions.get("window").width}
+                  height={"100%"}
+                  autoPlay={false}
+                  data={productsList}
+                  scrollAnimationDuration={1500}
+                  autoPlayInterval={3000}
+                  mode="parallax"
+                  modeConfig={{
+                    parallaxScrollingScale:
+                      deviceType == devicesType.tablet ? 0.9 : 0.8,
+                  }}
+                  style={{}}
+                  renderItem={({ index }) => (
+                    <ProductCarousleItem
+                      item={productsList[index]}
+                      onItemSelect={onItemSelect}
+                      onDeleteProduct={onDeleteProduct}
+                      onEditProduct={onEditProduct}
+                    />
+                  )}
+                />
+              </View>
+            )}
 
+          {category.categoryId != 1 &&
+            productsList.length == 1 &&
+            isProductAnimateDone && (
+              <View
+                style={{
+                  marginTop: 20,
+                  height: "100%",
+                  width: "100%",
+                  alignSelf: "center",
+                  transform: [
+                    { scale: deviceType == devicesType.tablet ? 0.9 : 0.8 },
+                  ],
+                }}
+              >
+                <ProductCarousleItem
+                  item={productsList[0]}
+                  onItemSelect={onItemSelect}
+                  onDeleteProduct={onDeleteProduct}
+                  onEditProduct={onEditProduct}
+                />
+              </View>
+            )}
+        </View>
+      )}
       {true && isProductAnimateDone && (
         <View
           style={{
-            height: "100%",
+            height: "85%",
             shadowColor: themeStyle.GRAY_600,
             shadowOffset: {
               width: 0,
@@ -215,25 +299,35 @@ const CategoryItemsList = ({ productsList, category }) => {
                   <AddProductItem onItemSelect={onAddProduct} />
                 </View>
               )}
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ alignItems: 'flex-start', paddingHorizontal: 16 }}>
-                {filterBirthdayProducts
-                  .slice(0, pageNumber * 5)
-                  .map((item, index) => {
-                    return (
-                      <View key={item._id} style={{ marginRight: 18,  }}>
-                        <ProductItem
-                          item={item}
-                          onItemSelect={onItemSelect}
-                          onDeleteProduct={onDeleteProduct}
-                          onEditProduct={onEditProduct}
-                        />
-                      </View>
-                    );
-                  })}
-              </ScrollView>
+              {filterBirthdayProducts
+                .slice(0, pageNumber * 5)
+                .map((item, index) => {
+                  return (
+                    <View
+                      key={item._id}
+                      style={{
+                    
+                        flexBasis: "48.5%",
+                        marginTop:
+                        productsList?.length > 1
+                          ? index % 2 === 0
+                            ? 15
+                            : 15
+                          : 0,
+                      }}
+                    >
+                      <ProductItem
+                        item={item}
+                        onItemSelect={onItemSelect}
+                        onDeleteProduct={onDeleteProduct}
+                        onEditProduct={onEditProduct}
+                      />
+                    </View>
+                  );
+                })}
             </View>
             {filterBirthdayProducts.length >= pageNumber * 5 && (
-              <View style={{ flexDirection: "row", justifyContent: "center", }}>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
                 <ActivityIndicator
                   size="large"
                   style={{}}
@@ -245,7 +339,97 @@ const CategoryItemsList = ({ productsList, category }) => {
         </View>
       )}
 
-
+      {category.categoryId === 6 && isProductAnimateDone && (
+        <View
+          style={{
+            height: "85%",
+            shadowColor: "#C19A6B",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.9,
+            shadowRadius: 6,
+            elevation: 0,
+            borderWidth: 0,
+            backgroundColor: "transparent",
+          }}
+        >
+          {/* {(tmpSelectedCategory == undefined || tmpSelectedCategoryProg) && (
+            <View style={{ width: "20%", alignSelf: "center", marginTop: 100 }}>
+              <Image source={loaderGif} style={{ alignSelf: "center" }} />
+            </View>
+          )} */}
+          <ScrollView
+            ref={scrollRef}
+            style={{ height: "100%", marginBottom: 20 }}
+            onMomentumScrollEnd={onScrollEnd}
+            onScrollEndDrag={onScrollEnd}
+            onMomentumScrollBegin={onScrollEnd}
+          >
+            <View style={styles.container}>
+              {userDetailsStore.isAdmin(ROLES.all) && (
+                <View
+                  style={{
+                    marginTop:
+                      productsList?.length > 1 ? (1 % 2 === 0 ? -50 : 50) : 0,
+                    flexBasis: "48.5%",
+                  }}
+                >
+                  <AddProductItem onItemSelect={onAddProduct} />
+                </View>
+              )}
+              {productsList.slice(0, pageNumber * 5).map((item, index) => {
+                return (
+                  <View
+                    key={item._id}
+                    style={{
+                      marginTop:
+                        productsList?.length > 1
+                          ? index % 2 === 0
+                            ? -15
+                            : 15
+                          : 0,
+                      flexBasis: "48.5%",
+                    }}
+                  >
+                    <ProductItem
+                      item={item}
+                      onItemSelect={onItemSelect}
+                      onDeleteProduct={onDeleteProduct}
+                      onEditProduct={onEditProduct}
+                    />
+                  </View>
+                );
+              })}
+            </View>
+            {category.categoryId === 5 &&
+              filterBirthdayProducts.length >= pageNumber * 5 && (
+                <View
+                  style={{ flexDirection: "row", justifyContent: "center" }}
+                >
+                  <ActivityIndicator
+                    size="large"
+                    style={{}}
+                    color={themeStyle.PRIMARY_COLOR}
+                  />
+                </View>
+              )}
+            {category.categoryId === 6 &&
+              productsList.length >= pageNumber * 5 && (
+                <View
+                  style={{ flexDirection: "row", justifyContent: "center" }}
+                >
+                  <ActivityIndicator
+                    size="large"
+                    style={{}}
+                    color={themeStyle.PRIMARY_COLOR}
+                  />
+                </View>
+              )}
+          </ScrollView>
+        </View>
+      )}
 
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}
@@ -263,7 +447,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row-reverse",
     flexWrap: "wrap",
-    marginTop: 15,
+    marginTop: 40,
     maxWidth: 600,
     justifyContent: "space-between",
     alignSelf: "center",
