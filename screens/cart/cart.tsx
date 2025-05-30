@@ -376,7 +376,7 @@ const CartScreen = ({ route }) => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  backgroundColor: "rgba(36, 33, 30, 0.8)",
+                  backgroundColor: "#ECF0F4",
                   paddingHorizontal: scale(10),
                   borderRadius: 10,
                   padding: scale(8),
@@ -385,7 +385,7 @@ const CartScreen = ({ route }) => {
                 <Text
                   style={{
                     fontSize: fontSize(20),
-                    color: themeStyle.SECONDARY_COLOR,
+                    color: themeStyle.TEXT_PRIMARY_COLOR,
                   }}
                 >
                   {t("items-count")}
@@ -393,7 +393,7 @@ const CartScreen = ({ route }) => {
                 <Text
                   style={{
                     fontSize: fontSize(20),
-                    color: themeStyle.SECONDARY_COLOR,
+                    color: themeStyle.TEXT_PRIMARY_COLOR,
                     fontFamily: `${getCurrentLang()}-American-bold`,
                   }}
                 >
@@ -408,7 +408,7 @@ const CartScreen = ({ route }) => {
                   justifyContent: "center",
                   marginVertical: scale(10),
                   marginLeft: scale(10),
-                  backgroundColor: "rgba(36, 33, 30, 0.8)",
+                  backgroundColor: "#ECF0F4",
                   paddingHorizontal: scale(5),
                   borderRadius: 10,
                 }}
@@ -432,17 +432,13 @@ const CartScreen = ({ route }) => {
                       style={{
                         borderRadius: scale(20),
                         marginTop: index != 0 ? scale(20) : 0,
-                        shadowColor: "black",
-                        shadowOffset: {
-                          width: 0,
-                          height: 2,
-                        },
-                        shadowOpacity: 0.9,
-                        shadowRadius: 6,
-                        elevation: 5,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.4,
+                        shadowRadius: 4,
+                        elevation: 2,
                         borderWidth: 0,
                         backgroundColor: "transparent",
-                        overflow: "hidden",
                         opacity: value.current.interpolate({
                           inputRange: index === 0
                             ? [-1, 0, 1, 2]
@@ -456,10 +452,12 @@ const CartScreen = ({ route }) => {
                         style={[
                           getProductIndexId(product, index) === itemToRemove ? animatedStyle : null,
                           {
-                            backgroundColor: themeStyle.SECONDARY_COLOR,
+                            backgroundColor: themeStyle.WHITE_COLOR,
                             borderRadius: scale(20),
                             padding: 0,
                             position: 'relative',
+                            overflow: "hidden",
+                           
                           },
                         ]}
                       >
@@ -569,6 +567,7 @@ const CartScreen = ({ route }) => {
                                   variant="colors"
                                   size={scale(30)}
                                 />
+                                <View style={{marginLeft:20}}>
                                 <Text
                                   style={{
                                     fontSize: fontSize(20),
@@ -578,6 +577,8 @@ const CartScreen = ({ route }) => {
                                 >
                                   ₪{product.data.price * product?.others.qty}
                                 </Text>
+                                </View>
+                      
                               </View>
                             </View>
                           </View>
@@ -592,7 +593,7 @@ const CartScreen = ({ route }) => {
                           <View>
                             <TouchableOpacity
                               style={{
-                                backgroundColor: themeStyle.ERROR_COLOR,
+                                backgroundColor: themeStyle.GRAY_600,
                                 height: 40,
                                 borderRadius: 10,
                                 width: 40,
@@ -604,7 +605,7 @@ const CartScreen = ({ route }) => {
                             >
                               <Text
                                 style={{
-                                  color: themeStyle.WHITE_COLOR,
+                                  color: themeStyle.TEXT_PRIMARY_COLOR,
                                   right: 20,
                                   top: 15,
                                   fontSize: 18,
@@ -626,7 +627,7 @@ const CartScreen = ({ route }) => {
                           <View>
                             <TouchableOpacity
                               style={{
-                                backgroundColor: themeStyle.SUCCESS_COLOR,
+                                backgroundColor: themeStyle.GRAY_600,
                                 height: 40,
                                 borderRadius: 10,
                                 width: 45,
@@ -642,7 +643,7 @@ const CartScreen = ({ route }) => {
                                 style={{
                                   right: 22,
                                   top: 8,
-                                  color: themeStyle.WHITE_COLOR,
+                                  color: themeStyle.TEXT_PRIMARY_COLOR,
                                 }}
                               />
                             </TouchableOpacity>
@@ -667,13 +668,13 @@ const CartScreen = ({ route }) => {
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: themeStyle.SECONDARY_COLOR,
+          backgroundColor: "#ECF0F4",
           flexDirection: "row",
           justifyContent: "space-between",
           padding: scale(20),
           borderTopStartRadius: scale(30),
           borderTopEndRadius: scale(30),
-          shadowColor: themeStyle.PRIMARY_COLOR,
+          shadowColor: themeStyle.TEXT_PRIMARY_COLOR,
           shadowOffset: { width: 2, height: 2 },
           shadowOpacity: 1,
           shadowRadius: 15,
@@ -686,17 +687,17 @@ const CartScreen = ({ route }) => {
             onClickFn={handleSubmintButton}
             text={storeDataStore.storeData?.isOrderLaterSupport ? t("pick-time") : t("continue-to-pay")}
             fontSize={fontSize(18)}
-            textColor={theme.WHITE_COLOR}
+            textColor={theme.TEXT_PRIMARY_COLOR}
             borderRadious={50}
             textPadding={0}
           />
         </View>
 
         <View style={{ alignItems: "center", justifyContent: "center" }}>
-          <Text style={{ fontSize: fontSize(18), color: themeStyle.PRIMARY_COLOR }}>
+          <Text style={{ fontSize: fontSize(18), color: themeStyle.TEXT_PRIMARY_COLOR }}>
             {t("price")}
           </Text>
-          <Text style={{ fontSize: fontSize(22) }} type="number">
+          <Text style={{ fontSize: fontSize(22),color: themeStyle.TEXT_PRIMARY_COLOR }} type="number">
             ₪{itemsPrice}
           </Text>
         </View>

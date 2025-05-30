@@ -132,7 +132,7 @@ export default function DeliveryMethodAggreeBasedEventDialog() {
                   <Button
                     onClickFn={() => hideDialog(true)}
                     text={t("agree")}
-                    textColor={themeStyle.WHITE_COLOR}
+                    textColor={themeStyle.TEXT_PRIMARY_COLOR}
                     fontSize={16}
                   />
                 </View>
@@ -141,7 +141,7 @@ export default function DeliveryMethodAggreeBasedEventDialog() {
                     onClickFn={() => hideDialog(false)}
                     text={t("edit-order")}
                     bgColor={themeStyle.GRAY_600}
-                    textColor={themeStyle.WHITE_COLOR}
+                    textColor={themeStyle.TEXT_PRIMARY_COLOR}
                     fontSize={16}
                   />
                 </View>

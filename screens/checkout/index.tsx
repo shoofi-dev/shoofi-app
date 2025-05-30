@@ -217,7 +217,7 @@ const CheckoutScreen = ({ route }) => {
             justifyContent: "center",
             marginVertical: 0,
             marginLeft: 10,
-            backgroundColor: "rgba(36, 33, 30, 0.8)",
+            backgroundColor: themeStyle.GRAY_600,
             paddingHorizontal: 5,
             borderRadius: 10,
           }}
@@ -279,7 +279,7 @@ const CheckoutScreen = ({ route }) => {
           padding: 20,
           borderTopStartRadius: 30,
           borderTopEndRadius: 30,
-          shadowColor: "#C19A6B",
+          shadowColor: themeStyle.BLACK_COLOR,
           shadowOffset: {
             width: 2,
             height: 2,
@@ -309,7 +309,7 @@ const CheckoutScreen = ({ route }) => {
             // }
             text={t("send-order")}
             fontSize={18}
-            textColor={themeStyle.WHITE_COLOR}
+            textColor={themeStyle.TEXT_PRIMARY_COLOR}
             isLoading={isLoadingOrderSent}
             borderRadious={50}
             textPadding={0}

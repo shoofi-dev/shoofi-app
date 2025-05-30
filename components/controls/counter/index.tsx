@@ -62,7 +62,7 @@ export default function Counter({ onCounterChange, value, stepValue = 1, minValu
           </TouchableOpacity>
         </View>
         <View style={[styles.counterValue, {width:80}]}>
-          <Text style={{ fontSize: 18,color:themeStyle.WHITE_COLOR}}>{couter}</Text>
+          <Text style={{ fontSize: 18,color:themeStyle.TEXT_PRIMARY_COLOR}}>{couter}</Text>
         </View>
         <View>
           <TouchableOpacity
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     marginHorizontal:10
   },
   btnGray: {
-    backgroundColor: themeStyle.WHITE_COLOR,
+    backgroundColor: themeStyle.GRAY_700,
 
     width: 35,
     height: 35,

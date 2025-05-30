@@ -31,6 +31,7 @@ export const hideHHeaderScreens = [
   "checkout-screen",
   "cart",
   "menuScreen",
+  "order-submitted"
 ];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];

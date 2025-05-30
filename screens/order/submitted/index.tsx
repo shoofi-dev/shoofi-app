@@ -59,7 +59,7 @@ const OrderSubmittedScreen = ({ route }) => {
                 fontFamily: `${getCurrentLang()}-Bold`,
                 marginRight: 10,
                 top: -20,
-                color:themeStyle.WHITE_COLOR
+                color:themeStyle.TEXT_PRIMARY_COLOR
               }}
             >
               {t("order-succefully-sent")}
@@ -118,7 +118,7 @@ const OrderSubmittedScreen = ({ route }) => {
               onClickFn={() => {
                 goToOrderStatus();
               }}
-              textColor={themeStyle.WHITE_COLOR}
+              textColor={themeStyle.TEXT_PRIMARY_COLOR}
               fontSize={20}
               fontFamily={`${getCurrentLang()}-SemiBold`}
               // text={userDetailsStore.isAdmin() ? t("new-order") : t("current-orderds")}
