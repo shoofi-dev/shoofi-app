@@ -191,72 +191,44 @@ const CategoryItemsList = ({ productsList, category }) => {
             backgroundColor: "transparent",
           }}
         >
-          {/* <BirthdayCakes onChange={handleSubCategoryChange} /> */}
-          {/* {(tmpSelectedCategory == undefined || tmpSelectedCategoryProg) && (
-            <View style={{ width: "20%", alignSelf: "center", marginTop: 100 }}>
-              <Image source={loaderGif} style={{ alignSelf: "center" }} />
-            </View>
-          )} */}
-          <ScrollView
-            ref={scrollRef}
-            style={{ height: "100%",                          
-                     
- }}
-            onMomentumScrollEnd={onScrollEnd}
-            onScrollEndDrag={onScrollEnd}
-            onMomentumScrollBegin={onScrollEnd}
-          >
-            <View style={styles.container}>
-              {/* {userDetailsStore.isAdmin(ROLES.all) && (
-                <View
-                  style={{
-                    marginTop:
-                      productsList?.length > 1 ? (1 % 2 === 0 ? -50 : 50) : 0,
-                    flexBasis: "48.5%",
-                  }}
-                >
-                  <AddProductItem onItemSelect={onAddProduct} />
-                </View>
-              )} */}
-              {filterBirthdayProducts
-                .slice(0, pageNumber * 5)
-                .map((item, index) => {
-                  return (
-                    <View
-                      key={item._id}
-                      style={{
-                    
-                        flexBasis: "49.5%",
-                        marginTop:
+          <View style={styles.container}>
+            {filterBirthdayProducts
+              .slice(0, pageNumber * 5)
+              .map((item, index) => {
+                return (
+                  <View
+                    key={item._id}
+                    style={{
+                      flexBasis: "49.5%",
+                      marginTop:
                         productsList?.length > 1
                           ? index % 2 === 0
                             ? 0
                             : 0
                           : 0,
-                        paddingHorizontal:10,
-                        marginBottom:15
-                      }}
-                    >
-                      <ProductItem
-                        item={item}
-                        onItemSelect={onItemSelect}
-                        onDeleteProduct={onDeleteProduct}
-                        onEditProduct={onEditProduct}
-                      />
-                    </View>
-                  );
-                })}
+                      paddingHorizontal: 10,
+                      marginBottom: 15,
+                    }}
+                  >
+                    <ProductItem
+                      item={item}
+                      onItemSelect={onItemSelect}
+                      onDeleteProduct={onDeleteProduct}
+                      onEditProduct={onEditProduct}
+                    />
+                  </View>
+                );
+              })}
+          </View>
+          {filterBirthdayProducts.length >= pageNumber * 5 && (
+            <View style={{ flexDirection: "row", justifyContent: "center" }}>
+              <ActivityIndicator
+                size="large"
+                style={{}}
+                color={themeStyle.PRIMARY_COLOR}
+              />
             </View>
-            {filterBirthdayProducts.length >= pageNumber * 5 && (
-              <View style={{ flexDirection: "row", justifyContent: "center" }}>
-                <ActivityIndicator
-                  size="large"
-                  style={{}}
-                  color={themeStyle.PRIMARY_COLOR}
-                />
-              </View>
-            )}
-          </ScrollView>
+          )}
         </View>
       )}
 

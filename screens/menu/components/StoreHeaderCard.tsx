@@ -7,9 +7,17 @@ interface StoreHeaderCardProps {
   store: any;
   onBack?: () => void;
   onFavorite?: () => void;
+  showImageOnly?: boolean;
+  showInfoOnly?: boolean;
 }
 
-const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({ store, onBack, onFavorite }) => {
+const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
+  store,
+  onBack,
+  onFavorite,
+  showImageOnly,
+  showInfoOnly,
+}) => {
   // Use store fields with fallbacks
   const storeImage = store?.coverImage || "https://images.unsplash.com/photo-1504674900247-0877df9cc836";
   const storeLogo = store?.storeLogo || "https://cdn-icons-png.flaticon.com/512/3075/3075977.png";
@@ -20,6 +28,32 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({ store, onBack, onFavo
   const minOrder = store?.minOrder || 120;
   const closingHour = store?.closingHour || "23:00";
 
+  if (showImageOnly) {
+    return (
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: storeImage }} style={styles.image} />
+        <View style={styles.logoWrapperOverlap}>
+          <Image source={{ uri: storeLogo }} style={styles.logoOverlap} />
+        </View>
+      </View>
+    );
+  }
+
+  if (showInfoOnly) {
+    return (
+      <View style={{ alignItems: "center", backgroundColor: "#fff", paddingBottom: 8 }}>
+        <Text style={styles.storeNameCentered}>{storeName}</Text>
+        <View style={styles.infoRowCentered}>
+          <Text style={styles.infoTextCentered}>{rating} <Icon name="star" size={16} color="#FFC107" /></Text>
+          <Text style={styles.infoTextCentered}>{deliveryTime} min <Icon name="clock-outline" size={16} color="#888" /></Text>
+          <Text style={styles.infoTextCentered}>₪{deliveryPrice} <Icon name="bike" size={16} color="#888" /></Text>
+        </View>
+        <Text style={styles.subInfoTextCentered}>פתוח עד {closingHour} · הזמנה מינימאלית ₪{minOrder}</Text>
+      </View>
+    );
+  }
+
+  // Default: full card
   return (
     <View style={styles.cardWrapper}>
       {/* Store Image with overlay icons */}

@@ -6,6 +6,7 @@ import {
   ScrollView,
   Text,
   Animated,
+  I18nManager,
 } from "react-native";
 
 import { useState, useEffect, useRef } from "react";
@@ -14,6 +15,7 @@ import { useContext } from "react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
 import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
 
 /* components */
 import CategoryItemsList from "./components/categoryItemsList";
@@ -31,6 +33,10 @@ import { ActivityIndicator } from "react-native-paper";
 import { adminCustomerStore } from "../../stores/admin-customer";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
+
+const HEADER_IMAGE_HEIGHT = 210;
+const STICKY_HEADER_HEIGHT = 110; // Info + categories
+
 export function toBase64(input) {
   return Buffer.from(input, "utf-8").toString("base64");
 }
@@ -42,6 +48,7 @@ export function fromBase64(encoded) {
 const MenuScreen = () => {
   const { t } = useTranslation();
   const scrollRef = useRef();
+  const navigation = useNavigation();
 
   const { menuStore, languageStore, storeDataStore } =
     useContext(StoreContext);
@@ -184,82 +191,91 @@ const MenuScreen = () => {
     getMenu();
   }, [menuStore.categories]);
 
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const translateY = scrollY.interpolate({
+    inputRange: [0, HEADER_IMAGE_HEIGHT],
+    outputRange: [HEADER_IMAGE_HEIGHT, 0],
+    extrapolate: "clamp",
+  });
+
   if (!categoryList || !selectedCategory) {
     return null;
   }
   return (
-    <View style={{ height: "100%", marginTop: 0,  }}>
-              <StoreHeaderCard store={storeDataStore.storeData} />
-
-            <CategoryList categoryList={categoryList} onCategorySelect={onCategorySelect} selectedCategory={selectedCategory} isDisabledCatItem={isDisabledCatItem} />
-
-      {/* <View style={styles.container}>
-        <ScrollView
-          ref={scrollRef}
-          style={{ height: "100%", width: "100%" }}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          decelerationRate={0.5}          
-        >
-          <Animated.View style={{flexDirection:'row', transform:[{translateX: anim.current}]}}>
-
-       
-          {categoryList.map((category) => (
-            <View
-              style={{
-                width: selectedCategory._id === category._id ? 70 : 70,
-              }}
-              key={category._id}
-            >
-                <MenuItem
-                  item={category}
-                  onItemSelect={onCategorySelect}
-                  selectedItem={selectedCategory}
-                  isDisabledCatItem={isDisabledCatItem}
-                />
-            </View>
-          ))}
-          </Animated.View>
-        </ScrollView>
-      </View> */}
-      {/* <LinearGradient
-        colors={[
-          "rgba(239, 238, 238, 0.04)",
-          "rgba(239, 238, 238, 0.9)",
-          "rgba(239, 238, 238, 0.9)",
-          "rgba(239, 238, 238, 0.9)",
-          "rgba(239, 238, 238, 0.9)",
-          "rgba(239, 238, 238, 0.01)",
-        ]}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.background]}
-      /> */}
-      {/* {(tmpSelectedCategory == undefined || tmpSelectedCategoryProg) && (
-        <View style={{ width: "20%", alignSelf: "center", marginTop: 100 }}>
-          <Image source={loaderGif} style={{ alignSelf: "center" }} />
-        </View>
-      )} */}
-
-      <View>
-        {/* { menuAnimationDone && categoryList.map((category, index) => ( */}
-        { categoryList.map((category, index) => (
-          <View
-            style={{
-              display:
-                category.categoryId === tmpSelectedCategory?.categoryId
-                  ? "flex"
-                  : "none",
-                  
-            }}
-          >
-            <CategoryItemsList
-              productsList={category.products}
-              category={category}
-            />
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      {/* Fixed Back and Heart Buttons */}
+      <View style={styles.fixedButtons} pointerEvents="box-none">
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <View style={styles.circle}>
+            <Icon name={I18nManager.isRTL ? "chevron-right" : "chevron-left"} size={28} color="#222" />
           </View>
-        ))}
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.heartButton} onPress={() => {}}>
+          <View style={styles.circle}>
+            <Icon name="heart" size={22} color={themeStyle.SECONDARY_COLOR} />
+          </View>
+        </TouchableOpacity>
       </View>
+      {/* Animated Store Image */}
+      <Animated.View
+        style={[
+          styles.animatedHeader,
+          {
+            height: scrollY.interpolate({
+              inputRange: [0, HEADER_IMAGE_HEIGHT],
+              outputRange: [HEADER_IMAGE_HEIGHT, 0],
+              extrapolate: "clamp",
+            }),
+            opacity: scrollY.interpolate({
+              inputRange: [0, HEADER_IMAGE_HEIGHT / 2, HEADER_IMAGE_HEIGHT],
+              outputRange: [1, 0.5, 0],
+              extrapolate: "clamp",
+            }),
+          },
+        ]}
+      >
+        <StoreHeaderCard store={storeDataStore.storeData} showImageOnly />
+      </Animated.View>
+
+      {/* Sticky Info + Categories */}
+      <Animated.View
+        style={[
+          styles.stickyHeader,
+          {
+            transform: [{ translateY }],
+          },
+          
+        ]}
+      >
+        <StoreHeaderCard store={storeDataStore.storeData} showInfoOnly />
+        <CategoryList
+          categoryList={categoryList}
+          onCategorySelect={setSelectedCategory}
+          selectedCategory={selectedCategory}
+          isDisabledCatItem={false}
+        />
+      </Animated.View>
+
+      {/* Items List */}
+      <Animated.ScrollView
+        style={{ flex: 1, }}
+        contentContainerStyle={{
+          paddingTop: HEADER_IMAGE_HEIGHT + STICKY_HEADER_HEIGHT,
+          paddingBottom: 40,
+          marginTop:-100
+        }}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+      >
+        <CategoryItemsList
+          productsList={selectedCategory.products}
+          category={selectedCategory}
+        />
+      </Animated.ScrollView>
     </View>
   );
 };
@@ -289,5 +305,49 @@ const styles = StyleSheet.create({
     top: 10,
     bottom: 0,
     zIndex: -1,
+  },
+  animatedHeader: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    overflow: "hidden",
+    backgroundColor: "#fff",
+  },
+  stickyHeader: {
+    zIndex: 9,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    paddingBottom: 4,
+    width: "100%",
+    
+  },
+  fixedButtons: {
+    position: "absolute",
+    top: 18,
+    left: 0,
+    right: 0,
+    zIndex: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 18,
+    pointerEvents: "box-none",
+  },
+  backButton: {},
+  heartButton: {},
+  circle: {
+    backgroundColor: "#fff",
+    borderRadius: 22,
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 4,
+    elevation: 2,
   },
 });
