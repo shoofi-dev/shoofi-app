@@ -85,8 +85,8 @@ const ProductItem = ({
     languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE;
   const price = item.price;
   const imageUrl = `${cdnUrl}${item.img[0].uri}`;
-  console.log("imageUrl", imageUrl);
   return (
+    <View>
     <TouchableOpacity style={styles.card} onPress={() => onItemSelect(item)}>
       {/* Product Image */}
       <View style={styles.imageWrapper}>
@@ -103,6 +103,51 @@ const ProductItem = ({
     </View>
 
     </TouchableOpacity>
+
+
+
+
+{userDetailsStore.isAdmin() && (
+            <View
+              style={{
+                flexDirection: "row",
+                flex: 1,
+                width: "100%",
+                justifyContent: "space-around",
+              }}
+            >
+              <View style={{ flexBasis: "45%" }}>
+                <Button
+                  bgColor={themeStyle.ORANGE_COLOR}
+                  text={"تعديل"}
+                  fontSize={16}
+                  onClickFn={() => onEditProduct(item)}
+                  textPadding={0}
+                  marginH={0}
+                  textColor={themeStyle.WHITE_COLOR}
+                  icon="cart_icon"
+                  iconSize={15}
+                  iconMargin={5}
+                />
+              </View>
+              <View style={{ flexBasis: "45%" }}>
+                <Button
+                  bgColor={"red"}
+                  text={t("delete")}
+                  fontSize={16}
+                  onClickFn={() => onDeleteProduct(item)}
+                  textPadding={0}
+                  marginH={0}
+                  textColor={themeStyle.WHITE_COLOR}
+                  icon="cart_icon"
+                  iconSize={15}
+                  iconMargin={5}
+                />
+              </View>
+            </View>
+          )}
+    </View>
+
   );
 };
 

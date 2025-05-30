@@ -90,11 +90,13 @@ const AddProductScreen = ({ route }) => {
       discountQuantity: "",
       discountPrice: "",
     };
+
     if (editProductData) {
       defaultProductData = {
         ...defaultProductData,
         ...editProductData,
       };
+      setExtras(editProductData.extras)
     }
     return {
       ...defaultProductData,
@@ -143,10 +145,7 @@ const AddProductScreen = ({ route }) => {
 
   const getExtrasLit = async () => {
     const categories: any = await shoofiAdminStore.getstoresCategories();
-    console.log("sottttterrW", storeDataStore.storeData.categoryId)
-    console.log("sottttterrW", categories)
     const categoryExtras = categories.find((c: any) => c._id === storeDataStore.storeData.categoryId);
-    console.log("categoryExtras", categoryExtras)
     setExtrasList(categoryExtras?.extras);
     // setExtrasList(extrasListRes);
 
@@ -325,7 +324,7 @@ const AddProductScreen = ({ route }) => {
           languageStore.selectedLang === "ar"
             ? category.nameAR
             : category.nameHE,
-        value: category.categoryId,
+        value: category._id,
       };
     });
     setCategoryList(mappedCategories);
@@ -348,10 +347,10 @@ const AddProductScreen = ({ route }) => {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#f6f6f6" }}>
+    <ScrollView style={{ flex: 1,  }}>
       <View style={{
         margin: 18,
-        backgroundColor: "#fff",
+        backgroundColor: themeStyle.GRAY_600,
         borderRadius: 18,
         padding: 20,
         shadowColor: "#000",
@@ -372,7 +371,7 @@ const AddProductScreen = ({ route }) => {
         </Text>
 
         {/* Name Fields */}
-        <View style={{ flexDirection: "row", marginBottom: 16 }}>
+        <View style={{ flexDirection: "row", marginBottom: 32 }}>
           <View style={{ flex: 1, marginRight: 5 }}>
             <InputText
               onChange={(e) => handleInputChange(e, "nameAR")}
@@ -401,6 +400,29 @@ const AddProductScreen = ({ route }) => {
               </Text>
             )}
           </View>
+        </View>
+
+        <View
+          style={{
+            width: "100%",
+            alignItems: "center",
+            flexDirection: "row",
+            marginBottom: 32
+          }}
+        >
+          <CheckBox
+            onChange={(e) => handleInputChange(e, "isInStore")}
+            value={selectedProduct?.isInStore}
+          />
+          <Text
+            style={{
+              fontSize: 20,
+              marginLeft: 10,
+              color: themeStyle.TEXT_PRIMARY_COLOR,
+            }}
+          >
+            {t("هل متوفر حاليا")}
+          </Text>
         </View>
 
         {/* Category Dropdown */}
@@ -527,6 +549,17 @@ const AddProductScreen = ({ route }) => {
           )}
         </View>
 
+             {/* Extras Section */}
+             <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("extras")}</Text>
+          <ExtrasManager
+            assignedExtras={extras}
+            onSave={handleSaveExtras}
+            onCreateGlobalExtra={handleCreateGlobalExtra}
+            globalExtras={extrasList} 
+          />
+        </View>
+
         {/* Image Upload */}
         <Text style={{
           fontSize: 18,
@@ -539,9 +572,9 @@ const AddProductScreen = ({ route }) => {
           {t("תמונה")}
         </Text>
         <View style={{ alignItems: "center", marginBottom: 32 }}>
-          {image ? (
+          {(image || (!image && isEditMode && product && product.img[0].uri )) ? (
             <Image
-              source={{ uri: image.uri }}
+              source={{ uri: image?.uri || `${cdnUrl}${product.img[0].uri}` }}
               style={{ width: 220, height: 220, borderRadius: 16, borderWidth: 1, borderColor: "#eee", marginBottom: 10 }}
               resizeMode="cover"
             />
@@ -560,22 +593,15 @@ const AddProductScreen = ({ route }) => {
             </TouchableOpacity>
           )}
           <Button
-            text={t(!!image ? "replace-image" : "add-image")}
+            text={t(!!image || (!image && isEditMode && product && product.img[0].uri) ? "replace-image" : "add-image")}
             fontSize={16}
             onClickFn={onImageSelect}
           />
         </View>
 
-        {/* Extras Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t("extras")}</Text>
-          <ExtrasManager
-            assignedExtras={extras}
-            onSave={handleSaveExtras}
-            onCreateGlobalExtra={handleCreateGlobalExtra}
-            globalExtras={extrasList} 
-          />
-        </View>
+
+
+   
 
         {/* Approve Button */}
         <Button
@@ -620,5 +646,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 16,
     color: themeStyle.TEXT_PRIMARY_COLOR,
+    textAlign: "right",
   },
 });
