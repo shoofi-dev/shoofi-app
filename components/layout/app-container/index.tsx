@@ -240,7 +240,6 @@ const AppContainer = () => {
           style={{
             flex: 1,
             paddingTop: 60,
-            backgroundColor: "rgba(36, 33, 30, 0)",
           }}
         >
           {!hideHHeaderScreens.includes(currentRouteName) &&

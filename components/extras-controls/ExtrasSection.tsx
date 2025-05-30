@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import ExtraGroup from "./ExtraGroup";
 import PizzaToppingGroup from "./PizzaToppingGroup";
 
@@ -23,6 +23,7 @@ export type Extra = {
   required?: boolean;
   min?: number;
   max?: number;
+  maxCount?: number;
   options?: PizzaToppingOption[];
   price?: number; // for counter
 };
@@ -38,16 +39,19 @@ const ExtrasSection = ({
   selections,
   onChange,
 }: ExtrasSectionProps) => (
-  <View>
+  <View style={styles.container}>
     {extras.map((extra) => {
       if (extra.type === "pizza-topping") {
         return (
+          <View style={styles.card}>
+
           <PizzaToppingGroup
             key={extra.id}
             extra={extra}
             value={selections[extra.id] || {}}
             onChange={(val) => onChange(extra.id, val)}
           />
+          </View>
         );
       }
       return (
@@ -61,5 +65,24 @@ const ExtrasSection = ({
     })}
   </View>
 );
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 8,
+    paddingTop: 8,
+    paddingBottom: 16,
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 2,
+  },
+});
 
 export default ExtrasSection;

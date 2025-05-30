@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 export type CheckboxGroupProps = {
   options: { id: string; name: string; price?: number }[];
@@ -16,8 +16,6 @@ const CheckboxGroup = ({
   min,
   max,
 }: CheckboxGroupProps) => {
-  console.log("CheckboxGroup value:", value);
-
   const toggle = (id: string) => {
     let newValue = value.includes(id)
       ? value.filter((v) => v !== id)
@@ -26,60 +24,54 @@ const CheckboxGroup = ({
     onChange(newValue);
   };
   return (
-    <View>
-      {options.map((opt) => (
-        <TouchableOpacity
-          key={opt.id}
-          onPress={() => toggle(opt.id)}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginVertical: 5,
-          }}
-        >
-          <View
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: 4,
-              borderWidth: 2,
-              borderColor: value.includes(opt.id) ? "#007aff" : "#ccc",
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: 10,
-            }}
+    <View style={styles.optionsRow}>
+      {options.map((opt) => {
+        const selected = value.includes(opt.id);
+        return (
+          <TouchableOpacity
+            key={opt.id}
+            onPress={() => toggle(opt.id)}
+            style={[
+              styles.optionPill,
+              selected && styles.optionPillSelected,
+            ]}
           >
-            {value.includes(opt.id) && (
-              <View
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: 2,
-                  backgroundColor: "#007aff",
-                }}
-              />
-            )}
-          </View>
-          <Text>
-            {opt.name}
-            {opt.price ? ` +₪${opt.price}` : ""}
-          </Text>
-        </TouchableOpacity>
-      ))}
-      <View style={{ flexDirection: "row", marginTop: 10 }}>
-        {!!max && (
-          <Text style={{ color: "#888", fontSize: 12, textAlign: "left" }}>
-            Choose up to {max} items
-          </Text>
-        )}
-        {!!min && (
-          <Text style={{ color: "#888", fontSize: 12, textAlign: "left" }}>
-            Choose at least {min} items
-          </Text>
-        )}
-      </View>
+            <Text style={[styles.optionText, selected && styles.optionTextSelected]}>
+              {opt.name}
+              {opt.price ? ` +₪${opt.price}` : ""}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  optionsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  optionPill: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: "#f0f0f0",
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  optionPillSelected: {
+    backgroundColor: "#007aff",
+  },
+  optionText: {
+    color: "#333",
+    fontSize: 15,
+  },
+  optionTextSelected: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+});
 
 export default CheckboxGroup;
