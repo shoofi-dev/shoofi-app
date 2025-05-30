@@ -35,6 +35,7 @@ import CustomDeliveryListScreen from "../screens/book-delivery/list";
 import CheckoutScreen from "../screens/checkout";
 import PickTimeCMP from "../components/dialogs/pick-time";
 import StoresScreen from "../screens/stores/stores";
+import { TransitionSpecs } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -58,8 +59,28 @@ export const MainStackNavigator = () => {
     <Stack.Navigator
       initialRouteName="MainTabs"
       screenOptions={{
-        cardStyle: { backgroundColor: 'transparent' },
+        cardStyle: { backgroundColor: '#fff' },
         headerShown: false,
+        gestureEnabled: true,
+        transitionSpec: {
+          open: TransitionSpecs.TransitionIOSSpec,
+          close: TransitionSpecs.TransitionIOSSpec,
+        },
+        cardStyleInterpolator: ({ current, layouts }) => {
+          return {
+            cardStyle: {
+              opacity: current.progress,
+              transform: [
+                {
+                  translateX: current.progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [40, 0], // Slide in from 40px right
+                  }),
+                },
+              ],
+            },
+          };
+        },
       }}
     >
       <Stack.Screen name="MainTabs" component={MainTabs} />
