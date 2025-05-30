@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { cdnUrl, ROLES } from "../../../../consts/shared";
 import CheckBox from "../../../../components/controls/checkbox";
 import BackButton from "../../../../components/back-button";
+import type { Asset } from "react-native-image-picker";
 
 export type TProduct = {
   id?: string;
@@ -54,7 +55,7 @@ const AddProductScreen = ({ route }) => {
   const [categoryList, setCategoryList] = useState();
   const [selectedCategoryId, setSelectedCategoryId] = useState();
   const [selectedProduct, setSelectedProduct] = useState<TProduct>();
-  const [image, setImage] = useState();
+  const [image, setImage] = useState<Asset | null>(null);
   const [extrasList, setExtrasList] = useState([]);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
 
@@ -122,7 +123,7 @@ const AddProductScreen = ({ route }) => {
   useEffect(() => {
     if (product) {
       setIdEditMode(true);
-      setSelectedCategoryId(Number(product.categoryId));
+      setSelectedCategoryId(product.categoryId);
       let tmpProduct = {
         ...product,
       };
@@ -242,7 +243,11 @@ const AddProductScreen = ({ route }) => {
     const result = await launchImageLibrary({
       mediaType: "photo",
     });
-    setImage(result.assets[0]);
+    if (result.assets && result.assets.length > 0) {
+      setImage(result.assets[0]);
+    } else {
+      setImage(null);
+    }
   };
 
   const handleInputChange = (value: any, name: string) => {
@@ -257,9 +262,9 @@ const AddProductScreen = ({ route }) => {
       // Convert string values to numbers before sending to API
       const processedProduct = {
         ...selectedProduct,
-        // Convert discount fields to numbers if discount is enabled
-        discountQuantity: selectedProduct.hasDiscount ? parseFloat(selectedProduct.discountQuantity) || 0 : 0,
-        discountPrice: selectedProduct.hasDiscount ? parseFloat(selectedProduct.discountPrice) || 0 : 0,
+        // Keep discount fields as strings for TProduct
+        discountQuantity: selectedProduct.hasDiscount ? selectedProduct.discountQuantity : "",
+        discountPrice: selectedProduct.hasDiscount ? selectedProduct.discountPrice : "",
         extras: Object.keys(selectedProduct.extras || {}).reduce(
           (acc, extraName) => {
             const extra = selectedProduct.extras[extraName];
@@ -282,9 +287,9 @@ const AddProductScreen = ({ route }) => {
       let updatedData = image
         ? { ...processedProduct, img: image }
         : processedProduct;
-      setSelectedProduct(updatedData);
+      setSelectedProduct(updatedData as TProduct);
       menuStore
-        .addOrUpdateProduct(updatedData, isEditMode, image)
+        .addOrUpdateProduct(updatedData, isEditMode, !!image)
         .then((res: any) => {
           menuStore.getMenu();
           setIsLoading(false);
@@ -294,7 +299,7 @@ const AddProductScreen = ({ route }) => {
   };
 
   const navigateToMenu = () => {
-    navigation.navigate("menuScreen");
+    navigation.navigate("menuScreen" as never);
   };
 
   const getMenu = () => {
@@ -331,51 +336,38 @@ const AddProductScreen = ({ route }) => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View
-        style={{
-          right: 15,
-          position: "absolute",
-          width: 40,
-          height: 35,
-          alignItems: "center",
-          justifyContent: "center",
-          marginVertical: 10,
-          marginLeft: 10,
-          backgroundColor: "rgba(36, 33, 30, 0.8)",
-          paddingHorizontal: 5,
-          borderRadius: 10,
-        }}
-      >
-        <BackButton />
-      </View>
-
-      <View style={styles.inputsContainer}>
-        <Text style={{ fontSize: 30, color: themeStyle.WHITE_COLOR }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#f6f6f6" }}>
+      <View style={{
+        margin: 18,
+        backgroundColor: "#fff",
+        borderRadius: 18,
+        padding: 20,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.10,
+        shadowRadius: 12,
+        elevation: 6,
+      }}>
+        {/* Header */}
+        <Text style={{
+          fontSize: 28,
+          fontWeight: "bold",
+          color: themeStyle.TEXT_PRIMARY_COLOR,
+          textAlign: "center",
+          marginBottom: 32,
+        }}>
           {t("add-product")}
         </Text>
 
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            width: "100%",
-            marginTop: 30,
-          }}
-        >
-          <View
-            style={{
-              flexBasis: "49%",
-              marginTop: 15,
-              alignItems: "flex-start",
-            }}
-          >
+        {/* Name Fields */}
+        <View style={{ flexDirection: "row", marginBottom: 16 }}>
+          <View style={{ flex: 1, marginRight: 5 }}>
             <InputText
               onChange={(e) => handleInputChange(e, "nameAR")}
               label={t("name-ar")}
               value={selectedProduct?.nameAR}
               isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
-              color={themeStyle.WHITE_COLOR}
+              color={themeStyle.TEXT_PRIMARY_COLOR}
             />
             {!selectedProduct?.nameAR && (
               <Text style={{ color: themeStyle.ERROR_COLOR }}>
@@ -383,19 +375,13 @@ const AddProductScreen = ({ route }) => {
               </Text>
             )}
           </View>
-          <View
-            style={{
-              flexBasis: "49%",
-              marginTop: 15,
-              alignItems: "flex-start",
-            }}
-          >
+          <View style={{ flex: 1, marginLeft: 5 }}>
             <InputText
               onChange={(e) => handleInputChange(e, "nameHE")}
               label={t("name-he")}
               value={selectedProduct?.nameHE}
               isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
-              color={themeStyle.WHITE_COLOR}
+              color={themeStyle.TEXT_PRIMARY_COLOR}
             />
             {!selectedProduct?.nameHE && (
               <Text style={{ color: themeStyle.ERROR_COLOR }}>
@@ -405,46 +391,15 @@ const AddProductScreen = ({ route }) => {
           </View>
         </View>
 
-        <View
-          style={{
-            width: "100%",
-            marginTop: 40,
-            alignItems: "center",
-            flexDirection: "row",
-          }}
-        >
-          <CheckBox
-            onChange={(e) => handleInputChange(e, "isInStore")}
-            value={selectedProduct?.isInStore}
-          />
-          <Text
-            style={{
-              fontSize: 20,
-              marginLeft: 10,
-              color: themeStyle.WHITE_COLOR,
-            }}
-          >
-            {t("هل متوفر حاليا")}
-          </Text>
-        </View>
-
-        {/* <Divider style={{width:"100%", height:10, marginTop:20, backgroundColor: themeStyle.PRIMARY_COLOR}}/> */}
-
-        <View
-          style={{
-            width: "100%",
-            marginTop: 40,
-            alignItems: "flex-start",
-            zIndex: 11,
-          }}
-        >
+        {/* Category Dropdown */}
+        <View style={{ marginBottom: 32 }}>
           {categoryList && (
             <View style={{ alignItems: "flex-start" }}>
               <Text
                 style={{
                   fontSize: 16,
                   marginBottom: 10,
-                  color: themeStyle.WHITE_COLOR,
+                  color: themeStyle.TEXT_PRIMARY_COLOR,
                 }}
               >
                 اختر القسم :
@@ -458,7 +413,6 @@ const AddProductScreen = ({ route }) => {
                   disabled={!userDetailsStore.isAdmin(ROLES.all)}
                 />
               </View>
-
               {!selectedProduct?.categoryId && (
                 <Text style={{ color: themeStyle.ERROR_COLOR }}>
                   {t("invalid-categoryId")}
@@ -468,230 +422,35 @@ const AddProductScreen = ({ route }) => {
           )}
         </View>
 
-        <View style={{ width: "100%", marginTop: 40 }}>
-          {/* <View>
-            <Text
-              style={{
-                textAlign: "center",
-                fontSize: 20,
-                textDecorationLine: "underline",
-              }}
-            >
-              {t("medium-size")}
+        {/* Price Field */}
+        <View style={{ marginBottom: 32 }}>
+          <InputText
+            onChange={(e) => handleInputChange(e, "price")}
+            label={t("medium-price")}
+            value={selectedProduct?.price?.toString()}
+            keyboardType="numeric"
+            isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
+            color={themeStyle.TEXT_PRIMARY_COLOR}
+          />
+          {selectedProduct?.price == undefined && (
+            <Text style={{ color: themeStyle.ERROR_COLOR }}>
+              {t("invalid-medium-price")}
             </Text>
-          </View> */}
-          <View
-            style={{
-              flexDirection: "row",
-              width: "100%",
-              // justifyContent: "space-around",
-            }}
-          >
-            <View
-              style={{
-                marginTop: 15,
-                alignItems: "flex-start",
-                flexBasis: "49%",
-              }}
-            >
-              <InputText
-                onChange={(e) => handleInputChange(e, "price")}
-                label={t("medium-price")}
-                value={selectedProduct?.price?.toString()}
-                keyboardType="numeric"
-                isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
-                color={themeStyle.WHITE_COLOR}
-              />
-              {selectedProduct?.price == undefined && (
-                <Text style={{ color: themeStyle.ERROR_COLOR }}>
-                  {t("invalid-medium-price")}
-                </Text>
-              )}
-            </View>
-          </View>
-
-          {/* Add Discount Section */}
-          <View style={{ width: "100%", marginTop: 40 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 15 }}>
-              <CheckBox
-                onChange={(e) => handleInputChange(e, "hasDiscount")}
-                value={selectedProduct?.hasDiscount}
-              />
-              <View style={{marginLeft: 10}}>
-              <Text style={{ fontSize: 16,  color: themeStyle.WHITE_COLOR }}>
-                {t("enable_bulk_discount")}
-              </Text></View>
-            </View>
-
-            {selectedProduct?.hasDiscount && (
-              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <View style={{ flexBasis: "48%" }}>
-                  <InputText
-                    onChange={(e) => handleInputChange(e, "discountQuantity")}
-                    label={t("discount_quantity_kg")}
-                    value={selectedProduct?.discountQuantity?.toString()}
-                    keyboardType="decimal-pad"
-                    isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
-                    color={themeStyle.WHITE_COLOR}
-                  />
-                </View>
-                <View style={{ flexBasis: "48%" }}>
-                  <InputText
-                    onChange={(e) => handleInputChange(e, "discountPrice")}
-                    label={t("discount_total_price")}
-                    value={selectedProduct?.discountPrice?.toString()}
-                    keyboardType="decimal-pad"
-                    isPreviewMode={!userDetailsStore.isAdmin(ROLES.all)}
-                    color={themeStyle.WHITE_COLOR}
-                  />
-                </View>
-              </View>
-            )}
-          </View>
-          {/* End Discount Section */}
-
-          <View
-            style={{
-              width: "100%",
-              marginTop: 40,
-              alignItems: "flex-start",
-            }}
-          >
-            <View>
-              <Text
-                style={{
-                  fontSize: 20,
-                  marginBottom: 10,
-                  color: themeStyle.WHITE_COLOR,
-                }}
-              >
-                قائمة الاضافات:
-              </Text>
-            </View>
-            <View>
-              {extrasList?.map((extra) => {
-                const extraData = selectedProduct?.extras?.[extra.name] || {};
-                const isSelected = selectedExtras.includes(extra.name);
-
-                return (
-                  <View key={extra._id} style={{ marginBottom: 20 }}>
-                    <TouchableOpacity
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginBottom: 10,
-                      }}
-                      onPress={() => toggleExtraSelection(extra.name)}
-                    >
-                      <View
-                        style={{
-                          height: 20,
-                          width: 20,
-                          borderRadius: 4,
-                          borderWidth: 2,
-                          borderColor: themeStyle.WHITE_COLOR,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          marginRight: 10,
-                        }}
-                      >
-                        {isSelected && (
-                          <View
-                            style={{
-                              height: 12,
-                              width: 12,
-                              borderRadius: 2,
-                              backgroundColor: themeStyle.WHITE_COLOR,
-                            }}
-                          />
-                        )}
-                      </View>
-                      <Text
-                        style={{ color: themeStyle.WHITE_COLOR, fontSize: 18 }}
-                      >
-                        {t(extra.name)}
-                      </Text>
-                    </TouchableOpacity>
-                    {isSelected && (
-                      <View style={{ paddingHorizontal: 10 }}>
-                        {chunkArray(
-                          [
-                            "price",
-                            "value",
-                            "minValue",
-                            "maxValue",
-                            "stepValue",
-                          ].filter((field) => extra[field] !== undefined),
-                          2 // now it's 2 in a row
-                        ).map((row, rowIndex) => (
-                          <View
-                            key={rowIndex}
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                              width: "100%",
-                              marginBottom: 20,
-                            }}
-                          >
-                            {row.map((field) => (
-                              <View
-                                key={field}
-                                style={{
-                                  flexBasis: "49%", // 🔥 important: ~half the row, with margin between
-                                }}
-                              >
-                                <InputText
-                                  label={t(field)}
-                                  value={extraData?.[field]?.toString() || ""}
-                                  onChange={(val) =>
-                                    updateExtraField(extra.name, field, val)
-                                  }
-                                  keyboardType="decimal-pad"
-                                  color={themeStyle.WHITE_COLOR}
-                                />
-                              </View>
-                            ))}
-                          </View>
-                        ))}
-                      </View>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
-          </View>
+          )}
         </View>
 
-        <View style={{ marginTop: 60 }}>
-          <Text
-            style={{
-              fontSize: 20,
-              textAlign: "center",
-              width: "100%",
-              textDecorationLine: "underline",
-              color: themeStyle.WHITE_COLOR,
-            }}
-          >
-            {t("product-description")}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            width: "100%",
-            marginTop: 20,
-            alignItems: "flex-start",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              marginBottom: 10,
-              color: themeStyle.WHITE_COLOR,
-            }}
-          >
-            {t("insert-discription-ar")}
-          </Text>
+        {/* Description Fields */}
+        <Text style={{
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themeStyle.TEXT_PRIMARY_COLOR,
+          marginBottom: 16,
+          marginTop: 24,
+          textAlign: "right",
+        }}>
+          {t("product-description")}
+        </Text>
+        <View style={{ marginBottom: 24 }}>
           <TextInput
             onChange={(e) => {
               handleInputChange(e.nativeEvent.text, "descriptionAR");
@@ -699,46 +458,31 @@ const AddProductScreen = ({ route }) => {
             editable={userDetailsStore.isAdmin(ROLES.all)}
             value={selectedProduct?.descriptionAR}
             placeholder={t("insert-discription-ar")}
-            placeholderTextColor={themeStyle.GRAY_600}
+            placeholderTextColor={themeStyle.TEXT_PRIMARY_COLOR}
             multiline={true}
             selectionColor="black"
             underlineColorAndroid="transparent"
             numberOfLines={5}
             style={{
-              backgroundColor: "white",
+              backgroundColor: "#f8f8f8",
               borderWidth: 1,
+              borderColor: "#eee",
+              borderRadius: 12,
               textAlignVertical: "top",
               textAlign: "right",
               padding: 10,
               height: 80,
               width: "100%",
               opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5,
-              // fontFamily: `${getCurrentLang()}-SemiBold`,
             }}
           />
           {!selectedProduct?.descriptionAR && (
-            <Text style={{ color: themeStyle.ERROR_COLOR }}>
+            <Text style={{ color: themeStyle.ERROR_COLOR, textAlign: "right" }}>
               {t("invalid-descriptionAR")}
             </Text>
           )}
         </View>
-
-        <View
-          style={{
-            width: "100%",
-            marginTop: 15,
-            alignItems: "flex-start",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              marginBottom: 10,
-              color: themeStyle.WHITE_COLOR,
-            }}
-          >
-            {t("insert-discription-he")}
-          </Text>
+        <View style={{ marginBottom: 32 }}>
           <TextInput
             onChange={(e) => {
               handleInputChange(e.nativeEvent.text, "descriptionHE");
@@ -746,199 +490,78 @@ const AddProductScreen = ({ route }) => {
             editable={userDetailsStore.isAdmin(ROLES.all)}
             value={selectedProduct?.descriptionHE}
             placeholder={t("insert-discription-he")}
-            placeholderTextColor={themeStyle.GRAY_600}
+            placeholderTextColor={themeStyle.TEXT_PRIMARY_COLOR}
             multiline={true}
             selectionColor="black"
             underlineColorAndroid="transparent"
             numberOfLines={5}
             style={{
-              backgroundColor: "white",
+              backgroundColor: "#f8f8f8",
               borderWidth: 1,
+              borderColor: "#eee",
+              borderRadius: 12,
               textAlignVertical: "top",
               textAlign: "right",
               padding: 10,
               height: 80,
               width: "100%",
               opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5,
-              // fontFamily: `${getCurrentLang()}-SemiBold`,
             }}
           />
           {!selectedProduct?.descriptionHE && (
-            <Text style={{ color: themeStyle.ERROR_COLOR }}>
+            <Text style={{ color: themeStyle.ERROR_COLOR, textAlign: "right" }}>
               {t("invalid-descriptionHE")}
             </Text>
           )}
         </View>
 
-        {/* <View style={{ marginTop: 50 }}>
-          <Text
-            style={{
-              fontSize: 20,
-              textAlign: "center",
-              width: "100%",
-              textDecorationLine: "underline",
-            }}
-          >
-            رسالة خاصه بحالة عدم توفر المنتج
-          </Text>
-        </View> */}
-
-        {/* <View
-          style={{
-            width: "100%",
-            marginTop: 20,
-            alignItems: "flex-start",
-          }}
-        >
-          <Text style={{ fontSize: 16, marginBottom: 10 }}>رسالة - عربي</Text>
-          <TextInput
-            onChange={(e) => {
-              handleInputChange(e.nativeEvent.text, "notInStoreDescriptionAR");
-            }}
-            
-            value={selectedProduct?.notInStoreDescriptionAR}
-            placeholderTextColor={themeStyle.GRAY_600}
-            multiline={true}
-            selectionColor="black"
-            underlineColorAndroid="transparent"
-            numberOfLines={5}
-            style={{
-              backgroundColor: "white",
-              borderWidth: 1,
-              textAlignVertical: "top",
-              textAlign: "right",
-              padding: 10,
-              height: 80,
-              width: "100%",
-              // fontFamily: `${getCurrentLang()}-SemiBold`,
-            }}
-          />
-        </View> */}
-        {/* <View
-          style={{
-            width: "100%",
-            marginTop: 15,
-            alignItems: "flex-start",
-          }}
-        >
-          <Text style={{ fontSize: 16, marginBottom: 10 }}>رسالة - عبري</Text>
-          <TextInput
-            onChange={(e) => {
-              handleInputChange(e.nativeEvent.text, "notInStoreDescriptionHE");
-            }}
-            value={selectedProduct?.notInStoreDescriptionHE}
-            placeholderTextColor={themeStyle.GRAY_600}
-            multiline={true}
-            selectionColor="black"
-            underlineColorAndroid="transparent"
-            numberOfLines={5}
-            style={{
-              backgroundColor: "white",
-              borderWidth: 1,
-              textAlignVertical: "top",
-              textAlign: "right",
-              padding: 10,
-              height: 80,
-              width: "100%",
-              // fontFamily: `${getCurrentLang()}-SemiBold`,
-            }}
-          />
-        </View> */}
-        <View style={{ marginTop: 40 }}>
-          {image && (
-            <View>
-              <Image
-                source={{
-                  uri: image.uri,
-                }}
-                style={{ width: 300, height: 400 }}
-                resizeMode="contain"
-              />
-
-              <TouchableOpacity
-                onPress={onImageSelect}
-                style={{
-                  marginTop: 10,
-                  borderWidth: 1,
-                  padding: 10,
-                  backgroundColor: themeStyle.ORANGE_COLOR,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 20,
-                    textAlign: "center",
-                    textDecorationLine: "underline",
-                  }}
-                >
-                  {t("replace-image")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {!image && isEditMode && product && product.img[0].uri && (
-            <View>
-              <Image
-                source={{
-                  uri: `${cdnUrl}${product.img[0].uri}`,
-                }}
-                style={{ width: 300, height: 400 }}
-                resizeMode="contain"
-              />
-              <View
-                style={{
-                  opacity: userDetailsStore.isAdmin(ROLES.all) ? 1 : 0.5,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={onImageSelect}
-                  style={{
-                    marginTop: 10,
-                    borderWidth: 1,
-                    padding: 10,
-                    backgroundColor: themeStyle.ORANGE_COLOR,
-                  }}
-                  disabled={!userDetailsStore.isAdmin(ROLES.all)}
-                >
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      textAlign: "center",
-                      textDecorationLine: "underline",
-                    }}
-                  >
-                    {t("replace-image")}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-
-          {!image && !isEditMode && (
+        {/* Image Upload */}
+        <Text style={{
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themeStyle.TEXT_PRIMARY_COLOR,
+          marginBottom: 16,
+          marginTop: 24,
+          textAlign: "right",
+        }}>
+          {t("תמונה")}
+        </Text>
+        <View style={{ alignItems: "center", marginBottom: 32 }}>
+          {image ? (
+            <Image
+              source={{ uri: image.uri }}
+              style={{ width: 220, height: 220, borderRadius: 16, borderWidth: 1, borderColor: "#eee", marginBottom: 10 }}
+              resizeMode="cover"
+            />
+          ) : (
             <TouchableOpacity
               onPress={onImageSelect}
               style={{
                 backgroundColor: themeStyle.PRIMARY_COLOR,
-                width: "100%",
-                padding: 40,
-                marginTop: 20,
+                borderRadius: 16,
+                padding: 30,
+                alignItems: "center",
+                marginBottom: 10,
               }}
             >
-              <Icon icon="add_image" size={80} />
+              <Icon icon="add_image" size={60} />
             </TouchableOpacity>
           )}
-        </View>
-
-        <View style={{ width: "100%", paddingHorizontal: 50, marginTop: 25 }}>
           <Button
-            text={t("approve")}
-            fontSize={20}
-            onClickFn={handlAddClick}
-            isLoading={isLoading}
-            disabled={isLoading || !isValidForm()}
+            text={t(!!image ? "replace-image" : "add-image")}
+            fontSize={16}
+            onClickFn={onImageSelect}
           />
         </View>
+
+        {/* Approve Button */}
+        <Button
+          text={t("approve")}
+          fontSize={20}
+          onClickFn={handlAddClick}
+          isLoading={isLoading}
+          disabled={isLoading || !isValidForm()}
+        />
       </View>
     </ScrollView>
   );
@@ -951,6 +574,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     marginBottom: 30,
+    backgroundColor:themeStyle.GRAY_600
   },
   inputsContainer: {
     marginTop: 50,
