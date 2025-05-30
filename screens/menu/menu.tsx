@@ -49,6 +49,7 @@ const MenuScreen = () => {
   const { t } = useTranslation();
   const scrollRef = useRef();
   const navigation = useNavigation();
+  const scrollViewRef = useRef(null);
 
   const { menuStore, languageStore, storeDataStore } =
     useContext(StoreContext);
@@ -199,6 +200,11 @@ const MenuScreen = () => {
     extrapolate: "clamp",
   });
 
+  const handleCategorySelect = (cat) => {
+    setSelectedCategory(cat);
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+  };
+
   if (!categoryList || !selectedCategory) {
     return null;
   }
@@ -245,13 +251,12 @@ const MenuScreen = () => {
           {
             transform: [{ translateY }],
           },
-          
         ]}
       >
         <StoreHeaderCard store={storeDataStore.storeData} showInfoOnly />
         <CategoryList
           categoryList={categoryList}
-          onCategorySelect={setSelectedCategory}
+          onCategorySelect={handleCategorySelect}
           selectedCategory={selectedCategory}
           isDisabledCatItem={false}
         />
@@ -259,6 +264,7 @@ const MenuScreen = () => {
 
       {/* Items List */}
       <Animated.ScrollView
+        ref={scrollViewRef}
         style={{ flex: 1, }}
         contentContainerStyle={{
           paddingTop: HEADER_IMAGE_HEIGHT + STICKY_HEADER_HEIGHT,

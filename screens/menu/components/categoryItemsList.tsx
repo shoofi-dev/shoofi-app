@@ -247,7 +247,7 @@ export default observer(CategoryItemsList);
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 10,
     maxWidth: 600,
