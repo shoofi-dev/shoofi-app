@@ -219,7 +219,9 @@ const Header = () => {
   };
 
   const onLogoClick = async () => {
-    await shoofiAdminStore.setStoreDBName("");
+    if(!userDetailsStore.isAdmin()){
+      await shoofiAdminStore.setStoreDBName("");
+    }
 
     if (
       navigation?.getCurrentRoute()?.name === "terms-and-conditions" ||
@@ -585,7 +587,7 @@ const styles = StyleSheet.create({
     // elevation: 20,
     // borderWidth: 0,
     // marginBottom: 40,
-    // backgroundColor: "#737373",
+   backgroundColor: themeStyle.TEXT_PRIMARY_COLOR,
     // backgroundColor: themeStyle.WHITE_COLOR
   },
   headerItem: {

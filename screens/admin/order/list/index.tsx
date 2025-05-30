@@ -1177,7 +1177,7 @@ const OrdersListScreen = ({ route }) => {
         </View>
       )}
 
-      <View style={{ width: "100%", marginTop: 15 }}>
+      <View style={{ width: "100%", }}>
         <View
           style={{
             alignSelf: "center",
@@ -1196,7 +1196,7 @@ const OrdersListScreen = ({ route }) => {
               style={{
                 fontSize: 30,
                 fontFamily: `${getCurrentLang()}-SemiBold`,
-                color: themeStyle.WHITE_COLOR,
+                color: themeStyle.TEXT_PRIMARY_COLOR,
               }}
             >
               {t("orders-list")}
@@ -1213,7 +1213,7 @@ const OrdersListScreen = ({ route }) => {
                 style={{
                   right: 0,
                   top: 8,
-                  color: themeStyle.SECONDARY_COLOR,
+                  color: themeStyle.TEXT_PRIMARY_COLOR,
                 }}
               />
             </TouchableOpacity>
@@ -1253,6 +1253,7 @@ const OrdersListScreen = ({ route }) => {
                 marginRight: 10,
                 height: 70,
                 marginTop: 20,
+                borderWidth:1
               }}
               onPress={() => handleSelectDay(day)}
             >
@@ -1286,8 +1287,8 @@ const OrdersListScreen = ({ route }) => {
                   fontSize: 20,
                   fontFamily: `${getCurrentLang()}-Bold`,
                   color: isSelectedDay
-                    ? themeStyle.WHITE_COLOR
-                    : themeStyle.PRIMARY_COLOR,
+                    ? themeStyle.TEXT_PRIMARY_COLOR
+                    : themeStyle.TEXT_PRIMARY_COLOR,
                 }}
               >
                 {t(day?.dayName)}
@@ -1297,8 +1298,8 @@ const OrdersListScreen = ({ route }) => {
                   fontSize: 18,
                   fontFamily: `${getCurrentLang()}-American-bold`,
                   color: isSelectedDay
-                    ? themeStyle.WHITE_COLOR
-                    : themeStyle.PRIMARY_COLOR,
+                    ? themeStyle.TEXT_PRIMARY_COLOR
+                    : themeStyle.TEXT_PRIMARY_COLOR,
                 }}
               >
                 {moment(day.date).format("DD/MM")}
@@ -1340,7 +1341,7 @@ const OrdersListScreen = ({ route }) => {
               bgColor={selectedStatus === "1" ? "" : themeStyle.WHITE_COLOR}
               textColor={
                 selectedStatus === "1"
-                  ? themeStyle.WHITE_COLOR
+                  ? themeStyle.TEXT_PRIMARY_COLOR
                   : themeStyle.TEXT_PRIMARY_COLOR
               }
               fontFamily={`${getCurrentLang()}-Bold`}

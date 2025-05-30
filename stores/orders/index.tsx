@@ -5,6 +5,8 @@ import { fromBase64, toBase64 } from "../../helpers/convert-base64";
 import { orderBy } from "lodash";
 import { SHIPPING_METHODS } from "../../consts/shared";
 import { storeDataStore } from "../store";
+import { shoofiAdminStore } from "../shoofi-admin";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export const inProgressStatuses = ["SENT", "APPROVED"];
 
 class OrdersStore {
@@ -73,10 +75,16 @@ class OrdersStore {
 
   getNotViewdOrdersFromServer = async (isAdminAll: boolean) => {
     const api =  `${ORDER_API.CONTROLLER}/${isAdminAll ? ORDER_API.GET_ADMIN_ALL_NOT_VIEWD_ORDERS_API : ORDER_API.GET_ADMIN_NOT_VIEWD_ORDERS_API}`
+    const storeDB = await AsyncStorage.getItem("@storage_storeDB")
 
     return axiosInstance
       .get(
         api,
+        {
+          headers: {
+            "app-name":storeDB
+          }
+        }
       )
       .then(function (response: any) {
         return response;

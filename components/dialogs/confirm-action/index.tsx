@@ -94,7 +94,7 @@ export default function ConfirmActiondDialog({
                     onClickFn={() => hideDialog(false)}
                     text={t(negativeText)}
                     bgColor={themeStyle.GRAY_600}
-                    textColor={themeStyle.WHITE_COLOR}
+                    textColor={themeStyle.TEXT_PRIMARY_COLOR}
                     fontSize={18}
                   />
                 </View>

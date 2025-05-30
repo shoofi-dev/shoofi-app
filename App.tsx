@@ -169,10 +169,10 @@ const App = () => {
     {
       share: true,
       onOpen: (data) => {
-        // console.log("connected", data);
+         console.log("connected", data);
       },
       onClose: () => {
-        // console.log("closed websocket");
+        console.log("closed websocket");
       },
       shouldReconnect: (closeEvent) => true,
       queryParams: { customerId: userDetailsStore.userDetails?.customerId },

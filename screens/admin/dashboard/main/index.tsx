@@ -168,8 +168,8 @@ const DashboardScreen = () => {
         navigation.navigate("upload-images");
         break;
       case "new-order":
-        navigation.navigate("homeScreen");
-        break;
+        navigation.navigate("search-customer");
+                break;
       case "new-product":
         navigation.navigate("admin-add-product", { categoryId: null });
         break;

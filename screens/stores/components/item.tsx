@@ -37,12 +37,7 @@ const StoreItem = ({storeItem}: TProps) => {
 
   // Log all values to debug object rendering
   console.log('storeName', storeItem.storeName);
-  console.log('location', location);
-  console.log('t חדש', t("חדש"));
-  console.log('rating', rating);
-  console.log('distance', distance);
-  console.log('deliveryTime', deliveryTime);
-  console.log('deliveryPrice', deliveryPrice);
+
 
   // Defensive: ensure only strings/numbers are rendered
   const safeStoreName = typeof storeItem.storeName === 'string' || typeof storeItem.storeName === 'number' ? storeItem.storeName : '';

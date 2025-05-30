@@ -123,11 +123,11 @@ const SearchCustomerScreen = () => {
           onChange={(e) => handleInputChange(e)}
           label={t("serch")}
           value={searchQuery}
-          color={themeStyle.SECONDARY_COLOR}
+          color={themeStyle.TEXT_PRIMARY_COLOR}
         />
           </View>
           <View style={{borderWidth:1, borderRadius:50, padding:10,flexBasis: 40, alignItems:'center'}}>
-            <Text style={{fontSize:20,fontFamily:`${getCurrentLang()}-Bold`, color: themeStyle.WHITE_COLOR}}>او</Text>
+            <Text style={{fontSize:20,fontFamily:`${getCurrentLang()}-Bold`, color: themeStyle.TEXT_PRIMARY_COLOR}}>او</Text>
           </View>
           <View style={{flexBasis: '25%'}}>
           <Button
@@ -135,7 +135,7 @@ const SearchCustomerScreen = () => {
             icon="shopping-bag-plus"
             fontSize={17}
             onClickFn={addNewCustomer}
-            textColor={themeStyle.WHITE_COLOR}
+            textColor={themeStyle.TEXT_PRIMARY_COLOR}
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
           />
@@ -145,12 +145,12 @@ const SearchCustomerScreen = () => {
 
         <ScrollView style={{marginTop:40}} keyboardShouldPersistTaps={'handled'}>
           {!isLoading && (!customerList || customerList.length === 0) && searchQuery && <View style={{alignSelf:'center', marginTop:40}}>
-            <Text style={{fontSize:25, color: themeStyle.WHITE_COLOR}}>
+            <Text style={{fontSize:25, color: themeStyle.TEXT_PRIMARY_COLOR}}>
               {t('cannot-find-customer')}
             </Text>
           </View> }
           {isLoading && <View style={{alignSelf:'center', marginTop:40}}>
-            <Text style={{fontSize:25, color: themeStyle.WHITE_COLOR}}>
+            <Text style={{fontSize:25, color: themeStyle.TEXT_PRIMARY_COLOR}}>
               <ActivityIndicator size="large"/>
             </Text>
           </View> }
@@ -163,9 +163,9 @@ const SearchCustomerScreen = () => {
                style={{flexDirection: "row",}}
                 onPress={()=>handleSelectCustomer(customer)}
               >
-                <Text style={{ fontSize: 25, color: themeStyle.WHITE_COLOR }}>{customer.fullName}</Text>
-                <Text style={{ fontSize: 25, color: themeStyle.WHITE_COLOR }}>{"  -  "}</Text>
-                <Text style={{ fontSize: 25, color: themeStyle.WHITE_COLOR }} type="number">
+                <Text style={{ fontSize: 25, color: themeStyle.TEXT_PRIMARY_COLOR }}>{customer.fullName}</Text>
+                <Text style={{ fontSize: 25, color: themeStyle.TEXT_PRIMARY_COLOR }}>{"  -  "}</Text>
+                <Text style={{ fontSize: 25, color: themeStyle.TEXT_PRIMARY_COLOR }} type="number">
                   {customer.phone}
                 </Text>
               </TouchableOpacity>
