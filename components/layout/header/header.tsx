@@ -457,7 +457,7 @@ const Header = () => {
             style={{ color: theme.GRAY_700,  width:100 }}
           /> */}
           <Image
-            style={{ maxWidth: "50%", maxHeight: "30%" }}
+            style={{ maxWidth: "45%", maxHeight: "40%" }}
             source={require("../../../assets/icon4.png")}
           />
         </TouchableOpacity>
