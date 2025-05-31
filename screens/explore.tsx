@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import themeStyle from "../styles/theme.style";
 import StoresCategoryItem from "./home/categories/item";
 import StoreItem from "./stores/components/item";
+import { cdnUrl } from "../consts/shared";
+import CustomFastImage from "../components/custom-fast-image";
 
 const CATEGORY_BG = "#f5f5f5";
 
@@ -66,10 +68,16 @@ const ExploreScreen = () => {
               activeOpacity={0.8}
             >
               {cat.image ? (
-                <Image
-                  source={{ uri: cat.image }}
-                  style={{ width: "100%", height: "100%", borderRadius: 15, resizeMode: "cover" }}
-                />
+          
+                <CustomFastImage
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 20,
+                }}
+                source={{ uri: `${cdnUrl}${cat.image.uri}` }}
+                cacheKey={`${cat.image.uri.split(/[\\/]/).pop()}`}
+              />
               ) : (
                 <View style={{ width: 50, height: 50, borderRadius: 15, backgroundColor: "#fff" }} />
               )}
@@ -95,7 +103,7 @@ const ExploreScreen = () => {
       {/* Main Content: Each Category Section */}
       <ScrollView>
         {categories.map((cat) => {
-          const storesInCategory = stores.filter((store) => store.categoryId === cat.categoryId);
+          const storesInCategory = stores.filter((store) => store.categoryId === cat._id);
           if (storesInCategory.length === 0) return null;
           return (
             <View key={cat.categoryId} style={{ marginBottom: 30,}}>

@@ -48,7 +48,6 @@ class ShoofiAdminStore {
   getStoresListData = (location) => {
     return this.getStoresListDataFromServer(location).then((res:any) => {
       runInAction(() => {
-
         this.storesList = res;
       })
       return res;
