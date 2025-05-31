@@ -416,7 +416,7 @@ const MealScreen = ({ route }) => {
   }, []);
 
   const handlePickImage = () => {
-    if(storeDataStore.storeData.image_support){
+    if(storeDataStore.storeData?.image_support){
       setIsPickImageDialogOpen(true)
     }else{
       setConfirmActiondDialogText(t('image-not-supported'));
