@@ -28,7 +28,7 @@ class ShoofiAdminStore {
     const body = { date: moment().format(), location}
     return axiosInstance
       .post(
-        `${SHOOFI_ADMIN_API.CONTROLLER}/${SHOOFI_ADMIN_API.GET_STORES_LIST_API}`,
+        `${SHOOFI_ADMIN_API.CONTROLLER}/${SHOOFI_ADMIN_API.GET_AVAILABLE_STORES_API}`,
         body,
         {
           headers: {
@@ -48,7 +48,7 @@ class ShoofiAdminStore {
   getStoresListData = (location) => {
     return this.getStoresListDataFromServer(location).then((res:any) => {
       runInAction(() => {
-        this.storesList = res;
+        this.storesList = res?.map((item)=> item.store);
       })
       return res;
     })

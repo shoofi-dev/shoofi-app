@@ -22,7 +22,7 @@ const StoreItem = ({storeItem}: TProps) => {
     shoofiAdminStore,
   } = useContext(StoreContext);
   const onStoreSelect = async (store: any) => {
-    await shoofiAdminStore.setStoreDBName(store.dbName);
+    await shoofiAdminStore.setStoreDBName(store.appName);
     await menuStore.getMenu();
     await storeDataStore.getStoreData();
     (navigation as any).navigate("menuScreen");

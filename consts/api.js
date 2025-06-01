@@ -3,8 +3,8 @@
 // export const WS_URL = "wss://sari-apps-lcibm.ondigitalocean.app";
 
 //DEV
- export const BASE_URL = "http://192.168.68.58:1111/api";
- export const WS_URL = "ws://192.168.68.58:1111";
+ export const BASE_URL = "http://192.168.68.53:1111/api";
+ export const WS_URL = "ws://192.168.68.53:1111";
 
 // export const BASE_URL = "http://192.168.0.100:1111/api";
 // export const WS_URL = "ws://192.168.0.100:1111";
@@ -15,6 +15,7 @@
 export const SHOOFI_ADMIN_API = {
     CONTROLLER: "shoofiAdmin",
     GET_STORES_LIST_API : "store/list",
+    GET_AVAILABLE_STORES_API : "available-stores",
     GET_CATEGORY_LIST_API : "category/list",
     UPDATE_STORE_API : "store/update",
     GET_CATEGORIES_API : "/admin/categorie",
