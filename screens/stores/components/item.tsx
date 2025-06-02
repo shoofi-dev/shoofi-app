@@ -28,19 +28,18 @@ const StoreItem = ({storeItem}: TProps) => {
     (navigation as any).navigate("menuScreen");
   };
   // Placeholder values for demo
-  const isNew = storeItem.isNew || false;
-  const rating = storeItem.rating || 4.1;
-  const distance = storeItem.distance || 1.6;
-  const deliveryTime = storeItem.deliveryTime || 27;
-  const location = storeItem.location || "כפר קאסם";
+  const isNew = storeItem.store.isNew || false;
+  const rating = storeItem.store.rating || 4.1;
+  const distance = storeItem.store.distance || 1.6;
+  const deliveryTime = storeItem.store.deliveryTime || 27;
+  const location = storeItem.store.location || "כפר קאסם";
   const deliveryPrice = storeItem.deliveryPrice || 10;
 
   // Log all values to debug object rendering
-  console.log('storeName', storeItem.storeName);
 
 
   // Defensive: ensure only strings/numbers are rendered
-  const safeStoreName = typeof storeItem.storeName === 'string' || typeof storeItem.storeName === 'number' ? storeItem.storeName : '';
+  const safeStoreName =  storeItem.store.name_ar ;
   const safeLocation = typeof location === 'string' || typeof location === 'number' ? location : (location && location.name ? location.name : '');
   const safeNew = typeof t("חדש") === 'string' || typeof t("חדש") === 'number' ? t("חדש") : '';
   const safeRating = typeof rating === 'string' || typeof rating === 'number' ? rating : '';
@@ -50,7 +49,7 @@ const StoreItem = ({storeItem}: TProps) => {
 
   return (
     <TouchableOpacity
-      onPress={() => onStoreSelect(storeItem)}
+      onPress={() => onStoreSelect(storeItem.store)}
       style={styles.card}
       activeOpacity={0.9}
     >
@@ -58,8 +57,8 @@ const StoreItem = ({storeItem}: TProps) => {
       <View style={styles.imageWrapper}>
         <CustomFastImage
           style={styles.image}
-          source={{ uri: `${storeItem.storeLogo}` }}
-          cacheKey={`${storeItem.storeLogo?.split(/[\\/]/).pop()}1`}
+          source={{ uri: `${storeItem.store.storeLogo.uri}` }}
+          cacheKey={`${storeItem.store.storeLogo?.uri?.split(/[\\/]/).pop()}1`}
         />
         {/* New badge */}
         {isNew && (
@@ -81,6 +80,14 @@ const StoreItem = ({storeItem}: TProps) => {
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoText}>{safeLocation} ₪{safeDeliveryPrice} {" "}·{" "} כפר קאסם</Text>
+        </View>
+        <View style={{flexDirection:'row', flexWrap:'wrap', width:'100%'}}>
+          {storeItem.deliveryCompanies.map((company:any, index:number) => (
+            <View key={index} style={{ flexWrap:'wrap', width:'100%'}}>
+              <Text style={styles.infoText}>{company.company.nameAR}</Text>
+              <Text style={styles.infoText}>{company.eta} : ETA</Text>
+            </View>
+          ))}
         </View>
       </View>
     </TouchableOpacity>
