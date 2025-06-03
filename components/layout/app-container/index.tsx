@@ -246,7 +246,7 @@ const AppContainer = () => {
             (userDetailsStore.isAdmin() ? (
               <Header />
             ) : (
-              <TopBar address={"ארלוזורוב 135, תל-אביב"} />
+              <TopBar  />
             ))}
           <MainStackNavigator />
           {renderImage()}

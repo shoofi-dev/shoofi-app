@@ -12,6 +12,7 @@ import { adminCustomerStore } from "./admin-customer";
 import { errorHandlerStore } from "./error-handler";
 import { shoofiAdminStore } from "./shoofi-admin";
 import { extrasStore } from "./extras";
+import { addressStore } from "./address";
 
 export const StoreContext = createContext({ 
     cartStore: cartStore, 
@@ -26,5 +27,6 @@ export const StoreContext = createContext({
     adminCustomerStore: adminCustomerStore,
     errorHandlerStore: errorHandlerStore,
     shoofiAdminStore: shoofiAdminStore,
-    extrasStore: extrasStore
+    extrasStore: extrasStore,
+    addressStore: addressStore
 });

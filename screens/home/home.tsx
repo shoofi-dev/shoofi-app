@@ -44,7 +44,6 @@ import StoreErrorMsgDialog from "../../components/dialogs/store-errot-msg";
 import moment from "moment";
 import StoresCategoryList from "./categories/list";
 import ExploreScreen from "../explore";
-import CitiesList from '../../components/CitiesList';
 
 const HomeScreen = ({ navigation }) => {
   const { t } = useTranslation();
@@ -326,7 +325,7 @@ const HomeScreen = ({ navigation }) => {
         backgroundColor: "transparent",
       }}
     >
-      <CitiesList cities={Array.isArray(cities) ? cities : []} onCitySelect={handleCitySelect} selectedCity={selectedCity} />
+      {/* <CitiesList cities={Array.isArray(cities) ? cities : []} onCitySelect={handleCitySelect} selectedCity={selectedCity} /> */}
       <ExploreScreen  />
     </View>
   );

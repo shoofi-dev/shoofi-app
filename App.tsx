@@ -67,6 +67,7 @@ import { axiosInstance } from "./utils/http-interceptor";
 import getPizzaCount from "./helpers/get-pizza-count";
 import _useWebSocketUrl from "./hooks/use-web-socket-url";
 import { useLocation } from "./hooks/useLocation";
+import { addressStore } from "./stores/address";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -817,6 +818,7 @@ const App = () => {
             errorHandlerStore: errorHandlerStore,
             shoofiAdminStore: shoofiAdminStore,
             extrasStore: extrasStore,
+            addressStore: addressStore
           }}
         >
           <View style={{ height: "100%" }}>

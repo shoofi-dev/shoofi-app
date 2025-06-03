@@ -1,19 +1,14 @@
 import React, { useContext } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, I18nManager } from "react-native";
+import { View, TouchableOpacity, StyleSheet, I18nManager, Text } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import themeStyle from "../../styles/theme.style";
 import { observer } from "mobx-react";
 import { StoreContext } from "../../stores";
 import { useNavigation } from "@react-navigation/native";
+import AddressSelector from "../address/AddressSelector";
 
-interface TopBarProps {
-  address: string;
-  onAddressPress?: () => void;
-  onHomePress?: () => void;
-}
-
-const TopBar: React.FC<TopBarProps> = observer(({ address, onAddressPress, onHomePress }) => {
-  const { cartStore, authStore } = useContext(StoreContext);
+const TopBar: React.FC = observer(() => {
+  const { cartStore, authStore, userDetailsStore, addressStore } = useContext(StoreContext);
   const navigation = useNavigation();
   const cartCount = cartStore.getProductsCount();
 
@@ -44,16 +39,10 @@ const TopBar: React.FC<TopBarProps> = observer(({ address, onAddressPress, onHom
         )}
       </TouchableOpacity>
 
-      {/* Home Icon and Address (grouped together at end) */}
-      <View style={styles.rightGroup}>
-        <TouchableOpacity onPress={onHomePress} style={styles.iconContainer}>
-          <Icon name="home-outline" size={26} color="#222" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onAddressPress} style={styles.addressContainer} activeOpacity={0.7}>
-          <Text style={styles.addressText} numberOfLines={1} ellipsizeMode="tail">{address}</Text>
-          <Icon name="chevron-down" size={20} color="#888" style={{ marginLeft: 2, marginRight: 2 }} />
-        </TouchableOpacity>
-      </View>
+      {/* Address Selector */}
+      <AddressSelector
+
+      />
     </View>
   );
 });
@@ -69,7 +58,6 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   iconContainer: {
-
     justifyContent: "center",
     alignItems: "center",
   },
@@ -90,23 +78,6 @@ const styles = StyleSheet.create({
     color: "#3B3B3B",
     fontSize: 12,
     fontWeight: "bold",
-  },
-  rightGroup: {
-    flexDirection: 'row',
-  },
-  addressContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 0,
-    marginLeft: 4,
-  },
-  addressText: {
-    fontSize: 15,
-    color: "#222",
-    fontWeight: "400",
-    maxWidth: 180,
-    textAlign: "center",
   },
 });
 

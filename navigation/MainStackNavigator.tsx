@@ -36,6 +36,9 @@ import CheckoutScreen from "../screens/checkout";
 import PickTimeCMP from "../components/dialogs/pick-time";
 import StoresScreen from "../screens/stores/stores";
 import { TransitionSpecs } from '@react-navigation/stack';
+import AddressForm from '../components/address/AddressForm';
+import AddressList from '../components/address/AddressList';
+import CitiesScreen from '../screens/CitiesScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -128,6 +131,10 @@ export const MainStackNavigator = () => {
         component={MealScreen}
         initialParams={{ index: null }}
       />
+      <Stack.Screen name="AddAddress" component={AddressForm} initialParams={{ address: null }} />
+      <Stack.Screen name="EditAddress" component={AddressForm} initialParams={{ address: null }} />
+      <Stack.Screen name="AddressList" component={AddressList} />
+      <Stack.Screen name="Cities" component={CitiesScreen} />
     </Stack.Navigator>
   );
 };

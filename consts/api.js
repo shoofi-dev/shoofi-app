@@ -46,7 +46,12 @@ export const CUSTOMER_API = {
     GET_USER_DETAILS: "details",
     SEARCH_CUSTOMER_DETAILS: "search-customer",
     LOGOUT_API: "logout",
-    DELETE_ACOOUNT_API: "delete"
+    DELETE_ACOOUNT_API: "delete",
+    GET_ADDRESSES: 'addresses',
+    ADD_ADDRESS: 'addresses/add',
+    UPDATE_ADDRESS: 'addresses',
+    DELETE_ADDRESS: 'addresses',
+    SET_DEFAULT_ADDRESS: 'addresses',
 };
 export const MENU_API = {
     CONTROLLER: "config",

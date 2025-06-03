@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { axiosInstance } from '../../utils/http-interceptor';
 
 interface City {
   name: string;
@@ -10,18 +11,26 @@ interface City {
 }
 
 interface CitiesListProps {
-  cities: City[];
-  onCitySelect?: (city: City) => void;
-  selectedCity?: City | null;
+  onCitySelect?: (city: any) => void;
+  selectedCity?: any | null;
 }
 
-const CitiesList: React.FC<CitiesListProps> = ({ cities, onCitySelect, selectedCity }) => {
-  const isSelected = (city: City) => {
+const CitiesList: React.FC<CitiesListProps> = ({ onCitySelect, selectedCity }) => {
+
+  const [cities, setCities] = useState<Array<{ _id: string; nameAR: string; nameHE: string, geometry: any }>>([]);
+
+  const fetchCities = async () => {
+    const res: any = await axiosInstance.get("/delivery/cities");
+    setCities(res);
+  };
+  useEffect(() => { fetchCities(); }, []);
+
+  
+  const isSelected = (city: any) => {
+
     if (!selectedCity) return false;
     return (
-      city.name === selectedCity.name &&
-      city.location.lat === selectedCity.location.lat &&
-      city.location.lng === selectedCity.location.lng
+      city._id === selectedCity._id
     );
   };
 
@@ -31,7 +40,7 @@ const CitiesList: React.FC<CitiesListProps> = ({ cities, onCitySelect, selectedC
       <FlatList
         data={cities}
         keyExtractor={(_, idx) => idx.toString()}
-        renderItem={({ item }) => {
+        renderItem={({ item }:any) => {
           const selected = isSelected(item);
           return (
             <TouchableOpacity
@@ -39,7 +48,7 @@ const CitiesList: React.FC<CitiesListProps> = ({ cities, onCitySelect, selectedC
               onPress={() => onCitySelect && onCitySelect(item)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.cityName, selected && styles.selectedCityName]}>{item.name}</Text>
+              <Text style={[styles.cityName, selected && styles.selectedCityName]}>{item.nameAR}</Text>
             </TouchableOpacity>
           );
         }}
