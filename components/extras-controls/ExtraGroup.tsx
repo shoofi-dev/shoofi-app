@@ -41,13 +41,14 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
           </>
         )}
         {extra.type === "counter" && (
-          <Counter
-            value={value || 0}
-            min={extra.min}
-            max={extra.max}
-            onChange={onChange}
-            price={extra.price}
-          />
+            <Counter
+              value={value || extra.defaultValue ||  0}
+              min={extra.min}
+              max={extra.max}
+              onChange={onChange}
+              price={extra.price}
+              step={extra.step}
+            />
         )}
       </View>
     </View>
@@ -57,18 +58,18 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
     shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 4,
+    elevation: 1,
   },
   title: {
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: 16,
     textAlign: "left",
     color: "#222",
   },
