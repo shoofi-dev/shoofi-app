@@ -1,13 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View } from "react-native";
 import Text from "../../../components/controls/Text";
 import { extrasStore } from "../../../stores/extras";
 import { isEmpty } from "lodash";
+import { StoreContext } from "../../../stores";
 
 const CartExtras = ({ extrasDef, selectedExtras, fontSize, basePrice, qty }) => {
+  const { languageStore } = useContext(StoreContext);
   if (!extrasDef || !selectedExtras || isEmpty(extrasDef)) return null;
   const extrasPrice = extrasStore.calculateExtrasPrice(extrasDef, selectedExtras);
   const totalPrice = (basePrice + extrasPrice) * (qty || 1);
+
+  const getName = (item) => {
+    return languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE;
+  };
+
   return (
     <View style={{ marginTop: 5 }}>
       {extrasDef.map((extra) => {
@@ -18,8 +25,8 @@ const CartExtras = ({ extrasDef, selectedExtras, fontSize, basePrice, qty }) => 
           const opt = extra.options.find(o => o.id === value);
           return (
             <View key={extra.id} style={{ flexDirection: "row", alignItems: "center", marginBottom: 2 }}>
-              <Text style={{ fontSize: fontSize(14), color: "#888" }}>{extra.title}: </Text>
-              <Text style={{ fontSize: fontSize(14), color: "#333" }}>{opt?.name}{opt?.price ? ` (+₪${opt.price})` : ""}</Text>
+              <Text style={{ fontSize: fontSize(14), color: "#888" }}>{getName(extra)}: </Text>
+              <Text style={{ fontSize: fontSize(14), color: "#333" }}>{getName(opt)}{opt?.price ? ` (+₪${opt.price})` : ""}</Text>
             </View>
           );
         }
@@ -28,8 +35,8 @@ const CartExtras = ({ extrasDef, selectedExtras, fontSize, basePrice, qty }) => 
           const opts = extra.options.filter(o => value.includes(o.id));
           return (
             <View key={extra.id} style={{ flexDirection: "row", alignItems: "center", marginBottom: 2 }}>
-              <Text style={{ fontSize: fontSize(14), color: "#888" }}>{extra.title}: </Text>
-              <Text style={{ fontSize: fontSize(14), color: "#333" }}>{opts.map(o => `${o.name}${o.price ? ` (+₪${o.price})` : ""}`).join(", ")}</Text>
+              <Text style={{ fontSize: fontSize(14), color: "#888" }}>{getName(extra)}: </Text>
+              <Text style={{ fontSize: fontSize(14), color: "#333" }}>{opts.map(o => `${getName(o)}${o.price ? ` (+₪${o.price})` : ""}`).join(", ")}</Text>
             </View>
           );
         }
@@ -37,7 +44,7 @@ const CartExtras = ({ extrasDef, selectedExtras, fontSize, basePrice, qty }) => 
         if (extra.type === "counter") {
           return (
             <View key={extra.id} style={{ flexDirection: "row", alignItems: "center", marginBottom: 2 }}>
-              <Text style={{ fontSize: fontSize(14), color: "#888" }}>{extra.title}: </Text>
+              <Text style={{ fontSize: fontSize(14), color: "#888" }}>{getName(extra)}: </Text>
               <Text style={{ fontSize: fontSize(14), color: "#333" }}>{value}x{extra.price ? ` (+₪${extra.price})` : ""}</Text>
             </View>
           );
@@ -48,7 +55,7 @@ const CartExtras = ({ extrasDef, selectedExtras, fontSize, basePrice, qty }) => 
           if (toppingSelections.length === 0) return null;
           return (
             <View key={extra.id} style={{ marginBottom: 2 }}>
-              <Text style={{ fontSize: fontSize(14), color: "#888" }}>{extra.title}:</Text>
+              <Text style={{ fontSize: fontSize(14), color: "#888" }}>{getName(extra)}:</Text>
               {toppingSelections.map(([toppingId, areaId]) => {
                 const topping = extra.options.find(o => o.id === toppingId);
                 if (!topping) return null;
@@ -56,7 +63,7 @@ const CartExtras = ({ extrasDef, selectedExtras, fontSize, basePrice, qty }) => 
                 return (
                   <View key={toppingId} style={{ flexDirection: "row", alignItems: "center", marginLeft: 10 }}>
                     <Text style={{ fontSize: fontSize(14), color: "#333" }}>
-                      {topping.name}
+                      {getName(topping)}
                       {area ? ` (${area.name}${area.price ? ` +₪${area.price}` : ""})` : ""}
                     </Text>
                   </View>
