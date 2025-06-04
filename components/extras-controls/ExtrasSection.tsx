@@ -11,7 +11,8 @@ export type AreaOption = {
 
 export type PizzaToppingOption = {
   id: string;
-  name: string;
+  nameAR: string;
+  nameHE: string;
   price?: number; // fallback
   areaOptions?: AreaOption[];
 };
@@ -19,7 +20,8 @@ export type PizzaToppingOption = {
 export type Extra = {
   id: string;
   type: "single" | "multi" | "counter" | "pizza-topping";
-  title: string;
+  nameAR: string;
+  nameHE: string;
   required?: boolean;
   min?: number;
   max?: number;

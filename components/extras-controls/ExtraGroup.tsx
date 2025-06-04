@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import RadioGroup from "./RadioGroup";
 import CheckboxGroup from "./CheckboxGroup";
 import Counter from "./Counter";
 import { Extra } from "./ExtrasSection";
+import { StoreContext } from "../../stores";
 
 export type ExtraGroupProps = {
   extra: Extra;
@@ -12,9 +13,11 @@ export type ExtraGroupProps = {
 };
 
 const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
+  let { languageStore } = useContext(StoreContext);
+
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{extra.title}</Text>
+      <Text style={styles.title}>{languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}</Text>
       <View style={{ marginTop: 10 }}>
         {extra.type === "single" && extra.options && (
           <RadioGroup options={extra.options} value={value} onChange={onChange} />

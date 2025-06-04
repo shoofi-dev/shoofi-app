@@ -1,59 +1,71 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { StoreContext } from "../../stores";
 
 export type RadioGroupProps = {
-  options: { id: string; name: string; price?: number }[];
+  options: { id: string;  nameAR?: string; nameHE?: string; price?: number }[];
   value: string;
   onChange: (value: string) => void;
 };
 
-const RadioGroup = ({ options, value, onChange }: RadioGroupProps) => (
-  <View style={styles.optionsRow}>
+const RadioGroup = ({ options, value, onChange }: RadioGroupProps) => {
+  let { languageStore } = useContext(StoreContext);
+  return(
+  <View >
     {options.map((opt) => {
       const selected = value === opt.id;
       return (
-        <TouchableOpacity
-          key={opt.id}
-          onPress={() => onChange(opt.id)}
-          style={[
-            styles.optionPill,
-            selected && styles.optionPillSelected,
-          ]}
-        >
-          <Text style={[styles.optionText, selected && styles.optionTextSelected]}>
-            {opt.name}
-            {opt.price ? ` +₪${opt.price}` : ""}
-          </Text>
-        </TouchableOpacity>
+<TouchableOpacity
+  key={opt.id}
+  onPress={() => onChange(opt.id)}
+  style={styles.optionRow}
+  activeOpacity={0.7}
+>
+<Text style={styles.optionLabel}>
+    {languageStore.selectedLang === "ar" ? opt.nameAR : opt.nameHE}
+    {opt.price ? ` +₪${opt.price}` : ""}
+  </Text>
+  <View style={styles.radioOuter}>
+    {selected && <View style={styles.radioInner} />}
+  </View>
+
+</TouchableOpacity>
       );
     })}
   </View>
-);
+)};
 
 const styles = StyleSheet.create({
-  optionsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
+  optionRow: {
+    flexDirection: "row", // RTL: label right, radio left
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    width: "100%",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
-  optionPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: "#f0f0f0",
-    marginRight: 8,
-    marginBottom: 8,
+  radioOuter: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#8BC34A",
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 12,
   },
-  optionPillSelected: {
-    backgroundColor: "#007aff",
+  radioInner: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: "#4CAF50",
   },
-  optionText: {
+  optionLabel: {
+    fontSize: 18,
     color: "#333",
-    fontSize: 15,
-  },
-  optionTextSelected: {
-    color: "#fff",
-    fontWeight: "bold",
+    flex: 1,
+    textAlign: "left",
   },
 });
 
