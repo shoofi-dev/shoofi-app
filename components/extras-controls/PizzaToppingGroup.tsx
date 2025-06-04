@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Extra, PizzaToppingOption, AreaOption } from "./ExtrasSection";
+import { useContext } from "react";
+import { StoreContext } from "../../stores";
 
 export type PizzaToppingGroupProps = {
   extra: Extra;
@@ -9,6 +11,8 @@ export type PizzaToppingGroupProps = {
 };
 
 const PizzaToppingGroup = ({ extra, value, onChange }: PizzaToppingGroupProps) => {
+  const { languageStore } = useContext(StoreContext);
+
   const handleAreaSelect = (toppingId: string, areaId: string) => {
     const newValue = { ...value };
     if (newValue[toppingId] === areaId) {
@@ -20,15 +24,18 @@ const PizzaToppingGroup = ({ extra, value, onChange }: PizzaToppingGroupProps) =
   };
 
   const getSelectedArea = (toppingId: string) => value[toppingId];
-
+  console.log("extra",extra.options)
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{extra.title}</Text>
+      <Text style={styles.title}>
+        {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}
+      </Text>
       <View style={styles.toppingsContainer}>
         {extra.options?.map((topping: PizzaToppingOption) => (
           <View key={topping.id} style={styles.toppingRow}>
-            {/* <Text style={styles.toppingName}>{topping.name}</Text> */}
-  
+            <Text style={styles.toppingName}>
+              {languageStore.selectedLang === "ar" ? topping.nameAR : topping.nameHE}
+            </Text>
             <View style={styles.areaSelector}>
               {topping.areaOptions?.map((area: AreaOption) => (
                 <TouchableOpacity
@@ -68,6 +75,15 @@ const styles = StyleSheet.create({
   toppingsContainer: {
     flexDirection: "column",
     gap: 12,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 4,
+    elevation: 1,
   },
   toppingRow: {
     marginBottom: 10,

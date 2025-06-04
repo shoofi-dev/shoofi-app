@@ -64,19 +64,31 @@ const ExtrasSection = ({
     }
     return acc;
   }, {} as Record<string, Extra[]>);
-
+  console.log("groupedExtras",groupedExtras)
   return (
     <View style={styles.container}>
       {Object.entries(groupedExtras).map(([groupId, groupExtras]) => {
         if (groupId === "ungrouped") {
-          return groupExtras.map((extra) => (
-            <ExtraGroup
-              key={extra.id}
-              extra={extra}
-              value={selections[extra.id]}
-              onChange={(val) => onChange(extra.id, val)}
-            />
-          ));
+          return groupExtras.map((extra) => {
+            if (extra.type === "pizza-topping") {
+              return (
+                <PizzaToppingGroup
+                  key={extra.id}
+                  extra={extra}
+                  value={selections[extra.id] || {}}
+                  onChange={(val) => onChange(extra.id, val)}
+                />
+              );
+            }
+            return (
+              <ExtraGroup
+                key={extra.id}
+                extra={extra}
+                value={selections[extra.id]}
+                onChange={(val) => onChange(extra.id, val)}
+              />
+            );
+          });
         }
 
         // Get group header (first extra with isGroupHeader)
