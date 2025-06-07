@@ -47,15 +47,27 @@ const ExploreScreen = () => {
     fetchData();
   }, [shoofiAdminStore]);
 
-  const categories = shoofiAdminStore.categoryList || [];
+  const allCategories = shoofiAdminStore.categoryList || [];
   const stores = shoofiAdminStore.storesList || [];
 
-  // Set default selected category
+  // Filter categories by selected general category
+  const categories = selectedGeneralCategory
+    ? allCategories.filter((cat) =>
+        cat.supportedGeneralCategoryIds?.some(
+          (id) => id.$oid === selectedGeneralCategory._id || id === selectedGeneralCategory._id
+        )
+      )
+    : allCategories;
+
+  // Set default selected category when categories change
   useEffect(() => {
     if (categories.length && !selectedCategory) {
       setSelectedCategory(categories[0]);
+    } else if (categories.length && selectedCategory && !categories.find(cat => cat._id === selectedCategory._id)) {
+      // If current selected category is not in filtered list, select first available
+      setSelectedCategory(categories[0]);
     }
-  }, [categories]);
+  }, [categories, selectedGeneralCategory]);
 
   // Filter stores by selected category
   const storesInCategory = selectedCategory
