@@ -8,6 +8,7 @@ import CustomFastImage from "../../../components/custom-fast-image";
 import { StoreContext } from "../../../stores";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { cdnUrl } from "../../../consts/shared";
 
 export type TProps = {
     storeItem: any;
@@ -46,7 +47,7 @@ const StoreItem = ({storeItem}: TProps) => {
   const safeDistance = typeof distance === 'string' || typeof distance === 'number' ? distance : '';
   const safeDeliveryTime = typeof deliveryTime === 'string' || typeof deliveryTime === 'number' ? deliveryTime : '';
   const safeDeliveryPrice = typeof deliveryPrice === 'string' || typeof deliveryPrice === 'number' ? deliveryPrice : '';
-
+  console.log(storeItem.store.storeLogo.uri);
   return (
     <TouchableOpacity
       onPress={() => onStoreSelect(storeItem.store)}
@@ -57,8 +58,9 @@ const StoreItem = ({storeItem}: TProps) => {
       <View style={styles.imageWrapper}>
         <CustomFastImage
           style={styles.image}
-          source={{ uri: `${storeItem.store.storeLogo.uri}` }}
-          cacheKey={`${storeItem.store.storeLogo?.uri?.split(/[\\/]/).pop()}1`}
+          source={{ uri: `${cdnUrl}${storeItem.store.storeLogo.uri}` }}
+          cacheKey={`${cdnUrl}${storeItem.store.storeLogo?.uri?.split(/[\\/]/).pop()}1`}
+          resizeMode="cover"
         />
         {/* New badge */}
         {isNew && (
@@ -118,6 +120,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     overflow: 'hidden',
     position: 'relative',
+    borderWidth: 1,
+    borderColor: 'red',
   },
   image: {
     width: '100%',
