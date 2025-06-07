@@ -7,6 +7,7 @@ import themeStyle from "../styles/theme.style";
 import StoreItem from "./stores/components/item";
 import { cdnUrl } from "../consts/shared";
 import CustomFastImage from "../components/custom-fast-image";
+import { axiosInstance } from "../utils/http-interceptor";
 
 const CATEGORY_BG = "#f5f5f5";
 
@@ -14,17 +15,34 @@ const ExploreScreen = () => {
   const { t } = useTranslation();
   const { shoofiAdminStore } = useContext(StoreContext);
   const [loading, setLoading] = useState(true);
+  const [selectedGeneralCategory, setSelectedGeneralCategory] = useState(null);
+  const [generalCategories, setGeneralCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!shoofiAdminStore.categoryList) {
-        await shoofiAdminStore.getCategoryListData();
+      try {
+        // Fetch general categories
+        const generalCategoriesRes: any = await axiosInstance.get("/category/general/all");
+        console.log("generalCategoriesRes", generalCategoriesRes);
+        setGeneralCategories(generalCategoriesRes);
+
+        // Set default selected general category
+        if (generalCategoriesRes?.length && !selectedGeneralCategory) {
+          setSelectedGeneralCategory(generalCategoriesRes[0]);
+        }
+
+        if (!shoofiAdminStore.categoryList) {
+          await shoofiAdminStore.getCategoryListData();
+        }
+        if (!shoofiAdminStore.storesList) {
+          await shoofiAdminStore.getStoresListData({});
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
-      if (!shoofiAdminStore.storesList) {
-        await shoofiAdminStore.getStoresListData({});
-      }
-      setLoading(false);
     };
     fetchData();
   }, [shoofiAdminStore]);
@@ -60,6 +78,73 @@ const ExploreScreen = () => {
 
   return (
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
+      {/* General Categories Horizontal Scroller */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ paddingVertical: 16, paddingHorizontal: 8, marginBottom: 10 }}
+        contentContainerStyle={{ flexDirection: I18nManager.isRTL ? "row-reverse" : "row" }}
+      >
+        {generalCategories?.map((cat) => (
+          <TouchableOpacity
+            key={cat._id}
+            style={{
+              alignItems: "center",
+              marginHorizontal: 8,
+              opacity: selectedGeneralCategory && selectedGeneralCategory._id === cat._id ? 1 : 0.5,
+            }}
+            onPress={() => setSelectedGeneralCategory(cat)}
+            activeOpacity={0.8}
+          >
+            <View
+              style={{
+                width: 70,
+                height: 70,
+                borderRadius: 20,
+                backgroundColor: CATEGORY_BG,
+                justifyContent: "center",
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.08,
+                shadowRadius: 4,
+                elevation: 2,
+                borderWidth: selectedGeneralCategory && selectedGeneralCategory._id === cat._id ? 2 : 0,
+                borderColor: themeStyle.PRIMARY_COLOR,
+              }}
+            >
+              {cat.img && cat.img[0] ? (
+                <CustomFastImage
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: 20,
+                  }}
+                  source={{ uri: `${cdnUrl}${cat.img[0].uri}` }}
+                  cacheKey={`${cat.img[0].uri.split(/[\\/]/).pop()}`}
+                />
+              ) : (
+                <View style={{ width: 50, height: 50, borderRadius: 15, backgroundColor: "#fff" }} />
+              )}
+            </View>
+            <Text
+              style={{
+                fontSize: 16,
+                color: "#222",
+                fontWeight: "500",
+                marginTop: 6,
+                textAlign: "center",
+                maxWidth: 70,
+              }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {cat.nameHE}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
       {/* Categories Horizontal Scroller */}
       <ScrollView
         horizontal
