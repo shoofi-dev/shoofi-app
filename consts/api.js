@@ -1,10 +1,10 @@
 // // // // //PROD
-// export const BASE_URL = "https://sari-apps-lcibm.ondigitalocean.app/api";
-// export const WS_URL = "wss://sari-apps-lcibm.ondigitalocean.app";
+// export const BASE_URL = "https://shoofi-api-95miq.ondigitalocean.app/api";
+// export const WS_URL = "wss://shoofi-api-95miq.ondigitalocean.app";
 
 //DEV
- export const BASE_URL = "http://192.168.68.57:1111/api";
- export const WS_URL = "ws://192.168.68.57:1111";
+ export const BASE_URL = "http://192.168.68.73:1111/api";
+ export const WS_URL = "ws://192.168.68.73:1111";
 
 // export const BASE_URL = "http://192.168.0.100:1111/api";
 // export const WS_URL = "ws://192.168.0.100:1111";

@@ -13,7 +13,7 @@ const CATEGORY_BG = "#f5f5f5";
 
 const ExploreScreen = () => {
   const { t } = useTranslation();
-  const { shoofiAdminStore } = useContext(StoreContext);
+  const { shoofiAdminStore, languageStore } = useContext(StoreContext);
   const [loading, setLoading] = useState(true);
   const [selectedGeneralCategory, setSelectedGeneralCategory] = useState(null);
   const [generalCategories, setGeneralCategories] = useState([]);
@@ -218,7 +218,7 @@ const ExploreScreen = () => {
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {cat.name}
+              {languageStore.selectedLang === "ar" ? cat.nameAR : cat.nameHE}
             </Text>
           </TouchableOpacity>
         ))}

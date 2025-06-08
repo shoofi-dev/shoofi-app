@@ -20,7 +20,7 @@ export const animationDuration = 1500;
 
 export const bcoindId = 3027;
 
-export const cdnUrl = 'https://app-main-bucket.fra1.cdn.digitaloceanspaces.com/';
+export const cdnUrl = 'https://shoofi-spaces.fra1.cdn.digitaloceanspaces.com/';
 
 export const devicesType = {
   tablet: 2
