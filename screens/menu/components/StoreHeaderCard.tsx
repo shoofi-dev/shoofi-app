@@ -131,9 +131,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
     </View>
   );
 
-  if (showImageOnly) {
-    return renderImageSection();
-  }
+
 
   if (showInfoOnly) {
     return (
@@ -204,21 +202,8 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   // Default: full card
   return (
     <View style={{ position: "relative", height: 260 }}>
-      <View style={styles.imageWrapper}>
-        <Image
-          source={{ uri: storeImages[activeSlide] }}
-          style={styles.image}
-        />
-        {/* Overlayed circular buttons */}
-        <View style={styles.overlayButtons}>
-          <TouchableOpacity style={styles.overlayCircle}>
-            <Icon name="favorite-border" size={22} color="#222" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.overlayCircle}>
-            <Icon name="search" size={22} color="#222" />
-          </TouchableOpacity>
-        </View>
-      </View>
+     
+      {renderImageSection()}
       {/* Info card overlapping the image at the bottom */}
       <View style={[styles.infoCard, { top: 160 }]}>
         {/* 210 (image) - 50 (overlap) */}
@@ -230,7 +215,9 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               color="#bbb"
             />
           </TouchableOpacity>
-          <View style={{ flex: 1, marginHorizontal: 8 }}>
+          <View
+            style={{ flex: 1, marginHorizontal: 8, alignItems: "flex-start" }}
+          >
             <Text style={styles.storeName}>{storeName}</Text>
             <Text style={styles.subtitle}>
               {store?.description || "מסעדה איטלקית אורגינלית"}

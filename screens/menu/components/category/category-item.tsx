@@ -38,7 +38,7 @@ const CategoryItem = ({
       disabled={isDisabledCatItem}
       activeOpacity={0.8}
     >
-      <Text style={[styles.pillText, isSelected ? styles.pillTextSelected : styles.pillTextUnselected]}>
+      <Text style={styles.pillText}>
         {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
       </Text>
     </TouchableOpacity>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   pillText: {
-    fontSize: 16,
+    fontSize: themeStyle.FONT_SIZE_LG,
     textAlign: "center",
   },
   pillTextSelected: {
