@@ -26,7 +26,7 @@ const TopBar: React.FC = observer(() => {
     <View
       style={[
         styles.container,
-        { flexDirection: I18nManager.isRTL ? "row-reverse" : "row" },
+        { flexDirection: "row-reverse", zIndex: 1000 },
       ]}
     >
       {/* Cart Icon with Badge (always at start) */}

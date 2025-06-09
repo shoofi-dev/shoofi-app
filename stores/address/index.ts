@@ -17,6 +17,7 @@ class AddressStore {
     try {
       const response: any = await axiosInstance.get(`${CUSTOMER_API.CONTROLLER}/${customerId}/${CUSTOMER_API.GET_ADDRESSES}`);
       runInAction(() => {
+        console.log("responsexx", response);
         this.addresses = response;
         this.loading = false;
       });
@@ -104,7 +105,11 @@ class AddressStore {
   }
 
   get defaultAddress() {
-    return this.addresses.find(addr => addr.isDefault);
+    console.log("this.addresses",this.addresses)
+    if(this.addresses?.length === 1){
+      return this.addresses[0];
+    }
+    return this.addresses?.find(addr => addr.isDefault);;
   }
 }
 

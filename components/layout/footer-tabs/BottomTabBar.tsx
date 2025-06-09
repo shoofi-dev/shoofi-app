@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, I18nManager } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { StoreContext } from "../../../stores";
 
 const tabs = [
   {
@@ -20,7 +21,26 @@ const tabs = [
   },
 ];
 
+
+
 export default function BottomTabBar({ state, navigation }) {
+  const {
+
+    authStore,
+
+  } = useContext(StoreContext);
+  const handleTabPress = (route) => {
+    if (route.key === "Profile") {
+      if (authStore.isLoggedIn()) {
+        navigation.navigate(route.key);
+      } else {
+        navigation.navigate("login");
+      }
+    } else {
+      navigation.navigate(route.key);
+    }
+  
+  };
   return (
     <View style={styles.container}>
       {tabs.map((tab, idx) => {
@@ -32,7 +52,7 @@ export default function BottomTabBar({ state, navigation }) {
           <TouchableOpacity
             key={route.key}
             style={styles.tab}
-            onPress={() => navigation.navigate(route.key)}
+            onPress={() => handleTabPress(route)}
             activeOpacity={0.7}
           >
             <Icon

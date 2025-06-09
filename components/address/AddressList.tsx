@@ -16,8 +16,10 @@ const AddressList = observer(({ onAddressSelect, selectionMode = false }: Addres
   const [customerId, setCustomerId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    loadAddresses();
-  }, []);
+    if(customerId){   
+      loadAddresses();
+    }
+  }, [customerId]);
 
     useEffect(() => {
     if(userDetailsStore?.userDetails?.phone){
@@ -29,6 +31,7 @@ const AddressList = observer(({ onAddressSelect, selectionMode = false }: Addres
     try {
       await addressStore.fetchAddresses(customerId);
     } catch (error) {
+      console.log("error",error)
       Alert.alert('Error', 'Failed to load addresses');
     }
   };

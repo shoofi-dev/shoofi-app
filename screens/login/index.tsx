@@ -169,11 +169,11 @@ const LoginScreen = () => {
 
 
         <View style={styles.inputsContainer}>
-          <Text style={{ fontSize: 26,fontWeight: 'bold', color: themeStyle.SECONDARY_COLOR  }}>
+          <Text style={{ fontSize: 26,fontWeight: 'bold', color: themeStyle.TEXT_PRIMARY_COLOR  }}>
             {userDetailsStore.isAdmin() ? t("insert-phone-number-admin") : t("insert-phone-number")}
           </Text>
           <Text
-            style={{ marginTop: 20, fontSize: 20, color: themeStyle.SECONDARY_COLOR }}
+            style={{ marginTop: 20, fontSize: 20, color: themeStyle.TEXT_PRIMARY_COLOR }}
           >
              {!userDetailsStore.isAdmin() && t("will-send-sms-with-code")}
           </Text>
@@ -191,7 +191,7 @@ const LoginScreen = () => {
               onChange={onChange}
               label={t("phone")}
               isPreviewMode={isLoading}
-              color={themeStyle.SECONDARY_COLOR}
+              color={themeStyle.TEXT_PRIMARY_COLOR}
             />
             {!isValid && (
               <Text style={{ color: themeStyle.ERROR_COLOR, paddingLeft: 15 }}>
