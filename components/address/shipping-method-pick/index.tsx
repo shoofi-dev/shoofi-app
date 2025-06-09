@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     borderColor: theme.PRIMARY_COLOR,
     flexDirection: "row",
     width: "100%",
-    backgroundColor:'rgba(36, 33, 30, 0.8)'
+    backgroundColor:'rgba(36, 33, 30, 0.8)',
   },
   togglleCItem: {
     borderWidth: 0,

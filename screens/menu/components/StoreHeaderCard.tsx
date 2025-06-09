@@ -14,6 +14,7 @@ import Carousel from "react-native-reanimated-carousel";
 import CustomFastImage from "../../../components/custom-fast-image";
 import { interpolate } from "react-native-reanimated";
 import { withTiming } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 
 interface StoreHeaderCardProps {
   store: any;
@@ -21,6 +22,9 @@ interface StoreHeaderCardProps {
   onFavorite?: () => void;
   showImageOnly?: boolean;
   showInfoOnly?: boolean;
+  scrollY?: any;
+  onlyCarousel?: boolean;
+  onlyInfoCard?: boolean;
 }
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -31,6 +35,9 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   onFavorite,
   showImageOnly,
   showInfoOnly,
+  scrollY,
+  onlyCarousel,
+  onlyInfoCard,
 }) => {
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -131,81 +138,28 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
     </View>
   );
 
+  // Animated values for carousel
+  const carouselOpacity = scrollY
+    ? scrollY.interpolate({
+        inputRange: [0, 120],
+        outputRange: [1, 0],
+        extrapolate: "clamp",
+      })
+    : 1;
+  const carouselTranslateY = scrollY
+    ? scrollY.interpolate({
+        inputRange: [0, 120],
+        outputRange: [0, -160],
+        extrapolate: "clamp",
+      })
+    : 0;
 
-
-  if (showInfoOnly) {
-    return (
-      <View
-        style={{
-          alignItems: "center",
-          backgroundColor: "#fff",
-          paddingBottom: 8,
-          zIndex: 40,
-        }}
-      >
-        <View
-          style={[
-            styles.infoCard,
-            { top: -50, position: "relative", zIndex: 1000 },
-          ]}
-        >
-          <View style={styles.infoRow}>
-            <TouchableOpacity style={styles.arrowBtn}>
-              <Icon
-                name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
-                size={28}
-                color="#bbb"
-              />
-            </TouchableOpacity>
-            <View style={{ flex: 1, marginHorizontal: 8 }}>
-              <Text style={styles.storeName}>{storeName}</Text>
-              <Text style={styles.subtitle}>
-                {store?.description || "מסעדה איטלקית אורגינלית"}
-              </Text>
-              <View style={styles.infoDetailsRow}>
-                <Text style={styles.infoDetail}>
-                  <Icon name="star" size={16} color="#FFC107" />{" "}
-                  <Text>{rating}</Text>
-                </Text>
-                <Text style={styles.infoDetail}>
-                  <Icon name="clock-outline" size={16} color="#888" />{" "}
-                  <Text>{deliveryTime} דקות</Text>
-                </Text>
-                <Text style={styles.infoDetail}>
-                  <Icon name="bike" size={16} color="#888" />{" "}
-                  <Text>משלוח: ₪{deliveryPrice}</Text>
-                </Text>
-              </View>
-              <View style={styles.bottomInfoRow}>
-                <TouchableOpacity>
-                  <Icon name="share-variant" size={22} color="#bbb" />
-                </TouchableOpacity>
-                <Text style={styles.bottomInfoText}>
-                  ₪{deliveryPrice}:משלוח
-                </Text>
-                <Text style={styles.bottomInfoText}>
-                  דקות {deliveryTime + 15}-{deliveryTime}:משלוח
-                </Text>
-                <Text style={styles.bottomInfoText}>
-                  {rating}
-                  <Icon name="star" size={16} color="#FFC107" />
-                </Text>
-              </View>
-            </View>
-            <Image source={{ uri: storeLogo }} style={styles.logo} />
-          </View>
-        </View>
-      </View>
-    );
+  if (onlyCarousel) {
+    return renderImageSection();
   }
-
-  // Default: full card
-  return (
-    <View style={{ position: "relative", height: 260 }}>
-     
-      {renderImageSection()}
-      {/* Info card overlapping the image at the bottom */}
-      <View style={[styles.infoCard, { top: 160 }]}>
+  if (onlyInfoCard) {
+    return (
+      <View style={[styles.infoCard, { top: 10, zIndex: 2 }]}>
         {/* 210 (image) - 50 (overlap) */}
         <View style={styles.infoRow}>
           <TouchableOpacity style={styles.arrowBtn}>
@@ -252,6 +206,86 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
           <Image source={{ uri: storeLogo }} style={styles.logo} />
         </View>
       </View>
+    );
+  }
+
+  // Default: full card
+  return (
+    <View style={{ position: "relative", height: 260 }}>
+      {/* Animated carousel */}
+      <Animated.View
+        style={{
+          opacity: carouselOpacity,
+          transform: [{ translateY: carouselTranslateY }],
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1,
+        }}
+      >
+        {renderImageSection()}
+      </Animated.View>
+      {/* Info card always visible */}
+      <Animated.View
+        style={{
+          transform: [{ translateY: carouselTranslateY }],
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1,
+        }}
+      >
+      <View style={[styles.infoCard, { top: 160, zIndex: 2 }]}>
+        {/* 210 (image) - 50 (overlap) */}
+        <View style={styles.infoRow}>
+          <TouchableOpacity style={styles.arrowBtn}>
+            <Icon
+              name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+              size={28}
+              color="#bbb"
+            />
+          </TouchableOpacity>
+          <View
+            style={{ flex: 1, marginHorizontal: 8, alignItems: "flex-start" }}
+          >
+            <Text style={styles.storeName}>{storeName}</Text>
+            <Text style={styles.subtitle}>
+              {store?.description || "מסעדה איטלקית אורגינלית"}
+            </Text>
+            <View style={styles.infoDetailsRow}>
+              <Text style={styles.infoDetail}>
+                <Icon name="star" size={16} color="#FFC107" />{" "}
+                <Text>{rating}</Text>
+              </Text>
+              <Text style={styles.infoDetail}>
+                <Icon name="clock-outline" size={16} color="#888" />{" "}
+                <Text>{deliveryTime} דקות</Text>
+              </Text>
+              <Text style={styles.infoDetail}>
+                <Icon name="bike" size={16} color="#888" />{" "}
+                <Text>משלוח: ₪{deliveryPrice}</Text>
+              </Text>
+            </View>
+            <View style={styles.bottomInfoRow}>
+              <TouchableOpacity>
+                <Icon name="share-variant" size={22} color="#bbb" />
+              </TouchableOpacity>
+              <Text style={styles.bottomInfoText}>₪{deliveryPrice}:משלוח</Text>
+              <Text style={styles.bottomInfoText}>
+                דקות {deliveryTime + 15}-{deliveryTime}:משלוח
+              </Text>
+              <Text style={styles.bottomInfoText}>
+                {rating} <Icon name="star" size={16} color="#FFC107" />
+              </Text>
+            </View>
+          </View>
+          <Image source={{ uri: storeLogo }} style={styles.logo} />
+        </View>
+      </View>
+      </Animated.View>
+
     </View>
   );
 };

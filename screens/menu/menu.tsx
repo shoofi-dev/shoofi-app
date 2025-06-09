@@ -5,8 +5,8 @@ import {
   Image,
   ScrollView,
   Text,
-  Animated,
   I18nManager,
+  Easing,
 } from "react-native";
 
 import { useState, useEffect, useRef } from "react";
@@ -16,6 +16,7 @@ import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import Animated from "react-native-reanimated";
 
 /* components */
 import CategoryItemsList from "./components/categoryItemsList";
@@ -37,6 +38,9 @@ import { ShippingMethodPick } from "../../components/address/shipping-method-pic
 
 const HEADER_IMAGE_HEIGHT = 210;
 const STICKY_HEADER_HEIGHT = 110; // Info + categories
+const HEADER_HEIGHT = 80;
+const PICKERS_HEIGHT = 100;
+const SCROLL_PADDING_TOP = HEADER_HEIGHT + PICKERS_HEIGHT;
 
 export function toBase64(input) {
   return Buffer.from(input, "utf-8").toString("base64");
@@ -119,7 +123,7 @@ const MenuScreen = () => {
     Animated.timing(productsAnim.current, {
       toValue: 0,
       duration: 1400,
-      useNativeDriver: false,
+      easing: Easing.linear,
     }).start(() => {});
   };
 
@@ -133,12 +137,12 @@ const MenuScreen = () => {
     Animated.timing(anim.current, {
       toValue: 300,
       duration: 600,
-      useNativeDriver: true,
+      easing: Easing.linear,
     }).start(() => {
       Animated.timing(anim.current, {
         toValue: -10,
         duration: 600,
-        useNativeDriver: true,
+        easing: Easing.linear,
       }).start(() => {
         setTimeout(() => {
           handleMenuAnimScrollEnd();
@@ -148,13 +152,13 @@ const MenuScreen = () => {
   };
 
   const tasteScorll2 = () => {
-    scrollRef.current?.scrollTo({
+    scrollRef.current?.scrollTo?.({
       x: 600,
       animated: true,
       duration: 1,
     });
     setTimeout(() => {
-      scrollRef.current?.scrollTo({
+      scrollRef.current?.scrollTo?.({
         x: -1000,
         animated: true,
         duration: 1,
@@ -179,6 +183,23 @@ const MenuScreen = () => {
     setSelectedCategory(cat);
     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
   };
+
+  const scrollY: any = useRef(new Animated.Value(0)).current;
+  const carouselTranslateY = scrollY
+  ? scrollY.interpolate({
+      inputRange: [0, 120],
+      outputRange: [0, -160],
+              extrapolate: "clamp",
+
+    })
+  : 0;
+  const productsTranslateY = scrollY
+  ? scrollY.interpolate({
+      inputRange: [0, 70],
+      outputRange: [0,-200],
+
+    })
+  : 0;
 
   if (!categoryList || !selectedCategory) {
     return null;
@@ -205,12 +226,21 @@ const MenuScreen = () => {
           </View>
         </TouchableOpacity>
       </View>
-      {/* Static Store Header */}
-      <StoreHeaderCard store={storeDataStore.storeData} />
+      {/* Info Card, Shipping Method, Categories */}
+      <StoreHeaderCard store={storeDataStore.storeData} scrollY={scrollY} />
+      <Animated.View
+        style={{
+          transform: [{ translateY: carouselTranslateY }],
+          position: "absolute",
+          top: 250,
+          left: 0,
+          right: 0,
+          zIndex: 1,
+        }}
+      >
       <View style={{ marginTop: 60, marginHorizontal: 10 }}>
         <ShippingMethodPick onChange={() => {}} shippingMethodValue={""} />
       </View>
-      {/* Categories always visible below header */}
       <View style={{ width: "100%" }}>
         <CategoryList
           style={{ marginTop: 20 }}
@@ -218,25 +248,32 @@ const MenuScreen = () => {
           onCategorySelect={handleCategorySelect}
           selectedCategory={selectedCategory}
           isDisabledCatItem={false}
-        />
-      </View>
-
+          />
+        </View>
+      </Animated.View>
       {/* Items List */}
-      <ScrollView
+      <Animated.ScrollView
         ref={scrollViewRef}
-        style={{ flex: 1 }}
+        style={{ flex: 1,
+    
+          }}
+         
         contentContainerStyle={{
-          paddingTop: 0,
+          paddingTop: SCROLL_PADDING_TOP,
           paddingBottom: 40,
           marginTop: 0,
         }}
         scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
       >
         <CategoryItemsList
           productsList={selectedCategory.products}
           category={selectedCategory}
         />
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 };
