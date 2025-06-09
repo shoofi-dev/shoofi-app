@@ -11,7 +11,6 @@ export type MealExtrasProps = {
 
 const MealExtras = ({ extras }: MealExtrasProps) => {
   let { extrasStore } = useContext(StoreContext);
-  console.log("extrasStore.selections", extrasStore.selections);
   return (
     <ExtrasSection
       extras={extras}

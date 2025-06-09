@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { Extra } from "./ExtrasSection";
+import { StoreContext } from "../../stores";
+import themeStyle from "../../styles/theme.style";
 
 export type CounterProps = {
   value: number;
@@ -8,11 +11,16 @@ export type CounterProps = {
   step?: number;
   onChange: (value: number) => void;
   price?: number;
+  extra?: Extra;
 };
 
-const Counter = ({ value, min = 0, max = 10, step = 1, onChange, price }: CounterProps) => {
+const Counter = ({ value, min = 0, max = 10, step = 1, onChange, price, extra }: CounterProps) => {
+  let { languageStore } = useContext(StoreContext);
+
   return(
-<View style={{ flexDirection: "row-reverse", alignItems: "center", width: "100%" }}>
+<View style={{ flexDirection: "row", alignItems: "center", width: "100%", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 10 }}>
+       <Text >{languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}</Text> 
+
   <View
     style={{
       flexDirection: "row",
@@ -28,13 +36,13 @@ const Counter = ({ value, min = 0, max = 10, step = 1, onChange, price }: Counte
     }}
   >
     <TouchableOpacity onPress={() => value - step >= min && onChange(value - step)}>
-      <Text style={{ fontSize: 28, color: "#444", fontWeight: "300" }}>−</Text>
+      <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, color: "#444", fontWeight: "300" }}>−</Text>
     </TouchableOpacity>
-    <Text style={{ fontSize: 22, fontWeight: "bold", marginHorizontal: 16, minWidth: 40, textAlign: "center" }}>
+    <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, fontWeight: "bold", marginHorizontal: 16, minWidth: 40, textAlign: "center" }}>
       {value}
     </Text>
     <TouchableOpacity onPress={() => value + step <= max && onChange(value + step)}>
-      <Text style={{ fontSize: 28, color: "#444", fontWeight: "300" }}>+</Text>
+      <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, color: "#444", fontWeight: "300" }}>+</Text>
     </TouchableOpacity>
   </View>
   {/* You can render the label and image here if needed */}

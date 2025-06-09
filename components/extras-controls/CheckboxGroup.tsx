@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { StoreContext } from "../../stores";
-
+import Text from "../../components/controls/Text";
 export type CheckboxGroupProps = {
   options: { id: string; nameAR: string; nameHE: string; price?: number }[];
   value: string[];

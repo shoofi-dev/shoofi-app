@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Animated, View } from "react-native";
 import { observer } from "mobx-react";
 import { useContext, useEffect } from "react";
 import { StoreContext } from "../../../../stores";
@@ -7,6 +7,9 @@ import Text from "../../../../components/controls/Text";
 import Counter from "../../../../components/controls/counter";
 import { getCurrentLang } from "../../../../translations/i18n";
 import themeStyle from "../../../../styles/theme.style";
+import ProductDescription from "../description/description";
+import { cdnUrl } from "../../../../consts/shared";
+import CustomFastImage from "../../../../components/custom-fast-image";
 
 export type TProps = {
   product: any;
@@ -15,15 +18,34 @@ export type TProps = {
 const ProductHeader = ({ product, updateOthers }: TProps) => {
   const { t } = useTranslation();
   let { languageStore } = useContext(StoreContext);
+  const imageHeight = 200;
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <View>
+    <View >
+      <Animated.View
+        style={{
+          height: imageHeight,
+          width: "100%",
+          
+          
+        }}
+      >
+        <CustomFastImage
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+          source={{ uri: `${cdnUrl}${product.data.img[0].uri}` }}
+          cacheKey={`${product.data.img[0].uri.split(/[\\/]/).pop()}`}
+          resizeMode="cover"
+        />
+      </Animated.View>
+      <View
+        style={{
+          flexDirection: "column",
+          alignItems: "flex-start",
+          padding:10,
+        }}
+      >
         <Text
           style={{
             fontSize: themeStyle.FONT_SIZE_2XL,
@@ -34,18 +56,10 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
           {languageStore.selectedLang === "ar"
             ? product.data.nameAR
             : product.data.nameHE}
-          
         </Text>
-      </View>
-      <View style={{width:"25%",alignItems:"center"}}>
-        <Counter
-          value={product.others.qty}
-          minValue={1}
-          onCounterChange={(value) => {
-            updateOthers(value, "qty", "others");
-          }}
-          variant={"gray"}
-        />
+        <View style={{ marginTop: 15 }}>
+          <ProductDescription product={product.data} />
+        </View>
       </View>
     </View>
   );

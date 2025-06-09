@@ -11,7 +11,6 @@ import {
   Platform,
 } from "react-native";
 import ProductHeader from "./components/header/header";
-import ProductDescription from "./components/description/description";
 import ProductFooter from "./components/footer/footer";
 
 import Text from "../../components/controls/Text";
@@ -336,7 +335,7 @@ const MealScreen = ({ route }) => {
       </View>
       <Animated.ScrollView
         ref={scrollRef}
-        style={{  height: "100%", borderWidth: 1,  }}
+        style={{  height: "100%",   }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
@@ -344,58 +343,21 @@ const MealScreen = ({ route }) => {
         scrollEventThrottle={16}
         contentContainerStyle={{ paddingBottom: 110 }}
       >
-        <Animated.View
-          style={{
-            height: imageHeight,
-            opacity: imageOpacity,
-            marginHorizontal: 5,
-            shadowColor: themeStyle.SHADOW_COLOR,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.9,
-            shadowRadius: 6,
-            elevation: 20,
-            borderWidth: 0,
-            overflow: "hidden",
-            borderRadius: 20,
-            backgroundColor: "transparent",
-          }}
-        >
-          <CustomFastImage
-            style={{
-              width: "100%",
-              height: "100%",
-              borderRadius: 20,
-            }}
-            source={{ uri: `${cdnUrl}${meal.data.img[0].uri}` }}
-            cacheKey={`${meal.data.img[0].uri.split(/[\\/]/).pop()}`}
-          />
-        </Animated.View>
+  
         <View
           style={{
             width: "100%",
-            minHeight: "100%",
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            zIndex: 2,
-            top: -30,
-            padding: 20,
-            shadowColor: themeStyle.SHADOW_COLOR,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.9,
-            shadowRadius: 6,
-            elevation: 20,
-            borderWidth: 0,
+
+
           }}
         >
-          <View style={{ height: "100%", flexDirection: "column" }}>
-            <View>
+          <View style={{}}>
+            <View style={{}}>
               <ProductHeader product={meal} updateOthers={updateOthers} />
             </View>
-            <View style={{ marginTop: 15 }}>
-              <ProductDescription product={meal.data} />
-            </View>
+      
             {meal.data.extras && meal.data.extras.length > 0 && (
-              <View style={{ marginTop: 15, }}>
+              <View style={{  }}>
                 <MealExtras extras={meal.data.extras} />
               </View>
             )}

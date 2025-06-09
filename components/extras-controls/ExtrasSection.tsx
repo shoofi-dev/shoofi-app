@@ -4,6 +4,7 @@ import ExtraGroup from "./ExtraGroup";
 import PizzaToppingGroup from "./PizzaToppingGroup";
 import { useContext } from "react";
 import { StoreContext } from "../../stores";
+import themeStyle from "../../styles/theme.style";
 
 export type AreaOption = {
   id: string; // e.g. "full", "left", "right"
@@ -34,6 +35,7 @@ export type Extra = {
   defaultValue?: number;
   groupId?: string;
   isGroupHeader?: boolean;
+  order?: number;
 };
 
 export type ExtrasSectionProps = {
@@ -64,84 +66,89 @@ const ExtrasSection = ({
     }
     return acc;
   }, {} as Record<string, Extra[]>);
-  console.log("groupedExtras",groupedExtras)
   return (
-    <View style={styles.container}>
-      {Object.entries(groupedExtras).map(([groupId, groupExtras]) => {
-        if (groupId === "ungrouped") {
-          return groupExtras.map((extra) => {
-            if (extra.type === "pizza-topping") {
-              return (
-                <PizzaToppingGroup
-                  key={extra.id}
-                  extra={extra}
-                  value={selections[extra.id] || {}}
-                  onChange={(val) => onChange(extra.id, val)}
-                />
-              );
-            }
-            return (
-              <ExtraGroup
-                key={extra.id}
-                extra={extra}
-                value={selections[extra.id]}
-                onChange={(val) => onChange(extra.id, val)}
-              />
-            );
-          });
-        }
-
-        // Get group header (first extra with isGroupHeader)
-        const groupHeader = groupExtras.find(extra => extra.isGroupHeader);
-        if (!groupHeader) return null;
-
-        return (
-          <View key={groupId} style={styles.groupContainer}>
-            <View style={styles.groupHeader}>
-              <Text style={styles.groupTitle}>
-                {languageStore.selectedLang === "ar" ? groupHeader.nameAR : groupHeader.nameHE}
-              </Text>
-            </View>
-            <View style={styles.groupContent}>
-              {groupExtras
-                .filter(extra => !extra.isGroupHeader)
-                .map((extra) => {
-                  if (extra.type === "pizza-topping") {
-                    return (
-                      <PizzaToppingGroup
-                        key={extra.id}
-                        extra={extra}
-                        value={selections[extra.id] || {}}
-                        onChange={(val) => onChange(extra.id, val)}
-                      />
-                    );
-                  }
+      <View style={styles.container}>
+        {Object.entries(groupedExtras).sort((a, b) => a[1][0].order - b[1][0].order).map(([groupId, groupExtras]) => (
+          <View key={groupId} style={styles.groupWrapper}>
+            {groupId === "ungrouped" ? (
+              groupExtras.sort((a, b) => a.order - b.order).map((extra) => {
+                if (extra.type === "pizza-topping") {
                   return (
-                    <ExtraGroup
+                    <PizzaToppingGroup
                       key={extra.id}
                       extra={extra}
-                      value={selections[extra.id]}
+                      value={selections[extra.id] || {}}
                       onChange={(val) => onChange(extra.id, val)}
                     />
                   );
-                })}
-            </View>
+                }
+                return (
+                  <ExtraGroup
+                    key={extra.id}
+                    extra={extra}
+                    value={selections[extra.id]}
+                    onChange={(val) => onChange(extra.id, val)}
+                  />
+                );
+              })
+            ) : (
+              (() => {
+                const groupHeader = groupExtras.find(extra => extra.isGroupHeader);
+                if (!groupHeader) return null;
+                return (
+                  <View style={styles.groupContainer}>
+                    <View style={styles.groupHeader}>
+                      <Text style={styles.groupTitle}>
+                        {languageStore.selectedLang === "ar"
+                          ? groupHeader.nameAR
+                          : groupHeader.nameHE}
+                      </Text>
+                    </View>
+                    <View style={styles.groupContent}>
+                      {groupExtras
+                        .filter(extra => !extra.isGroupHeader)
+                        .sort((a, b) => a.order - b.order)
+                        .map((extra) => {
+                          if (extra.type === "pizza-topping") {
+                            return (
+                              <PizzaToppingGroup
+                                key={extra.id}
+                                extra={extra}
+                                value={selections[extra.id] || {}}
+                                onChange={(val) => onChange(extra.id, val)}
+                              />
+                            );
+                          }
+                          return (
+                            <ExtraGroup
+                              key={extra.id}
+                              extra={extra}
+                              value={selections[extra.id]}
+                              onChange={(val) => onChange(extra.id, val)}
+                            />
+                          );
+                        })}
+                    </View>
+                  </View>
+                );
+              })()
+            )}
           </View>
-        );
-      })}
-    </View>
-  );
+        ))}
+      </View>
+    );
+    
 };
 
 const styles = StyleSheet.create({
+  groupWrapper: {
+    marginBottom: 30,
+  },
   container: {
-    paddingHorizontal: 8,
-    paddingTop: 8,
-    paddingBottom: 16,
+    backgroundColor: themeStyle.GRAY_600,
   },
   groupContainer: {
     backgroundColor: "#fff",
-    borderRadius: 16,
     marginBottom: 16,
     shadowColor: "#000",
     shadowOpacity: 0.06,
@@ -151,10 +158,11 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   groupHeader: {
-    backgroundColor: "#f7f9fa",
+    backgroundColor: themeStyle.WHITE_COLOR,
     padding: 16,
-    borderBottomWidth: 1,
     borderBottomColor: "#e5e7eb",
+    flexDirection: "row",
+    alignItems: "center",
   },
   groupTitle: {
     fontSize: 18,
