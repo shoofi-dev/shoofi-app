@@ -143,52 +143,128 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
           backgroundColor: "#fff",
           paddingBottom: 8,
           zIndex: 40,
-    
         }}
       >
-        <View style={styles.logoWrapperOverlap}>
-          <Image source={{ uri: storeLogo }} style={styles.logoOverlap} />
+        <View
+          style={[
+            styles.infoCard,
+            { top: -50, position: "relative", zIndex: 1000 },
+          ]}
+        >
+          <View style={styles.infoRow}>
+            <TouchableOpacity style={styles.arrowBtn}>
+              <Icon
+                name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+                size={28}
+                color="#bbb"
+              />
+            </TouchableOpacity>
+            <View style={{ flex: 1, marginHorizontal: 8 }}>
+              <Text style={styles.storeName}>{storeName}</Text>
+              <Text style={styles.subtitle}>
+                {store?.description || "מסעדה איטלקית אורגינלית"}
+              </Text>
+              <View style={styles.infoDetailsRow}>
+                <Text style={styles.infoDetail}>
+                  <Icon name="star" size={16} color="#FFC107" />{" "}
+                  <Text>{rating}</Text>
+                </Text>
+                <Text style={styles.infoDetail}>
+                  <Icon name="clock-outline" size={16} color="#888" />{" "}
+                  <Text>{deliveryTime} דקות</Text>
+                </Text>
+                <Text style={styles.infoDetail}>
+                  <Icon name="bike" size={16} color="#888" />{" "}
+                  <Text>משלוח: ₪{deliveryPrice}</Text>
+                </Text>
+              </View>
+              <View style={styles.bottomInfoRow}>
+                <TouchableOpacity>
+                  <Icon name="share-variant" size={22} color="#bbb" />
+                </TouchableOpacity>
+                <Text style={styles.bottomInfoText}>
+                  ₪{deliveryPrice}:משלוח
+                </Text>
+                <Text style={styles.bottomInfoText}>
+                  דקות {deliveryTime + 15}-{deliveryTime}:משלוח
+                </Text>
+                <Text style={styles.bottomInfoText}>
+                  {rating}
+                  <Icon name="star" size={16} color="#FFC107" />
+                </Text>
+              </View>
+            </View>
+            <Image source={{ uri: storeLogo }} style={styles.logo} />
+          </View>
         </View>
-        <Text style={styles.storeNameCentered}>{storeName}</Text>
-        <View style={styles.infoRowCentered}>
-          <Text style={styles.infoTextCentered}>
-            {rating} <Icon name="star" size={16} color="#FFC107" />
-          </Text>
-          <Text style={styles.infoTextCentered}>
-            {deliveryTime} min{" "}
-            <Icon name="clock-outline" size={16} color="#888" />
-          </Text>
-          <Text style={styles.infoTextCentered}>
-            ₪{deliveryPrice} <Icon name="bike" size={16} color="#888" />
-          </Text>
-        </View>
-        <Text style={styles.subInfoTextCentered}>
-          פתוח עד {closingHour} · הזמנה מינימאלית ₪{minOrder}
-        </Text>
       </View>
     );
   }
 
   // Default: full card
   return (
-    <View style={styles.cardWrapper}>
-      {renderImageSection()}
-      <Text style={styles.storeNameCentered}>{storeName}</Text>
-      <View style={styles.infoRowCentered}>
-        <Text style={styles.infoTextCentered}>
-          {rating} <Icon name="star" size={16} color="#FFC107" />
-        </Text>
-        <Text style={styles.infoTextCentered}>
-          {deliveryTime} min{" "}
-          <Icon name="clock-outline" size={16} color="#888" />
-        </Text>
-        <Text style={styles.infoTextCentered}>
-          ₪{deliveryPrice} <Icon name="bike" size={16} color="#888" />
-        </Text>
+    <View style={{ position: "relative", height: 260 }}>
+      <View style={styles.imageWrapper}>
+        <Image
+          source={{ uri: storeImages[activeSlide] }}
+          style={styles.image}
+        />
+        {/* Overlayed circular buttons */}
+        <View style={styles.overlayButtons}>
+          <TouchableOpacity style={styles.overlayCircle}>
+            <Icon name="favorite-border" size={22} color="#222" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.overlayCircle}>
+            <Icon name="search" size={22} color="#222" />
+          </TouchableOpacity>
+        </View>
       </View>
-      <Text style={styles.subInfoTextCentered}>
-        פתוח עד {closingHour} · הזמנה מינימאלית ₪{minOrder}
-      </Text>
+      {/* Info card overlapping the image at the bottom */}
+      <View style={[styles.infoCard, { top: 160 }]}>
+        {/* 210 (image) - 50 (overlap) */}
+        <View style={styles.infoRow}>
+          <TouchableOpacity style={styles.arrowBtn}>
+            <Icon
+              name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+              size={28}
+              color="#bbb"
+            />
+          </TouchableOpacity>
+          <View style={{ flex: 1, marginHorizontal: 8 }}>
+            <Text style={styles.storeName}>{storeName}</Text>
+            <Text style={styles.subtitle}>
+              {store?.description || "מסעדה איטלקית אורגינלית"}
+            </Text>
+            <View style={styles.infoDetailsRow}>
+              <Text style={styles.infoDetail}>
+                <Icon name="star" size={16} color="#FFC107" />{" "}
+                <Text>{rating}</Text>
+              </Text>
+              <Text style={styles.infoDetail}>
+                <Icon name="clock-outline" size={16} color="#888" />{" "}
+                <Text>{deliveryTime} דקות</Text>
+              </Text>
+              <Text style={styles.infoDetail}>
+                <Icon name="bike" size={16} color="#888" />{" "}
+                <Text>משלוח: ₪{deliveryPrice}</Text>
+              </Text>
+            </View>
+            <View style={styles.bottomInfoRow}>
+              <TouchableOpacity>
+                <Icon name="share-variant" size={22} color="#bbb" />
+              </TouchableOpacity>
+              <Text style={styles.bottomInfoText}>₪{deliveryPrice}:משלוח</Text>
+              <Text style={styles.bottomInfoText}>
+                דקות {deliveryTime + 15}-{deliveryTime}:משלוח
+              </Text>
+              <Text style={styles.bottomInfoText}>
+                {rating} <Icon name="star" size={16} color="#FFC107" />
+              </Text>
+            </View>
+          </View>
+          <Image source={{ uri: storeLogo }} style={styles.logo} />
+        </View>
+      </View>
     </View>
   );
 };
@@ -216,7 +292,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     justifyContent: "center",
     alignItems: "center",
-    zIndex:0
+    zIndex: 0,
   },
   image: {
     width: "100%",
@@ -320,6 +396,109 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
+  },
+  infoCard: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 10,
+    marginHorizontal: 0,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 18,
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 8,
+    zIndex: 10,
+  },
+  infoRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+  },
+  storeName: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#222",
+    textAlign: "right",
+  },
+  subtitle: {
+    fontSize: 15,
+    color: "#888",
+    marginTop: 2,
+    textAlign: "right",
+  },
+  infoDetailsRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    marginTop: 8,
+    gap: 16,
+  },
+  infoDetail: {
+    fontSize: 15,
+    color: "#444",
+    marginLeft: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    textAlign: "right",
+  },
+  logo: {
+    width: 64,
+    height: 64,
+    borderRadius: 14,
+    backgroundColor: "#fff",
+    marginLeft: 16,
+    marginRight: 0,
+  },
+  arrowBtn: {
+    alignSelf: "flex-start",
+    marginLeft: 8,
+    marginRight: 0,
+  },
+  bottomInfoRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    marginTop: 8,
+    gap: 12,
+  },
+  bottomInfoText: {
+    fontSize: 15,
+    color: "#444",
+    marginHorizontal: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    textAlign: "right",
+  },
+  imageWrapper: {
+    width: "100%",
+    height: 210,
+    overflow: "hidden",
+    position: "relative",
+    backgroundColor: "#eee",
+    marginBottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 0,
+  },
+  overlayButtons: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  overlayCircle: {
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    borderRadius: 22,
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

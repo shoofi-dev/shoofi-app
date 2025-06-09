@@ -33,6 +33,7 @@ import { ActivityIndicator } from "react-native-paper";
 import { adminCustomerStore } from "../../stores/admin-customer";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
+import { ShippingMethodPick } from "../../components/address/shipping-method-pick";
 
 const HEADER_IMAGE_HEIGHT = 210;
 const STICKY_HEADER_HEIGHT = 110; // Info + categories
@@ -51,9 +52,8 @@ const MenuScreen = () => {
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
 
-  const { menuStore, languageStore, storeDataStore } =
-    useContext(StoreContext);
-    const [menuAnimationDone, setMenuAnimationDone] = useState(false)
+  const { menuStore, languageStore, storeDataStore } = useContext(StoreContext);
+  const [menuAnimationDone, setMenuAnimationDone] = useState(false);
 
   useEffect(() => {}, [languageStore]);
 
@@ -115,90 +115,65 @@ const MenuScreen = () => {
   };
 
   const productsAnim = useRef(new Animated.Value(600));
-  const productsAnimate = ()=> {
+  const productsAnimate = () => {
     Animated.timing(productsAnim.current, {
       toValue: 0,
       duration: 1400,
       useNativeDriver: false,
-
-    }).start(() => {
-
-    });
-};
-
+    }).start(() => {});
+  };
 
   const handleMenuAnimScrollEnd = () => {
-
     setMenuAnimationDone(true);
-      productsAnimate();
-
-  }
+    productsAnimate();
+  };
   const anim = useRef(new Animated.Value(10));
 
-  const tasteScorll = ()=> {
+  const tasteScorll = () => {
+    Animated.timing(anim.current, {
+      toValue: 300,
+      duration: 600,
+      useNativeDriver: true,
+    }).start(() => {
       Animated.timing(anim.current, {
-        toValue:300,
+        toValue: -10,
         duration: 600,
         useNativeDriver: true,
-  
-      }).start(()=>{
-        Animated.timing(anim.current, {
-          toValue:-10,
-          duration: 600,
-          useNativeDriver: true,
-    
-        }).start(()=>{
-          setTimeout(() => {
-            handleMenuAnimScrollEnd()
-          }, 0);
-        });
-     
+      }).start(() => {
+        setTimeout(() => {
+          handleMenuAnimScrollEnd();
+        }, 0);
       });
-
-
+    });
   };
 
   const tasteScorll2 = () => {
     scrollRef.current?.scrollTo({
       x: 600,
       animated: true,
-      duration:1
-
-      
+      duration: 1,
     });
     setTimeout(() => {
       scrollRef.current?.scrollTo({
         x: -1000,
         animated: true,
-        duration:1
+        duration: 1,
       });
     }, 500);
     setTimeout(() => {
       //productsAnimate();
       handleMenuAnimScrollEnd();
     }, 0);
-
   };
   useEffect(() => {
     getMenu();
     setTimeout(() => {
       tasteScorll();
-
     }, 1000);
-  
-
-  }, [ ]);
+  }, []);
   useEffect(() => {
     getMenu();
   }, [menuStore.categories]);
-
-  const scrollY = useRef(new Animated.Value(0)).current;
-
-  const translateY = scrollY.interpolate({
-    inputRange: [0, HEADER_IMAGE_HEIGHT],
-    outputRange: [HEADER_IMAGE_HEIGHT, 0],
-    extrapolate: "clamp",
-  });
 
   const handleCategorySelect = (cat) => {
     setSelectedCategory(cat);
@@ -212,9 +187,16 @@ const MenuScreen = () => {
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       {/* Fixed Back and Heart Buttons */}
       <View style={styles.fixedButtons} pointerEvents="box-none">
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
           <View style={styles.circle}>
-            <Icon name={I18nManager.isRTL ? "chevron-right" : "chevron-left"} size={28} color="#222" />
+            <Icon
+              name={I18nManager.isRTL ? "chevron-right" : "chevron-left"}
+              size={28}
+              color="#222"
+            />
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.heartButton} onPress={() => {}}>
@@ -223,65 +205,38 @@ const MenuScreen = () => {
           </View>
         </TouchableOpacity>
       </View>
-      {/* Animated Store Image */}
-      <Animated.View
-        style={[
-          styles.animatedHeader,
-          {
-            height: scrollY.interpolate({
-              inputRange: [0, HEADER_IMAGE_HEIGHT],
-              outputRange: [HEADER_IMAGE_HEIGHT, 0],
-              extrapolate: "clamp",
-            }),
-            opacity: scrollY.interpolate({
-              inputRange: [0, HEADER_IMAGE_HEIGHT / 2, HEADER_IMAGE_HEIGHT],
-              outputRange: [1, 0.5, 0],
-              extrapolate: "clamp",
-            }),
-          },
-        ]}
-      >
-        <StoreHeaderCard store={storeDataStore.storeData} showImageOnly />
-      </Animated.View>
-
-      {/* Sticky Info + Categories */}
-      <Animated.View
-        style={[
-          styles.stickyHeader,
-          {
-            transform: [{ translateY }],
-          },
-        ]}
-      >
-        <StoreHeaderCard store={storeDataStore.storeData} showInfoOnly />
+      {/* Static Store Header */}
+      <StoreHeaderCard store={storeDataStore.storeData} />
+      <View style={{ marginTop: 60, marginHorizontal: 10 }}>
+        <ShippingMethodPick onChange={() => {}} shippingMethodValue={""} />
+      </View>
+      {/* Categories always visible below header */}
+      <View style={{ width: "100%" }}>
         <CategoryList
+          style={{ marginTop: 20 }}
           categoryList={categoryList}
           onCategorySelect={handleCategorySelect}
           selectedCategory={selectedCategory}
           isDisabledCatItem={false}
         />
-      </Animated.View>
+      </View>
 
       {/* Items List */}
-      <Animated.ScrollView
+      <ScrollView
         ref={scrollViewRef}
-        style={{ flex: 1, }}
+        style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingTop: HEADER_IMAGE_HEIGHT + STICKY_HEADER_HEIGHT,
+          paddingTop: 0,
           paddingBottom: 40,
-          marginTop:-100
+          marginTop: 0,
         }}
         scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
       >
         <CategoryItemsList
           productsList={selectedCategory.products}
           category={selectedCategory}
         />
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 };
@@ -318,7 +273,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    overflow: "hidden",
     backgroundColor: "#fff",
   },
   stickyHeader: {
@@ -328,7 +282,6 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eee",
     paddingBottom: 4,
     width: "100%",
-    
   },
   fixedButtons: {
     position: "absolute",
@@ -352,7 +305,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.10,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },

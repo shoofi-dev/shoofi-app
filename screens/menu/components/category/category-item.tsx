@@ -32,12 +32,13 @@ const CategoryItem = ({
     <TouchableOpacity
       style={[
         styles.pill,
-        isSelected && styles.pillSelected,
+        isSelected ? styles.pillSelected : styles.pillUnselected,
       ]}
       onPress={() => onItemSelect(item)}
       disabled={isDisabledCatItem}
+      activeOpacity={0.8}
     >
-      <Text style={[styles.pillText, isSelected && styles.pillTextSelected]}>
+      <Text style={[styles.pillText, isSelected ? styles.pillTextSelected : styles.pillTextUnselected]}>
         {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
       </Text>
     </TouchableOpacity>
@@ -48,25 +49,40 @@ export default observer(CategoryItem);
 
 const styles = StyleSheet.create({
   pill: {
-    backgroundColor: "#f0f0f0",
     borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 8,
+    paddingHorizontal: 22,
+    paddingVertical: 10,
     marginHorizontal: 6,
     minWidth: 80,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 4,
   },
   pillSelected: {
-    backgroundColor: "#B6D436",
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#eee",
+  },
+  pillUnselected: {
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    elevation: 0,
   },
   pillText: {
-    color: "#222",
     fontSize: 16,
-    fontWeight: "500",
+    textAlign: "center",
   },
   pillTextSelected: {
-    color: "#fff",
+    color: "#222",
     fontWeight: "bold",
+  },
+  pillTextUnselected: {
+    color: "#888",
+    fontWeight: "normal",
   },
 });

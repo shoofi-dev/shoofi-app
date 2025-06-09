@@ -8,12 +8,14 @@ export type TCategoryList = {
   selectedCategory: any;
   onCategorySelect: () => any;
   isDisabledCatItem: boolean;
+  style?: any;
 };
 const CategoryList = ({
   categoryList,
   selectedCategory,
   onCategorySelect,
   isDisabledCatItem,
+  style,
 }) => {
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const CategoryList = ({
 
   };
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <ScrollView
         style={{ height: "100%", width: "100%" }}
         showsHorizontalScrollIndicator={false}
@@ -88,11 +90,13 @@ const styles = StyleSheet.create({
     marginTop: 15,
     backgroundColor: "transparent",
     alignItems: "center",
+    justifyContent: "center",
   },
   scrollContent: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 8,
+    justifyContent: "center",
   },
   categoryItem: {},
   iconContainer: {},
