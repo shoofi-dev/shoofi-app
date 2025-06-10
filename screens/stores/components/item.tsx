@@ -1,4 +1,10 @@
-import { StyleSheet, View, Image, TouchableOpacity, I18nManager } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  I18nManager,
+} from "react-native";
 import { useContext } from "react";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
@@ -11,17 +17,14 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { cdnUrl } from "../../../consts/shared";
 
 export type TProps = {
-    storeItem: any;
-}
+  storeItem: any;
+};
 
-const StoreItem = ({storeItem}: TProps) => {
+const StoreItem = ({ storeItem }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  let {
-    menuStore,
-    storeDataStore,
-    shoofiAdminStore,
-  } = useContext(StoreContext);
+  let { menuStore, storeDataStore, shoofiAdminStore } =
+    useContext(StoreContext);
   const onStoreSelect = async (store: any) => {
     await shoofiAdminStore.setStoreDBName(store.appName);
     await menuStore.getMenu();
@@ -35,19 +38,20 @@ const StoreItem = ({storeItem}: TProps) => {
   const deliveryTime = storeItem.store.deliveryTime || 27;
   const location = storeItem.store.location || "כפר קאסם";
   const deliveryPrice = storeItem.deliveryPrice || 10;
-
-  // Log all values to debug object rendering
-
-
-  // Defensive: ensure only strings/numbers are rendered
-  const safeStoreName =  storeItem.store.name_ar ;
-  const safeLocation = typeof location === 'string' || typeof location === 'number' ? location : (location && location.name ? location.name : '');
-  const safeNew = typeof t("חדש") === 'string' || typeof t("חדש") === 'number' ? t("חדש") : '';
-  const safeRating = typeof rating === 'string' || typeof rating === 'number' ? rating : '';
-  const safeDistance = typeof distance === 'string' || typeof distance === 'number' ? distance : '';
-  const safeDeliveryTime = typeof deliveryTime === 'string' || typeof deliveryTime === 'number' ? deliveryTime : '';
-  const safeDeliveryPrice = typeof deliveryPrice === 'string' || typeof deliveryPrice === 'number' ? deliveryPrice : '';
-  console.log(storeItem.store.storeLogo.uri);
+  const isOpen = storeItem.store.isOpen !== false; // true by default
+  const logoUri = storeItem.store.storeLogo?.uri;
+  const imageUri =
+    (storeItem.store?.cover_sliders &&
+      storeItem.store.cover_sliders.length > 0 &&
+      storeItem.store?.cover_sliders[0]?.uri) ||
+    logoUri;
+  const storeName = storeItem.store.name_he || storeItem.store.name_ar;
+  if (
+    storeItem.store.cover_sliders &&
+    storeItem.store.cover_sliders.length > 0
+  ) {
+    console.log("storeItem", storeItem.store.cover_sliders[0]);
+  }
   return (
     <TouchableOpacity
       onPress={() => onStoreSelect(storeItem.store)}
@@ -58,39 +62,57 @@ const StoreItem = ({storeItem}: TProps) => {
       <View style={styles.imageWrapper}>
         <CustomFastImage
           style={styles.image}
-          source={{ uri: `${cdnUrl}${storeItem.store.storeLogo.uri}` }}
-          cacheKey={`${cdnUrl}${storeItem.store.storeLogo?.uri?.split(/[\\/]/).pop()}1`}
+          source={{ uri: `${cdnUrl}${imageUri}` }}
+          cacheKey={`${cdnUrl}${imageUri?.split(/[\\/]/).pop()}1`}
           resizeMode="cover"
         />
-        {/* New badge */}
-        {isNew && (
-          <View style={styles.newBadge}>
-            <Text style={styles.newBadgeText}>{safeNew}</Text>
-          </View>
-        )}
+        {/* Logo overlay */}
+
+        {/* Favorite icon */}
+        <View style={styles.favoriteIcon}>
+          <Icon
+            name="heart-outline"
+            size={24}
+            color={"#3B3B3B"}
+          />
+        </View>
       </View>
+      {logoUri && (
+        <View style={styles.logoOverlay}>
+          <CustomFastImage
+            style={styles.logo}
+            source={{ uri: `${cdnUrl}${logoUri}` }}
+            cacheKey={`${cdnUrl}${logoUri?.split(/[\\/]/).pop()}1`}
+            resizeMode="cover"
+          />
+        </View>
+      )}
       {/* Card Content */}
       <View style={styles.content}>
         <View style={styles.row}>
-          {/* Heart icon */}
-          <Icon name="heart-outline" size={20} color={themeStyle.GRAY_700} style={styles.heartIcon} />
-          {/* Store name */}
-          <Text style={styles.storeName} numberOfLines={1} ellipsizeMode="tail">{safeStoreName}</Text>
+          <Text style={styles.storeName}>{storeName}</Text>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoText}>★ {safeRating}{" "}·{" "} {safeDistance}{" "} ק"מ {" "}·{" "} {safeDeliveryTime} דקות</Text>
+          <View>
+            <Text style={styles.infoText}>{rating} ★</Text>
+          </View>
+          <View>
+            <Text style={styles.infoText}>· {distance} ק"מ · </Text>
+          </View>
+          <View>
+            <Text style={styles.openStatus}>
+              {isOpen ? t("פתוח") : t("סגור")}
+            </Text>
+          </View>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoText}>{safeLocation} ₪{safeDeliveryPrice} {" "}·{" "} כפר קאסם</Text>
+          <Text style={styles.infoText}>
+            {location} · ₪{deliveryPrice}
+          </Text>
         </View>
-        <View style={{flexDirection:'row', flexWrap:'wrap', width:'100%'}}>
-          {storeItem.deliveryCompanies.map((company:any, index:number) => (
-            <View key={index} style={{ flexWrap:'wrap', width:'100%'}}>
-              <Text style={styles.infoText}>{company.company.nameAR}</Text>
-              <Text style={styles.infoText}>{company.eta} : ETA</Text>
-            </View>
-          ))}
-        </View>
+        <Text style={styles.descText} >
+          שורה המסעדה שמופיע על כרטיס
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -99,88 +121,103 @@ export default observer(StoreItem);
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.22,
-    shadowRadius: 1,
-    elevation: 12,
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 6,
     marginBottom: 16,
     marginTop: 8,
-    marginHorizontal: 8,
-    width: 180,
-    overflow: 'visible',
-    alignSelf: 'flex-start',
+    marginHorizontal: 0,
+    width: "95%",
+    alignSelf: "center",
   },
   imageWrapper: {
-    width: '100%',
-    height: 100,
+    width: "100%",
+    height: 160,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    overflow: 'hidden',
-    position: 'relative',
-    borderWidth: 1,
-    borderColor: 'red',
+    overflow: "hidden",
+    position: "relative",
+    backgroundColor: "#eee",
   },
   image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
   },
-  newBadge: {
-    position: 'absolute',
-    top: 8,
-    [I18nManager.isRTL ? 'right' : 'left']: 8,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    shadowColor: '#000',
+  logoOverlay: {
+    position: "absolute",
+    top: 120,
+    right: 8,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 2,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
   },
-  newBadgeText: {
-    color: themeStyle.SECONDARY_COLOR,
-    fontWeight: 'bold',
-    fontSize: 14,
-    textAlign: 'right',
+  logo: {
+    width: 64,
+    height: 64,
+    borderRadius: 8,
+    resizeMode: "cover",
+  },
+  favoriteIcon: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    borderRadius: 16,
+    padding: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   content: {
-    padding: 12,
+    padding: 14,
     paddingBottom: 10,
   },
   row: {
-    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
-    alignItems: 'center',
+    flexDirection: "row-reverse",
+    alignItems: "center",
     marginBottom: 4,
-    justifyContent:'space-between',
-  },
-  heartIcon: {
-  
+    justifyContent: "flex-end",
   },
   storeName: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 17,
+    fontWeight: "700",
     color: themeStyle.GRAY_700,
-    textAlign: 'right',
+    textAlign: "right",
     flexShrink: 1,
     flex: 0,
   },
   infoRow: {
-    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 2,
-    justifyContent: 'flex-end',
   },
   infoText: {
-    fontSize: 13,
+    fontSize: 14,
     color: themeStyle.GRAY_700,
     opacity: 0.8,
-    textAlign: 'right',
-    width: '100%',
-    flexDirection:'row',
+    textAlign: "left",
+  },
+  openStatus: {
+    color: "#2ecc40",
+    fontWeight: "bold",
+  },
+  descText: {
+    fontSize: 13,
+    color: themeStyle.GRAY_700,
+    opacity: 0.7,
+    marginTop: 4,
+    textAlign: "left",
   },
 });
