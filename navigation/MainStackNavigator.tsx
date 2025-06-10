@@ -40,6 +40,7 @@ import AddressForm from '../components/address/AddressForm';
 import AddressList from '../components/address/AddressList';
 import CitiesScreen from '../screens/CitiesScreen';
 import StoresListScreen from "../screens/storesList";
+import GeneralCategoryScreen from "../screens/GeneralCategoryScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -137,6 +138,7 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="AddressList" component={AddressList} />
       <Stack.Screen name="Cities" component={CitiesScreen} />
       <Stack.Screen name="stores-list" component={StoresListScreen} initialParams={{ category: null }} />
+      <Stack.Screen name="general-category" component={GeneralCategoryScreen} initialParams={{ generalCategory: null }} />
     </Stack.Navigator>
   );
 };

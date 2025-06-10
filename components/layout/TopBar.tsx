@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import AddressSelector from "../address/AddressSelector";
 
 const TopBar = () => {
-  const { cartStore, authStore, userDetailsStore, addressStore, shoofiAdminStore } = useContext(StoreContext);
+    const { cartStore, authStore, userDetailsStore, addressStore, shoofiAdminStore } = useContext(StoreContext);
   const navigation = useNavigation();
   const cartCount = cartStore.getProductsCount();
 
@@ -22,7 +22,7 @@ const TopBar = () => {
     }
   };
   useEffect(() => {
-  }, [shoofiAdminStore.selectedCategory])
+  }, [shoofiAdminStore.selectedCategory, shoofiAdminStore.selectedGeneralCategory])
   
   return (
     <View
@@ -42,7 +42,18 @@ const TopBar = () => {
       </TouchableOpacity>
 
       {/* Address Selector or Category Name */}
-      {navigation?.getCurrentRoute()?.name === 'stores-list' && shoofiAdminStore.selectedCategory ? (
+      {navigation?.getCurrentRoute()?.name === 'general-category' && shoofiAdminStore.selectedGeneralCategory ? (
+        <View style={{ flex: 1, alignItems: 'center', paddingRight: 10, flexDirection: "row", }}>
+          <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginRight:10, height:36, width:36, borderWidth:1, borderRadius:18, justifyContent: "center", alignItems: "center", borderColor:"#DCDCDC", backgroundColor:"#F6F8FA" }}>
+            <Text>
+              {'>'}
+            </Text>
+          </TouchableOpacity>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#222', textAlign: "left" }}>
+            {shoofiAdminStore.selectedGeneralCategory.nameHE}
+          </Text>
+        </View>
+      ) : navigation?.getCurrentRoute()?.name === 'stores-list' && shoofiAdminStore.selectedCategory ? (
         <View style={{ flex: 1, alignItems: 'center', paddingRight: 10, flexDirection: "row", }}>
           <TouchableOpacity onPress={()=> navigation.goBack()} style={{marginRight:10, height:36, width:36, borderWidth:1, borderRadius:18, justifyContent: "center", alignItems: "center", borderColor:"#DCDCDC", backgroundColor:"#F6F8FA" }}>
             <Text>
@@ -61,7 +72,6 @@ const TopBar = () => {
 };
 
 export default observer(TopBar);
-
 
 const styles = StyleSheet.create({
   container: {

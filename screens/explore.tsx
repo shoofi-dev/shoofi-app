@@ -24,6 +24,7 @@ const ExploreScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       shoofiAdminStore.setSelectedCategory(null);
+      shoofiAdminStore.setSelectedGeneralCategory(null);
       // Optionally, return a cleanup function if needed
       return () => {};
     }, [])
@@ -103,7 +104,10 @@ const ExploreScreen = () => {
               marginHorizontal: 8,
               opacity: selectedGeneralCategory && selectedGeneralCategory._id === cat._id ? 1 : 0.5,
             }}
-            onPress={() => setSelectedGeneralCategory(cat)}
+            onPress={() => {
+              shoofiAdminStore.setSelectedGeneralCategory(cat);
+              navigation.navigate('general-category', { generalCategory: cat });
+            }}
             activeOpacity={0.8}
           >
             <View

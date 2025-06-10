@@ -19,6 +19,7 @@ class ShoofiAdminStore {
   storeData = null;
   repeatNotificationInterval = null;
   selectedCategory = null;
+  selectedGeneralCategory = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -150,6 +151,9 @@ class ShoofiAdminStore {
 
   setSelectedCategory(category) {
       this.selectedCategory = category;
+  }
+  setSelectedGeneralCategory(generalCategory) {
+    this.selectedGeneralCategory = generalCategory;
   }
 }
 
