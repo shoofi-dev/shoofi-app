@@ -46,6 +46,7 @@ import InputText from "../../components/controls/input";
 import AddCustomImagedDialog from "../../components/dialogs/add-custom-image";
 import MealExtras from "./extras/Extras";
 import { useResponsive } from "../../hooks/useResponsive";
+import Counter from "../../components/controls/counter";
 
 const showCakeNoteList = ["3", "5"];
 
@@ -72,13 +73,8 @@ const MealScreen = ({ route }) => {
 
   const { product, index, category } = route.params;
   const navigation = useNavigation();
-  let {
-    cartStore,
-    ordersStore,
-    languageStore,
-    storeDataStore,
-    extrasStore,
-  } = useContext(StoreContext);
+  let { cartStore, ordersStore, languageStore, storeDataStore, extrasStore } =
+    useContext(StoreContext);
   const [meal, setMeal] = useState(null);
   const [clientImage, setClientImage] = useState();
   const [suggestedImage, setSuggestedImage] = useState();
@@ -144,7 +140,10 @@ const MealScreen = ({ route }) => {
       tmpProduct = cartStore.getProductByIndex(index);
       // Calculate base price by subtracting extras price from total price
       if (tmpProduct.selectedExtras) {
-        const extrasPrice = extrasStore.calculateExtrasPrice(tmpProduct.data.extras, tmpProduct.selectedExtras);
+        const extrasPrice = extrasStore.calculateExtrasPrice(
+          tmpProduct.data.extras,
+          tmpProduct.selectedExtras
+        );
         tmpProduct.data.basePrice = tmpProduct.data.price - extrasPrice;
         extrasStore.reset();
         Object.entries(tmpProduct.selectedExtras).forEach(([key, value]) => {
@@ -160,7 +159,12 @@ const MealScreen = ({ route }) => {
 
   // Update meal price when extras change
   useEffect(() => {
-    if (meal && meal.data && meal.data.price !== undefined && meal.data.extras) {
+    if (
+      meal &&
+      meal.data &&
+      meal.data.price !== undefined &&
+      meal.data.extras
+    ) {
       const basePrice = meal.data.basePrice || meal.data.price;
       const extrasPrice = extrasStore.calculateExtrasPrice(meal.data.extras);
       setMeal((prev) => ({
@@ -294,38 +298,31 @@ const MealScreen = ({ route }) => {
     return null;
   }
   return (
-    <View style={{ height: "100%" }}>
+    <View style={{ height: "100%", }}>
       <View style={{ zIndex: 10 }}>
         <TouchableOpacity
           onPress={onClose}
           style={{
             zIndex: 1,
             position: "absolute",
-            left: 0,
+            right: 10,
             width: isTablet ? 60 : 45,
-            padding: 0,
             alignItems: "center",
-            height: isTablet ? 55 : 40,
+            height: isTablet ? 60 : 45,
             justifyContent: "center",
             top: 10,
-            backgroundColor: "rgba(36, 33, 30, 0.8)",
-            borderTopEndRadius: 50,
-            borderBottomEndRadius: 50,
-            alignSelf: "center",
-            shadowColor: themeStyle.SECONDARY_COLOR,
-            shadowOffset: {
-              width: 0,
-              height: 3,
-            },
-            shadowOpacity: 1,
-            shadowRadius: 15,
-            elevation: 5,
-            borderWidth: 0,
+            backgroundColor: themeStyle.WHITE_COLOR,
+            borderRadius: 100,
+            padding: 5,
+            shadowColor: themeStyle.SHADOW_COLOR,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
           }}
         >
           <Text
             style={{
-              color: themeStyle.SECONDARY_COLOR,
+              color: themeStyle.GRAY_300,
               fontSize: isTablet ? 40 : 30,
             }}
           >
@@ -335,7 +332,7 @@ const MealScreen = ({ route }) => {
       </View>
       <Animated.ScrollView
         ref={scrollRef}
-        style={{  height: "100%",   }}
+        style={{ height: "100%" }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
@@ -343,24 +340,33 @@ const MealScreen = ({ route }) => {
         scrollEventThrottle={16}
         contentContainerStyle={{ paddingBottom: 110 }}
       >
-  
         <View
           style={{
             width: "100%",
-
-
           }}
         >
           <View style={{}}>
             <View style={{}}>
               <ProductHeader product={meal} updateOthers={updateOthers} />
             </View>
-      
+
             {meal.data.extras && meal.data.extras.length > 0 && (
-              <View style={{  }}>
+              <View style={{}}>
                 <MealExtras extras={meal.data.extras} />
               </View>
             )}
+          </View>
+          <View
+            style={{  alignItems: "center", alignSelf: "center", marginTop:20 }}
+          >
+            <Counter
+              value={product.others.qty || 1}
+              minValue={1}
+              onCounterChange={(value) => {
+                updateOthers(value, "qty", "others");
+              }}
+              variant={"gray"}
+            />
           </View>
         </View>
       </Animated.ScrollView>
@@ -372,13 +378,6 @@ const MealScreen = ({ route }) => {
           bottom: 0,
           backgroundColor: themeStyle.WHITE_COLOR,
           padding: 10,
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          shadowColor: themeStyle.SHADOW_COLOR,
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.2,
-          shadowRadius: 6,
-          elevation: 10,
         }}
       >
         <ProductFooter
@@ -390,7 +389,7 @@ const MealScreen = ({ route }) => {
           qty={meal.others.qty}
         />
       </View>
-    
+
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}
         isOpen={isOpenConfirmActiondDialog}

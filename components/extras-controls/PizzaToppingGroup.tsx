@@ -24,7 +24,6 @@ const PizzaToppingGroup = ({ extra, value, onChange }: PizzaToppingGroupProps) =
   };
 
   const getSelectedArea = (toppingId: string) => value[toppingId];
-  console.log("extra",extra.options)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
@@ -64,7 +63,6 @@ const PizzaToppingGroup = ({ extra, value, onChange }: PizzaToppingGroupProps) =
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
   },
   title: {
     fontWeight: "bold",

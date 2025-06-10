@@ -3,114 +3,94 @@ import { useState, useEffect } from "react";
 import themeStyle from "../../../styles/theme.style";
 import * as Haptics from "expo-haptics";
 
-export default function Counter({ onCounterChange, value, stepValue = 1, minValue = 0, isVertical = false, variant = null, size = 35 }) {
+export default function Counter({
+  onCounterChange,
+  value,
+  stepValue = 1,
+  minValue = 0,
+  isVertical = false,
+  variant = null,
+  size = 35,
+}) {
   const [couter, setCounter] = useState(value || 0);
   const onBtnClick = (value) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    if ((couter === 0 && value === -1) || (couter + value < minValue )) {
+    if ((couter === 0 && value === -1) || couter + value < minValue) {
       return;
     }
     const updatedValue = couter + value;
     setCounter(updatedValue);
     onCounterChange(updatedValue);
   };
-  useEffect(()=>{
-    setCounter(value || 0)
-  },[value]);
-
-  if(variant === 'gray'){
-    return (
-      <View style={{...styles.containerGray, flexDirection: isVertical? "column" : "row"}}>
-        <View>
-          <TouchableOpacity
-            style={styles.btnGray}
-            onPress={() => {
-              onBtnClick(stepValue);
-            }}
-          >
-            <Text style={styles.btnTextGray}>+</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.counterValue}>
-          <Text style={{ fontSize: 20,color:themeStyle.WHITE_COLOR}}>{couter}</Text>
-        </View>
-        <View>
-          <TouchableOpacity
-            style={styles.btnGray}
-            onPress={() => {
-              onBtnClick(-stepValue);
-            }}
-          >
-            <Text style={styles.btnTextGray}>-</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
-
-  if(variant === 'colors'){
-    return (
-      <View style={{...styles.containerGray, flexDirection: isVertical? "column" : "row"}}>
-        <View>
-          <TouchableOpacity
-            style={[styles.btnGray,{width: size, height:size}]}
-            onPress={() => {
-              onBtnClick(stepValue);
-            }}
-          >
-            <Text style={styles.btnTextGreen}>+</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[styles.counterValue, {width:80}]}>
-          <Text style={{ fontSize: 18,color:themeStyle.TEXT_PRIMARY_COLOR}}>{couter}</Text>
-        </View>
-        <View>
-          <TouchableOpacity
-            style={[styles.btnGray,{width: size, height:size}]}
-            onPress={() => {
-              onBtnClick(-stepValue);
-            }}
-          >
-            <Text style={styles.btnTextRed}>-</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
+  useEffect(() => {
+    setCounter(value || 0);
+  }, [value]);
 
   return (
-    <View style={{...styles.container, flexDirection: isVertical? "column" : "row"}}>
-      <View>
+    <>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "#f7f9fa",
+          borderRadius: 999,
+          borderWidth: 1,
+          borderColor: "#d1d5db",
+          paddingHorizontal: 24,
+          paddingVertical: 8,
+          minWidth: 140,
+          justifyContent: "space-between",
+        }}
+      >
         <TouchableOpacity
-          style={[styles.btn]}
           onPress={() => {
             onBtnClick(stepValue);
           }}
         >
-          <Text style={styles.btnText}>+</Text>
+          <Text
+            style={{
+              fontSize: themeStyle.FONT_SIZE_MD,
+              color: "#444",
+              fontWeight: "300",
+            }}
+          >
+            +
+          </Text>
         </TouchableOpacity>
-      </View>
-      <View style={[styles.counterValue, {width:200}]}>
-        <Text style={{ fontSize: 20,color:themeStyle.PRIMARY_COLOR}}>{couter}</Text>
-      </View>
-      <View>
+        <Text
+          style={{
+            fontSize: themeStyle.FONT_SIZE_MD,
+            fontWeight: "bold",
+            marginHorizontal: 16,
+            minWidth: 40,
+            textAlign: "center",
+          }}
+        >
+          {couter}
+        </Text>
         <TouchableOpacity
-          style={styles.btn}
           onPress={() => {
             onBtnClick(-stepValue);
           }}
         >
-          <Text style={styles.btnText}>-</Text>
+          <Text
+            style={{
+              fontSize: themeStyle.FONT_SIZE_MD,
+              color: "#444",
+              fontWeight: "300",
+            }}
+          >
+            -
+          </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </>
   );
 }
 const styles = StyleSheet.create({
-  container: {
-  },
+  container: {},
   containerGray: {
-    borderRadius:50,
+    borderRadius: 50,
     shadowColor: themeStyle.GRAY_600,
     shadowOffset: {
       width: 0,
@@ -121,15 +101,14 @@ const styles = StyleSheet.create({
     elevation: 20,
     borderWidth: 0,
     backgroundColor: "white",
-    
   },
   counterValue: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor:themeStyle.SECONDARY_COLOR,
-    borderRadius:10,
-    width:40
+    backgroundColor: themeStyle.SECONDARY_COLOR,
+    borderRadius: 10,
+    width: 40,
   },
   btn: {
     // backgroundColor: themeStyle.PRIMARY_COLOR,
@@ -138,10 +117,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
-    color:themeStyle.SECONDARY_COLOR,
+    color: themeStyle.SECONDARY_COLOR,
     borderColor: themeStyle.SECONDARY_COLOR,
-    borderWidth:1,
-    marginHorizontal:10
+    borderWidth: 1,
+    marginHorizontal: 10,
   },
   btnGray: {
     backgroundColor: themeStyle.GRAY_700,
@@ -151,18 +130,18 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color:themeStyle.PRIMARY_COLOR,
+    color: themeStyle.PRIMARY_COLOR,
     borderColor: themeStyle.SECONDARY_COLOR,
-    borderRadius:10
+    borderRadius: 10,
   },
   btnGreen: {
-     backgroundColor: themeStyle.WHITE_COLOR,
+    backgroundColor: themeStyle.WHITE_COLOR,
     width: 35,
     height: 35,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color:themeStyle.SUCCESS_COLOR,
+    color: themeStyle.SUCCESS_COLOR,
     borderColor: themeStyle.SUCCESS_COLOR,
   },
   btnTextGray: {

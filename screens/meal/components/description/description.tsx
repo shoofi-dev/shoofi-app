@@ -18,18 +18,13 @@ const ProductDescription = ({ product }: TProps) => {
         alignItems:'flex-start'
       }}
     >
-      <View>
-        <Text style={{ fontSize: 18 }}>
-            {t('description')}
-        </Text>
-      </View>
-      <View style={{marginTop:10}}>
+     {product.descriptionAR || product.descriptionHE && <View style={{marginTop:10}}>
       <Text style={{ fontSize: 18, textAlign: 'left' }}>
       {languageStore.selectedLang === "ar"
                     ? product.descriptionAR
                     : product.descriptionHE}
         </Text>
-      </View>
+      </View>}
     </View>
   );
 };

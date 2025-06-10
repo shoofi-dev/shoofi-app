@@ -56,7 +56,7 @@ export default function Button({
   isOposetGradiant,
   borderColor,
   borderWidthNumber,
-  transformIconAnimate
+  transformIconAnimate,
 }: TProps) {
   const onBtnClick = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -64,14 +64,14 @@ export default function Button({
   };
 
   const getBorderWitdth = () => {
-    if(borderWidthNumber){
+    if (borderWidthNumber) {
       return borderWidthNumber;
     }
     return borderWidth && bgColor ? 1 : 0;
-  }
+  };
 
   const getBorderColor = () => {
-    if(borderColor){
+    if (borderColor) {
       return borderColor;
     }
     if (disabled) {
@@ -87,93 +87,54 @@ export default function Button({
     }
   };
   const renderIcon = () => (
-    <Animated.View style={{
-      transform: transformIconAnimate
-    }}>
-    <Icon
-      icon={icon}
-      size={iconSize ? iconSize : 20}
+    <Animated.View
       style={{
-        color: textColor || theme.GRAY_700,
-        marginBottom: isFlexCol ? 10 : 0,
-        marginRight: iconMargin ? iconMargin : 0,
+        transform: transformIconAnimate,
       }}
-    />
+    >
+      <Icon
+        icon={icon}
+        size={iconSize ? iconSize : 20}
+        style={{
+          color: textColor || theme.GRAY_700,
+          marginBottom: isFlexCol ? 10 : 0,
+          marginRight: iconMargin ? iconMargin : 0,
+        }}
+      />
     </Animated.View>
   );
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={{
-          ...styles.button,
-          borderRadius: borderRadious !== undefined ? borderRadious : 30,
-          backgroundColor: disabled ? themeStyle.GRAY_600 : bgColor,
-          borderColor: getBorderColor(),
-          borderWidth:getBorderWitdth(),
-          opacity: disabled && 0.3,
-          alignItems: "center",
-          padding: isFlexCol ? 0 : 0,
-          height: isFlexCol ? "100%" : "auto",
-        }}
+        style={{ width: '100%' }}
         disabled={disabled}
-        onPress={() => {
-          onBtnClick();
-        }}
+        onPress={onBtnClick}
+        activeOpacity={0.8}
       >
-        {!bgColor && (
-          <LinearGradient
-            colors={isOposetGradiant ? ["#eaaa5c", "#a77948"] : ["#EBA33E", "#D75F30","#EBA33E"]}
-            start={{ x: 1, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={[styles.background,{borderRadius:borderRadious !== undefined ? borderRadious : 30}]}
-          />
-        )}
-        <View
-          style={{
-            height: isFlexCol ? "100%" : "auto",
-            flexDirection: isFlexCol ? "column" : "row",
-            alignItems: "center",
-            ...styles.button,
-            borderRadius: borderRadious !== undefined ? borderRadious : 30,
-            backgroundColor: !bgColor ? themeStyle.PRIMARY_COLOR : bgColor,
-            borderColor: getBorderColor(),
-            width: "100%",
-            justifyContent:'center',
-            padding:10
-
-          }}
+        <LinearGradient
+          colors={["#5fd100", "#00b32a"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.gradient}
         >
-          {icon && iconPosition && iconPosition === "right" && renderIcon()}
-          <Text
-            style={{
-              marginHorizontal: marginH !== undefined ? marginH : 15,
-              fontSize: fontSize,
-              color: textColor || theme.SECONDARY_COLOR,
-              padding: textPadding,
-
-            }}
-          >
-            {text}
-          </Text>
-
-          {icon && iconPosition && iconPosition === "left" && renderIcon()}
-          {isLoading && (
-            <ActivityIndicator animating={true} color={theme.WHITE_COLOR} />
-          )}
-          <View></View>
-        </View>
-        {extraText && (
-          <Text
-            style={{
-              fontSize: 20,
-              color: textColor,
-              fontFamily: fontFamilyExtraText || fontFamily,
-              textAlign: "center",
-            }}
-          >
-            {extraText}
-          </Text>
-        )}
+          <View style={styles.row}>
+        
+            {/* Centered text and icon */}
+            <View style={styles.centerContent}>
+            {icon && (
+                <Animated.View style={{ marginRight: 8, transform: transformIconAnimate }}>
+                  <Icon icon={icon} size={iconSize ? iconSize : themeStyle.FONT_SIZE_MD} style={{ color: '#fff' }} />
+                </Animated.View>
+              )}
+              <Text style={styles.buttonText}>{text}</Text>
+      
+            </View>
+                {/* Price on the left */}
+                {extraText && (
+              <Text style={styles.price}>{extraText}</Text>
+            )}
+          </View>
+        </LinearGradient>
       </TouchableOpacity>
     </View>
   );
@@ -182,19 +143,41 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
   },
-  button: {
-    backgroundColor: theme.PRIMARY_COLOR,
-    alignItems: "center",
-    justifyContent: "center",
+  gradient: {
+    width: '100%',
+    borderRadius: 999,
+    paddingVertical: 18,
+    paddingHorizontal: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  price: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: themeStyle.FONT_SIZE_MD,
+    marginLeft: 10,
+    position:'absolute',
+    right:0,
+    top:0,
+  },
+  centerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+
+
   },
   buttonText: {
-    marginHorizontal: 15,
-  },
-  background: {
-    position: "absolute",
-    left: "0%",
-    right: "0%",
-    top: "0%",
-    bottom: "0%",
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: themeStyle.FONT_SIZE_MD,
+    textAlign: 'center',
   },
 });

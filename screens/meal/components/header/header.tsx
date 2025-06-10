@@ -20,13 +20,11 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
   let { languageStore } = useContext(StoreContext);
   const imageHeight = 200;
   return (
-    <View >
+    <View style={{ paddingBottom: 15 }}>
       <Animated.View
         style={{
           height: imageHeight,
           width: "100%",
-          
-          
         }}
       >
         <CustomFastImage
@@ -43,7 +41,7 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
         style={{
           flexDirection: "column",
           alignItems: "flex-start",
-          padding:10,
+          padding: 10,
         }}
       >
         <Text
@@ -58,6 +56,17 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
             : product.data.nameHE}
         </Text>
         <View style={{ marginTop: 15 }}>
+          <Text
+            style={{
+              fontSize: themeStyle.FONT_SIZE_SM,
+              fontWeight: "600",
+              fontFamily: `${getCurrentLang()}-Bold`,
+            }}
+          >
+            ₪ {product.data.price}
+          </Text>
+        </View>
+        <View style={{}}>
           <ProductDescription product={product.data} />
         </View>
       </View>

@@ -67,77 +67,88 @@ const ExtrasSection = ({
     return acc;
   }, {} as Record<string, Extra[]>);
   return (
-      <View style={styles.container}>
-        {Object.entries(groupedExtras).sort((a, b) => a[1][0].order - b[1][0].order).map(([groupId, groupExtras]) => (
-          <View key={groupId} style={styles.groupWrapper}>
-            {groupId === "ungrouped" ? (
-              groupExtras.sort((a, b) => a.order - b.order).map((extra) => {
-                if (extra.type === "pizza-topping") {
-                  return (
-                    <PizzaToppingGroup
-                      key={extra.id}
-                      extra={extra}
-                      value={selections[extra.id] || {}}
-                      onChange={(val) => onChange(extra.id, val)}
-                    />
+    <View style={styles.container}>
+      {Object.entries(groupedExtras)
+        .sort((a, b) => a[1][0].order - b[1][0].order)
+        .map(([groupId, groupExtras]) => (
+          <View key={groupId}>
+            {groupId === "ungrouped"
+              ? groupExtras
+                  .sort((a, b) => a.order - b.order)
+                  .map((extra) => {
+                    if (extra.type === "pizza-topping") {
+                      return (
+                        <View style={styles.groupWrapper}>
+                          <PizzaToppingGroup
+                            key={extra.id}
+                            extra={extra}
+                            value={selections[extra.id] || {}}
+                            onChange={(val) => onChange(extra.id, val)}
+                          />
+                        </View>
+                      );
+                    }
+                    return (
+                      <View style={styles.groupWrapper}>
+                        <ExtraGroup
+                          key={extra.id}
+                          extra={extra}
+                          value={selections[extra.id]}
+                          onChange={(val) => onChange(extra.id, val)}
+                        />
+                      </View>
+                    );
+                  })
+              : (() => {
+                  const groupHeader = groupExtras.find(
+                    (extra) => extra.isGroupHeader
                   );
-                }
-                return (
-                  <ExtraGroup
-                    key={extra.id}
-                    extra={extra}
-                    value={selections[extra.id]}
-                    onChange={(val) => onChange(extra.id, val)}
-                  />
-                );
-              })
-            ) : (
-              (() => {
-                const groupHeader = groupExtras.find(extra => extra.isGroupHeader);
-                if (!groupHeader) return null;
-                return (
-                  <View style={styles.groupContainer}>
-                    <View style={styles.groupHeader}>
-                      <Text style={styles.groupTitle}>
-                        {languageStore.selectedLang === "ar"
-                          ? groupHeader.nameAR
-                          : groupHeader.nameHE}
-                      </Text>
-                    </View>
-                    <View style={styles.groupContent}>
-                      {groupExtras
-                        .filter(extra => !extra.isGroupHeader)
-                        .sort((a, b) => a.order - b.order)
-                        .map((extra) => {
-                          if (extra.type === "pizza-topping") {
+                  if (!groupHeader) return null;
+                  return (
+                    <View style={styles.groupContainer}>
+                      <View style={styles.groupHeader}>
+                        <Text style={styles.groupTitle}>
+                          {languageStore.selectedLang === "ar"
+                            ? groupHeader.nameAR
+                            : groupHeader.nameHE}
+                        </Text>
+                      </View>
+                      <View style={styles.groupContent}>
+                        {groupExtras
+                          .filter((extra) => !extra.isGroupHeader)
+                          .sort((a, b) => a.order - b.order)
+                          .map((extra) => {
+                            if (extra.type === "pizza-topping") {
+                              return (
+                                <View style={styles.groupWrapper}>
+                                  <PizzaToppingGroup
+                                    key={extra.id}
+                                    extra={extra}
+                                    value={selections[extra.id] || {}}
+                                    onChange={(val) => onChange(extra.id, val)}
+                                  />
+                                </View>
+                              );
+                            }
                             return (
-                              <PizzaToppingGroup
-                                key={extra.id}
-                                extra={extra}
-                                value={selections[extra.id] || {}}
-                                onChange={(val) => onChange(extra.id, val)}
-                              />
+                              <View style={styles.groupWrapper}>
+                                <ExtraGroup
+                                  key={extra.id}
+                                  extra={extra}
+                                  value={selections[extra.id]}
+                                  onChange={(val) => onChange(extra.id, val)}
+                                />
+                              </View>
                             );
-                          }
-                          return (
-                            <ExtraGroup
-                              key={extra.id}
-                              extra={extra}
-                              value={selections[extra.id]}
-                              onChange={(val) => onChange(extra.id, val)}
-                            />
-                          );
-                        })}
+                          })}
+                      </View>
                     </View>
-                  </View>
-                );
-              })()
-            )}
+                  );
+                })()}
           </View>
         ))}
-      </View>
-    );
-    
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -149,17 +160,18 @@ const styles = StyleSheet.create({
   },
   groupContainer: {
     backgroundColor: "#fff",
-    marginBottom: 16,
     shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 2,
     overflow: "hidden",
+    marginBottom: 30,
+
   },
   groupHeader: {
     backgroundColor: themeStyle.WHITE_COLOR,
-    padding: 16,
+    padding: 10,
     borderBottomColor: "#e5e7eb",
     flexDirection: "row",
     alignItems: "center",
@@ -170,7 +182,7 @@ const styles = StyleSheet.create({
     color: "#222",
   },
   groupContent: {
-    padding: 8,
+    paddingHorizontal: 12,
   },
 });
 

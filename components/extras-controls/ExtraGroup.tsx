@@ -70,12 +70,7 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
-    marginBottom: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 4,
-    elevation: 1,
+ 
   },
   title: {
     fontWeight: "bold",

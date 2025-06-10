@@ -3,47 +3,52 @@ import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { StoreContext } from "../../stores";
 import Text from "../../components/controls/Text";
 export type RadioGroupProps = {
-  options: { id: string;  nameAR?: string; nameHE?: string; price?: number }[];
+  options: { id: string; nameAR?: string; nameHE?: string; price?: number }[];
   value: string;
   onChange: (value: string) => void;
 };
 
 const RadioGroup = ({ options, value, onChange }: RadioGroupProps) => {
   let { languageStore } = useContext(StoreContext);
-  return(
-  <View >
-    {options.map((opt) => {
-      const selected = value === opt.id;
-      return (
-<TouchableOpacity
-  key={opt.id}
-  onPress={() => onChange(opt.id)}
-  style={styles.optionRow}
-  activeOpacity={0.7}
->
-<Text style={styles.optionLabel}>
-    {languageStore.selectedLang === "ar" ? opt.nameAR : opt.nameHE}
-    {opt.price ? ` +₪${opt.price}` : ""}
-  </Text>
-  <View style={styles.radioOuter}>
-    {selected && <View style={styles.radioInner} />}
-  </View>
-
-</TouchableOpacity>
-      );
-    })}
-  </View>
-)};
+  return (
+    <View style={{}}>
+      {options.map((opt, idx) => {
+        const selected = value === opt.id;
+        const isLast = idx === options.length - 1;
+        return (
+          <TouchableOpacity
+            key={opt.id}
+            onPress={() => onChange(opt.id)}
+            style={[
+              styles.optionRow,
+              isLast && { borderBottomWidth: 0 }
+            ]}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.optionLabel}>
+              {languageStore.selectedLang === "ar" ? opt.nameAR : opt.nameHE}
+              {opt.price ? ` +₪${opt.price}` : ""}
+            </Text>
+            <View style={styles.radioOuter}>
+              {selected && <View style={styles.radioInner} />}
+            </View>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   optionRow: {
     flexDirection: "row", // RTL: label right, radio left
     alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+    paddingVertical: 14,
     width: "100%",
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+    flex:1,
+    
   },
   radioOuter: {
     width: 24,
@@ -69,4 +74,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RadioGroup; 
+export default RadioGroup;
