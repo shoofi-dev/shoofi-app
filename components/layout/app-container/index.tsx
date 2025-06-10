@@ -25,6 +25,7 @@ import {
   findImageInCache,
   getImgXtension,
 } from "../../custom-fast-image";
+import { observer } from "mobx-react";
 
 const yellowBgTopScreens = ["meal", "terms-and-conditions"];
 const yellowBgBottomScreens = ["homeScreen", "menuScreen", "BCOINSScreen"];
@@ -258,4 +259,4 @@ const AppContainer = () => {
   );
 };
 
-export default AppContainer;
+export default observer(AppContainer);

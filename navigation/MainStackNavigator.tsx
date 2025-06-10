@@ -39,6 +39,7 @@ import { TransitionSpecs } from '@react-navigation/stack';
 import AddressForm from '../components/address/AddressForm';
 import AddressList from '../components/address/AddressList';
 import CitiesScreen from '../screens/CitiesScreen';
+import StoresListScreen from "../screens/storesList";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -135,6 +136,7 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="EditAddress" component={AddressForm} initialParams={{ address: null }} />
       <Stack.Screen name="AddressList" component={AddressList} />
       <Stack.Screen name="Cities" component={CitiesScreen} />
+      <Stack.Screen name="stores-list" component={StoresListScreen} initialParams={{ category: null }} />
     </Stack.Navigator>
   );
 };

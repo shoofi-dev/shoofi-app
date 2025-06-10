@@ -18,6 +18,7 @@ class ShoofiAdminStore {
   paymentCredentials = null;
   storeData = null;
   repeatNotificationInterval = null;
+  selectedCategory = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -145,6 +146,10 @@ class ShoofiAdminStore {
           }
         }
       )
+  }
+
+  setSelectedCategory(category) {
+      this.selectedCategory = category;
   }
 }
 
