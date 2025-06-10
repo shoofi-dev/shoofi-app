@@ -22,7 +22,7 @@ export type PizzaToppingOption = {
 
 export type Extra = {
   id: string;
-  type: "single" | "multi" | "counter" | "pizza-topping";
+  type: "single" | "multi" | "counter" | "pizza-topping" | "weight";
   nameAR: string;
   nameHE: string;
   required?: boolean;
@@ -30,7 +30,7 @@ export type Extra = {
   max?: number;
   maxCount?: number;
   options?: PizzaToppingOption[];
-  price?: number; // for counter
+  price?: number; // for counter and weight
   step?: number;
   defaultValue?: number;
   groupId?: string;

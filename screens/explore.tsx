@@ -95,7 +95,7 @@ const ExploreScreen = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={{ paddingVertical: 16, paddingHorizontal: 8, marginBottom: 10 }}
-        contentContainerStyle={{ flexDirection: I18nManager.isRTL ? "row-reverse" : "row" }}
+        contentContainerStyle={{ flexDirection: I18nManager.isRTL ? "row" : "row" }}
       >
         {generalCategories?.map((cat) => (
           <TouchableOpacity
@@ -162,7 +162,7 @@ const ExploreScreen = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={{ paddingVertical: 16, paddingHorizontal: 8, marginBottom: 10 }}
-        contentContainerStyle={{ flexDirection: I18nManager.isRTL ? "row-reverse" : "row" }}
+        contentContainerStyle={{ flexDirection: I18nManager.isRTL ? "row" : "row" }}
       >
         {categories.map((cat) => (
           <TouchableOpacity

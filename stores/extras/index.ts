@@ -61,6 +61,10 @@ class ExtrasStore {
       if (extra.type === "counter" && extra.price && val) {
         total += extra.price * val;
       }
+      if (extra.type === "weight" && extra.price && val && extra.step) {
+        const currentCount = val/extra.step;
+        total += extra.price * (currentCount -1);
+      }
       if (extra.type === "pizza-topping" && extra.options) {
         // val is { [toppingId]: areaId }
         for (const toppingId in val) {

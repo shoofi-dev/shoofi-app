@@ -51,6 +51,17 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
               extra={extra}
             />
         )}
+        {extra.type === "weight" && (
+            <Counter
+              value={value || extra.defaultValue || 0}
+              min={extra.min}
+              max={extra.max}
+              onChange={onChange}
+              price={extra.price}
+              step={extra.step}
+              extra={extra}
+            />
+        )}
       </View>
     </View>
   );
