@@ -15,6 +15,7 @@ import CustomFastImage from "../../../components/custom-fast-image";
 import { interpolate } from "react-native-reanimated";
 import { withTiming } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
+import { cdnUrl } from "../../../consts/shared";
 
 interface StoreHeaderCardProps {
   store: any;
@@ -59,7 +60,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   const renderCarouselItem = ({ item }) => (
     <CustomFastImage
       style={styles.image}
-      source={{ uri: item }}
+      source={{ uri: cdnUrl + item }}
       cacheKey={`${item?.split(/[\\/]/).pop()}`}
     />
   );
@@ -157,6 +158,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   if (onlyCarousel) {
     return renderImageSection();
   }
+  console.log("storeLogo", storeLogo);
   if (onlyInfoCard) {
     return (
       <View style={[styles.infoCard, { top: 10, zIndex: 2 }]}>
@@ -203,7 +205,11 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               </Text>
             </View>
           </View>
-          <Image source={{ uri: storeLogo }} style={styles.logo} />
+          <CustomFastImage
+            source={{ uri: cdnUrl + storeLogo }}
+            style={styles.logo}
+            cacheKey={`${storeLogo?.split(/[\\/]/).pop()}`}
+          />
         </View>
       </View>
     );
@@ -237,55 +243,60 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
           zIndex: 1,
         }}
       >
-      <View style={[styles.infoCard, { top: 160, zIndex: 2 }]}>
-        {/* 210 (image) - 50 (overlap) */}
-        <View style={styles.infoRow}>
-          <TouchableOpacity style={styles.arrowBtn}>
-            <Icon
-              name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
-              size={28}
-              color="#bbb"
+        <View style={[styles.infoCard, { top: 160, zIndex: 2 }]}>
+          {/* 210 (image) - 50 (overlap) */}
+          <View style={styles.infoRow}>
+            <TouchableOpacity style={styles.arrowBtn}>
+              <Icon
+                name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+                size={28}
+                color="#bbb"
+              />
+            </TouchableOpacity>
+            <View
+              style={{ flex: 1, marginHorizontal: 8, alignItems: "flex-start" }}
+            >
+              <Text style={styles.storeName}>{storeName}</Text>
+              <Text style={styles.subtitle}>
+                {store?.description || "מסעדה איטלקית אורגינלית"}
+              </Text>
+              <View style={styles.infoDetailsRow}>
+                <Text style={styles.infoDetail}>
+                  <Icon name="star" size={16} color="#FFC107" />{" "}
+                  <Text>{rating}</Text>
+                </Text>
+                <Text style={styles.infoDetail}>
+                  <Icon name="clock-outline" size={16} color="#888" />{" "}
+                  <Text>{deliveryTime} דקות</Text>
+                </Text>
+                <Text style={styles.infoDetail}>
+                  <Icon name="bike" size={16} color="#888" />{" "}
+                  <Text>משלוח: ₪{deliveryPrice}</Text>
+                </Text>
+              </View>
+              <View style={styles.bottomInfoRow}>
+                <TouchableOpacity>
+                  <Icon name="share-variant" size={22} color="#bbb" />
+                </TouchableOpacity>
+                <Text style={styles.bottomInfoText}>
+                  ₪{deliveryPrice}:משלוח
+                </Text>
+                <Text style={styles.bottomInfoText}>
+                  דקות {deliveryTime + 15}-{deliveryTime}:משלוח
+                </Text>
+                <Text style={styles.bottomInfoText}>
+                  {rating} <Icon name="star" size={16} color="#FFC107" />
+                </Text>
+              </View>
+            </View>
+            <CustomFastImage
+              source={{ uri: cdnUrl + storeLogo }}
+              style={styles.logo}
+              cacheKey={`${storeLogo?.split(/[\\/]/).pop()}`}
             />
-          </TouchableOpacity>
-          <View
-            style={{ flex: 1, marginHorizontal: 8, alignItems: "flex-start" }}
-          >
-            <Text style={styles.storeName}>{storeName}</Text>
-            <Text style={styles.subtitle}>
-              {store?.description || "מסעדה איטלקית אורגינלית"}
-            </Text>
-            <View style={styles.infoDetailsRow}>
-              <Text style={styles.infoDetail}>
-                <Icon name="star" size={16} color="#FFC107" />{" "}
-                <Text>{rating}</Text>
-              </Text>
-              <Text style={styles.infoDetail}>
-                <Icon name="clock-outline" size={16} color="#888" />{" "}
-                <Text>{deliveryTime} דקות</Text>
-              </Text>
-              <Text style={styles.infoDetail}>
-                <Icon name="bike" size={16} color="#888" />{" "}
-                <Text>משלוח: ₪{deliveryPrice}</Text>
-              </Text>
-            </View>
-            <View style={styles.bottomInfoRow}>
-              <TouchableOpacity>
-                <Icon name="share-variant" size={22} color="#bbb" />
-              </TouchableOpacity>
-              <Text style={styles.bottomInfoText}>₪{deliveryPrice}:משלוח</Text>
-              <Text style={styles.bottomInfoText}>
-                דקות {deliveryTime + 15}-{deliveryTime}:משלוח
-              </Text>
-              <Text style={styles.bottomInfoText}>
-                {rating} <Icon name="star" size={16} color="#FFC107" />
-              </Text>
-            </View>
           </View>
-          <Image source={{ uri: storeLogo }} style={styles.logo} />
         </View>
-      </View>
       </Animated.View>
-
     </View>
   );
 };
@@ -426,7 +437,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
     backgroundColor: "#fff",
     borderRadius: 20,
-    padding: 18,
+    padding: 10,
     flexDirection: "row-reverse",
     alignItems: "center",
     shadowColor: "#000",
@@ -438,7 +449,7 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: "row-reverse",
-    alignItems: "center",
+   
   },
   storeName: {
     fontSize: 22,
@@ -471,8 +482,6 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 14,
     backgroundColor: "#fff",
-    marginLeft: 16,
-    marginRight: 0,
   },
   arrowBtn: {
     alignSelf: "flex-start",

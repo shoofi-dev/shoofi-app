@@ -7,6 +7,7 @@ import {
   ImageBackground,
   ActivityIndicator,
   Animated,
+  FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useRef, useEffect } from "react";
@@ -172,66 +173,34 @@ const CategoryItemsList = ({ productsList, category }) => {
 
   const filterBirthdayProducts = filterBirthday();
   return (
-    <View style={{ height: "100%",           
-    }}>
-
-      {true && isProductAnimateDone && (
-        <View
-          style={{
-            height: "85%",
-            shadowColor: themeStyle.GRAY_600,
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.9,
-            shadowRadius: 6,
-            elevation: 0,
-            borderWidth: 0,
-            backgroundColor: "transparent",
-          }}
-        >
-          <View style={styles.container}>
-            {filterBirthdayProducts
-              .slice(0, pageNumber * 5)
-              .map((item, index) => {
-                return (
-                  <View
-                    key={item._id}
-                    style={{
-                      flexBasis: "49.5%",
-                      marginTop:
-                        productsList?.length > 1
-                          ? index % 2 === 0
-                            ? 0
-                            : 0
-                          : 0,
-                      paddingHorizontal: 10,
-                      marginBottom: 15,
-                    }}
-                  >
-                    <ProductItem
-                      item={item}
-                      onItemSelect={onItemSelect}
-                      onDeleteProduct={onDeleteProduct}
-                      onEditProduct={onEditProduct}
-                    />
-                  </View>
-                );
-              })}
-          </View>
-          {filterBirthdayProducts.length >= pageNumber * 5 && (
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <FlatList
+        data={filterBirthdayProducts.slice(0, pageNumber * 5)}
+        keyExtractor={item => item._id}
+        renderItem={({ item }) => (
+          <ProductItem
+            item={item}
+            onItemSelect={onItemSelect}
+            onDeleteProduct={onDeleteProduct}
+            onEditProduct={onEditProduct}
+          />
+        )}
+        onEndReached={() => {
+          if (filterBirthdayProducts.length >= pageNumber * 5) {
+            setIsLoadingProducts(true);
+            setPageNumber(pageNumber + 1);
+          }
+        }}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          filterBirthdayProducts.length >= pageNumber * 5 ? (
             <View style={{ flexDirection: "row", justifyContent: "center" }}>
-              <ActivityIndicator
-                size="large"
-                style={{}}
-                color={themeStyle.PRIMARY_COLOR}
-              />
+              <ActivityIndicator size="large" color={themeStyle.PRIMARY_COLOR} />
             </View>
-          )}
-        </View>
-      )}
-
+          ) : null
+        }
+        contentContainerStyle={{ paddingBottom: 40 }}
+      />
 
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}

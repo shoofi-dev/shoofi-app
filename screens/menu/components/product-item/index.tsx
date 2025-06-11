@@ -86,119 +86,108 @@ const ProductItem = ({
   const price = item.price;
   const imageUrl = `${cdnUrl}${item.img[0].uri}`;
   return (
-    <View>
-    <TouchableOpacity style={styles.card} onPress={() => onItemSelect(item)}>
-      {/* Product Image */}
-      <View style={styles.imageWrapper}>
+    <TouchableOpacity style={styles.rowCard} onPress={() => onItemSelect(item)}>
+      {/* Product Image on the right */}
+      <View style={styles.rowImageWrapper}>
         <CustomFastImage
           source={{ uri: imageUrl }}
-          style={styles.image}
-          cacheKey={`${APP_NAME}_${imageUrl.split(/[\\/]/).pop()}`}
-          resizeMode="contain"
+          style={styles.rowImage}
+          cacheKey={`${APP_NAME}_${imageUrl.split(/[\/]/).pop()}`}
+          resizeMode="cover"
         />
       </View>
-    <View style={{marginTop:10}}>
-    <Text style={styles.productName}>{productName}</Text>
-    <Text style={styles.priceText}>₪{price}</Text>
-    </View>
-
+      {/* Text and price on the left */}
+      <View style={styles.rowTextContainer}>
+        <Text style={styles.rowProductName} >{productName}</Text>
+        <Text style={styles.rowProductDesc} >{item.descriptionHE || item.descriptionAR}</Text>
+        <Text style={styles.rowPriceText}>₪{price}</Text>
+      </View>
+      {/* Add button */}
+      <TouchableOpacity style={styles.addButton} onPress={() => onAddToCart(item)}>
+        <Text style={styles.addButtonText}>+</Text>
+      </TouchableOpacity>
     </TouchableOpacity>
-
-
-
-
-{userDetailsStore.isAdmin() && (
-            <View
-              style={{
-                flexDirection: "row",
-                flex: 1,
-                width: "100%",
-                justifyContent: "space-around",
-              }}
-            >
-              <View style={{ flexBasis: "45%" }}>
-                <Button
-                  bgColor={themeStyle.ORANGE_COLOR}
-                  text={"تعديل"}
-                  fontSize={16}
-                  onClickFn={() => onEditProduct(item)}
-                  textPadding={0}
-                  marginH={0}
-                  textColor={themeStyle.WHITE_COLOR}
-                  icon="cart_icon"
-                  iconSize={15}
-                  iconMargin={5}
-                />
-              </View>
-              <View style={{ flexBasis: "45%" }}>
-                <Button
-                  bgColor={"red"}
-                  text={t("delete")}
-                  fontSize={16}
-                  onClickFn={() => onDeleteProduct(item)}
-                  textPadding={0}
-                  marginH={0}
-                  textColor={themeStyle.WHITE_COLOR}
-                  icon="cart_icon"
-                  iconSize={15}
-                  iconMargin={5}
-                />
-              </View>
-            </View>
-          )}
-    </View>
-
   );
 };
 
 export default observer(ProductItem);
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 18,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    elevation: 8,
-    marginBottom: 8,
-    marginHorizontal: 0,
-    width: "100%",
-
-    overflow: "hidden",
-    alignSelf: "flex-start",
-    justifyContent: "flex-start",
-    alignItems: "center",
+  rowCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    marginVertical: 8,
+    marginHorizontal: 8,
     padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+    minHeight: 90,
   },
-  imageWrapper: {
-    width: "100%",
-    height: 110,
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
-    overflow: "hidden",
-    position: "relative",
+  rowImageWrapper: {
+    width: 96,
+    height: 96,
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginLeft: 8,
+    backgroundColor: '#f3f3f3',
   },
-  image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
+  rowImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
+    resizeMode: 'cover',
   },
-  priceText: {
-    color: "#B6D436",
-    fontSize: themeStyle.FONT_SIZE_XL,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 4,
+  rowTextContainer: {
+    flex: 1,
+    marginHorizontal: 12,
+    justifyContent: 'center',
   },
-  productName: {
+  rowProductName: {
+    fontSize: 16,
+    fontWeight: 'bold',
     color: themeStyle.GRAY_900,
-    fontSize: themeStyle.FONT_SIZE_LG,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 0,
+    marginBottom: 2,
+    textAlign: 'right',
+  },
+  rowProductDesc: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 4,
+    textAlign: 'right',
+  },
+  rowPriceText: {
+    color: '#232323',
+    fontSize: 15,
+    fontWeight: 'bold',
+    textAlign: 'right',
+  },
+  addButton: {
+    position: 'absolute',
+    left: 15,
+    bottom: 15,
+    width: 32,
+    height: 32,
+    borderRadius: 18,
+    backgroundColor: '#fff',
+  
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  addButtonText: {
+    fontSize: 22,
+    color: themeStyle.GRAY_300,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

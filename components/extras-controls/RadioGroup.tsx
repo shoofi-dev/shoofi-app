@@ -11,7 +11,7 @@ export type RadioGroupProps = {
 const RadioGroup = ({ options, value, onChange }: RadioGroupProps) => {
   let { languageStore } = useContext(StoreContext);
   return (
-    <View style={{}}>
+    <View style={{paddingHorizontal: 15}}>
       {options.map((opt, idx) => {
         const selected = value === opt.id;
         const isLast = idx === options.length - 1;
