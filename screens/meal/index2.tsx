@@ -298,7 +298,7 @@ const MealScreen = ({ route }) => {
     return null;
   }
   return (
-    <View style={{ height: "100%", }}>
+    <View style={{ height: "100%" }}>
       <View style={{ zIndex: 10 }}>
         <TouchableOpacity
           onPress={onClose}
@@ -357,7 +357,7 @@ const MealScreen = ({ route }) => {
             )}
           </View>
           <View
-            style={{  alignItems: "center", alignSelf: "center", marginTop:20 }}
+            style={{ alignItems: "center", alignSelf: "center", marginTop: 20 }}
           >
             <Counter
               value={product.others.qty || 1}

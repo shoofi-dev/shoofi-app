@@ -521,6 +521,7 @@ const App = () => {
   };
 
   const handleUpdateVersionDialogAnswer = () => {
+    // TODO: change to the new app url
     Linking.openURL(
       "https://sari-apps-lcibm.ondigitalocean.app/api/store/download-app"
     );
@@ -539,7 +540,7 @@ const App = () => {
       //const fetchHomeSlides = menuStore.getSlides();
       // const fetchStoreDataStore = storeDataStore.getStoreData();
       const fetchShoofiStoreData = shoofiAdminStore.getStoreData();
-      const fetchStoresList = shoofiAdminStore.getStoresListData(latitude && longitude ? {lat: latitude, lng: longitude} : null);
+      const fetchStoresList = shoofiAdminStore.getStoresListData(latitude && longitude ? {lat: '32.109276', lng: '34.963179'} : null);
       const fetchCategoryList = shoofiAdminStore.getCategoryListData();
       const fetchTranslations = translationsStore.getTranslations();
 

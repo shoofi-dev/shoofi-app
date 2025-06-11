@@ -15,16 +15,19 @@ const ProductDescription = ({ product }: TProps) => {
   return (
     <View
       style={{
-        alignItems:'flex-start'
+        alignItems: "flex-start",
       }}
     >
-     {product.descriptionAR || product.descriptionHE && <View style={{marginTop:10}}>
-      <Text style={{ fontSize: 18, textAlign: 'left' }}>
-      {languageStore.selectedLang === "ar"
-                    ? product.descriptionAR
-                    : product.descriptionHE}
-        </Text>
-      </View>}
+      {(product.descriptionAR ||
+        product.descriptionHE) && (
+          <View style={{ marginTop: 10 }}>
+            <Text style={{ fontSize: 18, textAlign: "left" }}>
+              {languageStore.selectedLang === "ar"
+                ? product.descriptionAR
+                : product.descriptionHE}
+            </Text>
+          </View>
+        )}
     </View>
   );
 };

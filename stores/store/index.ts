@@ -35,7 +35,6 @@ class StoreDataStore {
       runInAction(() => {
         console.log("resSSStore", res)
         this.storeData = res[0];
-        this.paymentCredentials = res[0].credentials;
       })
       return res[0];
     })

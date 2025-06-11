@@ -9,6 +9,7 @@ import { cdnUrl } from "../consts/shared";
 import CustomFastImage from "../components/custom-fast-image";
 import { axiosInstance } from "../utils/http-interceptor";
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import AdsCarousel, { Ad } from '../components/shared/AdsCarousel';
 
 const CATEGORY_BG = "#f5f5f5";
 
@@ -20,6 +21,7 @@ const ExploreScreen = () => {
   const [selectedGeneralCategory, setSelectedGeneralCategory] = useState(null);
   const [generalCategories, setGeneralCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [ads, setAds] = useState<Ad[]>([]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -49,6 +51,18 @@ const ExploreScreen = () => {
         if (!shoofiAdminStore.storesList) {
           await shoofiAdminStore.getStoresListData({});
         }
+        // Fetch ads
+        const adsRes: any = await axiosInstance.get("/ads/list");
+        console.log("adsRes", adsRes);
+        // Map API response to Ad type for AdsCarousel
+        const mappedAds: Ad[] = (adsRes || []).map((ad) => ({
+          id: ad._id || ad.id,
+          background: ad.image?.uri || '',
+          products: [], // No products in the API response
+          title: ad.titleHE || ad.title || '',
+          subtitle: ad.descriptionHE || ad.subtitle || '',
+        }));
+        setAds(mappedAds);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -88,7 +102,7 @@ const ExploreScreen = () => {
   }
 
   return (
-    <View style={{ backgroundColor: "#fff", }}>
+    <ScrollView style={{ backgroundColor: "#fff" }}>
       {/* General Categories Horizontal Scroller (original design) */}
       <ScrollView
         horizontal
@@ -158,7 +172,10 @@ const ExploreScreen = () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-
+      {/* Ads Carousel */}
+      {ads.length > 0 && (
+        <AdsCarousel ads={ads} />
+      )}
       {/* Extra: All categories grouped by general category */}
       {Object.keys(categoriesByGeneral).map((generalId) => (
         <View key={generalId} style={{ marginBottom: 24 }}>
@@ -232,7 +249,7 @@ const ExploreScreen = () => {
           </ScrollView>
         </View>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
