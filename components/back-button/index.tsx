@@ -5,6 +5,8 @@ import theme from "../../styles/theme.style";
 import Icon from "../icon";
 import * as Haptics from "expo-haptics";
 import themeStyle from "../../styles/theme.style";
+import Text from "../controls/Text";
+import { useResponsive } from "../../hooks/useResponsive";
 
 export type TProps = {
   goTo?: string;
@@ -12,6 +14,7 @@ export type TProps = {
 };
 export default function BackButton({ goTo, onClick }: TProps) {
   const navigation = useNavigation();
+  const { isTablet, scale, fontSize } = useResponsive();
 
   const onBtnClick = () => {
     onClick && onClick();
@@ -35,35 +38,27 @@ export default function BackButton({ goTo, onClick }: TProps) {
   };
 
   return (
-    <View style={styles.container}>
+    
       <TouchableOpacity
         onPress={() => {
           onBtnClick();
         }}
+        style={styles.container}
       >
-        <View
-          style={{
-            borderRadius: 30,
-            width: 30,
-            height: 30,
-            alignItems: "center",
-            justifyContent: "center",
-            marginVertical: 10,
-          }}
-        >
-          <Icon
-            icon={"arrow-left2"}
-            style={{ color: themeStyle.TEXT_PRIMARY_COLOR }}
-            size={25}
-          />
-        </View>
+   
+         <Text style={{fontSize:20, color:themeStyle.BLACK_COLOR}}>{'>'}</Text>
       </TouchableOpacity>
-    </View>
+    
   );
 }
 const styles = StyleSheet.create({
   container: {
-    
+      width: 36,
+      height: 36,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#ECF0F4",
+      borderRadius: 50,
   },
   button: {
     backgroundColor: theme.PRIMARY_COLOR,

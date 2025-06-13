@@ -1,5 +1,11 @@
 import LottieView from "lottie-react-native";
-import { View, Image, StyleSheet, DeviceEventEmitter } from "react-native";
+import {
+  View,
+  Image,
+  StyleSheet,
+  DeviceEventEmitter,
+  TouchableOpacity,
+} from "react-native";
 import { ToggleButton } from "react-native-paper";
 import Text from "../../controls/Text";
 import { useTranslation } from "react-i18next";
@@ -83,145 +89,119 @@ export const PaymentMethodMethodPick = ({
   };
 
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        width:"100%"
-      }}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
+    <View style={styles.pillContainer}>
+      {/* Cash Option */}
+      <TouchableOpacity
+        style={[
+          styles.pillOption,
+          paymentMthod === PAYMENT_METHODS.cash
+            ? styles.pillOptionSelected
+            : styles.pillOptionUnselected,
+          { borderTopRightRadius: 50, borderBottomRightRadius: 50 },
+        ]}
+        activeOpacity={0.8}
+        onPress={() => handlePaymentMethodChange(PAYMENT_METHODS.cash)}
       >
-        <ToggleButton.Row
-          onValueChange={(value) => handlePaymentMethodChange(value)}
-          value={paymentMthod}
-          style={styles.togglleContainer}
-        >
-          <ToggleButton
-          style={{
-                    ...styles.togglleCItem,
-                    backgroundColor:
-                      paymentMthod === PAYMENT_METHODS.cash
-                        ? theme.SECONDARY_COLOR
-                        : "transparent",
-                    borderTopRightRadius: 50,
-                    borderBottomRightRadius: 50,
-                  }}
-            icon={() => (
-              
-              <View style={styles.togglleItemContentContainer}>
-              <Icon
-                icon="shekel"
-                size={20}
-                style={{
-                  color:
-                    paymentMthod === PAYMENT_METHODS.cash
-                      ? themeStyle.TEXT_PRIMARY_COLOR
-                      : theme.WHITE_COLOR,
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  color:
-                    paymentMthod === PAYMENT_METHODS.cash
-                      ? themeStyle.TEXT_PRIMARY_COLOR
-                      : themeStyle.WHITE_COLOR,
-                }}
-              >
-                {" "}
-                {t("cash")}
-              </Text>
-            </View>
-            )}
-            value={PAYMENT_METHODS.cash}
+        <View style={styles.pillOptionContent}>
+          <Text
+            style={[
+              styles.pillOptionText,
+              paymentMthod === PAYMENT_METHODS.cash &&
+                styles.pillOptionTextSelected,
+            ]}
+          >
+            {t("cash")}
+          </Text>
+          <Icon
+            icon="shekel"
+            size={20}
+            style={{
+              color:
+                paymentMthod === PAYMENT_METHODS.cash
+                  ? themeStyle.TEXT_PRIMARY_COLOR
+                  : themeStyle.WHITE_COLOR,
+            }}
           />
-          <ToggleButton
-       style={{
-                    ...styles.togglleCItem,
-                    backgroundColor:
-                      paymentMthod === PAYMENT_METHODS.creditCard
-                        ? theme.SECONDARY_COLOR
-                        : "transparent",
-                    borderTopLeftRadius: 50,
-                    borderBottomLeftRadius: 50,
-                  }}
-            icon={() => (
-              <View style={styles.togglleItemContentContainer}>
-                <Icon
-                  icon="credit-card-1"
-                  size={25}
-                  style={{
-                    color:
-                      paymentMthod === PAYMENT_METHODS.creditCard
-                        ? theme.TEXT_PRIMARY_COLOR
-                        : themeStyle.WHITE_COLOR,
-                  }}
-                />
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: "bold",
-                    color:
-                      paymentMthod === PAYMENT_METHODS.creditCard
-                        ? themeStyle.TEXT_PRIMARY_COLOR
-                        : themeStyle.WHITE_COLOR,
-                  }}
-                >
-                  {t("credit-card")}
-                </Text>
-              </View>
-            )}
-            value={PAYMENT_METHODS.creditCard}
+        </View>
+      </TouchableOpacity>
+      {/* Credit Card Option */}
+      <TouchableOpacity
+        style={[
+          styles.pillOption,
+          paymentMthod === PAYMENT_METHODS.creditCard
+            ? styles.pillOptionSelected
+            : styles.pillOptionUnselected,
+          { borderTopLeftRadius: 50, borderBottomLeftRadius: 50 },
+        ]}
+        activeOpacity={0.8}
+        onPress={() => handlePaymentMethodChange(PAYMENT_METHODS.creditCard)}
+      >
+        <View style={styles.pillOptionContent}>
+          <Text
+            style={[
+              styles.pillOptionText,
+              paymentMthod === PAYMENT_METHODS.creditCard &&
+                styles.pillOptionTextSelected,
+            ]}
+          >
+            {t("credit-card")}
+          </Text>
+          <Icon
+            icon="credit-card-1"
+            size={25}
+            style={{
+              color:
+                paymentMthod === PAYMENT_METHODS.creditCard
+                  ? themeStyle.TEXT_PRIMARY_COLOR
+                  : themeStyle.WHITE_COLOR,
+            }}
           />
-        </ToggleButton.Row>
-      </View>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-  togglleContainer: {
+  pillContainer: {
+    flexDirection: "row",
+    backgroundColor: "#F3F3F3",
     borderRadius: 50,
-    borderWidth: 2,
     overflow: "hidden",
-    borderColor: theme.PRIMARY_COLOR,
-    flexDirection: "row",
     width: "100%",
-    shadowColor: "black",
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 20,
+    alignSelf: "center",
+    marginVertical: 8,
+    height: 54,
+    padding: 5,
   },
-  togglleCItem: {
-    borderWidth: 0,
-
-    borderRadius: 50,
+  pillOption: {
     flex: 1,
-    alignItems: "flex-start",
-  },
-  togglleItemContent: {},
-  togglleItemContentContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 0,
     height: "100%",
+    borderWidth: 0,
   },
-
-  background: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    height: "100%",
+  pillOptionSelected: {
+    backgroundColor: "#fff",
+  },
+  pillOptionUnselected: {
+    backgroundColor: "#F3F3F3",
+  },
+  pillOptionText: {
+    fontSize: 18,
+    fontWeight: "400",
+    color: "#232323",
+    marginBottom: 2,
+    marginLeft: 8,
+  },
+  pillOptionTextSelected: {
+    fontWeight: "bold",
+    color: "#232323",
+  },
+  pillOptionContent: {
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

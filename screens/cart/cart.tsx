@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useContext } from "react";
 import { observer } from "mobx-react";
 import {
@@ -42,6 +42,7 @@ import CustomFastImage from "../../components/custom-fast-image";
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 import { useResponsive } from "../../hooks/useResponsive";
 import CartExtras from "./components/Extras";
+import TotalPriceCMP from "../../components/total-price";
 const barcodeString = "https://onelink.to/zky772";
 
 const hideExtras = ["counter"];
@@ -63,8 +64,8 @@ type RootStackParamList = {
   homeScreen: undefined;
   meal: { index: number };
   cart: undefined;
-  'pick-time-screen': undefined;
-  'checkout-screen': undefined;
+  "pick-time-screen": undefined;
+  "checkout-screen": undefined;
 };
 
 const CartScreen = ({ route }) => {
@@ -80,13 +81,15 @@ const CartScreen = ({ route }) => {
     menuStore,
     extrasStore,
   } = useContext(StoreContext);
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { isTablet, scale, fontSize } = useResponsive();
 
   const [itemsPrice, setItemsPrice] = React.useState(0);
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
   const [editOrderData, setEditOrderData] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
     if (ordersStore.editOrderData) {
@@ -119,8 +122,7 @@ const CartScreen = ({ route }) => {
     cartStore.cartItems.forEach((item) => {
       if (item && item.data.id !== bcoindId) {
         tmpOrderPrice +=
-          (getPriceBySize(item) || item.data.price) *
-          item.others.qty;
+          (getPriceBySize(item) || item.data.price) * item.others.qty;
       }
     });
     setItemsPrice(tmpOrderPrice);
@@ -360,6 +362,11 @@ const CartScreen = ({ route }) => {
     }
   };
 
+  const onChangeTotalPrice = (toalPriceValue) => {
+    console.log("toalPriceValue", toalPriceValue)
+    setTotalPrice(toalPriceValue);
+  };
+
   return (
     <View style={{ position: "relative", height: "100%", flex: 1, bottom: 0 }}>
       {/* <LinearGradient
@@ -372,7 +379,7 @@ const CartScreen = ({ route }) => {
         <View style={{ ...styles.container }}>
           <View style={{ paddingHorizontal: scale(20) }}>
             <View style={styles.backContainer}>
-              <View
+              {/* <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -399,50 +406,47 @@ const CartScreen = ({ route }) => {
                 >
                   {cartStore.getProductsCount()}{" "}
                 </Text>
-              </View>
-              <View
-                style={{
-                  width: scale(40),
-                  height: scale(35),
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginVertical: scale(10),
-                  marginLeft: scale(10),
-                  backgroundColor: "#ECF0F4",
-                  paddingHorizontal: scale(5),
-                  borderRadius: 10,
-                }}
-              >
-                <BackButton onClick={onBackClick} />
+              </View> */}
+
+              <BackButton onClick={onBackClick} />
+              <View style={{ marginLeft: 10 }}>
+                <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>
+                  {t("my-order")}
+                </Text>
               </View>
             </View>
 
-            <View style={{ 
-              marginTop: scale(20), 
-              width: isTablet ? "80%" : "100%", 
-              alignSelf: "center",
-              paddingBottom: scale(20)
-            }}>
+            <View
+              style={{
+                marginTop: scale(20),
+                width: isTablet ? "80%" : "100%",
+                alignSelf: "center",
+                paddingBottom: scale(20),
+              }}
+            >
               {cartStore.cartItems.map((product, index) => {
                 const moveBy = (1 - 1 / 1) * index;
-                console.log("product.selectedExtras",product.selectedExtras)
                 return (
                   product && (
                     <Animated.View
                       style={{
                         borderRadius: scale(20),
                         marginTop: index != 0 ? scale(20) : 0,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.4,
-                        shadowRadius: 4,
-                        elevation: 2,
-                        borderWidth: 0,
+                        borderBottomWidth:1,
+                        borderColor:themeStyle.GRAY_600,
+                        paddingBottom:scale(20),
                         backgroundColor: "transparent",
+                      
                         opacity: value.current.interpolate({
-                          inputRange: index === 0
-                            ? [-1, 0, 1, 2]
-                            : [index - 1 - moveBy, index - moveBy, index + 1 - moveBy, index + 2 - moveBy],
+                          inputRange:
+                            index === 0
+                              ? [-1, 0, 1, 2]
+                              : [
+                                  index - 1 - moveBy,
+                                  index - moveBy,
+                                  index + 1 - moveBy,
+                                  index + 2 - moveBy,
+                                ],
                           outputRange: [0, 0, 1, 1],
                           extrapolate: "clamp",
                         }),
@@ -450,14 +454,15 @@ const CartScreen = ({ route }) => {
                     >
                       <Animated.View
                         style={[
-                          getProductIndexId(product, index) === itemToRemove ? animatedStyle : null,
+                          getProductIndexId(product, index) === itemToRemove
+                            ? animatedStyle
+                            : null,
                           {
                             backgroundColor: themeStyle.WHITE_COLOR,
                             borderRadius: scale(20),
                             padding: 0,
-                            position: 'relative',
+                            position: "relative",
                             overflow: "hidden",
-                           
                           },
                         ]}
                       >
@@ -465,7 +470,6 @@ const CartScreen = ({ route }) => {
                           ref={itemRefs[getProductIndexId(product, index)]}
                           style={{
                             borderRadius: scale(20),
-                            padding: scale(15),
                           }}
                           key={getProductIndexId(product, index)}
                         >
@@ -479,15 +483,15 @@ const CartScreen = ({ route }) => {
                             {/* Product Image */}
                             <View
                               style={{
-                                width: scale(100),
-                                height: scale(100),
+                                width: scale(60),
+                                height: scale(60),
                                 borderRadius: scale(15),
                                 overflow: "hidden",
                                 shadowColor: "black",
                                 shadowOffset: { width: 0, height: 2 },
                                 shadowOpacity: 0.9,
                                 elevation: 5,
-                                padding:5
+                                padding: 5,
                               }}
                             >
                               <CustomFastImage
@@ -500,33 +504,34 @@ const CartScreen = ({ route }) => {
                                   uri: `${cdnUrl}${product.data.img[0].uri}`,
                                 }}
                                 resizeMode="contain"
-
-                                cacheKey={`${APP_NAME}_${product.data.img[0].uri.split(/[\\/]/).pop()}`}
+                                cacheKey={`${APP_NAME}_${product.data.img[0].uri
+                                  .split(/[\\/]/)
+                                  .pop()}`}
                               />
                             </View>
 
                             {/* Product Details */}
-                            <View style={{ 
-                              flex: 1, 
-                              marginLeft: scale(15),
-                              paddingRight: scale(45),
-                            }}>
-                              <View style={{
-                                borderColor: themeStyle.PRIMARY_COLOR,
-                                alignItems: "center",
-                                borderTopWidth: 1,
-                                borderBottomWidth: 1,
-                                justifyContent: "center",
-                                paddingVertical: scale(8),
-                                marginBottom: scale(10),
-                                marginRight: scale(20),
-                              }}>
+                            <View
+                              style={{
+                                flex: 1,
+                                marginLeft: scale(15),
+                              }}
+                            >
+                              <View
+                                style={{
+                                  borderColor: themeStyle.PRIMARY_COLOR,
+
+                                  paddingVertical: scale(8),
+                                  marginBottom: scale(1),
+                                  marginRight: scale(20),
+                                }}
+                              >
                                 <Text
                                   style={{
                                     fontSize: fontSize(18),
                                     color: themeStyle.TEXT_PRIMARY_COLOR,
                                     fontFamily: `${getCurrentLang()}-Bold`,
-                                    textAlign: "center",
+                                    textAlign: "right",
                                   }}
                                 >
                                   {languageStore.selectedLang === "ar"
@@ -540,7 +545,15 @@ const CartScreen = ({ route }) => {
                                 extrasDef={product.data.extras}
                                 selectedExtras={product.selectedExtras}
                                 fontSize={fontSize}
-                                basePrice={product.data.basePrice !== undefined ? product.data.basePrice : product.data.price - extrasStore.calculateExtrasPrice(product.data.extras, product.selectedExtras)}
+                                basePrice={
+                                  product.data.basePrice !== undefined
+                                    ? product.data.basePrice
+                                    : product.data.price -
+                                      extrasStore.calculateExtrasPrice(
+                                        product.data.extras,
+                                        product.selectedExtras
+                                      )
+                                }
                                 qty={product.others.qty}
                               />
 
@@ -554,42 +567,74 @@ const CartScreen = ({ route }) => {
                               )}
 
                               {/* Counter and Price */}
-                              <View style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                marginTop: scale(15),
-                              }}>
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  marginTop: scale(15),
+                                }}
+                              >
+                                <View style={{}}>
+                                  <Text
+                                    style={{
+                                      fontSize: fontSize(20),
+                                      fontWeight: "bold",
+                                      color: themeStyle.TEXT_PRIMARY_COLOR,
+                                    }}
+                                  >
+                                    ₪{product.data.price * product?.others.qty}
+                                  </Text>
+                                </View>
+                                <View style={{flexDirection:"row",alignItems:"center"}}>
+                                <TouchableOpacity
+                                  style={{
+                                    backgroundColor: themeStyle.GRAY_600,
+                                    height: 36,
+                                    borderRadius: 50,
+                                    width: 36,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginRight:10
+                                  }}
+                                  onPress={() => {
+                                    onEditProduct(index);
+                                  }}
+                                >
+                                  <Icon
+                                    icon="pencil"
+                                    size={15}
+                                    style={{
+                                  
+                                      color: themeStyle.TEXT_PRIMARY_COLOR,
+                                    }}
+                                  />
+                                </TouchableOpacity>
+                                <View style={{}}>
                                 <Counter
                                   value={product?.others.qty}
                                   minValue={1}
-                                  onCounterChange={(value) => onCounterChange(product, index, value)}
-                                  variant="colors"
-                                  size={scale(30)}
+                                  onCounterChange={(value) =>
+                                    onCounterChange(product, index, value)
+                                  }
                                 />
-                                <View style={{marginLeft:20}}>
-                                <Text
-                                  style={{
-                                    fontSize: fontSize(20),
-                                    fontWeight: "bold",
-                                    color: themeStyle.PRIMARY_COLOR,
-                                  }}
-                                >
-                                  ₪{product.data.price * product?.others.qty}
-                                </Text>
                                 </View>
-                      
+                         
+                                </View>
+                            
                               </View>
                             </View>
                           </View>
                         </View>
 
                         {/* Action Buttons - Moved outside the padded container */}
-                        <View style={{
-                          position: "absolute",
-                          right: -10,
-                          top: -10,
-                        }}>
+                        <View
+                          style={{
+                            position: "absolute",
+                            right: -10,
+                            top: -10,
+                          }}
+                        >
                           <View>
                             <TouchableOpacity
                               style={{
@@ -619,11 +664,13 @@ const CartScreen = ({ route }) => {
                           </View>
                         </View>
 
-                        <View style={{
-                          position: "absolute",
-                          right: -14,
-                          bottom: -8,
-                        }}>
+                        {/* <View
+                          style={{
+                            position: "absolute",
+                            right: -14,
+                            bottom: -8,
+                          }}
+                        >
                           <View>
                             <TouchableOpacity
                               style={{
@@ -648,13 +695,17 @@ const CartScreen = ({ route }) => {
                               />
                             </TouchableOpacity>
                           </View>
-                        </View>
+                        </View> */}
                       </Animated.View>
                     </Animated.View>
                   )
                 );
               })}
             </View>
+            <TotalPriceCMP
+            shippingMethod={SHIPPING_METHODS.shipping}
+            onChangeTotalPrice={onChangeTotalPrice}
+          />
           </View>
         </View>
       </ScrollView>
@@ -685,7 +736,11 @@ const CartScreen = ({ route }) => {
         <View style={{ width: isTablet ? "40%" : "50%" }}>
           <Button
             onClickFn={handleSubmintButton}
-            text={storeDataStore.storeData?.isOrderLaterSupport ? t("pick-time") : t("continue-to-pay")}
+            text={
+              storeDataStore.storeData?.isOrderLaterSupport
+                ? t("pick-time")
+                : t("continue-to-pay")
+            }
             fontSize={fontSize(18)}
             textColor={theme.TEXT_PRIMARY_COLOR}
             borderRadious={50}
@@ -694,11 +749,22 @@ const CartScreen = ({ route }) => {
         </View>
 
         <View style={{ alignItems: "center", justifyContent: "center" }}>
-          <Text style={{ fontSize: fontSize(18), color: themeStyle.TEXT_PRIMARY_COLOR }}>
+          <Text
+            style={{
+              fontSize: fontSize(18),
+              color: themeStyle.TEXT_PRIMARY_COLOR,
+            }}
+          >
             {t("price")}
           </Text>
-          <Text style={{ fontSize: fontSize(22),color: themeStyle.TEXT_PRIMARY_COLOR }} type="number">
-            ₪{itemsPrice}
+          <Text
+            style={{
+              fontSize: fontSize(22),
+              color: themeStyle.TEXT_PRIMARY_COLOR,
+            }}
+            type="number"
+          >
+            ₪{totalPrice}
           </Text>
         </View>
       </Animatable.View>
@@ -724,8 +790,8 @@ const styles = StyleSheet.create({
   },
   backContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 10,
   },
   togglleContainer: {
     borderRadius: 50,

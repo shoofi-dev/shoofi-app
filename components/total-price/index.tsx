@@ -8,6 +8,7 @@ import { SHIPPING_METHODS } from "../../consts/shared";
 import { StoreContext } from "../../stores";
 import { useContext, useEffect, useState } from "react";
 import { getCurrentLang } from "../../translations/i18n";
+import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
 
 export type TProps = {
   shippingMethod: any;
@@ -15,11 +16,12 @@ export type TProps = {
 };
 export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TProps) {
   const { t } = useTranslation();
-  const { storeDataStore, cartStore } = useContext(StoreContext);
-
+       
+  const { cartStore } = useContext(StoreContext);
+  const { availableDrivers, loading: driversLoading, error: driversError } = useAvailableDrivers();
   const [itemsPrice, setItemsPrice] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-
+  const areaDeliveryPrice = availableDrivers?.area?.price
   useEffect(() => {
     getItemsPrice();
   }, []);
@@ -27,13 +29,14 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
   useEffect(()=>{
             getTotalPrice();
 
-  }, [itemsPrice, shippingMethod])
+  }, [itemsPrice, shippingMethod, availableDrivers?.area?.price])
 
   const getTotalPrice = () => {
     const shippingPrice =
       shippingMethod === SHIPPING_METHODS.shipping
-        ? storeDataStore.storeData?.delivery_price
+        ? deliveryPrice
         : 0;
+        console.log("shippingPrice", shippingPrice)
         const totalPriceTmp = shippingPrice + itemsPrice;
     setTotalPrice(totalPriceTmp);
     onChangeTotalPrice(totalPriceTmp)
@@ -48,122 +51,93 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
     setItemsPrice(tmpOrderPrice);
   };
 
+  // --- NEW DESIGN START ---
+  // Calculate values
+  const orderPrice = itemsPrice;
+  const deliveryPrice = shippingMethod === SHIPPING_METHODS.shipping ? areaDeliveryPrice || 0 : 0;
+  // Placeholder for discount logic (replace with real discount if available)
+  const discount = 0; // e.g., -5
+  const finalTotal = orderPrice + deliveryPrice + discount;
+
+  // Hebrew labels
+  const rows = [
+    { label: t("order-price"), value: orderPrice },
+    { label: t("delivery"), value: deliveryPrice },
+  ];
+  if (discount) {
+    rows.push({ label: t("discount"), value: discount });
+  }
+
   return (
-    <View style={styles.totalPrictContainer}>
-      {/* <LinearGradient
-          colors={["#c1bab3", "#efebe5", "#d8d1ca", "#dcdcd4", "#ccccc4"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.background, { borderRadius: 10 }]}
-        /> */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
-          borderBottomWidth: 1,
-          borderBottomColor: themeStyle.PRIMARY_COLOR,
-        }}
-      >
-        <View style={styles.priceRowContainer}>
-          <View>
-            <Text
-              style={{
-                fontFamily: `${getCurrentLang()}-SemiBold`,
-                fontSize: 18,
-              }}
-            >
-              {t("order-price")}:
-            </Text>
-          </View>
-          <View>
-            <Text
-              style={{
-                fontSize: 18,
-                fontFamily: `${getCurrentLang()}-SemiBold`,
-              }}
-              type="number"
-            >
-              ₪{itemsPrice}{" "}
-            </Text>
-          </View>
-        </View>
-
-        {shippingMethod === SHIPPING_METHODS.shipping && (
-          <View style={styles.priceRowContainer}>
-            <View style={{marginHorizontal:10,}}>
-            <Text style={{fontSize:18}}>|</Text>
-              </View>
-            <View>
-              <Text
-                style={{
-                  fontFamily: `${getCurrentLang()}-SemiBold`,
-                  fontSize: 18,
-                }}
-              >
-              {t("delivery")}:
-              </Text>
-            </View>
-            <View>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontFamily: `${getCurrentLang()}-SemiBold`,
-                }}
-                type="number"
-              >
-                ₪{storeDataStore.storeData?.delivery_price}{" "}
-              </Text>
-            </View>
-          </View>
-        )}
-      </View>
-
-      {/* {storeDataStore.storeData?.delivery_price > 0 && (
-        <View style={{ borderWidth: 0.3 }}></View>
-      )} */}
-
-      <View style={[styles.priceRowContainer, { marginTop: 10 }]}>
-        <View>
-          <Text
-            style={{
-              fontFamily: `${getCurrentLang()}-SemiBold`,
-              fontSize: 20,
-            }}
-          >
-            {t("final-price")}:
+    <View style={styles.totalPriceContainer}>
+      {rows.map((row, idx) => (
+        <View
+          key={row.label}
+          style={[
+            styles.row,
+            idx === rows.length - 1 ? styles.lastRow : null,
+          ]}
+        >
+          <Text style={styles.price} type="number">
+            ₪{row.value.toFixed(2)}
           </Text>
+          <Text style={styles.label}>{row.label}</Text>
         </View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-            }}
-            type="number"
-          >
-            {totalPrice}{" "}
-          </Text>
-          <Text
-            style={{
-              fontWeight: "bold",
-              fontSize: 17,
-            }}
-          >
-            ₪
-          </Text>
-        </View>
+      ))}
+      <View style={[styles.row, styles.lastRow, { marginTop: 8 }]}> 
+        <Text style={styles.priceTotal} type="number">
+          ₪{finalTotal.toFixed(2)}
+        </Text>
+        <Text style={styles.labelTotal}>{t("final-price-short")}</Text>
       </View>
     </View>
   );
+  // --- NEW DESIGN END ---
 }
 
 const styles = StyleSheet.create({
-  totalPrictContainer: {},
-  priceRowContainer: {
-    flexDirection: "row",
-    marginBottom: 10,
-    fontSize: 25,
+  totalPriceContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    overflow: "hidden",
+    marginVertical: 8,
+  },
+  row: {
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
     alignItems: "center",
-    justifyContent: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+  },
+  lastRow: {
+    borderBottomWidth: 0,
+  },
+  price: {
+    color: "#888",
+    fontSize: 16,
+    minWidth: 70,
+    textAlign: "left",
+  },
+  label: {
+    color: "#222",
+    fontSize: 16,
+    textAlign: "right",
+    flex: 1,
+  },
+  priceTotal: {
+    color: "#222",
+    fontWeight: "bold",
+    fontSize: 18,
+    minWidth: 70,
+    textAlign: "left",
+  },
+  labelTotal: {
+    color: "#222",
+    fontWeight: "bold",
+    fontSize: 18,
+    textAlign: "right",
+    flex: 1,
   },
 });

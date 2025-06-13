@@ -31,7 +31,7 @@ const ExploreScreen = () => {
       return () => {};
     }, [])
   );
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -182,74 +182,74 @@ const ExploreScreen = () => {
           <Text style={{ fontSize: 20, fontWeight: 'bold', marginHorizontal: 16, marginBottom: 8, textAlign: "left" }}>
             {getGeneralCategoryName(generalId)}
           </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
             style={{ paddingVertical: 8, paddingHorizontal: 8 }}
-            contentContainerStyle={{ flexDirection: I18nManager.isRTL ? "row" : "row" }}
-          >
+        contentContainerStyle={{ flexDirection: I18nManager.isRTL ? "row" : "row" }}
+      >
             {categoriesByGeneral[generalId].map((cat) => (
-              <TouchableOpacity
-                key={cat.categoryId}
-                style={{
-                  alignItems: "center",
-                  marginHorizontal: 8,
+          <TouchableOpacity
+            key={cat.categoryId}
+            style={{
+              alignItems: "center",
+              marginHorizontal: 8,
                 }}
                 onPress={() => {
                   shoofiAdminStore.setSelectedCategory(cat);
                   navigation.navigate('stores-list', { category: cat });
-                }}
-                activeOpacity={0.8}
-              >
-                <View
+            }}
+            activeOpacity={0.8}
+          >
+            <View
+              style={{
+                width: 70,
+                height: 70,
+                borderRadius: 20,
+                backgroundColor: CATEGORY_BG,
+                justifyContent: "center",
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.08,
+                shadowRadius: 4,
+                elevation: 2,
+              }}
+            >
+              {cat.image ? (
+                <CustomFastImage
                   style={{
-                    width: 70,
-                    height: 70,
+                    width: "100%",
+                    height: "100%",
                     borderRadius: 20,
-                    backgroundColor: CATEGORY_BG,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.08,
-                    shadowRadius: 4,
-                    elevation: 2,
                   }}
-                >
-                  {cat.image ? (
-                    <CustomFastImage
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        borderRadius: 20,
-                      }}
-                      source={{ uri: `${cdnUrl}${cat.image.uri}` }}
-                      cacheKey={`${cat.image.uri.split(/[\\/]/).pop()}`}
-                    />
-                  ) : (
-                    <View style={{ width: 50, height: 50, borderRadius: 15, backgroundColor: "#fff" }} />
-                  )}
-                </View>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: "#222",
-                    fontWeight: "500",
-                    marginTop: 6,
-                    textAlign: "center",
-                    maxWidth: 70,
-                  }}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {languageStore.selectedLang === "ar" ? cat.nameAR : cat.nameHE}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      ))}
-    </ScrollView>
+                  source={{ uri: `${cdnUrl}${cat.image.uri}` }}
+                  cacheKey={`${cat.image.uri.split(/[\\/]/).pop()}`}
+                />
+              ) : (
+                <View style={{ width: 50, height: 50, borderRadius: 15, backgroundColor: "#fff" }} />
+              )}
+            </View>
+            <Text
+              style={{
+                fontSize: 16,
+                color: "#222",
+                fontWeight: "500",
+                marginTop: 6,
+                textAlign: "center",
+                maxWidth: 70,
+              }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {languageStore.selectedLang === "ar" ? cat.nameAR : cat.nameHE}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+          </View>
+        ))}
+      </ScrollView>
   );
 };
 

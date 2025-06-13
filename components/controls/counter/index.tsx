@@ -36,9 +36,9 @@ export default function Counter({
           borderRadius: 999,
           borderWidth: 1,
           borderColor: "#d1d5db",
-          paddingHorizontal: 24,
+          paddingHorizontal: 16,
           paddingVertical: 8,
-          minWidth: 140,
+          minWidth: 50,
           justifyContent: "space-between",
         }}
       >

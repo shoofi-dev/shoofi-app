@@ -36,6 +36,7 @@ import { adminCustomerStore } from "../../stores/admin-customer";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
 import { ShippingMethodPick } from "../../components/address/shipping-method-pick";
+import { useAvailableDrivers } from '../../hooks/useAvailableDrivers';
 
 const HEADER_IMAGE_HEIGHT = 210;
 const STICKY_HEADER_HEIGHT = 110; // Info + categories
@@ -57,33 +58,10 @@ const MenuScreen = () => {
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
 
-  const { menuStore, languageStore, storeDataStore, cartStore, addressStore, shoofiAdminStore } = useContext(StoreContext);
+  const { menuStore, languageStore, storeDataStore, cartStore, addressStore, shoofiAdminStore, authStore } = useContext(StoreContext);
   const [menuAnimationDone, setMenuAnimationDone] = useState(false);
-  const [availableDrivers, setAvailableDrivers] = useState(null);
 
-  useEffect(() => {
-    if(!storeDataStore.storeData) return;
-    // Call getAvailableDrivers with default address location
-    const defaultAddress = addressStore.defaultAddress;
-    if (defaultAddress && defaultAddress.location && defaultAddress.location.coordinates) {
-      const [lng, lat] = defaultAddress.location.coordinates;
-      let storeLocation = undefined;
-      if (storeDataStore.storeData?.location) {
-        const {lat, lng} = storeDataStore.storeData.location;
-        storeLocation = { lat, lng };
-      }
-      shoofiAdminStore.getAvailableDrivers({ lat, lng }/* customer location */, storeLocation)
-        .then(res => {
-          console.log('Available drivers:', res);
-          setAvailableDrivers(res);
-        })
-        .catch(err => {
-          console.error('Error fetching available drivers:', err);
-        });
-    }
-  }, [addressStore.defaultAddress, storeDataStore.storeData?.location]);
-
-  useEffect(() => {}, [languageStore]);
+  const { availableDrivers, loading: driversLoading, error: driversError } = useAvailableDrivers();
 
   const { lastJsonMessage } = useWebSocket(WS_URL, {
     share: true,
@@ -240,6 +218,15 @@ const MenuScreen = () => {
     max: availableDrivers?.area?.maxETA,
   }
   const distanceKm = availableDrivers?.distanceKm;
+
+  const handleCartClick = () => {
+    if(authStore.isLoggedIn()) {
+      navigation.navigate("cart");
+    } else {
+      navigation.navigate("login");
+    }
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       {/* Fixed Back and Heart Buttons */}
@@ -280,6 +267,7 @@ const MenuScreen = () => {
           takeAwayReadyTime={takeAwayReadyTime}
            deliveryTime={deliveryTime}
            distanceKm={distanceKm}
+           driversLoading={driversLoading}
            />
         </View>
         <View style={{ width: "100%" }}>
@@ -333,7 +321,7 @@ const MenuScreen = () => {
           text={t("show-order")}
           icon="shopping-bag-plus"
           fontSize={17}
-          onClickFn={()=>{navigation.navigate("cart")}}
+          onClickFn={()=>{handleCartClick()}}
           fontFamily={`${getCurrentLang()}-Bold`}
           bgColor={themeStyle.PRIMARY_COLOR}
           textColor={themeStyle.WHITE_COLOR}

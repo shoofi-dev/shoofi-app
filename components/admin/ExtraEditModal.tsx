@@ -85,6 +85,7 @@ const ExtraEditModal: React.FC<ExtraEditModalProps> = ({
         { id: "quarter4", name: "Fourth Quarter", price: 0 }
       ] : undefined
     };
+    console.log("newOption", newOption);
     setOptions((opts) => [...opts, newOption]);
   };
 

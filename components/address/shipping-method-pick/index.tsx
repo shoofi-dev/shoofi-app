@@ -36,9 +36,10 @@ export type TProps = {
     max: number;
   };
   distanceKm?: number;
+  driversLoading?: boolean;
 };
 
-export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySupport, deliveryDistanceText, deliveryEtaText, pickupEtaText, takeAwayReadyTime, deliveryTime, distanceKm }: TProps) => {
+export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySupport, deliveryDistanceText, deliveryEtaText, pickupEtaText, takeAwayReadyTime, deliveryTime, distanceKm, driversLoading }: TProps) => {
   const { t } = useTranslation(); 
   const { ordersStore } = useContext(StoreContext);
 
@@ -120,9 +121,12 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
         >
           {t("delivery")}
         </Text>
-        { isDeliverySupport ? <Text style={styles.pillOptionSubtext}>
+        { isDeliverySupport && !driversLoading ? <Text style={styles.pillOptionSubtext}>
           {distanceKm ? distanceKm + " km · " : ""}
           {deliveryTime?.min} - {deliveryTime?.max} {t('minutes')}
+        </Text>
+        : driversLoading ? <Text style={{color: themeStyle.ERROR_COLOR}}>
+          {t('loading')}
         </Text>
         : <Text style={{color: themeStyle.ERROR_COLOR}}>
           {t('delivery-not-supported')}

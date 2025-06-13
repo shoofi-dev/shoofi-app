@@ -9,63 +9,63 @@ export type TProps = {
 };
 
 export const MapViewAddress = ({ region, location }: TProps) => {
+  console.log("location", location);
   return (
-        <View
-          pointerEvents="none"
-          style={{
-            alignItems: "center",
-            paddingHorizontal: 1,
-            width:"100%"
-          }}
-        >
-          {location && region ? (
-            <View style={styles.mapViewContainer}>
-              <MapView
-                style={styles.mapContainer}
-                initialRegion={{
-                  ...region,
+    <View
+      pointerEvents="none"
+      style={{
+        alignItems: "center",
+        paddingHorizontal: 1,
+        width: "100%",
+      }}
+    >
+      {location ? (
+        <View style={styles.mapViewContainer}>
+          <MapView
+            style={styles.mapContainer}
+            initialRegion={{
+              latitude: location.lat,
+              longitude: location.lng,
+              latitudeDelta: 0.01, // Smaller values = more zoomed in
+              longitudeDelta: 0.01,
+            }}
+          >
+            {location && (
+              <Marker
+                coordinate={{
+                  latitude: location.lat,
+                  longitude: location.lng,
                 }}
-              >
-                {location && (
-                  <Marker
-                    coordinate={{
-                      latitude: location.coords.latitude,
-                      longitude: location.coords.longitude,
-                    }}
-                  />
-                )}
-              </MapView>
-            </View>
-          ) : (
-            <MapView
-              style={styles.mapContainerDefault}
-              initialRegion={{
-                latitude: 32.233583,
-                latitudeDelta: 0.01,
-                longitude: 34.951661,
-                longitudeDelta: 0.01,
-              }}
-            ></MapView>
-          )}
+              />
+            )}
+          </MapView>
         </View>
+      ) : (
+        <MapView
+          style={styles.mapContainerDefault}
+          initialRegion={{
+            latitude: location.lat,
+            latitudeDelta: 0.01,
+            longitude: location.lng,
+            longitudeDelta: 0.01,
+          }}
+        ></MapView>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-
-
   mapContainerDefault: {
     height: 150,
     borderRadius: 10,
     minHeight: 150,
-    
   },
   mapContainer: {
     width: "100%",
     height: 150,
     borderRadius: 10,
     minHeight: 150,
-
   },
   mapViewContainer: {
     width: "100%",
@@ -81,6 +81,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.9,
     shadowRadius: 6,
     elevation: 20,
-    
   },
 });

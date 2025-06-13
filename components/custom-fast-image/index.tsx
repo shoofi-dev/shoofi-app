@@ -139,7 +139,7 @@ const CustomFastImage = (props) => {
           accessibilityLabel={description}
         />
       ) : null}
-    </View>
+        </View>
   );
 };
 export default CustomFastImage;

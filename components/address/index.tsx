@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
   animationDuration,
@@ -15,6 +15,9 @@ import TextAddress from "./text-address";
 import GEOAddress from "./geo-address";
 import { StoreContext } from "../../stores";
 import * as Animatable from "react-native-animatable";
+import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
+import Icon from "../icon";
+import Text from "../controls/Text";
 
 export type TProps = {
   onShippingMethodChangeFN: any;
@@ -29,8 +32,15 @@ export const AddressCMP = ({
   onPlaceChangeFN,
 }: TProps) => {
   const { t } = useTranslation();
-  const { ordersStore } = useContext(StoreContext);
-
+  const { storeDataStore } = useContext(StoreContext);
+  const {
+    availableDrivers,
+    loading: driversLoading,
+    error: driversError,
+    customerLocation,
+    defaultAddress,
+  } = useAvailableDrivers();
+console.log("customerLocation", customerLocation)
   const [place, setPlace] = useState(PLACE.current);
   const [textAddress, setTextAddress] = useState("");
   const [location, setLocation] = useState(null);
@@ -66,7 +76,7 @@ export const AddressCMP = ({
     onTextAddressChange(textAddressValue);
   };
   const onGEOChange = (locationValue, regionValue) => {
-    console.log("onGEOChange");
+    console.log("onGEOChange", locationValue, regionValue);
     setLocation(locationValue);
     setRegion(regionValue);
     onGeoAddressChange(locationValue);
@@ -76,12 +86,35 @@ export const AddressCMP = ({
     setIsOpenConfirmActiondDialog(false);
   };
 
+  const minTakeAwayReadyTime = storeDataStore.storeData?.minReady;
+  const maxTakeAwayReadyTime = storeDataStore.storeData?.maxReady;
+  const takeAwayReadyTime = {
+    min: minTakeAwayReadyTime,
+    max: maxTakeAwayReadyTime,
+  };
+  const deliveryTime = {
+    min: availableDrivers?.area?.minETA,
+    max: availableDrivers?.area?.maxETA,
+  };
+  const distanceKm = availableDrivers?.distanceKm;
+
+
   return (
     <View style={{}}>
+    
       <View>
-        <ShippingMethodPick
+        {/* <ShippingMethodPick
           onChange={onShippingMethodChange}
           shippingMethodValue={shippingMethod}
+        /> */}
+        <ShippingMethodPick
+          onChange={onShippingMethodChange}
+          shippingMethodValue={""}
+          isDeliverySupport={availableDrivers?.available}
+          takeAwayReadyTime={takeAwayReadyTime}
+          deliveryTime={deliveryTime}
+          distanceKm={distanceKm}
+          driversLoading={driversLoading}
         />
       </View>
       {shippingMethod === SHIPPING_METHODS.shipping && (
@@ -96,33 +129,58 @@ export const AddressCMP = ({
               alignItems: "center",
             }}
           >
-            <PlacePickCmp onChnage={onPlaceChange} selectedPlace={place} />
+            {/* Default Address Bar */}
+      {defaultAddress && (
+        <TouchableOpacity style={styles.defaultAddressBar}>
+          <Icon name="home" size={20} color="#888" style={{ marginLeft: 6, marginRight: 2 }} />
+          <Text style={styles.defaultAddressText}>
+            {`${defaultAddress.name || 'בית'}: ${defaultAddress.street || ''}${defaultAddress.streetNumber ? ',' + defaultAddress.streetNumber : ''}${defaultAddress.city ? ', ' + defaultAddress.city : ''}`}
+          </Text>
+        </TouchableOpacity>
+      )}
+            {/* <PlacePickCmp onChnage={onPlaceChange} selectedPlace={place} /> */}
           </Animatable.View>
-          {place === PLACE.current && (
             <View style={{ width: "100%" }}>
-              <GEOAddress onChange={onGEOChange} />
+              {/* <GEOAddress onChange={onGEOChange} /> */}
               <Animatable.View
                 animation="fadeInLeft"
                 duration={animationDuration}
-                style={{ width: "100%", marginTop: 10 }}
+                style={{ width: "100%", marginTop: 10, }}
               >
-                {location && region && (
-                  <MapViewAddress location={location} region={region} />
+                {customerLocation && (
+                  <MapViewAddress location={customerLocation} region={region} />
                 )}
               </Animatable.View>
             </View>
-          )}
-          {place === PLACE.other && (
+      
+          {/* {place === PLACE.other && (
             <Animatable.View
               animation="fadeInLeft"
               style={{ marginTop: 10, width: "100%" }}
             >
               <TextAddress onChange={onChangeTextAddress} />
             </Animatable.View>
-          )}
+          )} */}
         </View>
       )}
     </View>
   );
 };
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  defaultAddressBar: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    backgroundColor: '#f5f6f7',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginBottom: 6,
+    minHeight: 32,
+  },
+  defaultAddressText: {
+    fontSize: 15,
+    color: '#222',
+    flexShrink: 1,
+    textAlign: 'right',
+  },
+});

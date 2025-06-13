@@ -229,7 +229,7 @@ const CheckoutScreen = ({ route }) => {
         style={{ marginHorizontal: 20 }}
         keyboardShouldPersistTaps="handled"
       >
-        {storeDataStore.storeData.isOrderLaterSupport && (
+        {storeDataStore.storeData?.isOrderLaterSupport && (
           <Animatable.View
             animation="fadeInDown"
             duration={animationDuration}
@@ -289,12 +289,12 @@ const CheckoutScreen = ({ route }) => {
           alignItems: "center",
         }}
       >
-        <View>
+        {/* <View>
           <TotalPriceCMP
             shippingMethod={shippingMethod}
             onChangeTotalPrice={onChangeTotalPrice}
           />
-        </View>
+        </View> */}
         <View style={{ width: "90%", marginTop: 10 }}>
           <Button
             onClickFn={() => handleCheckout(isShippingMethodAgrred)}
