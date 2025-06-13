@@ -1,5 +1,5 @@
 import LottieView from "lottie-react-native";
-import { View, Image, StyleSheet, DeviceEventEmitter } from "react-native";
+import { View, Image, StyleSheet, DeviceEventEmitter, TouchableOpacity } from "react-native";
 import { ToggleButton } from "react-native-paper";
 import Text from "../../controls/Text";
 import { useTranslation } from "react-i18next";
@@ -23,9 +23,23 @@ const icons = {
 export type TProps = {
   onChange: any;
   shippingMethodValue?: any;
+  isDeliverySupport?: boolean;
+  deliveryDistanceText?: string;
+  deliveryEtaText?: string;
+  pickupEtaText?: string;
+  takeAwayReadyTime?: {
+    min: number;
+    max: number;
+  };
+  deliveryTime?: {
+    min: number;
+    max: number;
+  };
+  distanceKm?: number;
 };
-export const ShippingMethodPick = ({ onChange, shippingMethodValue }: TProps) => {
-  const { t } = useTranslation();
+
+export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySupport, deliveryDistanceText, deliveryEtaText, pickupEtaText, takeAwayReadyTime, deliveryTime, distanceKm }: TProps) => {
+  const { t } = useTranslation(); 
   const { ordersStore } = useContext(StoreContext);
 
   const [shippingMethod, setShippingMethod] = useState(
@@ -68,15 +82,15 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue }: TProps) =>
       return;
     }
 
-    let isDeliverySupported = true;
+    let isDeliverySupported = false;
     if (value === SHIPPING_METHODS.shipping) {
-      isDeliverySupported = await isStoreSupportAction("delivery_support");
+      isDeliverySupported = isDeliverySupport;
     }
     if (!isDeliverySupported) {
-      toggleDialog({
-        text: "shipping-not-supported",
-        icon: "shipping_icon",
-      });
+      // toggleDialog({
+      //   text: "shipping-not-supported",
+      //   icon: "shipping_icon",
+      // });
       setShippingMethod(SHIPPING_METHODS.takAway);
       return;
     }
@@ -85,132 +99,102 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue }: TProps) =>
   };
 
   return (
-    <View
-      style={{
-        width:"100%",
-      }}
-    >
-      <ToggleButton.Row
-        onValueChange={(value) => handleDeliverySelect(value)}
-        value={shippingMethod}
-        style={styles.togglleContainer}
+    <View style={styles.pillContainer}>
+      {/* Delivery Option */}
+      <TouchableOpacity
+        style={[
+          styles.pillOption,
+          shippingMethod === SHIPPING_METHODS.shipping
+            ? styles.pillOptionSelected
+            : styles.pillOptionUnselected,
+            { borderRadius: 50 },
+          ]}
+        onPress={() => handleDeliverySelect(SHIPPING_METHODS.shipping)}
+        activeOpacity={0.8}
       >
-        <ToggleButton
-              style={{
-                    ...styles.togglleCItem,
-                    backgroundColor:
-                      shippingMethod === SHIPPING_METHODS.shipping
-                        ? theme.SECONDARY_COLOR
-                        : "transparent",
-                    borderTopRightRadius: 50,
-                    borderBottomRightRadius: 50,
-                  }}
-          icon={() => (
-            <View style={styles.togglleItemContentContainer}>
-            <Icon
-              icon="delivery-active"
-              size={25}
-              style={{
-                color:
-                  shippingMethod === SHIPPING_METHODS.shipping
-                    ? theme.TEXT_PRIMARY_COLOR
-                    : theme.WHITE_COLOR,
-              }}
-            />
-
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "bold",
-                color:
-                  shippingMethod === SHIPPING_METHODS.shipping
-                    ? themeStyle.TEXT_PRIMARY_COLOR
-                    : themeStyle.WHITE_COLOR,
-                left: 3,
-              }}
-            >
-              {t("delivery")}
-            </Text>
-          </View>
-          )}
-          value={SHIPPING_METHODS.shipping}
-        />
-        <ToggleButton
-            style={{
-                    ...styles.togglleCItem,
-                    backgroundColor:
-                      shippingMethod === SHIPPING_METHODS.takAway
-                        ? theme.SECONDARY_COLOR
-                        : "transparent",
-                    borderTopLeftRadius: 50,
-                    borderBottomLeftRadius: 50,
-                  }}
-          icon={() => (
-            <View style={styles.togglleItemContentContainer}>
-            <Icon
-              icon="shopping-bag-1"
-              size={25}
-              style={{
-                color:
-                  shippingMethod === SHIPPING_METHODS.takAway
-                    ? theme.TEXT_PRIMARY_COLOR
-                    : themeStyle.WHITE_COLOR,
-              }}
-            />
-
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "bold",
-                color:
-                  shippingMethod === SHIPPING_METHODS.takAway
-                    ? themeStyle.TEXT_PRIMARY_COLOR
-                    : themeStyle.WHITE_COLOR,
-              }}
-            >
-              {t("take-away")}
-            </Text>
-          </View>
-          )}
-          value={SHIPPING_METHODS.takAway}
-        />
-      </ToggleButton.Row>
+        <Text
+          style={[
+            styles.pillOptionText,
+            shippingMethod === SHIPPING_METHODS.shipping && styles.pillOptionTextSelected,
+          ]}
+        >
+          {t("delivery")}
+        </Text>
+        { isDeliverySupport ? <Text style={styles.pillOptionSubtext}>
+          {distanceKm ? distanceKm + " km · " : ""}
+          {deliveryTime?.min} - {deliveryTime?.max} {t('minutes')}
+        </Text>
+        : <Text style={{color: themeStyle.ERROR_COLOR}}>
+          {t('delivery-not-supported')}
+        </Text>
+        }
+      </TouchableOpacity>
+      {/* Pickup Option */}
+      <TouchableOpacity
+        style={[
+          styles.pillOption,
+          shippingMethod === SHIPPING_METHODS.takAway
+            ? styles.pillOptionSelected
+            : styles.pillOptionUnselected,
+          { borderRadius: 50 },
+        ]}
+        onPress={() => handleDeliverySelect(SHIPPING_METHODS.takAway)}
+        activeOpacity={0.8}
+      >
+        <Text
+          style={[
+            styles.pillOptionText,
+            shippingMethod === SHIPPING_METHODS.takAway && styles.pillOptionTextSelected,
+          ]}
+        >
+          {t("take-away")}
+        </Text>
+        <Text style={styles.pillOptionSubtext}>{takeAwayReadyTime?.min} - {takeAwayReadyTime?.max} {t('minutes')}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-  togglleContainer: {
+  pillContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#F3F3F3',
     borderRadius: 50,
-    borderWidth: 2,
-    overflow: "hidden",
-    borderColor: theme.PRIMARY_COLOR,
-    flexDirection: "row",
-    width: "100%",
-    backgroundColor:'rgba(36, 33, 30, 0.8)',
+    overflow: 'hidden',
+    width: '100%',
+    alignSelf: 'center',
+    marginVertical: 8,
+    height: 54,
+    padding:5
   },
-  togglleCItem: {
-    borderWidth: 0,
-
-    borderRadius: 50,
+  pillOption: {
     flex: 1,
-    alignItems: "flex-start",
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 0,
+    height: '100%',
   },
-  togglleItemContent: {},
-  togglleItemContentContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    height: "100%",
+  pillOptionSelected: {
+    backgroundColor: '#fff',
   },
-
-  background: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    height: "100%",
+  pillOptionUnselected: {
+    backgroundColor: '#F3F3F3',
+  },
+  pillOptionText: {
+    fontSize: 18,
+    fontWeight: '400',
+    color: '#232323',
+    marginBottom: 2,
+  },
+  pillOptionTextSelected: {
+    fontWeight: 'bold',
+    color: '#232323',
+  },
+  pillOptionSubtext: {
+    fontSize: 13,
+    color: '#888',
+    marginTop: -2,
+    textAlign: 'center',
   },
 });

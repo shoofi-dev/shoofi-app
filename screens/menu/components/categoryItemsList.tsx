@@ -173,7 +173,7 @@ const CategoryItemsList = ({ productsList, category }) => {
 
   const filterBirthdayProducts = filterBirthday();
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, backgroundColor: '#fff', position: 'relative' }}>
       <FlatList
         data={filterBirthdayProducts.slice(0, pageNumber * 5)}
         keyExtractor={item => item._id}
@@ -201,6 +201,8 @@ const CategoryItemsList = ({ productsList, category }) => {
         }
         contentContainerStyle={{ paddingBottom: 40 }}
       />
+
+
 
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { interpolate } from "react-native-reanimated";
 import { withTiming } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
 import { cdnUrl } from "../../../consts/shared";
+import { StoreContext } from "../../../stores";
 
 interface StoreHeaderCardProps {
   store: any;
@@ -41,7 +42,8 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   onlyInfoCard,
 }) => {
   const [activeSlide, setActiveSlide] = useState(0);
-
+  const {  languageStore } =
+  useContext(StoreContext);
   // Use store fields with fallbacks
   const storeImages =
     store?.cover_sliders?.length > 0
@@ -50,7 +52,8 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   const storeLogo =
     store?.storeLogo ||
     "https://cdn-icons-png.flaticon.com/512/3075/3075977.png";
-  const storeName = store?.storeName || "הקרים";
+  const storeName = languageStore.selectedLang === "ar" ? store?.name_ar : store?.name_he;
+  const storeDescription = languageStore.selectedLang === "ar" ? store?.descriptionAR : store?.descriptionHE;
   const rating = store?.rating || 4.7;
   const deliveryTime = store?.deliveryTime || 20;
   const deliveryPrice = store?.deliveryPrice || 10;
@@ -158,10 +161,10 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   if (onlyCarousel) {
     return renderImageSection();
   }
-  console.log("storeLogo", storeLogo);
+
   if (onlyInfoCard) {
     return (
-      <View style={[styles.infoCard, { top: 10, zIndex: 2 }]}>
+      <View style={[styles.infoCard, { top: 10, zIndex: 2, }]}>
         {/* 210 (image) - 50 (overlap) */}
         <View style={styles.infoRow}>
           <TouchableOpacity style={styles.arrowBtn}>
@@ -176,9 +179,9 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
           >
             <Text style={styles.storeName}>{storeName}</Text>
             <Text style={styles.subtitle}>
-              {store?.description || "מסעדה איטלקית אורגינלית"}
+              {storeDescription}
             </Text>
-            <View style={styles.infoDetailsRow}>
+            {/* <View style={styles.infoDetailsRow}>
               <Text style={styles.infoDetail}>
                 <Icon name="star" size={16} color="#FFC107" />{" "}
                 <Text>{rating}</Text>
@@ -203,7 +206,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               <Text style={styles.bottomInfoText}>
                 {rating} <Icon name="star" size={16} color="#FFC107" />
               </Text>
-            </View>
+            </View> */}
           </View>
           <CustomFastImage
             source={{ uri: cdnUrl + storeLogo }}
@@ -260,7 +263,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               <Text style={styles.subtitle}>
                 {store?.description || "מסעדה איטלקית אורגינלית"}
               </Text>
-              <View style={styles.infoDetailsRow}>
+              {/* <View style={styles.infoDetailsRow}>
                 <Text style={styles.infoDetail}>
                   <Icon name="star" size={16} color="#FFC107" />{" "}
                   <Text>{rating}</Text>
@@ -287,7 +290,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
                 <Text style={styles.bottomInfoText}>
                   {rating} <Icon name="star" size={16} color="#FFC107" />
                 </Text>
-              </View>
+              </View> */}
             </View>
             <CustomFastImage
               source={{ uri: cdnUrl + storeLogo }}

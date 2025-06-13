@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { axiosInstance } from '../../utils/http-interceptor';
+import { useTranslation } from 'react-i18next';
 
 interface City {
   name: string;
@@ -16,7 +17,7 @@ interface CitiesListProps {
 }
 
 const CitiesList: React.FC<CitiesListProps> = ({ onCitySelect, selectedCity }) => {
-
+  const { t } = useTranslation();
   const [cities, setCities] = useState<Array<{ _id: string; nameAR: string; nameHE: string, geometry: any }>>([]);
 
   const fetchCities = async () => {
@@ -36,7 +37,7 @@ const CitiesList: React.FC<CitiesListProps> = ({ onCitySelect, selectedCity }) =
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Cities</Text>
+      <Text style={styles.header}>{t('cities')}</Text> 
       <FlatList
         data={cities}
         keyExtractor={(_, idx) => idx.toString()}
@@ -60,10 +61,8 @@ const CitiesList: React.FC<CitiesListProps> = ({ onCitySelect, selectedCity }) =
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
     backgroundColor: '#fff',
     borderRadius: 12,
-    margin: 8,
     elevation: 2,
   },
   header: {

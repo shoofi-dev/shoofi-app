@@ -107,7 +107,7 @@ const StoreItem = ({ storeItem }: TProps) => {
         </View>
         <View style={styles.infoRow}>
           <Text style={styles.infoText}>
-            {location} · ₪{deliveryPrice}
+             · ₪{deliveryPrice}
           </Text>
         </View>
         <Text style={styles.descText} >

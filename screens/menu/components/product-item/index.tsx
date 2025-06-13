@@ -93,7 +93,6 @@ const ProductItem = ({
           source={{ uri: imageUrl }}
           style={styles.rowImage}
           cacheKey={`${APP_NAME}_${imageUrl.split(/[\/]/).pop()}`}
-          resizeMode="cover"
         />
       </View>
       {/* Text and price on the left */}

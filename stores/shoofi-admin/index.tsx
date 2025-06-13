@@ -155,6 +155,23 @@ class ShoofiAdminStore {
   setSelectedGeneralCategory(generalCategory) {
     this.selectedGeneralCategory = generalCategory;
   }
+
+  getAvailableDrivers = async (
+    location: { lat: number; lng: number },
+    storeLocation?: { lat: number; lng: number }
+  ) => {
+    try {
+      const body: any = { location };
+      if (storeLocation) {
+        body.storeLocation = storeLocation;
+      }
+      const response = await axiosInstance.post('/delivery/available-drivers', body);
+      return response;
+    } catch (error) {
+      console.error('Error fetching available drivers:', error);
+      throw error;
+    }
+  };
 }
 
 export const shoofiAdminStore = new ShoofiAdminStore();

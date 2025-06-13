@@ -18,12 +18,12 @@ export type TProps = {
 const ProductHeader = ({ product, updateOthers }: TProps) => {
   const { t } = useTranslation();
   let { languageStore } = useContext(StoreContext);
-  const imageHeight = 200;
+  const imageHeight = 280;
   return (
     <View style={{ paddingBottom: 15 }}>
       <Animated.View
         style={{
-          height: imageHeight,
+          maxHeight: imageHeight,
           width: "100%",
         }}
       >
@@ -33,8 +33,7 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
             height: "100%",
           }}
           source={{ uri: `${cdnUrl}${product.data.img[0].uri}` }}
-          cacheKey={`${product.data.img[0].uri.split(/[\\/]/).pop()}`}
-          resizeMode="cover"
+   
         />
       </Animated.View>
       <View

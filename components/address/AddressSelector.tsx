@@ -10,7 +10,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const AddressSelector = observer(({ onAddressSelect }) => {
   const navigation = useNavigation();
-  const { addressStore, userDetailsStore,shoofiAdminStore } = useContext(StoreContext);
+  const { addressStore, userDetailsStore,shoofiAdminStore, authStore } = useContext(StoreContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -45,6 +45,10 @@ const AddressSelector = observer(({ onAddressSelect }) => {
   };
 
   const handleAddNew = () => {
+    if(!authStore.isLoggedIn()){
+      navigation.navigate('login')
+      return;
+    }
     setDropdownOpen(false);
     navigation.navigate('AddAddress', {
       onSuccess: () => navigation.goBack(),

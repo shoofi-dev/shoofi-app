@@ -35,7 +35,6 @@ const ProductFooter = ({
         marginHorizontal:10
       }}
     >
-      {/* <Text>{Number(price)*Number(qty)}</Text> */}
         <Button
           text={isEdit ? t("save") : t("add-to-cart")}
           icon="shopping-bag-plus"

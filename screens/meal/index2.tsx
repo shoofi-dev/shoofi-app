@@ -360,7 +360,7 @@ const MealScreen = ({ route }) => {
             style={{ alignItems: "center", alignSelf: "center", marginTop: 20 }}
           >
             <Counter
-              value={product.others.qty || 1}
+              value={meal.others.qty}
               minValue={1}
               onCounterChange={(value) => {
                 updateOthers(value, "qty", "others");

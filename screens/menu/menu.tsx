@@ -17,6 +17,7 @@ import themeStyle from "../../styles/theme.style";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import Animated from "react-native-reanimated";
+import Button from "../../components/controls/button/button";
 
 /* components */
 import CategoryItemsList from "./components/categoryItemsList";
@@ -56,8 +57,31 @@ const MenuScreen = () => {
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
 
-  const { menuStore, languageStore, storeDataStore } = useContext(StoreContext);
+  const { menuStore, languageStore, storeDataStore, cartStore, addressStore, shoofiAdminStore } = useContext(StoreContext);
   const [menuAnimationDone, setMenuAnimationDone] = useState(false);
+  const [availableDrivers, setAvailableDrivers] = useState(null);
+
+  useEffect(() => {
+    if(!storeDataStore.storeData) return;
+    // Call getAvailableDrivers with default address location
+    const defaultAddress = addressStore.defaultAddress;
+    if (defaultAddress && defaultAddress.location && defaultAddress.location.coordinates) {
+      const [lng, lat] = defaultAddress.location.coordinates;
+      let storeLocation = undefined;
+      if (storeDataStore.storeData?.location) {
+        const {lat, lng} = storeDataStore.storeData.location;
+        storeLocation = { lat, lng };
+      }
+      shoofiAdminStore.getAvailableDrivers({ lat, lng }/* customer location */, storeLocation)
+        .then(res => {
+          console.log('Available drivers:', res);
+          setAvailableDrivers(res);
+        })
+        .catch(err => {
+          console.error('Error fetching available drivers:', err);
+        });
+    }
+  }, [addressStore.defaultAddress, storeDataStore.storeData?.location]);
 
   useEffect(() => {}, [languageStore]);
 
@@ -79,6 +103,7 @@ const MenuScreen = () => {
   const [tmpSelectedCategoryProg, setTmpSelectedCategoryProg] = useState(false);
   const [isDisabledCatItem, setIsDisabledCatItem] = useState(false);
   const [selectedCats, setSelectedCats] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
 
   const [selectedCategoryKey, setSelectedCategoryKey] = useState("BURGERS");
 
@@ -150,7 +175,9 @@ const MenuScreen = () => {
       });
     });
   };
-
+  useEffect(() => {
+    setCartCount(cartStore.getProductsCount());
+  }, [cartStore.cartItems]);
   const tasteScorll2 = () => {
     scrollRef.current?.scrollTo?.({
       x: 600,
@@ -186,24 +213,33 @@ const MenuScreen = () => {
 
   const scrollY: any = useRef(new Animated.Value(0)).current;
   const carouselTranslateY = scrollY
-  ? scrollY.interpolate({
-      inputRange: [0, 120],
-      outputRange: [0, -160],
-              extrapolate: "clamp",
-
-    })
-  : 0;
+    ? scrollY.interpolate({
+        inputRange: [0, 120],
+        outputRange: [0, -160],
+        extrapolate: "clamp",
+      })
+    : 0;
   const productsTranslateY = scrollY
-  ? scrollY.interpolate({
-      inputRange: [0, 70],
-      outputRange: [0,-200],
-
-    })
-  : 0;
+    ? scrollY.interpolate({
+        inputRange: [0, 70],
+        outputRange: [0, -200],
+      })
+    : 0;
 
   if (!categoryList || !selectedCategory) {
     return null;
   }
+  const minTakeAwayReadyTime = storeDataStore.storeData?.minReady;
+  const maxTakeAwayReadyTime = storeDataStore.storeData?.maxReady;
+  const takeAwayReadyTime = {
+    min: minTakeAwayReadyTime,
+    max: maxTakeAwayReadyTime,
+  }
+  const deliveryTime = {
+    min: availableDrivers?.area?.minETA,
+    max: availableDrivers?.area?.maxETA,
+  }
+  const distanceKm = availableDrivers?.distanceKm;
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       {/* Fixed Back and Heart Buttons */}
@@ -232,32 +268,34 @@ const MenuScreen = () => {
         style={{
           transform: [{ translateY: carouselTranslateY }],
           position: "absolute",
-          top: 250,
+          top: 190,
           left: 0,
           right: 0,
           zIndex: 1,
         }}
       >
-      <View style={{ marginTop: 60, marginHorizontal: 10 }}>
-        <ShippingMethodPick onChange={() => {}} shippingMethodValue={""} />
-      </View>
-      <View style={{ width: "100%" }}>
-        <CategoryList
-          style={{ marginTop: 20 }}
-          categoryList={categoryList}
-          onCategorySelect={handleCategorySelect}
-          selectedCategory={selectedCategory}
-          isDisabledCatItem={false}
+        <View style={{ marginTop: 60, marginHorizontal: 10 }}>
+          <ShippingMethodPick onChange={() => {}} shippingMethodValue={""} 
+          isDeliverySupport={availableDrivers?.available} 
+          takeAwayReadyTime={takeAwayReadyTime}
+           deliveryTime={deliveryTime}
+           distanceKm={distanceKm}
+           />
+        </View>
+        <View style={{ width: "100%" }}>
+          <CategoryList
+            style={{ marginTop: 20 }}
+            categoryList={categoryList}
+            onCategorySelect={handleCategorySelect}
+            selectedCategory={selectedCategory}
+            isDisabledCatItem={false}
           />
         </View>
       </Animated.View>
       {/* Items List */}
       <Animated.ScrollView
         ref={scrollViewRef}
-        style={{ flex: 1,
-    
-          }}
-         
+        style={{ flex: 1 }}
         contentContainerStyle={{
           paddingTop: SCROLL_PADDING_TOP,
           paddingBottom: 40,
@@ -274,6 +312,36 @@ const MenuScreen = () => {
           category={selectedCategory}
         />
       </Animated.ScrollView>
+      <View
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: themeStyle.WHITE_COLOR,
+          padding: 10,
+        }}
+      >
+         {cartCount > 0 &&<View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        marginHorizontal:10
+      }}
+    >
+        <Button
+          text={t("show-order")}
+          icon="shopping-bag-plus"
+          fontSize={17}
+          onClickFn={()=>{navigation.navigate("cart")}}
+          fontFamily={`${getCurrentLang()}-Bold`}
+          bgColor={themeStyle.PRIMARY_COLOR}
+          textColor={themeStyle.WHITE_COLOR}
+          borderRadious={100}
+          countText={`${cartCount}`}
+        />
+    </View>}
+      </View>
     </View>
   );
 };
