@@ -6,7 +6,7 @@ import {
   DeviceEventEmitter,
   KeyboardAvoidingView,
   Platform,
-  Image
+  Image,
 } from "react-native";
 import InputText from "../controls/input";
 import { useState, useEffect } from "react";
@@ -22,6 +22,7 @@ import Button from "../controls/button/button";
 import themeStyle from "../../styles/theme.style";
 import { useTranslation } from "react-i18next";
 import isValidEmail from "../../helpers/validate-email";
+import ExpiryDate from "../expiry-date";
 
 export type TProps = {
   onSaveCard: () => void;
@@ -62,6 +63,7 @@ const CreditCard = ({ onSaveCard }) => {
   };
 
   const showPicker = () => {
+    console.log("showPicker");
     DeviceEventEmitter.emit(`SHOW_EXP_DATE_PICKER`, { show: true });
   };
 
@@ -150,18 +152,23 @@ const CreditCard = ({ onSaveCard }) => {
             keyboardType="numeric"
             isError={formStatus.isNumberValid === false}
             variant="default"
-            placeHolder="xxxx-xxxx-xxxx-xxxx"
+            placeHolder="1234 1234 1234 1234"
           />
-                                  <View style={{marginTop:2, height:30, }}>
-
-          {formStatus.isNumberValid === false && (
-            <Text style={{ color: themeStyle.ERROR_COLOR, fontSize:12}}>
-              {t("invalid-cc-number")}
-            </Text>
-          )}
+          <View style={{ marginTop: 2, height: 30 }}>
+            {formStatus.isNumberValid === false && (
+              <Text style={{ color: themeStyle.ERROR_COLOR, fontSize: 12 }}>
+                {t("invalid-cc-number")}
+              </Text>
+            )}
+          </View>
         </View>
-        </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems:'center' }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+          }}
+        >
           <View style={styles.monthExpContainer}>
             <InputText
               label={t("expiry-date")}
@@ -174,17 +181,22 @@ const CreditCard = ({ onSaveCard }) => {
               }}
               variant="default"
             />
-                        <View style={{marginTop:2, height:30, }}>
-
-            {isExpDateValid === false && (
-              <Text style={{ color: themeStyle.ERROR_COLOR, textAlign:'left', fontSize:12 }}>
-                {t("invalid-expiry-date")}
-              </Text>
-            )}
+            <View style={{ marginTop: 2, height: 30 }}>
+              {isExpDateValid === false && (
+                <Text
+                  style={{
+                    color: themeStyle.ERROR_COLOR,
+                    textAlign: "left",
+                    fontSize: 12,
+                  }}
+                >
+                  {t("invalid-expiry-date")}
+                </Text>
+              )}
+            </View>
           </View>
-          </View>
-          <View style={{width:10}}></View>
-          <View style={{ marginTop: 0, flexBasis: "49%" }}>
+          <View style={{ width: 10 }}></View>
+          <View style={{ marginTop: 0, flex:1 }}>
             <InputText
               keyboardType="numeric"
               label="CVV"
@@ -193,18 +205,23 @@ const CreditCard = ({ onSaveCard }) => {
               isError={formStatus.isCVVValid === false}
               variant="default"
             />
-            <View style={{marginTop:2, height:30, }}>
-            {formStatus.isCVVValid === false && (
-              <Text style={{ color: themeStyle.ERROR_COLOR, textAlign:'left', fontSize:12 }}>
-                {t("invalid-cvv")}
-              </Text>
-            )}
+            <View style={{ marginTop: 2, height: 30 }}>
+              {formStatus.isCVVValid === false && (
+                <Text
+                  style={{
+                    color: themeStyle.ERROR_COLOR,
+                    textAlign: "left",
+                    fontSize: 12,
+                  }}
+                >
+                  {t("invalid-cvv")}
+                </Text>
+              )}
             </View>
- 
           </View>
         </View>
 
-        <View style={{  alignItems: "flex-start" }}>
+        <View style={{ alignItems: "flex-start" }}>
           <InputText
             keyboardType="numeric"
             label={t("id-number")}
@@ -215,14 +232,13 @@ const CreditCard = ({ onSaveCard }) => {
             onFocus={() => setkeyboardVerticalOffset(150)}
             onBlur={() => setkeyboardVerticalOffset(0)}
           />
-                                  <View style={{marginTop:2, height:30, }}>
-
-          {formStatus.idIDValid === false && (
-            <Text style={{ color: themeStyle.ERROR_COLOR }}>
-              {t("invalid-id-number")}
-            </Text>
-          )}
-        </View>
+          <View style={{ marginTop: 2, height: 30 }}>
+            {formStatus.idIDValid === false && (
+              <Text style={{ color: themeStyle.ERROR_COLOR }}>
+                {t("invalid-id-number")}
+              </Text>
+            )}
+          </View>
         </View>
         {/* <View style={{ marginTop: 10, alignItems: "flex-start" }}>
           <InputText
@@ -250,13 +266,22 @@ const CreditCard = ({ onSaveCard }) => {
             isLoading={isLoading}
           />
         </View>
-        <View style={{ marginTop: 20, alignItems:'center',  width: 180,height:80, alignSelf:'center', }}>
-        <Image
-            source={require("../../assets/secure-payment-logos.png")}
-            style={{ width: "100%", height:"100%"}}
+        <View
+          style={{
+            marginTop: 20,
+            alignItems: "center",
+            width: 175,
+            height: 60,
+            alignSelf: "center",
+          }}
+        >
+          <Image
+            source={require("../../assets/safe-payment.png")}
+            style={{ width: "100%", height: "100%", resizeMode: "contain" }}
           />
         </View>
       </View>
+
     </KeyboardAvoidingView>
   );
 };
@@ -264,12 +289,11 @@ const CreditCard = ({ onSaveCard }) => {
 export default CreditCard;
 
 const styles = StyleSheet.create({
-  container: {
-  },
+  container: {},
   monthExpContainer: {
     marginTop: 0,
     alignItems: "flex-start",
-    flexBasis: "49%",
+    flex:1
   },
   monthExpContainerChild: {},
   submitButton: {

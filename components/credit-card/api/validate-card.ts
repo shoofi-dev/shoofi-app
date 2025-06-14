@@ -1,5 +1,5 @@
 import axios from "axios";
-import { storeDataStore } from "../../../stores/store";
+import { shoofiAdminStore } from "../../../stores/shoofi-admin";
 
 // TODO: get terminal and password from server
 export const TerminalNumber = '2665648015';
@@ -28,7 +28,7 @@ export type TCCDetails = {
 }
 
 const validateCard = ({ cardNumber, expDate }: TValidateCardProps) => {
-  const paymentCredentials = storeDataStore.paymentCredentials;
+  const paymentCredentials = shoofiAdminStore.paymentCredentials;
   const body: TPayload = {
     TerminalNumber: paymentCredentials.credentials_terminal_number,
     Password: paymentCredentials.credentials_password,

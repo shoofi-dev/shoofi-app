@@ -564,10 +564,12 @@ const App = () => {
           // const imageAssets = await cacheImages(tempHomeSlides);
           if (authStore.isLoggedIn()) {
             const fetchUserDetails = userDetailsStore.getUserDetails();
+            const fetchStoreZCrData = shoofiAdminStore.getStoreZCrData();
             //const fetchOrders = ordersStore.getOrders(userDetailsStore.isAdmin());
             userDetailsStore.setIsAcceptedTerms(true);
             Promise.all([
               fetchUserDetails,
+              fetchStoreZCrData,
               // fetchOrders,
             ]).then(async (res: any) => {
               console.log("res", res)
@@ -900,7 +902,6 @@ const App = () => {
                 </ScrollView>
               );
             })}
-          <ExpiryDate />
           <GeneralServerErrorDialog />
           <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />
           <UpdateVersion

@@ -97,7 +97,7 @@ export const PaymentMethodMethodPick = ({
           paymentMthod === PAYMENT_METHODS.cash
             ? styles.pillOptionSelected
             : styles.pillOptionUnselected,
-          { borderTopRightRadius: 50, borderBottomRightRadius: 50 },
+          { borderRadius: 50 },
         ]}
         activeOpacity={0.8}
         onPress={() => handlePaymentMethodChange(PAYMENT_METHODS.cash)}
@@ -131,7 +131,7 @@ export const PaymentMethodMethodPick = ({
           paymentMthod === PAYMENT_METHODS.creditCard
             ? styles.pillOptionSelected
             : styles.pillOptionUnselected,
-          { borderTopLeftRadius: 50, borderBottomLeftRadius: 50 },
+          { borderRadius: 50 },
         ]}
         activeOpacity={0.8}
         onPress={() => handlePaymentMethodChange(PAYMENT_METHODS.creditCard)}

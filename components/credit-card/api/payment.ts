@@ -1,7 +1,7 @@
 import axios from "axios";
-import { storeDataStore } from "../../../stores/store";
 import { TOrderSubmitResponse } from "../../../stores/cart";
 import { SHIPPING_METHODS } from "../../../consts/shared";
+import { shoofiAdminStore } from "../../../stores/shoofi-admin";
 type TPayload = {
     TerminalNumber: string;
     Password: string;
@@ -50,7 +50,7 @@ const getCartItems = (cartData: any) => {
 }
 
 const chargeCreditCard = ({ token, totalPrice, orderId, id, email, cvv, phone,userName }: TPaymentProps, cartData: any) => {
-    const paymentCredentials = storeDataStore.paymentCredentials;
+    const paymentCredentials = shoofiAdminStore.paymentCredentials;
 
     const itemsList = getCartItems(cartData)
 

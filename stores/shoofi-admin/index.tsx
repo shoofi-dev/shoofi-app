@@ -129,9 +129,32 @@ class ShoofiAdminStore {
       runInAction(() => {
         console.log("resSSStore", res)
         this.storeData = res[0];
-        this.paymentCredentials = res[0].credentials;
       })
       return res[0];
+    })
+  };
+
+  getStoreZCrDataFromServer = async () => {
+    return axiosInstance
+      .get(
+        `${SHOOFI_ADMIN_API.CONTROLLER}/${SHOOFI_ADMIN_API.GET_STORE_Z_CR_API}`,
+      
+      )
+      .then(function (response) {
+        const res = response;
+        return res;
+      }).catch((error) => {
+        console.log(error);
+      })
+  };
+
+  getStoreZCrData = () => {
+    return this.getStoreZCrDataFromServer().then((res:any) => {
+      runInAction(() => {
+        console.log("getStoreZCrDataFromServer", res)
+        this.paymentCredentials = res;
+      })
+      return res;
     })
   };
 

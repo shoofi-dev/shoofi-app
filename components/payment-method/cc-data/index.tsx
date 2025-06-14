@@ -46,6 +46,9 @@ export const CCDataCMP = ({
     <View
       style={{
         width: "100%",
+        backgroundColor: "#F6F8FA",
+        borderRadius: 4,
+        padding: 5,
       }}
     >
       <View
@@ -53,91 +56,54 @@ export const CCDataCMP = ({
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-
-          borderRadius: 15,
-          paddingHorizontal: 10,
-          overflow: "hidden",
-          shadowColor: "#C19A6B",
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.9,
-          shadowRadius: 6,
-          elevation: 20,
-          borderWidth: 0,
+          
+      
         }}
       >
-        <LinearGradient
-          colors={[
-            "rgba(207, 207, 207, 0.4)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(207, 207, 207, 0.4)",
-          ]}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.background]}
-        />
-        <View
+        {/* <View
           style={{
             alignItems: "center",
             flexDirection: "row",
+            borderWidth: 1,
           }}
         >
-          <TouchableOpacity onPress={replaceCreditCard}>
-            <Text
-              style={{
-                fontSize: 16,
-                color: themeStyle.TEXT_PRIMARY_COLOR,
-              }}
-            >
-              {t("change")}
-            </Text>
-          </TouchableOpacity>
-          {/* <TouchableOpacity
+          <TouchableOpacity
                       onPress={removeCreditCard}
                       style={{ marginLeft: 20 }}
                     >
                       <Icon icon="trash" size={20} />
-                    </TouchableOpacity> */}
-        </View>
+                    </TouchableOpacity>
+        </View> */}
         <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Icon
+            icon={ccData?.ccType}
+            size={40}
+            style={{ color: theme.GRAY_700, marginLeft: 10, marginRight: 10 }}
+          />
+         
+
           <Text
             style={{
               fontSize: 17,
               color: themeStyle.TEXT_PRIMARY_COLOR,
               fontFamily: `${getCurrentLang()}-American-bold`,
+              
             }}
-          >{`****_****_****_${ccData?.last4Digits}`}</Text>
-          <Icon
-            icon={ccData?.ccType}
-            size={50}
-            style={{ color: theme.GRAY_700, marginLeft: 5 }}
-          />
+          >{`**** **** **** ${ccData?.last4Digits}`}</Text>
+        
+   
         </View>
-      </View>
-      {shippingMethod === SHIPPING_METHODS.shipping && (
-        <View
-          style={{
-            marginTop: 10,
-            paddingHorizontal: 20,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <TouchableOpacity onPress={replaceCreditCard} style={{marginRight: 15}}>
           <Text
             style={{
-              fontSize: 18,
-              color: themeStyle.ERROR_COLOR,
-              textAlign: "left",
+              fontSize: 16,
+              color: themeStyle.TEXT_PRIMARY_COLOR,
             }}
           >
-            *{t("delivery-method-note")}.
+            {'<'}
           </Text>
-        </View>
-      )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

@@ -1,28 +1,18 @@
-import {
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  DeviceEventEmitter,
-} from "react-native";
-import { Dialog, Portal, Provider } from "react-native-paper";
-import Text from "../controls/Text";
-import { LinearGradient } from "expo-linear-gradient";
-
-/* styles */
-import theme from "../../styles/theme.style";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { View, TouchableOpacity, StyleSheet, DeviceEventEmitter, KeyboardAvoidingView, Platform, Text } from "react-native";
+import Modal from "react-native-modal";
 import CreditCard from "../credit-card";
 import { useTranslation } from "react-i18next";
-import { ScrollView } from "react-native-gesture-handler";
-import DialogBG from "./dialog-bg";
 import { DIALOG_EVENTS } from "../../consts/events";
+import theme from "../../styles/theme.style";
+import ExpiryDate from "../expiry-date";
 
 export default function NewPaymentMethodBasedEventDialog() {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const subscription =DeviceEventEmitter.addListener(
+    const subscription = DeviceEventEmitter.addListener(
       DIALOG_EVENTS.OPEN_NEW_CREDIT_CARD_BASED_EVENT_DIALOG,
       openDialog
     );
@@ -31,92 +21,101 @@ export default function NewPaymentMethodBasedEventDialog() {
     };
   }, []);
 
-  const openDialog = (data) => {
-    setVisible(true);
-  };
+  const openDialog = () => setVisible(true);
 
   const hideDialog = (value: any) => {
     DeviceEventEmitter.emit(
       `${DIALOG_EVENTS.OPEN_NEW_CREDIT_CARD_BASED_EVENT_DIALOG}_HIDE`,
-      {
-        value,
-      }
+      { value }
     );
     setVisible(false);
   };
 
   return (
-    <Provider>
-      <Portal>
-        <Dialog
-          theme={{
-            colors: {},
-          }}
-          style={{
-            width: "95%",
-            top: -30,
-            position: "absolute",
-            alignSelf: "center",
-          }}
-          visible={visible}
-          dismissable={false}
-        >
-          <DialogBG>
-            <Dialog.Content
-              style={{
-                paddingLeft: 0,
-                paddingRight: 0,
-                paddingTop: 0,
-                marginTop: -30,
-                // paddingBottom: 30,
-                alignSelf: "center",
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  zIndex: 1,
-                  paddingBottom: 5,
-                  padding: 20,
-                }}
-              >
-                <View style={{ alignItems: "flex-end" }}>
-                  <Text style={{ fontSize: 18 }}>
-                    {t("inser-credit-card-details")}
-                  </Text>
-                </View>
-                <View>
-                  <TouchableOpacity onPress={() => hideDialog("close")}>
-                    <Text
-                      style={{
-                        fontSize: 25,
-                      }}
-                    >
-                      X
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+    <Modal
+      isVisible={visible}
+      onBackdropPress={() => hideDialog("close")}
+      onBackButtonPress={() => hideDialog("close")}
+      style={styles.modal}
+      backdropOpacity={0.4}
+      animationIn="slideInUp"
+      animationOut="slideOutDown"
+      useNativeDriver
+      hideModalContentWhileAnimating
+      avoidKeyboard
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoiding}
+      >
+        <View style={styles.sheet}>
+          {/* Header */}
+          <View style={styles.headerRow}>
+            <TouchableOpacity onPress={() => hideDialog("close")} style={styles.closeBtn}>
+              <Text style={styles.closeBtnText}>×</Text>
+            </TouchableOpacity>
+            <Text style={styles.title}>{t("inser-credit-card-details")}</Text>
+            <View style={{ width: 32 }} />
+          </View>
+          {/* Credit Card Form */}
+          <CreditCard onSaveCard={hideDialog} />
+        </View>
+      </KeyboardAvoidingView>
+      <ExpiryDate />
 
-              <ScrollView keyboardShouldPersistTaps="handled">
-                <View style={{ paddingHorizontal: 20, alignItems: "center" }}>
-                  <CreditCard onSaveCard={hideDialog} />
-                </View>
-              </ScrollView>
-            </Dialog.Content>
-          </DialogBG>
-        </Dialog>
-      </Portal>
-    </Provider>
+    </Modal>
   );
 }
+
 const styles = StyleSheet.create({
-  background: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+  modal: {
+    justifyContent: "flex-end",
+    margin: 0,
+  },
+  keyboardAvoiding: {
+    width: "100%",
+  },
+  sheet: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 0,
+    paddingBottom: 16,
+    minHeight: 850,
+    maxHeight: "90%",
+    width: "100%",
+    alignSelf: "center",
+    overflow: "hidden",
+    padding:15
+
+  },
+  headerRow: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingTop: 18,
+    paddingBottom: 8,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    backgroundColor: "#fff",
+  },
+  closeBtn: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  closeBtnText: {
+    fontSize: 28,
+    color: "#222",
+    fontWeight: "400",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#222",
+    textAlign: "center",
+    flex: 1,
   },
 });

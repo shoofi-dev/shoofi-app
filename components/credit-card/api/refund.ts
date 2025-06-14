@@ -1,5 +1,6 @@
 import axios from "axios";
-import { storeDataStore } from "../../../stores/store";
+import { shoofiAdminStore } from "../../../stores/shoofi-admin";
+
 type TPayload = {
     TerminalNumber: string;
     Password: string;
@@ -9,7 +10,7 @@ type TPayload = {
 
 
 const refundTransaction = ({TransactionIdToCancelOrRefund, TransactionSum}:any) => {
-    const paymentCredentials = storeDataStore.paymentCredentials;
+    const paymentCredentials = shoofiAdminStore.paymentCredentials;
     let body: TPayload = {
         TerminalNumber: paymentCredentials.credentials_terminal_number,
         Password: paymentCredentials.credentials_password,
