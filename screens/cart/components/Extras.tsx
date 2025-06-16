@@ -133,10 +133,11 @@ const CartExtras = ({
               {/* <Text style={{ fontSize: fontSize(14), color: "#888" }}>
                 {getName(extra)}
               </Text> */}
-              {toppingSelections.map(([toppingId, areaId]) => {
+              {toppingSelections.map(([toppingId, areaData]) => {
                 const topping = extra.options.find((o) => o.id === toppingId);
                 if (!topping) return null;
-                const area = topping.areaOptions?.find((a) => a.id === areaId);
+                const area = topping.areaOptions?.find((a) => a.id === areaData.areaId);
+                console.log("area", area);
                 return (
                   <View
                     key={toppingId}
@@ -149,7 +150,7 @@ const CartExtras = ({
                       {getName(topping)}
                       {area
                         ? ` (${area.name}${
-                            area.price ? ` +₪${area.price}` : ""
+                            area.price && areaData.isFree ? ` +₪${area.price}` : ""
                           })`
                         : ""}
                     </Text>

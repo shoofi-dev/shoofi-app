@@ -3,6 +3,8 @@ import { View } from "react-native";
 import Text from "../controls/Text";
 
 const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
+  console.log("extrasDef", extrasDef);
+  console.log("selectedExtras", selectedExtras);
   if (!extrasDef || !selectedExtras || extrasDef.length === 0) return null;
   return (
     <View style={{ marginTop: 5 }}>
@@ -45,15 +47,15 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
           return (
             <View key={extra.id} style={{ marginBottom: 2 }}>
               <Text style={{ fontSize: fontSize(14), color: "#888" }}>{extra.title}:</Text>
-              {toppingSelections.map(([toppingId, areaId]) => {
+              {toppingSelections.map(([toppingId, areaData]) => {
                 const topping = extra.options.find(o => o.id === toppingId);
                 if (!topping) return null;
-                const area = topping.areaOptions?.find(a => a.id === areaId);
+                const area = topping.areaOptions?.find(a => a.id === areaData.areaId);
                 return (
                   <View key={toppingId} style={{ flexDirection: "row", alignItems: "center", marginLeft: 10 }}>
                     <Text style={{ fontSize: fontSize(14), color: "#333" }}>
                       {topping.name}
-                      {area ? ` (${area.name}${area.price ? ` +₪${area.price}` : ""})` : ""}
+                      {area ? ` (${area.name}${area.price && !areaData.isFree ? ` +₪${area.price}` : ""})` : ""}
                     </Text>
                   </View>
                 );

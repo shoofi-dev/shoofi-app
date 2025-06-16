@@ -41,11 +41,31 @@ class ExtrasStore {
     }
     return true;
   }
+
+  // Helper function to get group header for an extra
+  getGroupHeader(extras, groupId) {
+    return extras.find(e => e.groupId === groupId && e.isGroupHeader);
+  }
+
   calculateExtrasPrice(extras, selected = this.selections) {
     let total = 0;
     if(!extras || extras.length === 0 || isEmpty(extras)){
         return total;
     }
+
+    // Track free toppings per group
+    const groupFreeCounts = new Map();
+    const groupUsedFreeCounts = new Map();
+
+    // First pass: collect all group free counts
+    for (const extra of extras) {
+      if (extra.isGroupHeader && extra.freeCount) {
+        groupFreeCounts.set(extra.groupId, extra.freeCount);
+        groupUsedFreeCounts.set(extra.groupId, 0);
+      }
+    }
+
+    // Second pass: calculate prices
     for (const extra of extras) {
       const val = selected[extra.id];
       if (extra.type === "single" && extra.options) {
@@ -67,18 +87,38 @@ class ExtrasStore {
       }
       if (extra.type === "pizza-topping" && extra.options) {
         // val is { [toppingId]: areaId }
+        const groupHeader = extra.groupId ? this.getGroupHeader(extras, extra.groupId) : null;
+        const freeCount = groupHeader?.freeCount || 0;
+        const usedFreeCount = groupUsedFreeCounts.get(extra.groupId) || 0;
+        let remainingFreeCount = freeCount - usedFreeCount;
+
         for (const toppingId in val) {
           const areaId = val[toppingId];
           const topping = extra.options.find(o => o.id === toppingId);
           if (topping && topping.areaOptions) {
             const area = topping.areaOptions.find(a => a.id === areaId);
             if (area && area.price) {
-              total += area.price;
+              if (remainingFreeCount > 0) {
+                remainingFreeCount--;
+                groupUsedFreeCounts.set(extra.groupId, usedFreeCount + 1);
+              } else {
+                total += area.price;
+              }
             } else if (topping.price) {
-              total += topping.price;
+              if (remainingFreeCount > 0) {
+                remainingFreeCount--;
+                groupUsedFreeCounts.set(extra.groupId, usedFreeCount + 1);
+              } else {
+                total += topping.price;
+              }
             }
           } else if (topping && topping.price) {
-            total += topping.price;
+            if (remainingFreeCount > 0) {
+              remainingFreeCount--;
+              groupUsedFreeCounts.set(extra.groupId, usedFreeCount + 1);
+            } else {
+              total += topping.price;
+            }
           }
         }
       }

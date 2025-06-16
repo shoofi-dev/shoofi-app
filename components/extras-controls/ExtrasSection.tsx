@@ -38,6 +38,7 @@ export type Extra = {
   order?: number;
   defaultOptionId?: string;
   defaultOptionIds?: string[];
+  freeCount?: number;
 };
 
 export type ExtrasSectionProps = {
@@ -68,6 +69,29 @@ const ExtrasSection = ({
     }
     return acc;
   }, {} as Record<string, Extra[]>);
+
+  const getFreeExtrasIds = (freeCount, groupExtras) => {
+
+    const selectedToppings = [];
+
+    for (const extra of groupExtras) {
+      const selected = selections[extra.id];
+
+      if (selected && typeof selected === "object" && Object.keys(selected).length > 0) {
+        for (const [optionId, area] of Object.entries(selected)) {
+          selectedToppings.push({
+            extraId: extra.id,
+            optionId,
+            area
+          });
+        }
+      }
+    }
+    const extrasIds = selectedToppings.map(t => t.optionId);
+    const firstFreeExtrasIds = [...new Set(extrasIds)].slice(0, freeCount);
+    return firstFreeExtrasIds;
+  };
+
   return (
     <View style={styles.container}>
       {Object.entries(groupedExtras)
@@ -128,11 +152,18 @@ const ExtrasSection = ({
                   return (
                     <View style={styles.groupContainer}>
                       <View style={styles.groupHeader}>
-                        <Text style={styles.groupTitle}>
-                          {languageStore.selectedLang === "ar"
-                            ? groupHeader.nameAR
-                            : groupHeader.nameHE}
-                        </Text>
+                        <View>
+                          <Text style={styles.groupTitle}>
+                            {languageStore.selectedLang === "ar"
+                              ? groupHeader.nameAR
+                              : groupHeader.nameHE}
+                          </Text>
+                          {groupHeader.freeCount > 0 && (
+                            <Text style={styles.freeCountText}>
+                              {groupHeader.freeCount} תוספות ראשונות בחינם
+                            </Text>
+                          )}
+                        </View>
                       </View>
                       <View style={styles.groupContent}>
                         {groupExtras
@@ -147,6 +178,8 @@ const ExtrasSection = ({
                                     extra={extra}
                                     value={selections[extra.id] || {}}
                                     onChange={(val) => onChange(extra.id, val)}
+                                    freeCount={groupHeader.freeCount}
+                                    freeToppingIds={getFreeExtrasIds(groupHeader.freeCount, groupExtras)}
                                   />
                                 </View>
                               );
@@ -222,6 +255,11 @@ const styles = StyleSheet.create({
   },
   groupContent: {
     paddingHorizontal: 12,
+  },
+  freeCountText: {
+    color: "#007AFF",
+    fontSize: 14,
+    marginTop: 4,
   },
 });
 

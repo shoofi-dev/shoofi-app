@@ -6,24 +6,34 @@ import { StoreContext } from "../../stores";
 
 export type PizzaToppingGroupProps = {
   extra: Extra;
-  value: Record<string, string>; // { [toppingId]: areaId }
-  onChange: (value: Record<string, string>) => void;
+  value: Record<string, { areaId: string; isFree: boolean }>; // { [toppingId]: { areaId, isFree } }
+  onChange: (value: Record<string, { areaId: string; isFree: boolean }>) => void;
+  freeToppingIds?: string[];
+  freeCount?: number;
 };
 
-const PizzaToppingGroup = ({ extra, value, onChange }: PizzaToppingGroupProps) => {
+const PizzaToppingGroup = ({ extra, value, onChange, freeToppingIds, freeCount }: PizzaToppingGroupProps) => {
   const { languageStore } = useContext(StoreContext);
 
   const handleAreaSelect = (toppingId: string, areaId: string) => {
     const newValue = { ...value };
-    if (newValue[toppingId] === areaId) {
+    const isFree = freeToppingIds ? isToppingFree(toppingId) : false;
+    if (newValue[toppingId] && newValue[toppingId].areaId === areaId) {
       delete newValue[toppingId]; // Deselect if already selected
     } else {
-      newValue[toppingId] = areaId;
+      newValue[toppingId] = { areaId, isFree };
     }
     onChange(newValue);
   };
 
-  const getSelectedArea = (toppingId: string) => value[toppingId];
+  const getSelectedArea = (toppingId: string) => value[toppingId]?.areaId;
+
+  // Use freeToppingIds if provided
+  const isToppingFree = (toppingId: string) => {
+    if (freeToppingIds) return freeToppingIds.includes(toppingId) || freeToppingIds.length < freeCount;
+    return false;
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
@@ -49,7 +59,7 @@ const PizzaToppingGroup = ({ extra, value, onChange }: PizzaToppingGroupProps) =
                     styles.areaButtonText,
                     getSelectedArea(topping.id) === area.id && styles.selectedAreaButtonText
                   ]}>
-                    {area.name} {area.price ? `(+${area.price})` : ""}
+                    {area.name} {area.price && !isToppingFree(topping.id) ? `(+${area.price})` : ""}
                   </Text>
                 </TouchableOpacity>
               ))}
