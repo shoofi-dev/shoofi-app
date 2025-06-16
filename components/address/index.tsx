@@ -18,33 +18,42 @@ import * as Animatable from "react-native-animatable";
 import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
 import Icon from "../icon";
 import Text from "../controls/Text";
+import { useNavigation } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
 
 export type TProps = {
   onShippingMethodChangeFN: any;
   onGeoAddressChange: any;
   onTextAddressChange: any;
   onPlaceChangeFN: any;
+  onAddressChange: any;
 };
-export const AddressCMP = ({
+export const AddressCMP = observer(({
   onShippingMethodChangeFN,
   onGeoAddressChange,
-  onTextAddressChange,
+  onTextAddressChange,  
+  onAddressChange,
   onPlaceChangeFN,
 }: TProps) => {
   const { t } = useTranslation();
-  const { storeDataStore } = useContext(StoreContext);
+  const navigation = useNavigation();
+  const { storeDataStore, addressStore } = useContext(StoreContext);
   const {
     availableDrivers,
     loading: driversLoading,
     error: driversError,
     customerLocation,
-    defaultAddress,
   } = useAvailableDrivers();
-console.log("customerLocation", customerLocation)
+  const [defaultAddress, setDefaultAddress] = useState(null);
+  useEffect(() => {
+    console.log("addressStore.defaultAddress", addressStore.defaultAddress)
+    setDefaultAddress(addressStore.defaultAddress);
+  }, [addressStore.defaultAddress]);
   const [place, setPlace] = useState(PLACE.current);
   const [textAddress, setTextAddress] = useState("");
   const [location, setLocation] = useState(null);
   const [region, setRegion] = useState(null);
+  const [address, setAddress] = useState(null);
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
 
@@ -71,10 +80,18 @@ console.log("customerLocation", customerLocation)
     //   setIsOpenConfirmActiondDialog(true);
     // }
   };
-  const onChangeTextAddress = (textAddressValue) => {
-    setTextAddress(textAddressValue);
-    onTextAddressChange(textAddressValue);
+  const onChangeTextAddress = (addressObj) => {
+    setTextAddress(addressObj ? `${addressObj.name}: ${addressObj.street || ''}${addressObj.streetNumber ? ',' + addressObj.streetNumber : ''}${addressObj.city ? ', ' + addressObj.city : ''}` : '');
+    onTextAddressChange(addressObj);
   };
+  useEffect(() => {
+    console.log("defaultAddress", defaultAddress);
+    if (defaultAddress) {
+      setAddress(`${defaultAddress.name}: ${defaultAddress.street || ''}${defaultAddress.streetNumber ? ',' + defaultAddress.streetNumber : ''}${defaultAddress.city ? ', ' + defaultAddress.city : ''}`);
+      onAddressChange(defaultAddress);
+    }
+  }, [defaultAddress]);
+  
   const onGEOChange = (locationValue, regionValue) => {
     console.log("onGEOChange", locationValue, regionValue);
     setLocation(locationValue);
@@ -97,7 +114,7 @@ console.log("customerLocation", customerLocation)
     max: availableDrivers?.area?.maxETA,
   };
   const distanceKm = availableDrivers?.distanceKm;
-
+  console.log("address", address);
 
   return (
     <View style={{}}>
@@ -130,11 +147,13 @@ console.log("customerLocation", customerLocation)
             }}
           >
             {/* Default Address Bar */}
-      {defaultAddress && (
-        <TouchableOpacity style={styles.defaultAddressBar}>
+      {address && (
+        <TouchableOpacity style={styles.defaultAddressBar} onPress={()=>{
+          navigation.navigate("AddressList");
+        }}>
           <Icon name="home" size={20} color="#888" style={{ marginLeft: 6, marginRight: 2 }} />
           <Text style={styles.defaultAddressText}>
-            {`${defaultAddress.name || 'בית'}: ${defaultAddress.street || ''}${defaultAddress.streetNumber ? ',' + defaultAddress.streetNumber : ''}${defaultAddress.city ? ', ' + defaultAddress.city : ''}`}
+            {address}
           </Text>
         </TouchableOpacity>
       )}
@@ -165,7 +184,7 @@ console.log("customerLocation", customerLocation)
       )}
     </View>
   );
-};
+});
 const styles = StyleSheet.create({
   defaultAddressBar: {
     flexDirection: 'row-reverse',

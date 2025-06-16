@@ -12,7 +12,7 @@ export type TPropsCheckoutSubmit = {
   totalPrice: any;
   orderDate: any;
   editOrderData: any;
-  location?: any;
+  address?: any;
   locationText?: any;
 };
 const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
@@ -42,11 +42,11 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     totalPrice,
     orderDate,
     editOrderData,
-    location,
+    address,
     locationText,
   }: TPropsCheckoutSubmit) => {
     onLoadingOrderSent(true);
-
+    console.log("location2xxx", address?.location);
     const order: any = {
       paymentMthod,
       shippingMethod,
@@ -66,19 +66,20 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     }
 
     if (shippingMethod === SHIPPING_METHODS.shipping) {
-      if (location) {
+      if (address) {
+        order.address = address;
         order.geo_positioning = {
           latitude: editOrderData
             ? editOrderData?.order?.geo_positioning?.latitude ||
-              location?.coords?.latitude
-            : location?.coords?.latitude,
+              address?.location?.coordinates?.[1]
+            : address?.location?.coordinates?.[1],
           longitude: editOrderData
             ? editOrderData?.order?.geo_positioning?.longitude ||
-              location?.coords?.longitude
-            : location?.coords?.longitude,
+              address?.location?.coordinates?.[0]
+            : address?.location?.coordinates?.[0],
         };
       }
-      console.log("locationText", locationText);
+      console.log("order.geo_positioning", order.geo_positioning);
       if (locationText) {
         order.locationText = editOrderData
           ? editOrderData?.order?.locationText ? editOrderData?.order?.locationText : locationText

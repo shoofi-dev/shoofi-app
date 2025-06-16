@@ -53,7 +53,6 @@ const ExploreScreen = () => {
         }
         // Fetch ads
         const adsRes: any = await axiosInstance.get("/ads/list");
-        console.log("adsRes", adsRes);
         // Map API response to Ad type for AdsCarousel
         const mappedAds: Ad[] = (adsRes || []).map((ad) => ({
           id: ad._id || ad.id,

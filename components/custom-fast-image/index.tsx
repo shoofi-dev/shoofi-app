@@ -72,7 +72,6 @@ function getImgixUrl(uri, style) {
   if (width) params.push(`w=${Math.round(width)}`);
   if (height) params.push(`h=${Math.round(height)}`);
   if (params.length) url += `?${params.join('&')}`;
-  console.log("url",url)
   return url + `?w=1600&h=1200&auto=format`;
 }
 

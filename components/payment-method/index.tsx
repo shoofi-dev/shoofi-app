@@ -10,6 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TCCDetails } from "../credit-card/api/validate-card";
 import { CCDataCMP } from "./cc-data";
 import { StoreContext } from "../../stores";
+import { useNavigation } from "@react-navigation/native";
 
 export type TProps = {
   onChange: any;
@@ -19,6 +20,7 @@ export type TProps = {
 };
 export const PaymentMethodCMP = ({ onChange, editOrderData, defaultValue, shippingMethod }: TProps) => {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { userDetailsStore } = useContext(StoreContext);
   const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS.cash);
   const [ccData, setCCData] = useState<TCCDetails | undefined>();
@@ -85,7 +87,8 @@ export const PaymentMethodCMP = ({ onChange, editOrderData, defaultValue, shippi
   };
 
   const onReplaceCreditCard = () => {
-    openNewCreditCardDialog();
+    // openNewCreditCardDialog();
+    navigation.navigate("AddressList");
   };
 
   return (

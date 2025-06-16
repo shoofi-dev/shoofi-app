@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import ExtraGroup from "./ExtraGroup";
 import PizzaToppingGroup from "./PizzaToppingGroup";
@@ -36,6 +36,8 @@ export type Extra = {
   groupId?: string;
   isGroupHeader?: boolean;
   order?: number;
+  defaultOptionId?: string;
+  defaultOptionIds?: string[];
 };
 
 export type ExtrasSectionProps = {
@@ -88,12 +90,31 @@ const ExtrasSection = ({
                         </View>
                       );
                     }
+                    // Handle default for single/multi
+                    let value = selections[extra.id];
+                    if (extra.type === "single") {
+                      if (value === undefined && extra.defaultOptionId) {
+                        value = extra.defaultOptionId;
+                        // Set default on first render
+                        useEffect(() => {
+                          onChange(extra.id, extra.defaultOptionId);
+                        }, []);
+                      }
+                    }
+                    if (extra.type === "multi") {
+                      if (value === undefined && Array.isArray(extra.defaultOptionIds)) {
+                        value = extra.defaultOptionIds;
+                        useEffect(() => {
+                          onChange(extra.id, extra.defaultOptionIds);
+                        }, []);
+                      }
+                    }
                     return (
                       <View style={styles.groupWrapper}>
                         <ExtraGroup
                           key={extra.id}
                           extra={extra}
-                          value={selections[extra.id]}
+                          value={value}
                           onChange={(val) => onChange(extra.id, val)}
                         />
                       </View>
@@ -130,12 +151,30 @@ const ExtrasSection = ({
                                 </View>
                               );
                             }
+                            // Handle default for single/multi
+                            let value = selections[extra.id];
+                            if (extra.type === "single") {
+                              if (value === undefined && extra.defaultOptionId) {
+                                value = extra.defaultOptionId;
+                                useEffect(() => {
+                                  onChange(extra.id, extra.defaultOptionId);
+                                }, []);
+                              }
+                            }
+                            if (extra.type === "multi") {
+                              if (value === undefined && Array.isArray(extra.defaultOptionIds)) {
+                                value = extra.defaultOptionIds;
+                                useEffect(() => {
+                                  onChange(extra.id, extra.defaultOptionIds);
+                                }, []);
+                              }
+                            }
                             return (
                               <View style={styles.groupWrapper}>
                                 <ExtraGroup
                                   key={extra.id}
                                   extra={extra}
-                                  value={selections[extra.id]}
+                                  value={value}
                                   onChange={(val) => onChange(extra.id, val)}
                                 />
                               </View>

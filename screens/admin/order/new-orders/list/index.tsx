@@ -343,7 +343,7 @@ const NewOrdersListScreen = ({ route }) => {
             {order?.customerDetails?.phone}{" "}
           </Text>
         </View>
-        {storeDataStore.storeData.isOrderLaterSupport && (
+        {storeDataStore.storeData?.isOrderLaterSupport && (
           <View style={{ alignItems: "center" }}>
             <View style={{ marginBottom: 10 }}>
               <Text style={styles.dateRawText}>{t("collect-date")}</Text>
@@ -1068,7 +1068,7 @@ const NewOrdersListScreen = ({ route }) => {
                         />
                       </View> */}
 
-                      {!storeDataStore.storeData.isOrderLaterSupport && (
+                      {!storeDataStore.storeData?.isOrderLaterSupport && (
                         <View
                           style={{
                             marginVertical: 40,
@@ -1152,7 +1152,7 @@ const NewOrdersListScreen = ({ route }) => {
                             updateViewedOrder(
                               order,
                               selectedTime[order._id],
-                              storeDataStore.storeData.isOrderLaterSupport
+                              storeDataStore.storeData?.isOrderLaterSupport
                             )
                           }
                           textColor={themeStyle.WHITE_COLOR}
@@ -1160,7 +1160,7 @@ const NewOrdersListScreen = ({ route }) => {
                           borderRadious={19}
                           disabled={
                             !selectedTime[order._id] &&
-                            !storeDataStore.storeData.isOrderLaterSupport
+                            !storeDataStore.storeData?.isOrderLaterSupport
                           }
                         />
                       </View>

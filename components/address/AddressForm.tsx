@@ -8,6 +8,9 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  DeviceEventEmitter,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { observer } from "mobx-react-lite";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -17,16 +20,16 @@ import CitiesList from "./CitiesList";
 import GooglePlacesSearch from "./GooglePlacesSearch";
 import themeStyle from "../../styles/theme.style";
 import { useTranslation } from "react-i18next";
+import { DIALOG_EVENTS } from "../../consts/events";
 
 interface AddressFormProps {
   address?: any;
   onSuccess?: () => void;
 }
 
-const AddressForm = observer(({ route }: any) => {
+const AddressForm = observer(({ route,address }: any) => {
   const { t } = useTranslation();
 
-  const { address } = route?.params;
 
   const { userDetailsStore, addressStore } = useContext(StoreContext);
   const [selectedCity, setSelectedCity] = useState(null);
@@ -135,18 +138,36 @@ const AddressForm = observer(({ route }: any) => {
   };
 
   const handleSubmit = async () => {
-    if ((!customerId && !formData.name) || !formData.street) {
+    if ((!formData.name) || !formData.street) {
       Alert.alert("Error", "Please fill in all required fields");
       return;
     }
-    console.log("formData", formData);
+    setLoading(true);
+    console.log("formData", formData.location);
+    const [lng, lat] = address ? address.location.coordinates : formData.location.coordinates;
+    const location = { lat, lng };  
     try {
-      setLoading(true);
-      if (address) {
-        await addressStore.updateAddress(customerId, address._id, formData);
-      } else {
-        await addressStore.addAddress(customerId, formData);
-      }
+      addressStore.getLocationSupported(location).then(async (res: any) => {
+        console.log("res", res);
+        if (res.available) {
+          if (address) {
+            console.log("updateAddress", address);
+            await addressStore.updateAddress(customerId, address._id, formData);
+            DeviceEventEmitter.emit(
+              `${DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG}_HIDE`
+            );
+          } else {
+            console.log("addAddress", formData);
+
+            await addressStore.addAddress(customerId, formData);
+            DeviceEventEmitter.emit(
+              `${DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG}_HIDE`
+            );
+          }
+        } else {
+          Alert.alert("Error", t("location-not-supported"));
+        }
+      });
     } catch (error) {
       console.log("error", error);
       Alert.alert("Error", "Failed to save address");
@@ -156,113 +177,123 @@ const AddressForm = observer(({ route }: any) => {
   };
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-      <View style={styles.form}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 24,
-          }}
-        >
-          <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-            {t("new-address")}
-          </Text>
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>{t("address-name")} *</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.name}
-            onChangeText={(value) => handleInputChange("name", value)}
-            placeholder={t("address-name-placeholder")}
-          />
-        </View>
-        {/* Google Places Autocomplete */}
-        <TouchableOpacity
-          style={styles.locationButton}
-          onPress={getCurrentLocation}
-          disabled={loading}
-        >
-          <Icon name="my-location" size={20} color={themeStyle.PRIMARY_COLOR} />
-          <Text style={styles.locationButtonText}>
-            {t("user-current-location")}
-          </Text>
-        </TouchableOpacity>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>{t("street-address")}</Text>
-          <GooglePlacesSearch onPlaceSelected={handlePlaceSelected} />
-
-          {/* <TextInput
-            style={styles.input}
-            value={formData.street}
-            onChangeText={(value) => handleInputChange('street', value)}
-            placeholder="Enter street address"
-          /> */}
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>{t("city")}</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.city}
-            onChangeText={(value) => handleInputChange("city", value)}
-          />
-        </View>
-
-        <View style={styles.row}>
-          <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-            <Text style={styles.label}>{t("street-number")}</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={0}
+    >
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.form}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 24,
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+              {t("new-address")}
+            </Text>
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t("address-name")} *</Text>
             <TextInput
               style={styles.input}
-              value={formData.streetNumber}
-              onChangeText={(value) => handleInputChange("streetNumber", value)}
+              value={formData.name}
+              onChangeText={(value) => handleInputChange("name", value)}
+              placeholder={t("address-name-placeholder")}
+            />
+          </View>
+          {/* Google Places Autocomplete */}
+          <TouchableOpacity
+            style={styles.locationButton}
+            onPress={getCurrentLocation}
+            disabled={loading}
+          >
+            <Icon name="my-location" size={20} color={themeStyle.PRIMARY_COLOR} />
+            <Text style={styles.locationButtonText}>
+              {t("user-current-location")}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t("street-address")}</Text>
+            <GooglePlacesSearch onPlaceSelected={handlePlaceSelected} />
+
+            {/* <TextInput
+              style={styles.input}
+              value={formData.street}
+              onChangeText={(value) => handleInputChange('street', value)}
+              placeholder="Enter street address"
+            /> */}
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t("city")}</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.city}
+              onChangeText={(value) => handleInputChange("city", value)}
             />
           </View>
 
-          {/* <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-            <Text style={styles.label}>State *</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.streetNumber}
-              onChangeText={(value) => handleInputChange('streetNumber', value)}
-              placeholder="Enter state"
+          <View style={styles.row}>
+            <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
+              <Text style={styles.label}>{t("street-number")}</Text>
+              <TextInput
+                style={styles.input}
+                value={formData.streetNumber}
+                onChangeText={(value) => handleInputChange("streetNumber", value)}
+              />
+            </View>
+
+            {/* <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
+              <Text style={styles.label}>State *</Text>
+              <TextInput
+                style={styles.input}
+                value={formData.streetNumber}
+                onChangeText={(value) => handleInputChange('streetNumber', value)}
+                placeholder="Enter state"
+              />
+            </View> */}
+          </View>
+
+          {/* <CitiesList
+            onCitySelect={(value) => handleInputChange("selectedCity", value)}
+            selectedCity={formData.selectedCity}
+          /> */}
+          <TouchableOpacity
+            style={styles.defaultToggle}
+            onPress={() => handleInputChange("isDefault", !formData.isDefault)}
+          >
+            <Icon
+              name={formData.isDefault ? "star" : "star-border"}
+              size={24}
+              color={formData.isDefault ? "#FFD700" : "#666"}
             />
-          </View> */}
+            <Text style={styles.defaultText}>{t('set-as-default-address')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.submitButtonText}>
+                {address ? t('update-address') : t('add-address')}
+              </Text>
+            )}
+          </TouchableOpacity>
         </View>
-
-        {/* <CitiesList
-          onCitySelect={(value) => handleInputChange("selectedCity", value)}
-          selectedCity={formData.selectedCity}
-        /> */}
-        <TouchableOpacity
-          style={styles.defaultToggle}
-          onPress={() => handleInputChange("isDefault", !formData.isDefault)}
-        >
-          <Icon
-            name={formData.isDefault ? "star" : "star-border"}
-            size={24}
-            color={formData.isDefault ? "#FFD700" : "#666"}
-          />
-          <Text style={styles.defaultText}>{t('set-as-default-address')}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.submitButtonText}>
-              {address ? t('update-address') : t('add-address')}
-            </Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 });
 
@@ -272,7 +303,7 @@ const styles = StyleSheet.create({
     backgroundColor: themeStyle.WHITE_COLOR,
   },
   form: {
-    padding: 16,
+    paddingHorizontal: 10,
   },
   inputGroup: {
     marginBottom: 16,

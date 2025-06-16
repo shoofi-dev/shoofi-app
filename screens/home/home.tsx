@@ -209,7 +209,7 @@ const HomeScreen = ({ navigation }) => {
         return;
       }
     }
-    if (storeDataStore.storeData.isOrderLaterSupport) {
+    if (storeDataStore.storeData?.isOrderLaterSupport) {
       if (orderTypeTmp === ORDER_TYPE.now) {
         const endTime = storeDataStore.storeData.orderNowEndTime;
         var currentTime = moment().utc(true).valueOf();

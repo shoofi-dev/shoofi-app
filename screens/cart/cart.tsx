@@ -80,6 +80,7 @@ const CartScreen = ({ route }) => {
     adminCustomerStore,
     menuStore,
     extrasStore,
+    authStore
   } = useContext(StoreContext);
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -358,7 +359,11 @@ const CartScreen = ({ route }) => {
     if (storeDataStore.storeData?.isOrderLaterSupport) {
       onPickTime();
     } else {
-      navigation.navigate("checkout-screen");
+      if(authStore.isLoggedIn()) {
+        navigation.navigate("checkout-screen");
+      } else {
+        navigation.navigate("login");
+      }
     }
   };
 
@@ -379,35 +384,6 @@ const CartScreen = ({ route }) => {
         <View style={{ ...styles.container }}>
           <View style={{ paddingHorizontal: scale(20) }}>
             <View style={styles.backContainer}>
-              {/* <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: "#ECF0F4",
-                  paddingHorizontal: scale(10),
-                  borderRadius: 10,
-                  padding: scale(8),
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: fontSize(20),
-                    color: themeStyle.TEXT_PRIMARY_COLOR,
-                  }}
-                >
-                  {t("items-count")}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: fontSize(20),
-                    color: themeStyle.TEXT_PRIMARY_COLOR,
-                    fontFamily: `${getCurrentLang()}-American-bold`,
-                  }}
-                >
-                  {cartStore.getProductsCount()}{" "}
-                </Text>
-              </View> */}
-
               <BackButton onClick={onBackClick} />
               <View style={{ marginLeft: 10 }}>
                 <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>

@@ -68,6 +68,7 @@ import getPizzaCount from "./helpers/get-pizza-count";
 import _useWebSocketUrl from "./hooks/use-web-socket-url";
 import { useLocation } from "./hooks/useLocation";
 import { addressStore } from "./stores/address";
+import NewAddressBasedEventDialog from "./components/dialogs/new-address-based-event";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -582,6 +583,15 @@ const App = () => {
                 await storeDataStore.getStoreData();
                 console.log("storeId", store.appName)
                 
+              }else{
+                const appNameStorage: any = await shoofiAdminStore.getStoreDBName();
+                console.log("appNameStorage", appNameStorage)
+                if(appNameStorage){
+                  await shoofiAdminStore.setStoreDBName(appNameStorage);
+
+                await menuStore.getMenu();
+                await storeDataStore.getStoreData();
+                }
               }
               setTimeout(() => {
                 setAppIsReady(true);
@@ -902,6 +912,7 @@ const App = () => {
                 </ScrollView>
               );
             })}
+          <NewAddressBasedEventDialog />
           <GeneralServerErrorDialog />
           <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />
           <UpdateVersion

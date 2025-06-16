@@ -13,13 +13,10 @@ const TopBar = () => {
   const cartCount = cartStore.getProductsCount();
 
   const handleCartPress = () => {
-    if (authStore.isLoggedIn()) {
       if (cartCount > 0) {
         (navigation as any).navigate("cart");
       }
-    } else {
-      (navigation as any).navigate("login");
-    }
+  
   };
   useEffect(() => {
   }, [shoofiAdminStore.selectedCategory, shoofiAdminStore.selectedGeneralCategory])
@@ -65,7 +62,9 @@ const TopBar = () => {
           </Text>
         </View>
       ) : (
-        <AddressSelector />
+        <View style={{ minWidth:"60%"}}>
+          <AddressSelector />
+        </View>
       )}
     </View>
   );

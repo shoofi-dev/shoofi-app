@@ -28,7 +28,7 @@ class OrdersStore {
     return axiosInstance
       .post(
         api,
-        {statusList, ordersDate, isNotPrinted, pageNumber, isNotViewd, isOrderLaterSupport: storeDataStore.storeData.isOrderLaterSupport}
+        {statusList, ordersDate, isNotPrinted, pageNumber, isNotViewd, isOrderLaterSupport: storeDataStore.storeData?.isOrderLaterSupport}
       )
       .then(function (response: any) {
         return response;

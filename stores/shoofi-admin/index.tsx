@@ -92,7 +92,8 @@ class ShoofiAdminStore {
     await AsyncStorage.setItem("@storage_storeDB", storeDBName);
   };
   getStoreDBName = async () => {
-    await AsyncStorage.getItem("@storage_storeDB")
+    const storeDBName = await AsyncStorage.getItem("@storage_storeDB")
+    return storeDBName;
   };
 
   getStoreById = (storeId) => {

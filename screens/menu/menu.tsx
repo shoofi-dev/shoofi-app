@@ -220,11 +220,7 @@ const MenuScreen = () => {
   const distanceKm = availableDrivers?.distanceKm;
 
   const handleCartClick = () => {
-    if(authStore.isLoggedIn()) {
       navigation.navigate("cart");
-    } else {
-      navigation.navigate("login");
-    }
   }
 
   return (

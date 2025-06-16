@@ -52,6 +52,7 @@ type TOrder = {
   receipt_method: "DELIVERY" | "TAKEAWAY";
   creditcard_ReferenceNumber?: string;
   geo_positioning?: string;
+  address?: any;
   items: TProduct[];
   locationText?: string;
 };
@@ -166,8 +167,38 @@ class CartStore {
     }
   };
 
+  setCartStoreDBName = async (storeDBName) => {
+    await AsyncStorage.setItem("@storage_cart_storeDB", storeDBName);
+  };
+  getCartStoreDBName = async () => {
+    const storeDBName = await AsyncStorage.getItem("@storage_cart_storeDB")
+    return storeDBName;
+  };
+
+  /**
+   * Checks if the current store is different from the cart's store
+   * Returns true if different, false otherwise
+   */
+  isDifferentStore = async () => {
+    const cartStoreDBName = await this.getCartStoreDBName();
+    const storeDBName = await AsyncStorage.getItem("@storage_storeDB");
+    return cartStoreDBName && storeDBName && cartStoreDBName !== storeDBName;
+  };
+
+  /**
+   * Call this when user approves resetting the cart for a new store
+   */
+  resetCartForNewStore = async () => {
+    const storeDBName = await AsyncStorage.getItem("@storage_storeDB");
+    this.cartItems = [];
+    await this.setCartStoreDBName(storeDBName);
+    this.updateLocalStorage();
+  };
+
   addProductToCart = async (product, isBcoin = false) => {
     if (this.cartItems.length === 0) {
+      const storeDBName = await AsyncStorage.getItem("@storage_storeDB")
+      this.setCartStoreDBName(storeDBName);
       const storage_cartCreatedDate = {
         date: new Date(),
       };
@@ -176,6 +207,7 @@ class CartStore {
         JSON.stringify(storage_cartCreatedDate)
       );
     }
+    // UI should check isDifferentStore and call resetCartForNewStore if needed
     if (isBcoin) {
       this.cartItems.unshift(product);
     } else {
@@ -266,6 +298,7 @@ class CartStore {
       payment_method: order.paymentMthod,
       receipt_method: order.shippingMethod,
       geo_positioning: order.geo_positioning,
+      address: order.address,
       locationText: order.locationText,
       items: produtsAdapter(order),
     };

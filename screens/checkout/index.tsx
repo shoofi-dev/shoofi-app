@@ -103,9 +103,13 @@ const CheckoutScreen = ({ route }) => {
     console.log("onGeoAddressChange", data);
     setAddressLocation(data);
   };
-  const onTextAddressChange = (data: any) => {
-    console.log("onTextAddressChange", data);
-    setAddressLocationText(data);
+  const onTextAddressChange = (addressObj: any) => {
+    console.log("onTextAddressChange", addressObj);
+    setAddressLocationText(addressObj);
+  };
+  const onAddressChange = (addressObj: any) => {
+    console.log("onAddressChange", addressObj);
+    setAddressLocation(addressObj);
   };
 
   const onPaymentMethodChange = (data: any) => {
@@ -183,14 +187,13 @@ const CheckoutScreen = ({ route }) => {
       isShippingMethodAgrredCheck();
       return false;
     }
-
     const checkoutSubmitOrderRes = await checkoutSubmitOrder({
       paymentMthod,
       shippingMethod,
       totalPrice,
       orderDate: selectedDate,
       editOrderData: ordersStore.editOrderData,
-      location: addressLocation,
+      address: addressLocation,
       locationText: addressLocationText,
     });
     if (checkoutSubmitOrderRes) {
@@ -251,6 +254,7 @@ const CheckoutScreen = ({ route }) => {
             onGeoAddressChange={onGeoAddressChange}
             onTextAddressChange={onTextAddressChange}
             onPlaceChangeFN={onPlaceChange}
+            onAddressChange={onAddressChange}
           />
         </Animatable.View>
         <Animatable.View

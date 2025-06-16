@@ -23,10 +23,10 @@ export const MapViewAddress = ({ region, location }: TProps) => {
         <View style={styles.mapViewContainer}>
           <MapView
             style={styles.mapContainer}
-            initialRegion={{
+            region={{
               latitude: location.lat,
               longitude: location.lng,
-              latitudeDelta: 0.01, // Smaller values = more zoomed in
+              latitudeDelta: 0.01,
               longitudeDelta: 0.01,
             }}
           >

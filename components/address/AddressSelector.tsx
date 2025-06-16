@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, I18nManager, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, I18nManager, Dimensions, DeviceEventEmitter } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { StoreContext } from '../../stores';
 import * as Animatable from 'react-native-animatable';
+import { DIALOG_EVENTS } from '../../consts/events';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -45,18 +46,18 @@ const AddressSelector = observer(({ onAddressSelect }) => {
   };
 
   const handleAddNew = () => {
-    if(!authStore.isLoggedIn()){
-      navigation.navigate('login')
-      return;
-    }
+    // if(!authStore.isLoggedIn()){
+    //   navigation.navigate('login')
+    //   return;
+    // }
     setDropdownOpen(false);
-    navigation.navigate('AddAddress', {
-      onSuccess: () => navigation.goBack(),
-    });
+      DeviceEventEmitter.emit(
+        DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG
+      );
   };
 
   return (
-    <View style={{ zIndex: 100 }}>
+    <View style={{ zIndex: 100,  }}>
       <TouchableOpacity style={styles.row} onPress={handleRowPress} activeOpacity={0.8}>
         <Icon name="home" size={22} color="#444" style={styles.icon} />
         <View >
@@ -66,7 +67,7 @@ const AddressSelector = observer(({ onAddressSelect }) => {
             <Text  numberOfLines={1}>
               {selectedAddress.street && selectedAddress.city
                 ? `${selectedAddress.street} ${selectedAddress.streetNumber ? selectedAddress.streetNumber + ', ' : ''}${selectedAddress.city}`
-                : selectedAddress.name || ''}
+                : selectedAddress.city || ''}
             </Text>
           )}
         </View>

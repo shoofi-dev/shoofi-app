@@ -47,6 +47,7 @@ import AddCustomImagedDialog from "../../components/dialogs/add-custom-image";
 import MealExtras from "./extras/Extras";
 import { useResponsive } from "../../hooks/useResponsive";
 import Counter from "../../components/controls/counter";
+import StoreChangeConfirmationDialog from "../../components/dialogs/store-change-confirmation";
 
 const showCakeNoteList = ["3", "5"];
 
@@ -91,6 +92,8 @@ const MealScreen = ({ route }) => {
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
   const [confirmActiondDialogText, setConfirmActiondDialogText] = useState("");
+  const [isStoreChangeDialogOpen, setIsStoreChangeDialogOpen] = useState(false);
+  const [pendingProduct, setPendingProduct] = useState(null);
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -177,7 +180,7 @@ const MealScreen = ({ route }) => {
     }
   }, [extrasStore?.selections]);
 
-  const onAddToCart = () => {
+  const handleAddToCart = async () => {
     if (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) {
       setConfirmActiondDialogText(
         getOutOfStockMessage() || "call-store-to-order"
@@ -185,17 +188,37 @@ const MealScreen = ({ route }) => {
       setIsOpenConfirmActiondDialog(true);
       return;
     }
-    DeviceEventEmitter.emit(`add-to-cart-animate`, {
-      imgUrl: meal.data.img,
-    });
 
+    const isDifferentStore = await cartStore.isDifferentStore();
+    if (isDifferentStore) {
+      setPendingProduct({
+        ...meal,
+        selectedExtras: { ...extrasStore.selections },
+      });
+      setIsStoreChangeDialogOpen(true);
+      return;
+    }
+
+    addProductToCart();
+  };
+
+  const addProductToCart = () => {
     cartStore.addProductToCart({
       ...meal,
       selectedExtras: { ...extrasStore.selections },
     });
-    setTimeout(() => {
-      navigation.goBack();
-    }, 1000);
+    navigation.goBack();
+  };
+
+  const handleStoreChangeApprove = async () => {
+    await cartStore.resetCartForNewStore();
+    addProductToCart();
+    setIsStoreChangeDialogOpen(false);
+  };
+
+  const handleStoreChangeCancel = () => {
+    setIsStoreChangeDialogOpen(false);
+    setPendingProduct(null);
   };
 
   const onUpdateCartProduct = () => {
@@ -383,7 +406,7 @@ const MealScreen = ({ route }) => {
         <ProductFooter
           isEdit={isEdit}
           isValidForm={true}
-          onAddToCart={onAddToCart}
+          onAddToCart={handleAddToCart}
           onUpdateCartProduct={onUpdateCartProduct}
           price={meal.data.price}
           qty={meal.others.qty}
@@ -395,6 +418,12 @@ const MealScreen = ({ route }) => {
         isOpen={isOpenConfirmActiondDialog}
         text={confirmActiondDialogText}
         positiveText="ok"
+      />
+
+      <StoreChangeConfirmationDialog
+        isOpen={isStoreChangeDialogOpen}
+        onApprove={handleStoreChangeApprove}
+        onCancel={handleStoreChangeCancel}
       />
     </View>
   );

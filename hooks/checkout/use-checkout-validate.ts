@@ -169,15 +169,15 @@ const _useCheckoutValidate = () => {
       return false;
     }
 
-    const isValidShipping = await isValidShippingCheck(
-      shippingMethod,
-      addressLocation,
-      addressLocationText,
-      place
-    );
-    if (!isValidShipping) {
-      return false;
-    }
+    // const isValidShipping = await isValidShippingCheck(
+    //   shippingMethod,
+    //   addressLocation,
+    //   addressLocationText,
+    //   place
+    // );
+    // if (!isValidShipping) {
+    //   return false;
+    // }
     
     return true;
   };

@@ -166,7 +166,7 @@ const OrdersListScreen = ({ route }) => {
   const getNext7Days = () => {
     let days = [];
     let daysRequired = 14;
-    const multiple = storeDataStore.storeData.isOrderLaterSupport ? 1 : -1;
+    const multiple = storeDataStore.storeData?.isOrderLaterSupport ? 1 : -1;
     for (let i = 0; i < daysRequired; i++) {
       let day = moment().add(i * multiple, "days");
       days.push({
@@ -531,7 +531,7 @@ const OrdersListScreen = ({ route }) => {
             <View style={{ marginBottom: 0 }}>
               <Text style={styles.dateRawText}>{t("collect-date")}</Text>
             </View>
-            {storeDataStore.storeData.isOrderLaterSupport && (
+            {storeDataStore.storeData?.isOrderLaterSupport && (
               <Text
                 style={{
                   fontSize: 30,
