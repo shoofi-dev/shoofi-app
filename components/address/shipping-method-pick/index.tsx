@@ -1,5 +1,5 @@
 import LottieView from "lottie-react-native";
-import { View, Image, StyleSheet, DeviceEventEmitter, TouchableOpacity } from "react-native";
+import { View, Image, StyleSheet, DeviceEventEmitter, TouchableOpacity, ActivityIndicator } from "react-native";
 import { ToggleButton } from "react-native-paper";
 import Text from "../../controls/Text";
 import { useTranslation } from "react-i18next";
@@ -37,19 +37,24 @@ export type TProps = {
   };
   distanceKm?: number;
   driversLoading?: boolean;
+  shippingMethod?: any;
 };
 
-export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySupport, deliveryDistanceText, deliveryEtaText, pickupEtaText, takeAwayReadyTime, deliveryTime, distanceKm, driversLoading }: TProps) => {
+export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySupport, deliveryDistanceText, deliveryEtaText, pickupEtaText, takeAwayReadyTime, deliveryTime, distanceKm, driversLoading, shippingMethod }: TProps) => {
   const { t } = useTranslation(); 
   const { ordersStore } = useContext(StoreContext);
 
-  const [shippingMethod, setShippingMethod] = useState(
-    SHIPPING_METHODS.takAway
+  const [shippingMethodLocal, setShippingMethodLocal] = useState(
+    shippingMethod || SHIPPING_METHODS.takAway
   );
 
   useEffect(() => {
+    setShippingMethodLocal(shippingMethod || SHIPPING_METHODS.takAway);
+  }, [shippingMethod]);
+
+  useEffect(() => {
     if (ordersStore.editOrderData) {
-      setShippingMethod(ordersStore.editOrderData.order.receipt_method);
+      setShippingMethodLocal(ordersStore.editOrderData.order.receipt_method);
       onChange(ordersStore.editOrderData.order.receipt_method);
 
     }
@@ -92,10 +97,12 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
       //   text: "shipping-not-supported",
       //   icon: "shipping_icon",
       // });
-      setShippingMethod(SHIPPING_METHODS.takAway);
+      setShippingMethodLocal(SHIPPING_METHODS.takAway);
+      onChange(SHIPPING_METHODS.takAway);
+
       return;
     }
-    setShippingMethod(value);
+    setShippingMethodLocal(value);
     onChange(value);
   };
 
@@ -105,7 +112,7 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
       <TouchableOpacity
         style={[
           styles.pillOption,
-          shippingMethod === SHIPPING_METHODS.shipping
+          shippingMethodLocal === SHIPPING_METHODS.shipping
             ? styles.pillOptionSelected
             : styles.pillOptionUnselected,
             { borderRadius: 50 },
@@ -116,7 +123,7 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
         <Text
           style={[
             styles.pillOptionText,
-            shippingMethod === SHIPPING_METHODS.shipping && styles.pillOptionTextSelected,
+            shippingMethodLocal === SHIPPING_METHODS.shipping && styles.pillOptionTextSelected,
           ]}
         >
           {t("delivery")}
@@ -125,10 +132,8 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
           {distanceKm ? distanceKm + " km · " : ""}
           {deliveryTime?.min} - {deliveryTime?.max} {t('minutes')}
         </Text>
-        : driversLoading ? <Text style={{color: themeStyle.ERROR_COLOR}}>
-          {t('loading')}
-        </Text>
-        : <Text style={{color: themeStyle.ERROR_COLOR}}>
+        : driversLoading ? <ActivityIndicator size="small" color={themeStyle.GRAY_300} style={{ marginTop: 2 }} />
+        : <Text style={{color: themeStyle.GRAY_300}}>
           {t('delivery-not-supported')}
         </Text>
         }
@@ -137,7 +142,7 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
       <TouchableOpacity
         style={[
           styles.pillOption,
-          shippingMethod === SHIPPING_METHODS.takAway
+          shippingMethodLocal === SHIPPING_METHODS.takAway
             ? styles.pillOptionSelected
             : styles.pillOptionUnselected,
           { borderRadius: 50 },
@@ -148,7 +153,7 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
         <Text
           style={[
             styles.pillOptionText,
-            shippingMethod === SHIPPING_METHODS.takAway && styles.pillOptionTextSelected,
+            shippingMethodLocal === SHIPPING_METHODS.takAway && styles.pillOptionTextSelected,
           ]}
         >
           {t("take-away")}

@@ -223,6 +223,11 @@ const MenuScreen = () => {
       navigation.navigate("cart");
   }
 
+  const handleShippingMethodChange = async (value) => {
+    console.log("handleShippingMethodChange", value)
+    await cartStore.setShippingMethod(value);
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       {/* Fixed Back and Heart Buttons */}
@@ -258,7 +263,7 @@ const MenuScreen = () => {
         }}
       >
         <View style={{ marginTop: 60, marginHorizontal: 10 }}>
-          <ShippingMethodPick onChange={() => {}} shippingMethodValue={""} 
+          <ShippingMethodPick onChange={handleShippingMethodChange} shippingMethodValue={""} 
           isDeliverySupport={availableDrivers?.available} 
           takeAwayReadyTime={takeAwayReadyTime}
            deliveryTime={deliveryTime}

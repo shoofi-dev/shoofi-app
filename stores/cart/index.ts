@@ -8,7 +8,7 @@ import i18n from "../../translations/index-x";
 import { axiosInstance } from "../../utils/http-interceptor";
 import { getCurrentLang } from "../../translations/i18n";
 import { Platform } from "react-native";
-import { bcoindId } from "../../consts/shared";
+import { bcoindId, SHIPPING_METHODS } from "../../consts/shared";
 import moment from "moment";
 var hash = require("object-hash");
 
@@ -141,17 +141,34 @@ const produtsAdapter = (order) => {
 
 class CartStore {
   cartItems = [];
+  shippingMethod = "";
 
   isEnabled = false;
 
   constructor() {
     makeAutoObservable(this);
     this.getDefaultValue();
+    this.getShippingMethod();
   }
   getDefaultValue = async () => {
     const jsonValue = await AsyncStorage.getItem("@storage_cartItems");
     const value = jsonValue != null ? JSON.parse(jsonValue) : [];
     this.setDefaultValue(value);
+  };
+
+  getShippingMethod = async () => {
+    const jsonValue = await AsyncStorage.getItem("@storage_shippingMethod");
+    const value = jsonValue != null ? (jsonValue) : SHIPPING_METHODS.takAway;
+    console.log("valueAAAAA", value)
+    this.shippingMethod = value;
+    return value;
+
+  };
+
+  setShippingMethod = async (value) => {
+    console.log("storage_shippingMethod", value)
+    this.shippingMethod = value;
+    await AsyncStorage.setItem("@storage_shippingMethod", value);
   };
 
   setDefaultValue = (value) => {

@@ -9,17 +9,16 @@ import { StoreContext } from "../stores";
  * @param {object} params.shoofiAdminStore - MobX admin store (must have getAvailableDrivers)
  * @returns {object} { availableDrivers, loading, error }
  */
-export function useAvailableDrivers() {
+export function useAvailableDrivers({ isEnabled = true }: { isEnabled?: boolean } = {}) {
   const { storeDataStore, shoofiAdminStore, addressStore } =
     useContext(StoreContext);
-
   const [availableDrivers, setAvailableDrivers] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [customerLocation, setCustomerLocation] = useState(null);
 
   useEffect(() => {
-    if (!storeDataStore.storeData) return;
+    if (!storeDataStore.storeData || !isEnabled) return;
     const defaultAddress = addressStore.defaultAddress;
     if (
       defaultAddress &&
@@ -48,7 +47,7 @@ export function useAvailableDrivers() {
           setLoading(false);
         });
     }
-  }, [addressStore.defaultAddress, storeDataStore.storeData?.location]);
+  }, [addressStore.defaultAddress, storeDataStore.storeData?.location, isEnabled]);
 
   return { availableDrivers, loading, error, customerLocation, defaultAddress: addressStore.defaultAddress };
 }

@@ -45,9 +45,7 @@ const CheckoutScreen = ({ route }) => {
 
   const [isLoadingOrderSent, setIsLoadingOrderSent] = useState(null);
   const [paymentMthod, setPaymentMthod] = useState(PAYMENT_METHODS.cash);
-  const [shippingMethod, setShippingMethod] = useState(
-    SHIPPING_METHODS.takAway
-  );
+
   const [isShippingMethodAgrred, setIsShippingMethodAgrred] = useState(false);
   const [addressLocation, setAddressLocation] = useState();
   const [addressLocationText, setAddressLocationText] = useState();
@@ -55,6 +53,15 @@ const CheckoutScreen = ({ route }) => {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const [editOrderData, setEditOrderData] = useState(null);
+
+  const [shippingMethod, setShippingMethod] = useState(null);
+
+  useEffect(()=>{
+    cartStore.getShippingMethod().then((shippingMethodTmp)=>{
+      console.log("shippingMethodTmp", shippingMethodTmp)
+      setShippingMethod(shippingMethodTmp)
+    })
+  }, [])
 
   useEffect(() => {
     if (ordersStore.editOrderData) {
@@ -255,6 +262,7 @@ const CheckoutScreen = ({ route }) => {
             onTextAddressChange={onTextAddressChange}
             onPlaceChangeFN={onPlaceChange}
             onAddressChange={onAddressChange}
+            shippingMethod={shippingMethod}
           />
         </Animatable.View>
         <Animatable.View

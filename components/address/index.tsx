@@ -27,6 +27,7 @@ export type TProps = {
   onTextAddressChange: any;
   onPlaceChangeFN: any;
   onAddressChange: any;
+  shippingMethod: any;
 };
 export const AddressCMP = observer(({
   onShippingMethodChangeFN,
@@ -34,6 +35,7 @@ export const AddressCMP = observer(({
   onTextAddressChange,  
   onAddressChange,
   onPlaceChangeFN,
+  shippingMethod,
 }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -64,12 +66,9 @@ export const AddressCMP = observer(({
   const [isOpenRecipetNotSupportedDialog, setIOpenRecipetNotSupportedDialog] =
     useState(false);
 
-  const [shippingMethod, setShippingMethod] = useState(
-    SHIPPING_METHODS.takAway
-  );
 
   const onShippingMethodChange = async (shippingMethodValue: string) => {
-    setShippingMethod(shippingMethodValue);
+    // setShippingMethod(shippingMethodValue);
     onShippingMethodChangeFN(shippingMethodValue);
   };
 
@@ -132,6 +131,7 @@ export const AddressCMP = observer(({
           deliveryTime={deliveryTime}
           distanceKm={distanceKm}
           driversLoading={driversLoading}
+          shippingMethod={shippingMethod}
         />
       </View>
       {shippingMethod === SHIPPING_METHODS.shipping && (

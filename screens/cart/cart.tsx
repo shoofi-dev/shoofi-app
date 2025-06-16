@@ -678,10 +678,9 @@ const CartScreen = ({ route }) => {
                 );
               })}
             </View>
-            <TotalPriceCMP
-            shippingMethod={SHIPPING_METHODS.shipping}
-            onChangeTotalPrice={onChangeTotalPrice}
-          />
+              <TotalPriceCMP
+                onChangeTotalPrice={onChangeTotalPrice}
+              />
           </View>
         </View>
       </ScrollView>

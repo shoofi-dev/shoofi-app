@@ -11,14 +11,22 @@ import { getCurrentLang } from "../../translations/i18n";
 import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
 
 export type TProps = {
-  shippingMethod: any;
   onChangeTotalPrice: any;
 };
-export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TProps) {
-  const { t } = useTranslation();
-       
+export default function TotalPriceCMP({ onChangeTotalPrice }: TProps) {
+  const { t } = useTranslation()
+ 
+  const [shippingMethod, setShippingMethod] = useState(null);
+
+  useEffect(()=>{
+    cartStore.getShippingMethod().then((shippingMethodTmp)=>{
+      console.log("shippingMethodTmp", shippingMethodTmp)
+      setShippingMethod(shippingMethodTmp)
+    })
+  }, [])
+
   const { cartStore } = useContext(StoreContext);
-  const { availableDrivers, loading: driversLoading, error: driversError } = useAvailableDrivers();
+  const { availableDrivers, loading: driversLoading, error: driversError } = useAvailableDrivers({isEnabled: shippingMethod === SHIPPING_METHODS.shipping});
   const [itemsPrice, setItemsPrice] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const areaDeliveryPrice = availableDrivers?.area?.price
@@ -29,7 +37,7 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
   useEffect(()=>{
             getTotalPrice();
 
-  }, [itemsPrice, shippingMethod, availableDrivers?.area?.price])
+  }, [itemsPrice,shippingMethod, availableDrivers?.area?.price, availableDrivers, driversLoading])
 
   const getTotalPrice = () => {
     const shippingPrice =
@@ -54,7 +62,7 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
   // --- NEW DESIGN START ---
   // Calculate values
   const orderPrice = itemsPrice;
-  const deliveryPrice = shippingMethod === SHIPPING_METHODS.shipping ? areaDeliveryPrice || 0 : 0;
+  const deliveryPrice = shippingMethod === SHIPPING_METHODS.shipping ? areaDeliveryPrice || 0 : null;
   // Placeholder for discount logic (replace with real discount if available)
   const discount = 0; // e.g., -5
   const finalTotal = orderPrice + deliveryPrice + discount;
@@ -62,8 +70,11 @@ export default function TotalPriceCMP({ shippingMethod, onChangeTotalPrice }: TP
   // Hebrew labels
   const rows = [
     { label: t("order-price"), value: orderPrice },
-    { label: t("delivery"), value: deliveryPrice },
+   
   ];
+  if (deliveryPrice !== null) {
+    rows.push( { label: t("delivery"), value: deliveryPrice  });
+  }
   if (discount) {
     rows.push({ label: t("discount"), value: discount });
   }
