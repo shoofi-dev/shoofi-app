@@ -69,6 +69,7 @@ import _useWebSocketUrl from "./hooks/use-web-socket-url";
 import { useLocation } from "./hooks/useLocation";
 import { addressStore } from "./stores/address";
 import NewAddressBasedEventDialog from "./components/dialogs/new-address-based-event";
+import { couponsStore } from "./stores/coupons";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -831,7 +832,8 @@ const App = () => {
             errorHandlerStore: errorHandlerStore,
             shoofiAdminStore: shoofiAdminStore,
             extrasStore: extrasStore,
-            addressStore: addressStore
+            addressStore: addressStore,
+            couponsStore: couponsStore
           }}
         >
           <View style={{ height: "100%" }}>

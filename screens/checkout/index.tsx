@@ -37,7 +37,7 @@ const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { ordersStore, cartStore, adminCustomerStore } =
+  const { ordersStore, cartStore, adminCustomerStore, couponsStore, userDetailsStore } =
     useContext(StoreContext);
   const { selectedDate } = route.params;
 
@@ -83,7 +83,7 @@ const CheckoutScreen = ({ route }) => {
   }, []);
 
   const goToOrderStatus = () => {
-    navigation.navigate("homeScreen");
+    (navigation as any).navigate("homeScreen");
 
     // if(userDetailsStore.isAdmin()){
     //   navigation.navigate("homeScreen");
@@ -170,10 +170,10 @@ const CheckoutScreen = ({ route }) => {
         adminCustomerStore.setCustomer(null);
         ordersStore.setEditOrderData(null);
       }, 1000);
-      navigation.navigate("admin-orders");
+      (navigation as any).navigate("admin-orders");
       return;
     }
-    navigation.navigate("order-submitted", { shippingMethod });
+    (navigation as any).navigate("order-submitted", { shippingMethod });
   };
 
   const handleCheckout = async (isShippingMethodAgrredValue) => {
@@ -194,6 +194,27 @@ const CheckoutScreen = ({ route }) => {
       isShippingMethodAgrredCheck();
       return false;
     }
+
+    // Redeem coupon if applied
+    if (couponsStore.appliedCoupon) {
+      try {
+        const userId = adminCustomerStore.userDetails?.customerId || editOrderData?.customerId || userDetailsStore.userDetails?.customerId;
+        const orderId = editOrderData?._id || `temp-${Date.now()}`;
+        
+        await couponsStore.redeemCoupon(
+          couponsStore.appliedCoupon.coupon.code,
+          userId,
+          orderId,
+          couponsStore.appliedCoupon.discountAmount
+        );
+        
+        console.log('Coupon redeemed successfully');
+      } catch (error) {
+        console.error('Failed to redeem coupon:', error);
+        // Continue with checkout even if coupon redemption fails
+      }
+    }
+
     const checkoutSubmitOrderRes = await checkoutSubmitOrder({
       paymentMthod,
       shippingMethod,

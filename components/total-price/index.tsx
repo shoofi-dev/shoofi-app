@@ -9,6 +9,7 @@ import { StoreContext } from "../../stores";
 import { useContext, useEffect, useState } from "react";
 import { getCurrentLang } from "../../translations/i18n";
 import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
+import CouponInput from "../coupon/CouponInput";
 
 export type TProps = {
   onChangeTotalPrice: any;
@@ -81,6 +82,18 @@ export default function TotalPriceCMP({ onChangeTotalPrice }: TProps) {
 
   return (
     <View style={styles.totalPriceContainer}>
+      <CouponInput
+        orderAmount={finalTotal}
+        userId="current-user-id" // Replace with actual user ID
+        onCouponApplied={(couponApp) => {
+          // Handle coupon applied
+          console.log('Coupon applied:', couponApp);
+        }}
+        onCouponRemoved={() => {
+          // Handle coupon removed
+          console.log('Coupon removed');
+        }}
+      />
       {rows.map((row, idx) => (
         <View
           key={row.label}
