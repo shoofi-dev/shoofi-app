@@ -32,6 +32,8 @@ import _useCheckoutSubmit from "../../hooks/checkout/use-checkout-submit";
 import PaymentFailedBasedEventDialog from "../../components/dialogs/payment-failed-based-event";
 import * as Animatable from "react-native-animatable";
 import { storeDataStore } from "../../stores/store";
+import Text from "../../components/controls/Text";
+import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
 
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -55,6 +57,14 @@ const CheckoutScreen = ({ route }) => {
   const [editOrderData, setEditOrderData] = useState(null);
 
   const [shippingMethod, setShippingMethod] = useState(null);
+
+  const {
+    availableDrivers,
+    loading: driversLoading,
+    error: driversError,
+  } = useAvailableDrivers({
+    isEnabled: shippingMethod === SHIPPING_METHODS.shipping,
+  });
 
   useEffect(()=>{
     cartStore.getShippingMethod().then((shippingMethodTmp)=>{
@@ -81,6 +91,30 @@ const CheckoutScreen = ({ route }) => {
   useEffect(() => {
     setIsShippingMethodAgrred(false);
   }, []);
+
+  // Calculate total price including discount
+  useEffect(() => {
+    const calculateTotalPrice = () => {
+      let itemsPrice = 0;
+      cartStore.cartItems.forEach((item) => {
+        if (item) {
+          itemsPrice += item.data.price * item.others.qty;
+        }
+      });
+
+      // Get delivery price if shipping method is shipping
+      const deliveryPrice = shippingMethod === SHIPPING_METHODS.shipping ? 
+        (availableDrivers?.area?.price || 0) : 0;
+
+      // Get discount from applied coupon
+      const discount = couponsStore.appliedCoupon?.discountAmount || 0;
+
+      const finalPrice = itemsPrice + deliveryPrice - discount;
+      setTotalPrice(finalPrice);
+    };
+
+    calculateTotalPrice();
+  }, [cartStore.cartItems, shippingMethod, couponsStore.appliedCoupon, availableDrivers]);
 
   const goToOrderStatus = () => {
     (navigation as any).navigate("homeScreen");
@@ -308,7 +342,6 @@ const CheckoutScreen = ({ route }) => {
           left: 0,
           right: 0,
           backgroundColor: themeStyle.SECONDARY_COLOR,
-
           padding: 20,
           borderTopStartRadius: 30,
           borderTopEndRadius: 30,
@@ -322,12 +355,11 @@ const CheckoutScreen = ({ route }) => {
           alignItems: "center",
         }}
       >
-        {/* <View>
-          <TotalPriceCMP
-            shippingMethod={shippingMethod}
-            onChangeTotalPrice={onChangeTotalPrice}
-          />
-        </View> */}
+        <View style={{ width: "100%", marginBottom: 10 }}>
+          <Text style={{ fontSize: 18, textAlign: "center", color: themeStyle.TEXT_PRIMARY_COLOR }}>
+            {t("total-price")}: ₪{totalPrice.toFixed(2)}
+          </Text>
+        </View>
         <View style={{ width: "90%", marginTop: 10 }}>
           <Button
             onClickFn={() => handleCheckout(isShippingMethodAgrred)}

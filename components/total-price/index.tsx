@@ -13,42 +13,61 @@ import CouponInput from "../coupon/CouponInput";
 
 export type TProps = {
   onChangeTotalPrice: any;
+  hideCouponInput?: boolean;
 };
-export default function TotalPriceCMP({ onChangeTotalPrice }: TProps) {
-  const { t } = useTranslation()
- 
+export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = false }: TProps) {
+  const { t } = useTranslation();
+
   const [shippingMethod, setShippingMethod] = useState(null);
 
-  useEffect(()=>{
-    cartStore.getShippingMethod().then((shippingMethodTmp)=>{
-      console.log("shippingMethodTmp", shippingMethodTmp)
-      setShippingMethod(shippingMethodTmp)
-    })
-  }, [])
+  useEffect(() => {
+    cartStore.getShippingMethod().then((shippingMethodTmp) => {
+      setShippingMethod(shippingMethodTmp);
+    });
+  }, []);
 
   const { cartStore } = useContext(StoreContext);
-  const { availableDrivers, loading: driversLoading, error: driversError } = useAvailableDrivers({isEnabled: shippingMethod === SHIPPING_METHODS.shipping});
+  const {
+    availableDrivers,
+    loading: driversLoading,
+    error: driversError,
+  } = useAvailableDrivers({
+    isEnabled: shippingMethod === SHIPPING_METHODS.shipping,
+  });
   const [itemsPrice, setItemsPrice] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-  const areaDeliveryPrice = availableDrivers?.area?.price
+  const [discount, setDiscount] = useState(0);
+  const [deliveryPrice, setDeliveryPrice] = useState(0);
+  const areaDeliveryPrice = availableDrivers?.area?.price;
   useEffect(() => {
     getItemsPrice();
   }, []);
 
-  useEffect(()=>{
-            getTotalPrice();
+  useEffect(() => {
+    const deliveryPriceTmp =
+    shippingMethod === SHIPPING_METHODS.shipping
+      ? areaDeliveryPrice || 0
+      : null;
+    setDeliveryPrice(deliveryPriceTmp);
+  }, [availableDrivers]);
 
-  }, [itemsPrice,shippingMethod, availableDrivers?.area?.price, availableDrivers, driversLoading])
+  useEffect(() => {
+    getTotalPrice();
+  }, [
+    itemsPrice,
+    shippingMethod,
+    availableDrivers?.area?.price,
+    availableDrivers,
+    driversLoading,
+    discount,
+    deliveryPrice
+  ]);
 
   const getTotalPrice = () => {
-    const shippingPrice =
-      shippingMethod === SHIPPING_METHODS.shipping
-        ? deliveryPrice
-        : 0;
-        console.log("shippingPrice", shippingPrice)
-        const totalPriceTmp = shippingPrice + itemsPrice;
+
+    const totalPriceTmp = itemsPrice + deliveryPrice - discount;
     setTotalPrice(totalPriceTmp);
-    onChangeTotalPrice(totalPriceTmp)
+    onChangeTotalPrice(totalPriceTmp);
   };
   const getItemsPrice = () => {
     let tmpOrderPrice = 0;
@@ -60,21 +79,9 @@ export default function TotalPriceCMP({ onChangeTotalPrice }: TProps) {
     setItemsPrice(tmpOrderPrice);
   };
 
-  // --- NEW DESIGN START ---
-  // Calculate values
-  const orderPrice = itemsPrice;
-  const deliveryPrice = shippingMethod === SHIPPING_METHODS.shipping ? areaDeliveryPrice || 0 : null;
-  // Placeholder for discount logic (replace with real discount if available)
-  const discount = 0; // e.g., -5
-  const finalTotal = orderPrice + deliveryPrice + discount;
-
-  // Hebrew labels
-  const rows = [
-    { label: t("order-price"), value: orderPrice },
-   
-  ];
+  const rows = [{ label: t("order-price"), value: itemsPrice }];
   if (deliveryPrice !== null) {
-    rows.push( { label: t("delivery"), value: deliveryPrice  });
+    rows.push({ label: t("delivery"), value: deliveryPrice });
   }
   if (discount) {
     rows.push({ label: t("discount"), value: discount });
@@ -82,25 +89,27 @@ export default function TotalPriceCMP({ onChangeTotalPrice }: TProps) {
 
   return (
     <View style={styles.totalPriceContainer}>
-      <CouponInput
-        orderAmount={finalTotal}
-        userId="current-user-id" // Replace with actual user ID
-        onCouponApplied={(couponApp) => {
-          // Handle coupon applied
-          console.log('Coupon applied:', couponApp);
-        }}
-        onCouponRemoved={() => {
-          // Handle coupon removed
-          console.log('Coupon removed');
-        }}
-      />
+      {!hideCouponInput && (
+        <CouponInput
+          orderAmount={totalPrice}
+          userId="current-user-id" // Replace with actual user ID
+          onCouponApplied={(couponApp) => {
+            // Handle coupon applied
+            console.log("couponApp", couponApp);
+            setDiscount(couponApp.discountAmount);
+            console.log("Coupon applied:", couponApp);
+          }}
+          onCouponRemoved={() => {
+            // Handle coupon removed
+            console.log("Coupon removed");
+            setDiscount(0);
+          }}
+        />
+      )}
       {rows.map((row, idx) => (
         <View
           key={row.label}
-          style={[
-            styles.row,
-            idx === rows.length - 1 ? styles.lastRow : null,
-          ]}
+          style={[styles.row, idx === rows.length - 1 ? styles.lastRow : null]}
         >
           <Text style={styles.price} type="number">
             ₪{row.value.toFixed(2)}
@@ -108,9 +117,9 @@ export default function TotalPriceCMP({ onChangeTotalPrice }: TProps) {
           <Text style={styles.label}>{row.label}</Text>
         </View>
       ))}
-      <View style={[styles.row, styles.lastRow, { marginTop: 8 }]}> 
+      <View style={[styles.row, styles.lastRow, { marginTop: 8 }]}>
         <Text style={styles.priceTotal} type="number">
-          ₪{finalTotal.toFixed(2)}
+          ₪{totalPrice.toFixed(2)}
         </Text>
         <Text style={styles.labelTotal}>{t("final-price-short")}</Text>
       </View>

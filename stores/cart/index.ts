@@ -73,6 +73,11 @@ type TCart = {
   isAdmin?: boolean;
   shippingPrice?: any;
   orderPrice?: any;
+  appliedCoupon?: {
+    code: string;
+    discountAmount: number;
+    couponId: string;
+  };
 };
 
 const prodcutExtrasAdapter = (extras) => {
@@ -334,7 +339,8 @@ class CartStore {
       customerId: order.customerId,
       orderType: order.orderType,
       shippingPrice: order.shippingPrice,
-      orderPrice: order.totalPrice - (order.shippingPrice || 0)
+      orderPrice: order.totalPrice - (order.shippingPrice || 0),
+      appliedCoupon: order.appliedCoupon
     };
 
     return cartData;

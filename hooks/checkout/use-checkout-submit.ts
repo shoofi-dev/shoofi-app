@@ -16,7 +16,7 @@ export type TPropsCheckoutSubmit = {
   locationText?: any;
 };
 const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
-  const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, storeDataStore } =
+  const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, storeDataStore, couponsStore } =
     useContext(StoreContext);
   const { chargeCC } = _useCheckoutChargeCC();
 
@@ -55,6 +55,16 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
       orderDate,
       orderType: ordersStore.orderType,
     };
+    
+    // Add applied coupon information if exists
+    if (couponsStore.appliedCoupon) {
+      order.appliedCoupon = {
+        code: couponsStore.appliedCoupon.coupon.code,
+        discountAmount: couponsStore.appliedCoupon.discountAmount,
+        couponId: couponsStore.appliedCoupon.coupon._id
+      };
+    }
+    
     if (
       userDetailsStore.isAdmin() &&
       adminCustomerStore?.userDetails?.customerId
