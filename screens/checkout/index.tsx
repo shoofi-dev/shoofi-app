@@ -182,6 +182,7 @@ const CheckoutScreen = ({ route }) => {
     ordersStore.editOrderData,
     addressLocation,
     addressLocationText,
+    paymentData
   ]);
   const handleShippingMethodAgrreAnswer = (data) => {
     setIsShippingMethodAgrred(data.value);
@@ -255,8 +256,6 @@ const CheckoutScreen = ({ route }) => {
         // Continue with checkout even if coupon redemption fails
       }
     }
-    console.log("paymentDataXXXXX@@@", paymentData)
-    return;
     const checkoutSubmitOrderRes = await checkoutSubmitOrder({
       paymentMthod,
       shippingMethod,
