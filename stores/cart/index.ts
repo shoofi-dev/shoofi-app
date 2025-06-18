@@ -78,6 +78,7 @@ type TCart = {
     discountAmount: number;
     couponId: string;
   };
+  paymentData?: any;
 };
 
 const prodcutExtrasAdapter = (extras) => {
@@ -342,6 +343,11 @@ class CartStore {
       orderPrice: order.totalPrice - (order.shippingPrice || 0),
       appliedCoupon: order.appliedCoupon
     };
+
+    // Add payment data for credit card payments
+    if (order.paymentMthod === "CREDITCARD" && order.paymentData) {
+      cartData.paymentData = order.paymentData;
+    }
 
     return cartData;
   };

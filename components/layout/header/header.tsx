@@ -33,6 +33,7 @@ export const hideHHeaderScreens = [
   "menuScreen",
   "order-submitted",
   "AddressList",
+  "credit-cards",
 ];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];

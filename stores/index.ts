@@ -14,6 +14,7 @@ import { shoofiAdminStore } from "./shoofi-admin";
 import { extrasStore } from "./extras";
 import { addressStore } from "./address";
 import { couponsStore } from "./coupons";
+import { creditCardsStore } from "./creditCards";
 
 export const StoreContext = createContext({ 
     cartStore: cartStore, 
@@ -30,5 +31,6 @@ export const StoreContext = createContext({
     shoofiAdminStore: shoofiAdminStore,
     extrasStore: extrasStore,
     addressStore: addressStore,
-    couponsStore: couponsStore
+    couponsStore: couponsStore,
+    creditCardsStore: creditCardsStore
 });

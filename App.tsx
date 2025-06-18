@@ -70,6 +70,7 @@ import { useLocation } from "./hooks/useLocation";
 import { addressStore } from "./stores/address";
 import NewAddressBasedEventDialog from "./components/dialogs/new-address-based-event";
 import { couponsStore } from "./stores/coupons";
+import { creditCardsStore } from "./stores/creditCards";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -833,7 +834,8 @@ const App = () => {
             shoofiAdminStore: shoofiAdminStore,
             extrasStore: extrasStore,
             addressStore: addressStore,
-            couponsStore: couponsStore
+            couponsStore: couponsStore,
+            creditCardsStore: creditCardsStore
           }}
         >
           <View style={{ height: "100%" }}>

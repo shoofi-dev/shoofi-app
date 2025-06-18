@@ -47,6 +47,7 @@ const CheckoutScreen = ({ route }) => {
 
   const [isLoadingOrderSent, setIsLoadingOrderSent] = useState(null);
   const [paymentMthod, setPaymentMthod] = useState(PAYMENT_METHODS.cash);
+  const [paymentData, setPaymentData] = useState(null);
 
   const [isShippingMethodAgrred, setIsShippingMethodAgrred] = useState(false);
   const [addressLocation, setAddressLocation] = useState();
@@ -158,6 +159,12 @@ const CheckoutScreen = ({ route }) => {
     console.log("data", data);
   };
 
+  // Handle payment data from credit card component
+  const onPaymentDataChange = (data: any) => {
+    setPaymentData(data);
+    console.log("paymentData", data);
+  };
+
   // SHIPPING METHOD AGGRE - START
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
@@ -248,7 +255,8 @@ const CheckoutScreen = ({ route }) => {
         // Continue with checkout even if coupon redemption fails
       }
     }
-
+    console.log("paymentDataXXXXX@@@", paymentData)
+    return;
     const checkoutSubmitOrderRes = await checkoutSubmitOrder({
       paymentMthod,
       shippingMethod,
@@ -257,6 +265,7 @@ const CheckoutScreen = ({ route }) => {
       editOrderData: ordersStore.editOrderData,
       address: addressLocation,
       locationText: addressLocationText,
+      paymentData: paymentMthod === PAYMENT_METHODS.creditCard ? paymentData : undefined,
     });
     if (checkoutSubmitOrderRes) {
       postChargeOrderActions();
@@ -327,6 +336,7 @@ const CheckoutScreen = ({ route }) => {
         >
           <PaymentMethodCMP
             onChange={onPaymentMethodChange}
+            onPaymentDataChange={onPaymentDataChange}
             defaultValue={paymentMthod}
             shippingMethod={shippingMethod}
           />

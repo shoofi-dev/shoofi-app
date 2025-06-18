@@ -24,7 +24,6 @@ const _useCheckoutValidate = () => {
 
   const isStoreAvailable = () => {
     return storeDataStore.getStoreData().then((res) => {
-      console.log("getStoreData",res)
       return {
         ar: res["invalid_message_ar"],
         he: res["invalid_message_he"],

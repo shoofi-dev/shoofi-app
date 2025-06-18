@@ -41,6 +41,8 @@ import AddressList from '../components/address/AddressList';
 import CitiesScreen from '../screens/CitiesScreen';
 import StoresListScreen from "../screens/storesList";
 import GeneralCategoryScreen from "../screens/GeneralCategoryScreen";
+import CreditCardsListScreen from "../screens/credit-cards";
+import AddCreditCardScreen from "../components/credit-card/AddCreditCard";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -139,6 +141,8 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="Cities" component={CitiesScreen} />
       <Stack.Screen name="stores-list" component={StoresListScreen} initialParams={{ category: null }} />
       <Stack.Screen name="general-category" component={GeneralCategoryScreen} initialParams={{ generalCategory: null }} />
+      <Stack.Screen name="credit-cards" component={CreditCardsListScreen} />
+      <Stack.Screen name="add-credit-card" component={AddCreditCardScreen} />
     </Stack.Navigator>
   );
 };

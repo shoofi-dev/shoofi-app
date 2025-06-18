@@ -93,7 +93,7 @@ export const CCDataCMP = ({
         
    
         </View>
-        <TouchableOpacity onPress={replaceCreditCard} style={{marginRight: 15}}>
+        <TouchableOpacity onPress={replaceCreditCard} style={{marginRight: 15, padding: 10}}>
           <Text
             style={{
               fontSize: 16,

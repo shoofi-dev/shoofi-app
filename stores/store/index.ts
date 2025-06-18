@@ -33,7 +33,6 @@ class StoreDataStore {
   getStoreData = () => {
     return this.getStoreDataFromServer().then((res:any) => {
       runInAction(() => {
-        console.log("resSSStore", res)
         this.storeData = res[0];
       })
       return res[0];

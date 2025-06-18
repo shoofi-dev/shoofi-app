@@ -5,6 +5,7 @@ import {
   StyleSheet,
   DeviceEventEmitter,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { ToggleButton } from "react-native-paper";
 import Text from "../../controls/Text";
@@ -28,10 +29,12 @@ const icons = {
 export type TProps = {
   onChange: any;
   paymentMethodValue: any;
+  isLoadingCreditCards?: boolean;
 };
 export const PaymentMethodMethodPick = ({
   onChange,
   paymentMethodValue,
+  isLoadingCreditCards = false,
 }: TProps) => {
   const { t } = useTranslation();
   const [paymentMthod, setPaymentMthod] = useState<any>(paymentMethodValue);
@@ -135,6 +138,7 @@ export const PaymentMethodMethodPick = ({
         ]}
         activeOpacity={0.8}
         onPress={() => handlePaymentMethodChange(PAYMENT_METHODS.creditCard)}
+        disabled={isLoadingCreditCards}
       >
         <View style={styles.pillOptionContent}>
           <Text
@@ -146,16 +150,23 @@ export const PaymentMethodMethodPick = ({
           >
             {t("credit-card")}
           </Text>
-          <Icon
-            icon="credit-card-1"
-            size={25}
-            style={{
-              color:
-                paymentMthod === PAYMENT_METHODS.creditCard
-                  ? themeStyle.TEXT_PRIMARY_COLOR
-                  : themeStyle.WHITE_COLOR,
-            }}
-          />
+          {isLoadingCreditCards ? (
+            <ActivityIndicator 
+              size="small" 
+              color={paymentMthod === PAYMENT_METHODS.creditCard ? themeStyle.TEXT_PRIMARY_COLOR : themeStyle.WHITE_COLOR} 
+            />
+          ) : (
+            <Icon
+              icon="credit-card-1"
+              size={25}
+              style={{
+                color:
+                  paymentMthod === PAYMENT_METHODS.creditCard
+                    ? themeStyle.TEXT_PRIMARY_COLOR
+                    : themeStyle.WHITE_COLOR,
+              }}
+            />
+          )}
         </View>
       </TouchableOpacity>
     </View>

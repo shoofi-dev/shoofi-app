@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 export type TPropsCheckoutChargeCC = {
   submitOrderResponse: any;
   totalPrice: any;
+  paymentData?: any;
 };
 const _useCheckoutChargeCC = () => {
   const { t } = useTranslation();
@@ -48,46 +49,16 @@ const _useCheckoutChargeCC = () => {
   };
   // CHARGE ERROR MESSAGE - END
 
+  // This function is now deprecated since payment is handled server-side
   const chargeCC = async ({
     submitOrderResponse,
     totalPrice,
+    paymentData,
   }: TPropsCheckoutChargeCC) => {
-    const ccData = await getCCData();
-
-    const chargeData: TPaymentProps = {
-      token: ccData.ccToken,
-      id: ccData.id,
-      totalPrice: totalPrice,
-      orderId: submitOrderResponse.response.orderId,
-      email: ccData?.email,
-      cvv: ccData?.cvv,
-      phone: userDetailsStore?.userDetails?.phone,
-      userName: userDetailsStore?.userDetails?.name,
-    };
-    return chargeCreditCard(chargeData, submitOrderResponse.cartData).then(
-      (resCharge) => {
-        const updateCCData: TUpdateCCPaymentRequest = {
-          orderId: chargeData.orderId,
-          creditcard_ReferenceNumber: resCharge?.ReferenceNumber,
-          datetime: moment().format(),
-          ZCreditInvoiceReceiptResponse:
-            resCharge?.ZCreditInvoiceReceiptResponse,
-          ZCreditChargeResponse: resCharge,
-        };
-        return cartStore.UpdateCCPayment(updateCCData).then((res) => {
-
-          if (resCharge.HasError) {
-            togglePaymentErrorMessageDialog(resCharge.ReturnMessage);
-            return false;
-          }
-          if (res?.has_err) {
-            togglePaymentErrorMessageDialog('');
-            return false;
-          }
-          return true;
-        });
-      }
-    );
+    // Payment is now handled server-side during order creation
+    // This function is kept for backward compatibility but should not be used
+    console.warn('chargeCC is deprecated - payment is now handled server-side');
+    return true;
   };
 
   return {

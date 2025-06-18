@@ -7,9 +7,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Alert
 } from "react-native";
 import InputText from "../controls/input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import theme from "../../styles/theme.style";
 import validateCard, {
   TValidateCardProps,
@@ -23,13 +24,19 @@ import themeStyle from "../../styles/theme.style";
 import { useTranslation } from "react-i18next";
 import isValidEmail from "../../helpers/validate-email";
 import ExpiryDate from "../expiry-date";
+import { StoreContext } from "../../stores";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export type TProps = {
-  onSaveCard: () => void;
+  onSaveCard: (paymentData: TCCDetails) => void;
 };
 const CreditCard = ({ onSaveCard }) => {
   const { t } = useTranslation();
-
+  const navigation =
+    useNavigation<NativeStackNavigationProp<any>>();
+  const { creditCardsStore, userDetailsStore } =
+    useContext(StoreContext);
   const [creditCardNumber, setCreditCardNumber] = useState();
   const [creditCardExpDate, setCreditCardExpDate] = useState();
   const [creditCardCVV, setCreditCardCVV] = useState();
@@ -111,32 +118,84 @@ const CreditCard = ({ onSaveCard }) => {
     );
   };
 
-  const onSaveCreditCard = () => {
-    setIsLoading(true);
-    const validateCardData: TValidateCardProps = {
-      cardNumber: creditCardNumber,
-      expDate: creditCardExpDate.replace("/", ""),
-    };
+  // const onSaveCreditCard = () => {
+  //   setIsLoading(true);
+  //   const validateCardData: TValidateCardProps = {
+  //     cardNumber: creditCardNumber,
+  //     expDate: creditCardExpDate.replace("/", ""),
+  //   };
 
-    validateCard(validateCardData).then(async (res) => {
+  //   validateCard(validateCardData).then(async (res) => {
+  //     if (res.isValid) {
+  //       const ccData: TCCDetails = {
+  //         ccToken: res.ccDetails.ccToken,
+  //         last4Digits: res.ccDetails.last4Digits,
+  //         id: cardHolderID,
+  //         ccType: ccType,
+  //         // email: email,
+  //         cvv: creditCardCVV?.toString(),
+  //       };
+  //       const ccDetailsString = JSON.stringify(ccData);
+  //       await AsyncStorage.setItem("@storage_CCData", ccDetailsString);
+  //       setIsLoading(false);
+  //       onSaveCard(ccData);
+  //     } else {
+  //       // TODO: show try another card modal
+  //     }
+  //   });
+  // };
+
+  const onSaveCreditCard = async () => {
+    if (!creditCardNumber || !creditCardExpDate || !cardHolderID) {
+      Alert.alert(t('error'), t('please-fill-all-fields'));
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const validateCardData: TValidateCardProps = {
+        cardNumber: creditCardNumber,
+        expDate: creditCardExpDate.replace("/", ""),
+      };
+
+      const res = await validateCard(validateCardData);
+      
       if (res.isValid) {
         const ccData: TCCDetails = {
           ccToken: res.ccDetails.ccToken,
           last4Digits: res.ccDetails.last4Digits,
-          id: cardHolderID,
           ccType: ccType,
-          // email: email,
-          cvv: creditCardCVV?.toString(),
+          id: cardHolderID,
+          cvv: creditCardCVV,
         };
-        const ccDetailsString = JSON.stringify(ccData);
-        await AsyncStorage.setItem("@storage_CCData", ccDetailsString);
-        setIsLoading(false);
-        onSaveCard();
+        const isDefault = true;
+        // Save to database
+        await creditCardsStore.addCreditCard({
+          ccToken: ccData.ccToken,
+          last4Digits: ccData.last4Digits,
+          ccType: ccData.ccType,
+          holderName: userDetailsStore.userDetails?.name || 'Card Holder',
+          isDefault: isDefault,
+        });
+
+        Alert.alert(t('success'), t('credit-card-added-successfully'));
+        
+        if (onSaveCard) {
+          onSaveCard(ccData);
+        }
+        
+        navigation.goBack();
       } else {
-        // TODO: show try another card modal
+        Alert.alert(t('error'), t('invalid-credit-card'));
       }
-    });
+    } catch (error: any) {
+      Alert.alert(t('error'), error.message || t('failed-to-add-credit-card'));
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   const [keyboardVerticalOffset, setkeyboardVerticalOffset] = useState(0);
   return (
     <KeyboardAvoidingView

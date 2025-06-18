@@ -14,6 +14,7 @@ export type TPropsCheckoutSubmit = {
   editOrderData: any;
   address?: any;
   locationText?: any;
+  paymentData?: any;
 };
 const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
   const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, storeDataStore, couponsStore } =
@@ -44,6 +45,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     editOrderData,
     address,
     locationText,
+    paymentData,
   }: TPropsCheckoutSubmit) => {
     onLoadingOrderSent(true);
     console.log("location2xxx", address?.location);
@@ -63,6 +65,11 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
         discountAmount: couponsStore.appliedCoupon.discountAmount,
         couponId: couponsStore.appliedCoupon.coupon._id
       };
+    }
+    
+    // Add payment data for credit card payments
+    if (paymentMthod === "CREDITCARD" && paymentData) {
+      order.paymentData = paymentData;
     }
     
     if (
@@ -107,7 +114,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
       return updateOrderAdminRes;
     }
 
-    //cartStore.addOrderToHistory(order,userDetailsStore.userDetails.phone); TOrderSubmitResponse | string
+    // Submit order (payment will be processed server-side for credit card)
     const res: any = await cartStore.submitOrder(order);
     if (res?.has_err) {
       DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
@@ -115,16 +122,20 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
       });
       return false;
     }
-    if (paymentMthod === PAYMENT_METHODS.creditCard) {
-      const isChargeCCSuccess: any = await chargeCC({
-        submitOrderResponse: res,
-        totalPrice,
-      });
-      if (isChargeCCSuccess) {
+    
+    // Check payment status from server response
+    if (paymentMthod === "CREDITCARD") {
+      if (res?.paymentStatus === "success") {
         return true;
+      } else if (res?.paymentStatus === "failed" || res?.paymentStatus === "error") {
+        // Handle payment failure
+        DeviceEventEmitter.emit(`OPEN_PAYMENT_ERROR_MESSAGE_DIALOG`, {
+          text: res?.paymentError || 'Payment failed. Please try again.',
+        });
+        return false;
       }
-      return false;
     }
+    
     return true;
   };
 
