@@ -15,6 +15,7 @@ import { extrasStore } from "./extras";
 import { addressStore } from "./address";
 import { couponsStore } from "./coupons";
 import { creditCardsStore } from "./creditCards";
+import { deliveryDriverStore } from "./delivery-driver";
 
 export const StoreContext = createContext({ 
     cartStore: cartStore, 
@@ -32,5 +33,6 @@ export const StoreContext = createContext({
     extrasStore: extrasStore,
     addressStore: addressStore,
     couponsStore: couponsStore,
-    creditCardsStore: creditCardsStore
+    creditCardsStore: creditCardsStore,
+    deliveryDriverStore: deliveryDriverStore
 });

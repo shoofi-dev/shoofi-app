@@ -163,8 +163,9 @@ const VerifyCodeScreen = ({ route }) => {
           await authStore.updateUserToken(response.data.token);
           await AsyncStorage.removeItem("@storage_verifyCode");
           if (response.data.fullName) {
-            DeviceEventEmitter.emit(`PREPARE_APP`);
-            userDetailsStore.getUserDetails().then((res) => {
+            //DeviceEventEmitter.emit(`PREPARE_APP`);
+            console.log("XXXXXXXXXXA4", authStore.verifyCodeToken.startsWith("11"))
+            userDetailsStore.getUserDetails({isDriver: authStore.verifyCodeToken.startsWith("11")}).then((res) => {
               setIsLoading(false);
               if (cartStore.getProductsCount() > 0) {
                 navigation.navigate("cart");

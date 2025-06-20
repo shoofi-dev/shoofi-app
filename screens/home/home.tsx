@@ -82,6 +82,12 @@ const HomeScreen = ({ navigation }) => {
         navigation.navigate("terms-and-conditions");
       }, 0);
     }
+    console.log("userDetailsStore.isDriver()", userDetailsStore.isDriver());
+    if(userDetailsStore.isDriver()){
+      setTimeout(() => {
+        navigation.navigate("delivery-driver-dashboard");
+      }, 0);
+    }
     setIsAppReady(true);
     // setTimeout(() => {
     //   setIsAnimateReady(true);

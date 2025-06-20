@@ -3,8 +3,8 @@
 // export const WS_URL = "wss://shoofi-api-95miq.ondigitalocean.app";
 
 //DEV
- export const BASE_URL = "http://192.168.68.75:1111/api";
- export const WS_URL = "ws://192.168.68.75:1111";
+ export const BASE_URL = "http://192.168.68.73:1111/api";
+ export const WS_URL = "ws://192.168.68.73:1111";
 
 // export const BASE_URL = "http://192.168.0.100:1111/api";
 // export const WS_URL = "ws://192.168.0.100:1111";
@@ -120,3 +120,26 @@ export const UTILITIES_API = {
     CONTROLLER: "Utilities",
     GET_ORDERS_API : "getOrders",
 }
+
+export const DELIVERY_DRIVER_API = {
+    CONTROLLER: "delivery",
+    GET_ORDERS_LIST: "list",
+    GET_ORDER_DETAILS: "order",
+    UPDATE_ORDER: "update",
+    GET_EMPLOYEE_PROFILE: "company/employee",
+    UPDATE_EMPLOYEE_PROFILE: "company/employee/update",
+    GET_DRIVER_STATS: "driver/stats",
+    GET_DRIVER_EARNINGS: "driver/earnings",
+    UPDATE_DRIVER_LOCATION: "driver/location",
+    UPDATE_DRIVER_AVAILABILITY: "driver/availability",
+    GET_NEARBY_ORDERS: "driver/nearby-orders",
+    GET_DRIVER_SCHEDULE: "driver/schedule",
+    GET_NOTIFICATIONS: "driver/notifications",
+    MARK_NOTIFICATION_READ: "driver/notifications/read",
+    CREATE_NOTIFICATION: "notifications/create",
+    GET_ADMIN_NOTIFICATIONS: "notifications/admin",
+    APPROVE_ORDER: "driver/order/approve",
+    CANCEL_ORDER: "driver/order/cancel",
+    START_ORDER: "driver/order/start",
+    COMPLETE_ORDER: "driver/order/complete",
+};

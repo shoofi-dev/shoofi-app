@@ -12,6 +12,7 @@ type TUserDetails = {
   customerId?: string;
   roles?: string[],
   appName?: string
+  isDriver?: string
 };
 
 class UserDetailsStore {
@@ -25,12 +26,13 @@ class UserDetailsStore {
     this.isAcceptedTerms = flag;
   }
 
-  getUserDetailsFromServer = () => {
+  getUserDetailsFromServer = (params?: {isDriver?: boolean}) => {
+    console.log("XXXXXXXXXXA2", params)
     return axiosInstance
       .get(
         `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.GET_USER_DETAILS}`,
         {
-          headers: { "Content-Type": "application/json", "app-name": APP_NAME }
+          headers: { "Content-Type": "application/json", "app-name": params?.isDriver ? 'delivery-company' : APP_NAME }
         }
       )
       .then(function (response) {
@@ -39,8 +41,8 @@ class UserDetailsStore {
       });
   };
 
-  getUserDetails = () => {
-    return this.getUserDetailsFromServer().then((res: any)=>{
+  getUserDetails = (params?: {isDriver?: boolean}) => {
+    return this.getUserDetailsFromServer(params).then((res: any)=>{
       console.log("resUserDetails", res)
       const userDetailsTmp: TUserDetails = {
         name: res.fullName,
@@ -48,7 +50,8 @@ class UserDetailsStore {
         isAdmin: res.isAdmin,
         roles: res.roles,
         customerId: res.customerId || res.id,
-        appName: res?.appName
+        appName: res?.appName,
+        isDriver: res?.isDriver
       }
       runInAction(() => {
         this.userDetails = userDetailsTmp;
@@ -64,6 +67,15 @@ class UserDetailsStore {
       isHavePermission = this.userDetails?.roles.indexOf(role) > -1;
     }
     return this.userDetails?.isAdmin && isHavePermission;
+  }
+
+  isDriver = (role?) => {
+    let isHavePermission = true;
+    if(this.userDetails?.isDriver && role){
+      isHavePermission = this.userDetails?.roles.indexOf(role) > -1;
+    }
+    console.log("this.userDetails?.isDriver", this.userDetails?.isDriver);
+    return this.userDetails?.isDriver && isHavePermission;
   }
 
   resetUser = () => {

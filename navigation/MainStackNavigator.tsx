@@ -44,6 +44,12 @@ import GeneralCategoryScreen from "../screens/GeneralCategoryScreen";
 import CreditCardsListScreen from "../screens/credit-cards";
 import AddCreditCardScreen from "../components/credit-card/AddCreditCard";
 
+// Delivery Driver Screens
+import DeliveryDriverDashboard from "../screens/delivery-driver";
+import DeliveryDriverOrderDetails from "../screens/delivery-driver/order-details";
+import DeliveryDriverProfile from "../screens/delivery-driver/profile";
+import DeliveryDriverNotifications from "../screens/delivery-driver/notifications";
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -143,6 +149,12 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="general-category" component={GeneralCategoryScreen} initialParams={{ generalCategory: null }} />
       <Stack.Screen name="credit-cards" component={CreditCardsListScreen} />
       <Stack.Screen name="add-credit-card" component={AddCreditCardScreen} />
+      
+      {/* Delivery Driver Screens */}
+      <Stack.Screen name="delivery-driver-dashboard" component={DeliveryDriverDashboard} />
+      <Stack.Screen name="delivery-driver-order-details" component={DeliveryDriverOrderDetails} initialParams={{ orderId: null }} />
+      <Stack.Screen name="delivery-driver-profile" component={DeliveryDriverProfile} />
+      <Stack.Screen name="delivery-driver-notifications" component={DeliveryDriverNotifications} />
     </Stack.Navigator>
   );
 };

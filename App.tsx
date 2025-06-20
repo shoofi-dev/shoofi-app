@@ -71,6 +71,7 @@ import { addressStore } from "./stores/address";
 import NewAddressBasedEventDialog from "./components/dialogs/new-address-based-event";
 import { couponsStore } from "./stores/coupons";
 import { creditCardsStore } from "./stores/creditCards";
+import { deliveryDriverStore } from "./stores/delivery-driver";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -226,14 +227,14 @@ const App = () => {
   }, [storeDataStore.repeatNotificationInterval]);
 
   useEffect(() => {
-    if (userDetailsStore.isAdmin() || authStore.isLoggedIn()) {
+    if (userDetailsStore.isAdmin() || authStore.isLoggedIn() && userDetailsStore.userDetails) {
       registerForPushNotificationsAsync().then((token) => {
         axiosInstance
           .post(
             `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.UPDATE_CUSTOMER_NOTIFIVATION_TOKEN}`,
             { notificationToken: token },
             {
-              headers: { "Content-Type": "application/json", "app-name": APP_NAME }
+              headers: { "Content-Type": "application/json", "app-name": userDetailsStore.isDriver() ? 'delivery-company' : APP_NAME }
             }
           )
           .then(function (response) {
@@ -542,6 +543,23 @@ const App = () => {
       // const fetchMenu = menuStore.getMenu();
       //const fetchHomeSlides = menuStore.getSlides();
       // const fetchStoreDataStore = storeDataStore.getStoreData();
+      if (authStore.isLoggedIn() && userDetailsStore.isDriver()) {
+        console.log("XXXXXXXXXXA")
+        userDetailsStore.setIsAcceptedTerms(true);
+        const fetchUserDetails = userDetailsStore.getUserDetails({isDriver: true});
+        Promise.all([
+          fetchUserDetails,
+        ]).then(async (res: any) => {
+          setTimeout(() => {
+            setAppIsReady(true);
+          }, 2000);
+          setTimeout(() => {
+            setIsExtraLoadFinished(true);
+          }, 2400);
+        });
+        return;
+     }
+     console.log("XXXXXXXXXXA3")
       const fetchShoofiStoreData = shoofiAdminStore.getStoreData();
       const fetchStoresList = shoofiAdminStore.getStoresListData(latitude && longitude ? {lat: '32.109276', lng: '34.963179'} : null);
       const fetchCategoryList = shoofiAdminStore.getCategoryListData();
@@ -566,6 +584,7 @@ const App = () => {
 
           // const imageAssets = await cacheImages(tempHomeSlides);
           if (authStore.isLoggedIn()) {
+      
             const fetchUserDetails = userDetailsStore.getUserDetails();
             const fetchStoreZCrData = shoofiAdminStore.getStoreZCrData();
             //const fetchOrders = ordersStore.getOrders(userDetailsStore.isAdmin());
@@ -835,7 +854,8 @@ const App = () => {
             extrasStore: extrasStore,
             addressStore: addressStore,
             couponsStore: couponsStore,
-            creditCardsStore: creditCardsStore
+            creditCardsStore: creditCardsStore,
+            deliveryDriverStore: deliveryDriverStore
           }}
         >
           <View style={{ height: "100%" }}>
