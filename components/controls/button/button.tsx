@@ -13,6 +13,7 @@ type TProps = {
   text: any;
   icon?: any;
   iconSize?: any;
+  iconColor?: any;
   iconPosition?: "right" | "left";
   fontSize?: any;
   bgColor?: any;
@@ -28,6 +29,7 @@ type TProps = {
   iconMargin?: number;
   extraText?: string;
   countText?: string;
+  countTextColor?: string;
   fontFamilyExtraText?: string;
   isOposetGradiant?: boolean;
   borderColor?: string;
@@ -40,6 +42,7 @@ export default function Button({
   icon,
   iconSize,
   fontSize,
+  iconColor,
   iconPosition = "right",
   bgColor,
   textColor,
@@ -53,6 +56,7 @@ export default function Button({
   iconMargin,
   extraText,
   countText,
+  countTextColor,
   fontFamilyExtraText,
   borderWidth = true,
   isOposetGradiant,
@@ -108,39 +112,64 @@ export default function Button({
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={{ width: "100%" }}
+        style={{
+          width: "100%",
+          borderRadius: 999,
+
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 15,
+          backgroundColor: bgColor || themeStyle.PRIMARY_COLOR,
+        }}
         disabled={disabled}
         onPress={onBtnClick}
         activeOpacity={0.8}
       >
-        <LinearGradient
+        {/* <LinearGradient
           colors={["#5fd100", "#00b32a"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradient}
-        >
-          <View style={styles.row}>
-          {countText && <View style={styles.countTextContainer}><Text style={styles.countText}>{countText}</Text></View>}
-
-            {/* Centered text and icon */}
-            <View style={styles.centerContent}>
-              {icon && (
-                <Animated.View
-                  style={{ marginRight: 8, transform: transformIconAnimate }}
-                >
-                  <Icon
-                    icon={icon}
-                    size={iconSize ? iconSize : themeStyle.FONT_SIZE_MD}
-                    style={{ color: "#fff" }}
-                  />
-                </Animated.View>
-              )}
-              <Text style={styles.buttonText}>{text}</Text>
+        > */}
+        <View style={styles.row}>
+          {countText && (
+            <View style={styles.countTextContainer}>
+                <Text style={{
+                color: countTextColor ? countTextColor : "#fff",
+                fontWeight: "bold",
+                fontSize: themeStyle.FONT_SIZE_MD,
+              }}>{countText}</Text>
             </View>
-            {/* Price on the left */}
-            {extraText && <Text style={styles.price}>{extraText}</Text>}
+          )}
+
+          {/* Centered text and icon */}
+          <View style={styles.centerContent}>
+            {icon && (
+              <Animated.View
+                style={{ marginRight: 8, transform: transformIconAnimate }}
+              >
+                <Icon
+                  icon={icon}
+                  size={iconSize ? iconSize : themeStyle.FONT_SIZE_MD}
+                  style={{ color: iconColor ? iconColor : "#fff",  }}
+                />
+              </Animated.View>
+            )}
+            <Text style={{
+                  color: textColor ? textColor : themeStyle.SECONDARY_COLOR,
+                  fontWeight: "bold",
+                  fontSize: fontSize ? fontSize : themeStyle.FONT_SIZE_MD,
+                  textAlign: "center",
+            }}>{text}</Text>
           </View>
-        </LinearGradient>
+          {/* Price on the left */}
+          {extraText && (
+            <View style={styles.extraTextContainer}>
+                  {extraText && <Text style={styles.price}>{extraText}</Text>}
+            </View>
+          )}
+        </View>
+        {/* </LinearGradient> */}
       </TouchableOpacity>
     </View>
   );
@@ -155,7 +184,7 @@ const styles = StyleSheet.create({
 
     justifyContent: "center",
     alignItems: "center",
-    padding:15
+    padding: 15,
   },
   row: {
     flexDirection: "row",
@@ -164,31 +193,32 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   price: {
-    color: "#fff",
+    color: themeStyle.SECONDARY_COLOR,
     fontWeight: "bold",
     fontSize: themeStyle.FONT_SIZE_MD,
-    marginLeft: 10,
-    position: "absolute",
-    right: 0,
-    top: 0,
+   
   },
   countText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: themeStyle.FONT_SIZE_MD,
-
-
   },
   countTextContainer: {
-
     backgroundColor: "#4E2E53",
     borderRadius: 50,
-    
-    alignSelf:'center',
-    width:30,
-    height:30,
-    justifyContent:'center',
-    alignItems:'center'
+    alignSelf: "center",
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  extraTextContainer: {
+
+    justifyContent: "center",
+    alignItems: "center",
+    right:5,
+
   },
   centerContent: {
     flexDirection: "row",
@@ -197,7 +227,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonText: {
-    color: "#fff",
+    color: themeStyle.SECONDARY_COLOR,
     fontWeight: "bold",
     fontSize: themeStyle.FONT_SIZE_MD,
     textAlign: "center",

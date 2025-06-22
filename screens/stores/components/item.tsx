@@ -13,8 +13,8 @@ import themeStyle from "../../../styles/theme.style";
 import CustomFastImage from "../../../components/custom-fast-image";
 import { StoreContext } from "../../../stores";
 import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { cdnUrl } from "../../../consts/shared";
+import Icon from "../../../components/icon";
 
 export type TProps = {
   storeItem: any;
@@ -23,7 +23,7 @@ export type TProps = {
 const StoreItem = ({ storeItem }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  let { menuStore, storeDataStore, shoofiAdminStore } =
+  let { menuStore, storeDataStore, shoofiAdminStore, languageStore } =
     useContext(StoreContext);
   const onStoreSelect = async (store: any) => {
     await shoofiAdminStore.setStoreDBName(store.appName);
@@ -45,13 +45,13 @@ const StoreItem = ({ storeItem }: TProps) => {
       storeItem.store.cover_sliders.length > 0 &&
       storeItem.store?.cover_sliders[0]?.uri) ||
     logoUri;
-  const storeName = storeItem.store.name_he || storeItem.store.name_ar;
+  const storeName = languageStore.selectedLang === "ar" ? storeItem.store.name_ar : storeItem.store.name_he;
   if (
     storeItem.store.cover_sliders &&
     storeItem.store.cover_sliders.length > 0
   ) {
-    console.log("storeItem", storeItem.store.cover_sliders[0]);
   }
+  
   return (
     <TouchableOpacity
       onPress={() => onStoreSelect(storeItem.store)}
@@ -62,28 +62,26 @@ const StoreItem = ({ storeItem }: TProps) => {
       <View style={styles.imageWrapper}>
         <CustomFastImage
           style={styles.image}
-          source={{ uri: `${cdnUrl}${imageUri}` }}
-          cacheKey={`${cdnUrl}${imageUri?.split(/[\\/]/).pop()}1`}
+          source={{ uri: `${cdnUrl}${storeItem?.store?.cover_sliders?.[0]}` }}
           resizeMode="cover"
         />
         {/* Logo overlay */}
 
         {/* Favorite icon */}
-        <View style={styles.favoriteIcon}>
+        {/* <View style={styles.favoriteIcon}>
           <Icon
             name="heart-outline"
             size={24}
             color={"#3B3B3B"}
           />
-        </View>
+        </View> */}
       </View>
       {logoUri && (
         <View style={styles.logoOverlay}>
           <CustomFastImage
             style={styles.logo}
             source={{ uri: `${cdnUrl}${logoUri}` }}
-            cacheKey={`${cdnUrl}${logoUri?.split(/[\\/]/).pop()}1`}
-            resizeMode="cover"
+            resizeMode="contain"
           />
         </View>
       )}
@@ -93,26 +91,22 @@ const StoreItem = ({ storeItem }: TProps) => {
           <Text style={styles.storeName}>{storeName}</Text>
         </View>
         <View style={styles.infoRow}>
+          {/* <View>
+            <Text style={styles.infoText}>{rating} <Icon icon="star" size={16}  color={themeStyle.GRAY_70}  /></Text>
+          </View> */}
           <View>
-            <Text style={styles.infoText}>{rating} ★</Text>
+            <Text style={styles.infoText}>{distance} {t("km")}</Text>
           </View>
-          <View>
-            <Text style={styles.infoText}>· {distance} ק"מ · </Text>
-          </View>
-          <View>
+          <View style={{marginRight: 5, marginLeft: 5}}>
             <Text style={styles.openStatus}>
-              {isOpen ? t("פתוח") : t("סגור")}
+              {isOpen ? t("open") : t("closed")}
             </Text>
           </View>
         </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoText}>
-             · ₪{deliveryPrice}
-          </Text>
-        </View>
-        <Text style={styles.descText} >
-          שורה המסעדה שמופיע על כרטיס
-        </Text>
+    
+        {storeItem.store.description && <Text style={styles.descText} >
+         {storeItem.store.description}
+        </Text>}
       </View>
     </TouchableOpacity>
   );
@@ -154,12 +148,13 @@ const styles = StyleSheet.create({
     right: 8,
     backgroundColor: "#fff",
     borderRadius: 10,
-    padding: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: themeStyle.GRAY_30,
   },
   logo: {
     width: 64,
@@ -191,7 +186,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   storeName: {
-    fontSize: 17,
+    fontSize: themeStyle.FONT_SIZE_LG,
     fontWeight: "700",
     color: themeStyle.GRAY_700,
     textAlign: "right",
@@ -212,6 +207,7 @@ const styles = StyleSheet.create({
   openStatus: {
     color: "#2ecc40",
     fontWeight: "bold",
+    marginLeft: 5,
   },
   descText: {
     fontSize: 13,

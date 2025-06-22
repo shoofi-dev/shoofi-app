@@ -1,6 +1,5 @@
 import {
   StyleSheet,
-  Text as TextReact,
   View,
   DeviceEventEmitter,
   TouchableOpacity,
@@ -36,6 +35,7 @@ import React from "react";
 import AnimatedExample from "../../components/verify-code";
 import { LinearGradient } from "expo-linear-gradient";
 import { APP_NAME } from "../../consts/shared";
+import BackButton from "../../components/back-button";
 const CELL_COUNT = 4;
 const reg_arNumbers = /^[\u0660-\u0669]{4}$/;
 const arabicNumbers = [
@@ -164,15 +164,22 @@ const VerifyCodeScreen = ({ route }) => {
           await AsyncStorage.removeItem("@storage_verifyCode");
           if (response.data.fullName) {
             //DeviceEventEmitter.emit(`PREPARE_APP`);
-            console.log("XXXXXXXXXXA4", authStore.verifyCodeToken.startsWith("11"))
-            userDetailsStore.getUserDetails({isDriver: authStore.verifyCodeToken.startsWith("11")}).then((res) => {
-              setIsLoading(false);
-              if (cartStore.getProductsCount() > 0) {
-                navigation.navigate("cart");
-              } else {
-                navigation.navigate("homeScreen");
-              }
-            });
+            console.log(
+              "XXXXXXXXXXA4",
+              authStore.verifyCodeToken.startsWith("11")
+            );
+            userDetailsStore
+              .getUserDetails({
+                isDriver: authStore.verifyCodeToken.startsWith("11"),
+              })
+              .then((res) => {
+                setIsLoading(false);
+                if (cartStore.getProductsCount() > 0) {
+                  navigation.navigate("cart");
+                } else {
+                  navigation.navigate("homeScreen");
+                }
+              });
           } else {
             navigation.navigate("insert-customer-name");
           }
@@ -195,171 +202,108 @@ const VerifyCodeScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-     {/* <LinearGradient
-            colors={[
-              "rgba(207, 207, 207, 0.4)",
-              "rgba(246,246,247, 0.8)",
-              "rgba(246,246,247, 0.8)",
-              "rgba(246,246,247, 0.8)",
-              "rgba(246,246,247, 0.8)",
-              "rgba(246,246,247, 0.8)",
-              "rgba(207, 207, 207, 0.4)",
-            ]}
-            start={{ x: 1, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={[styles.background]}
-          /> */}
-      {/* <ImageBackground
-        source={require("../../assets/bg/login-bg.jpg")}
-        resizeMode="cover"
-        style={{ height: "100%", width: "100%" }}
-      > */}
-        <View style={{ marginTop: 10, width:"100%",  height:'30%', }}>
-        <Image
-          style={{  alignSelf: "center",width:"40%", height:"100%"}}
-          source={require("../../assets/icon4.png")}
-        />
-        </View>
-        {/* <View style={{ marginTop: 20 }}>
-        <Image
-          style={{ width: 190, height: 140 }}
-          source={require("../../assets/insert_code.png")}
-        />
-      </View> */}
-        <View style={{ width: "100%" }}>
-     
-          <View style={styles.inputsContainer}>
-            <Text
-              style={{ marginTop: 0, fontSize: 25, color: themeStyle.TEXT_PRIMARY_COLOR, }}
-            >
-              {t("inser-code")}
-            </Text>
-            <Text
-              style={{
-                marginTop: 20,
-                fontSize: 17,
-                paddingHorizontal: 30,
-                textAlign: "center",
-                color: themeStyle.TEXT_PRIMARY_COLOR,
-              }}
-            >
-              {t("inser-recived-number")} {phoneNumber}
-            </Text>
+      <BackButton />
+      <View style={{ width: "100%" }}>
+        <View style={styles.inputsContainer}>
+          <Text
+            style={{
+              marginTop: 0,
+              fontSize: themeStyle.FONT_SIZE_MD,
+              color: themeStyle.TEXT_PRIMARY_COLOR,
+            }}
+          >
+            {t("inser-code")}
+          </Text>
 
-            {isInvalidCodeRes && (
-              <View style={{ marginTop: 10 }}>
-                <Text style={{ fontSize: 20, color: themeStyle.ERROR_COLOR }}>
-                  {t("invalid-code-res")}
-                </Text>
-              </View>
-            )}
-            <View>
-              <AnimatedExample onChange={handleCodeChange} />
-            </View>
-
-            <View
-              style={{
-                width: "100%",
-                paddingHorizontal: 50,
-                marginTop: 15,
-                alignItems: "center",
-              }}
-            >
-              {/* <View>
-            <CodeField
-              ref={ref}
-              {...props}
-              // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
-              value={verifyCode}
-              onChangeText={setVerifyCode}
-              cellCount={CELL_COUNT}
-              rootStyle={styles.codeFieldRoot}
-              keyboardType="number-pad"
-              textContentType="oneTimeCode"
-              
-              renderCell={({ index, symbol, isFocused }) => {
-                return(
-                <View
-                  style={{
-                    borderBottomWidth: 2,
-                    marginHorizontal: 10,
-                    borderColor: themeStyle.PRIMARY_COLOR,
-                  }}
-                >
-                  <TextReact
-                    key={index}
-                    style={[styles.cell, isFocused && styles.focusCell]}
-                    onLayout={getCellOnLayoutHandler(index)}
-                  >
-                    {symbol || (isFocused ? <Cursor /> : (verifyCode[index]!=='')  && '*')}
-                  </TextReact>
-                </View>
-              )}}
-            />
-          </View> */}
-              {!isValid && (
-                <Text
-                  style={{
-                    color: themeStyle.ERROR_COLOR,
-                    paddingLeft: 15,
-                    marginTop: 20,
-                  }}
-                >
-                  {t("invalid-code")}
-                </Text>
-              )}
-            </View>
-            <View style={{ marginTop: 20 }}>
-              {timer > 0 && (
-                <Text style={{color: themeStyle.TEXT_PRIMARY_COLOR}}>
-                  {t("can-send-again")} {timer}
-                </Text>
-              )}
-              {timer == 0 && (
-                <Text
-                  style={{
-                    fontSize: 17,
-                    color: themeStyle.TEXT_PRIMARY_COLOR
-                    // fontFamily: `${getCurrentLang()}-SemiBold`,
-                  }}
-                >
-                  {t("didnt-recive-sms")} ?
-                </Text>
-              )}
-            </View>
-
+          {isInvalidCodeRes && (
             <View style={{ marginTop: 10 }}>
-              <TouchableOpacity disabled={timer > 0} onPress={resendMeTheCode}>
-                <Text
-                  style={{
-                    fontSize: 17,
-                    // fontFamily: `${getCurrentLang()}-SemiBold`,
-                    // color:
-                    //   timer > 0 ? themeStyle.GRAY_300 : themeStyle.SUCCESS_COLOR,
-                    textDecorationLine: "underline",
-                    padding: 5,
-                    opacity: 0.8,
-                    color: themeStyle.TEXT_PRIMARY_COLOR
-                  }}
-                >
-                  {t("resend-sms")}
-                </Text>
-              </TouchableOpacity>
+              <Text style={{ fontSize: 20, color: themeStyle.ERROR_COLOR }}>
+                {t("invalid-code-res")}
+              </Text>
             </View>
-
-            <View
-              style={{ width: "100%", paddingHorizontal: 50, marginTop: 25 }}
+          )}
+          <View>
+            <AnimatedExample onChange={handleCodeChange} />
+          </View>
+          <View>
+            <Text
+              style={{
+                fontSize: themeStyle.FONT_SIZE_MD,
+                color: themeStyle.TEXT_PRIMARY_COLOR,
+                marginTop: 15,
+              }}
             >
-              <Button
-                text={t("approve")}
-                fontSize={20}
-                onClickFn={onVerifyCode}
-                isLoading={isLoading}
-                disabled={isLoading}
-              />
-            </View>
+              {t("code-sent-to")} {phoneNumber}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              width: "100%",
+              paddingHorizontal: 50,
+              alignItems: "center",
+            }}
+          >
+            {!isValid && (
+              <Text
+                style={{
+                  color: themeStyle.ERROR_COLOR,
+                  paddingLeft: 15,
+                  marginTop: 20,
+                }}
+              >
+                {t("invalid-code")}
+              </Text>
+            )}
+          </View>
+          <View style={{ marginTop: 20 }}>
+            {timer > 0 && (
+              <Text style={{ fontSize: themeStyle.FONT_SIZE_MD }}>
+                {t("can-send-again")} {timer}
+              </Text>
+            )}
+            {timer == 0 && (
+              <Text
+                style={{
+                  fontSize: themeStyle.FONT_SIZE_MD,
+                  color: themeStyle.TEXT_PRIMARY_COLOR,
+                  // fontFamily: `${getCurrentLang()}-SemiBold`,
+                }}
+              >
+                {t("didnt-recive-sms")} ?
+              </Text>
+            )}
+          </View>
+
+          <View style={{ marginTop: 10 }}>
+            <TouchableOpacity disabled={timer > 0} onPress={resendMeTheCode}>
+              <Text
+                style={{
+                  fontSize: 17,
+                  // fontFamily: `${getCurrentLang()}-SemiBold`,
+                  // color:
+                  //   timer > 0 ? themeStyle.GRAY_300 : themeStyle.SUCCESS_COLOR,
+                  padding: 5,
+                  opacity: 0.8,
+                  color: themeStyle.SUCCESS_COLOR,
+                }}
+              >
+                {t("resend-sms")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ width: "100%", paddingHorizontal: 50, marginTop: 25 }}>
+            <Button
+              text={t("approve")}
+              fontSize={20}
+              onClickFn={onVerifyCode}
+              isLoading={isLoading}
+              disabled={isLoading}
+            />
           </View>
         </View>
+      </View>
       {/* </ImageBackground> */}
     </View>
   );
@@ -368,7 +312,6 @@ export default observer(VerifyCodeScreen);
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
     width: "100%",
     height: "100%",
   },
@@ -376,6 +319,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     paddingVertical: 20,
+    marginTop: 20,
   },
   footerTabs: {
     backgroundColor: "blue",

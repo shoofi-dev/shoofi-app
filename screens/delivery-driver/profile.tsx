@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { observer } from 'mobx-react';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../../contexts/AuthContext';
 import { useContext } from 'react';
 import { StoreContext } from '../../stores';
 import DeliveryDriverHeader from '../../components/delivery-driver/DeliveryDriverHeader';
@@ -19,8 +18,7 @@ import { colors } from '../../styles/colors';
 
 const DeliveryDriverProfile = observer(() => {
   const navigation = useNavigation();
-  const { user } = useAuth();
-  const { deliveryDriverStore } = useContext(StoreContext);
+  const { deliveryDriverStore, userDetailsStore, authStore } = useContext(StoreContext);
   
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,10 +32,11 @@ const DeliveryDriverProfile = observer(() => {
   });
 
   useEffect(() => {
-    if (user?._id) {
-      deliveryDriverStore.getProfile(user._id);
+    if (userDetailsStore.userDetails?.customerId) {
+      deliveryDriverStore.getProfile(userDetailsStore.userDetails.customerId);
+      // deliveryDriverStore.getEarnings(userDetailsStore.userDetails.customerId);
     }
-  }, [user?._id]);
+  }, [userDetailsStore.userDetails?.customerId]);
 
   useEffect(() => {
     if (deliveryDriverStore.profile) {
@@ -54,7 +53,7 @@ const DeliveryDriverProfile = observer(() => {
   }, [deliveryDriverStore.profile]);
 
   const updateProfile = async () => {
-    if (!user?._id) return;
+    if (!userDetailsStore.userDetails?.customerId) return;
     
     try {
       const updateData = {
@@ -69,7 +68,7 @@ const DeliveryDriverProfile = observer(() => {
         },
       };
 
-      await deliveryDriverStore.updateProfile(user._id, updateData);
+      await deliveryDriverStore.updateProfile(userDetailsStore.userDetails.customerId, updateData);
       setEditing(false);
       Alert.alert('Success', 'Profile updated successfully');
     } catch (error) {
@@ -85,6 +84,7 @@ const DeliveryDriverProfile = observer(() => {
         { text: 'Cancel', style: 'cancel' },
         { text: 'Logout', style: 'destructive', onPress: () => {
           // Handle logout logic here
+          authStore.logOut();
           navigation.navigate('login' as never);
         }},
       ]

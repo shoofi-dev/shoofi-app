@@ -7,12 +7,14 @@ import * as Haptics from "expo-haptics";
 import themeStyle from "../../styles/theme.style";
 import Text from "../controls/Text";
 import { useResponsive } from "../../hooks/useResponsive";
+import GlassBG from "../glass-background";
 
 export type TProps = {
   goTo?: string;
   onClick?: any;
+  color?: string;
 };
-export default function BackButton({ goTo, onClick }: TProps) {
+export default function BackButton({ goTo, onClick, color = themeStyle.BLACK_COLOR }: TProps) {
   const navigation = useNavigation();
   const { isTablet, scale, fontSize } = useResponsive();
 
@@ -38,16 +40,17 @@ export default function BackButton({ goTo, onClick }: TProps) {
   };
 
   return (
-    
+    <GlassBG style={styles.container}>
       <TouchableOpacity
         onPress={() => {
           onBtnClick();
         }}
-        style={styles.container}
+        
       >
-   
-         <Text style={{fontSize:20, color:themeStyle.BLACK_COLOR}}>{'>'}</Text>
+   <Icon icon="chevron_back" size={20} color={color} />
+            {/* <Text style={{fontSize:20, color:themeStyle.BLACK_COLOR}}>{'>'}</Text> */}
       </TouchableOpacity>
+      </GlassBG>
     
   );
 }
@@ -57,7 +60,6 @@ const styles = StyleSheet.create({
       height: 36,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#ECF0F4",
       borderRadius: 50,
   },
   button: {

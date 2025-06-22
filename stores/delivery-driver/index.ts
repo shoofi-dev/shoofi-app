@@ -239,7 +239,7 @@ class DeliveryDriverStore {
         `${DELIVERY_DRIVER_API.CONTROLLER}/${DELIVERY_DRIVER_API.GET_EMPLOYEE_PROFILE}/${driverId}`
       )
       .then(function (response: any) {
-        return response.data;
+        return response;
       });
   };
 
@@ -247,13 +247,14 @@ class DeliveryDriverStore {
     this.profileLoading = true;
     try {
       const profileData = await this.getProfileFromServer(driverId);
+      console.log("profileData", profileData);
       runInAction(() => {
         this.profile = profileData;
-        if (profileData.currentLocation) {
+        if (profileData?.currentLocation) {
           this.currentLocation = profileData.currentLocation;
         }
-        if (profileData.isOnline !== undefined) {
-          this.isOnline = profileData.isOnline;
+        if (profileData?.isActive !== undefined) {
+          this.isOnline = profileData.isActive;
         }
       });
       return profileData;

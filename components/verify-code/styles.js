@@ -4,7 +4,7 @@ import themeStyle from '../../styles/theme.style';
 export const CELL_SIZE = 55;
 export const CELL_BORDER_RADIUS = 88;
 export const DEFAULT_CELL_BG_COLOR = '#fff';
-export const NOT_EMPTY_CELL_BG_COLOR = themeStyle.PRIMARY_COLOR;
+export const NOT_EMPTY_CELL_BG_COLOR = themeStyle.TEXT_PRIMARY_COLOR;
 export const ACTIVE_CELL_BG_COLOR = '#f7fafe';
 
 const styles = StyleSheet.create({
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     textAlign: 'center',
     borderRadius: CELL_BORDER_RADIUS,
-    color: themeStyle.PRIMARY_COLOR,
+    color: themeStyle.TEXT_PRIMARY_COLOR,
     backgroundColor: '#fff',
 
     // IOS
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderRadius: 60,
     height: 60,
-    backgroundColor: themeStyle.PRIMARY_COLOR,
+    backgroundColor: themeStyle.TEXT_PRIMARY_COLOR,
     justifyContent: 'center',
     minWidth: 300,
     marginBottom: 100,

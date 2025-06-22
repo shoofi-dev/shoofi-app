@@ -1,29 +1,33 @@
 import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, I18nManager } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import { StoreContext } from "../../../stores";
+import GlassBG from "../../glass-background";
+import themeStyle from "../../../styles/theme.style";
+import Icon from "../../icon";
+import { useTranslation } from "react-i18next";
 
 const tabs = [
   {
     key: "homeScreen",
-    label: "ראשי",
-    icon: "dashboard",
+    label: "main",
+    icon: "main",
   },
   {
     key: "Orders",
-    label: "הזמנות",
-    icon: "receipt-long",
+    label: "search",
+    icon: "search",
   },
   {
     key: "Profile",
-    label: "פרופיל",
-    icon: "person-outline",
+    label: "profile",
+    icon: "profile",
   },
 ];
 
 
 
 export default function BottomTabBar({ state, navigation }) {
+  const { t } = useTranslation();
   const {
 
     authStore,
@@ -42,58 +46,59 @@ export default function BottomTabBar({ state, navigation }) {
   
   };
   return (
-    <View style={styles.container}>
-      {tabs.map((tab, idx) => {
-        // For RTL, reverse the order
-        const index = I18nManager.isRTL ? tabs.length - 1 - idx : idx;
-        const route = tabs[index];
-        const isActive = state.index === index;
-        return (
-          <TouchableOpacity
-            key={route.key}
-            style={styles.tab}
-            onPress={() => handleTabPress(route)}
-            activeOpacity={0.7}
-          >
-            <Icon
-              name={route.icon}
-              size={28}
-              color={isActive ? "#00C853" : "#BDBDBD"}
-              style={{ marginBottom: 2 }}
-            />
-            <Text style={[styles.label, { color: isActive ? "black" : "black" }]}> 
-              {route.label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+    <View style={styles.wrapper}>
+      <GlassBG style={styles.container} borderRadius={35}> 
+        {tabs.map((tab, idx) => {
+          // For RTL, reverse the order
+          const index = I18nManager.isRTL ? tabs.length - 1 - idx : idx;
+          const route = tabs[index];
+          const isActive = state.index === index;
+          return (
+            <TouchableOpacity
+              key={route.key}
+              style={[styles.tab, { backgroundColor: isActive ? themeStyle.GRAY_10 : 'transparent' }]}
+              onPress={() => handleTabPress(route)}
+              activeOpacity={0.7}
+            >
+              <Icon
+                icon={route.icon}
+                size={28}
+                color={isActive ? themeStyle.GRAY_80 : themeStyle.WHITE_COLOR}
+                style={{ marginBottom: 2 }}
+              />
+              <Text style={[styles.label, { color: isActive ? themeStyle.GRAY_80 : themeStyle.WHITE_COLOR }]}> 
+                {t(route.label)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </GlassBG>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    position: 'absolute',
+    bottom: 10,
+    width: "80%",
+    alignSelf: "center",
+  },
   container: {
     flexDirection: "row-reverse",
     justifyContent: "space-around",
     alignItems: "center",
-    height: 60,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 8,
+    height: 70,
+    borderRadius: 50,
   },
   tab: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingVertical: 5,
+    borderRadius: 50,
+    width: "29%"
   },
   label: {
-    fontSize: 13,
-    fontFamily: "he-Regular",
-    marginTop: 2,
+
   },
 }); 

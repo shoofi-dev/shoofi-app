@@ -72,7 +72,7 @@ export const MainStackNavigator = () => {
     <Stack.Navigator
       initialRouteName="MainTabs"
       screenOptions={{
-        cardStyle: { backgroundColor: '#fff' },
+        cardStyle: { backgroundColor: 'rgba(255, 255, 255, 0.94)' },
         headerShown: false,
         gestureEnabled: true,
         transitionSpec: {

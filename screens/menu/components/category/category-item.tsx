@@ -38,7 +38,7 @@ const CategoryItem = ({
       disabled={isDisabledCatItem}
       activeOpacity={0.8}
     >
-      <Text style={styles.pillText}>
+      <Text style={ isSelected ? styles.pillTextSelected : styles.pillTextUnselected}>
         {languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE}
       </Text>
     </TouchableOpacity>
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   pill: {
     borderRadius: 20,
     paddingHorizontal: 22,
-    paddingVertical: 10,
+    paddingVertical: 2,
     marginHorizontal: 6,
     minWidth: 80,
     alignItems: "center",
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   pillSelected: {
-    backgroundColor: "#fff",
+    backgroundColor: themeStyle.PRIMARY_COLOR,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -74,15 +74,17 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   pillText: {
-    fontSize: themeStyle.FONT_SIZE_LG,
+    fontSize: themeStyle.FONT_SIZE_MD,
     textAlign: "center",
   },
   pillTextSelected: {
-    color: "#222",
-    fontWeight: "bold",
+    color: themeStyle.GRAY_80,
+    fontSize: themeStyle.FONT_SIZE_MD,
+
   },
   pillTextUnselected: {
-    color: "#888",
-    fontWeight: "normal",
+    color: themeStyle.GRAY_80,
+    fontSize: themeStyle.FONT_SIZE_MD,
+
   },
 });

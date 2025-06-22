@@ -4,15 +4,9 @@ import { observer } from "mobx-react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
 import { useNavigation } from "@react-navigation/native";
-import Animated, {
-  useSharedValue,
-  useAnimatedScrollHandler,
-  Extrapolate,
-} from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedScrollHandler } from "react-native-reanimated";
 import Button from "../../components/controls/button/button";
-import AllCategoriesList, {
-  AllCategoriesListRef,
-} from "./components/AllCategoriesList";
+import AllCategoriesList, { AllCategoriesListRef } from "./components/AllCategoriesList";
 import Icon from "../../components/icon";
 import { useTranslation } from "react-i18next";
 import useWebSocket from "react-use-websocket";
@@ -23,11 +17,10 @@ import StoreHeaderCard from "./components/StoreHeaderCard";
 import { ShippingMethodPick } from "../../components/address/shipping-method-pick";
 import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
 import { getCurrentLang } from "../../translations/i18n";
-import BackButton from "../../components/back-button";
-import Text from "../../components/controls/Text";
+
 const HEADER_HEIGHT = 260;
-const SHIPPING_PICKER_CONTAINER_HEIGHT = 60;
-const STICKY_HEADER_HEIGHT = 90;
+const SHIPPING_PICKER_CONTAINER_HEIGHT = 120;
+const STICKY_HEADER_HEIGHT = 70;
 const SCROLLABLE_PART_HEIGHT = HEADER_HEIGHT + SHIPPING_PICKER_CONTAINER_HEIGHT;
 
 const MenuScreen = () => {
@@ -37,14 +30,11 @@ const MenuScreen = () => {
   const allCategoriesListRef = useRef<AllCategoriesListRef>(null);
   const categoryUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { menuStore, storeDataStore, cartStore, languageStore } =
-    useContext(StoreContext);
+  const { menuStore, storeDataStore, cartStore } = useContext(StoreContext);
 
   const { availableDrivers, loading: driversLoading } = useAvailableDrivers();
 
   const { lastJsonMessage } = useWebSocket(WS_URL, { share: true });
-
-  const [cartPrice, setCartPrice] = useState(0);
 
   useEffect(() => {
     if (lastJsonMessage) {
@@ -58,7 +48,6 @@ const MenuScreen = () => {
 
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
-    setCartPrice(cartStore.getProductsPrice());
   }, [cartStore.cartItems]);
 
   const getMenu = () => {
@@ -73,96 +62,60 @@ const MenuScreen = () => {
     getMenu();
   }, [menuStore.categories]);
 
-  const handleCategorySelect = useCallback(
-    (cat) => {
-      if (selectedCategory?._id !== cat._id) {
-        setSelectedCategory(cat);
-        // Calculate the offset for the category in the main ScrollView
-        const categoryIndex = categoryList.findIndex((c) => c._id === cat._id);
-        if (categoryIndex !== -1) {
-          // Calculate offset: STICKY_HEADER_HEIGHT + accumulated height of previous categories
-          let offset = STICKY_HEADER_HEIGHT;
-          for (let i = 0; i < categoryIndex; i++) {
-            const category = categoryList[i];
-            if (category.products.length > 0) {
-              const categoryHeaderHeight = 60;
-              const productHeight = 120;
-              const productsHeight = category.products.length * productHeight;
-              const sectionMargin = 24;
-              offset += categoryHeaderHeight + productsHeight + sectionMargin;
-            }
+  const handleCategorySelect = useCallback((cat) => {
+    if (selectedCategory?._id !== cat._id) {
+      setSelectedCategory(cat);
+      // Calculate the offset for the category in the main ScrollView
+      const categoryIndex = categoryList.findIndex(c => c._id === cat._id);
+      if (categoryIndex !== -1) {
+        // Calculate offset: STICKY_HEADER_HEIGHT + accumulated height of previous categories
+        let offset = STICKY_HEADER_HEIGHT;
+        for (let i = 0; i < categoryIndex; i++) {
+          const category = categoryList[i];
+          if (category allCategoriesListRef.current?.scrollToCategory(cat._id);allCategoriesListRef.current?.scrollToCategory(cat._id); category.products allCategoriesListRef.current?.scrollToCategory(cat._id);allCategoriesListRef.current?.scrollToCategory(cat._id); category.products.length > 0) {
+            const categoryHeaderHeight = 60;
+            const productHeight = 120;
+            const productsHeight = category.products.length * productHeight;
+            const sectionMargin = 24;
+            offset += categoryHeaderHeight + productsHeight + sectionMargin;
           }
-
-          console.log("Scrolling main ScrollView to offset:", offset);
-          scrollViewRef.current?.scrollTo({
-            y: SCROLLABLE_PART_HEIGHT + offset,
-            animated: true,
-          });
         }
-        console.log("handleCategorySelect", cat);
+        
+        console.log("Scrolling main ScrollView to offset:", offset);
+        scrollViewRef.current?.getNode().scrollTo({ 
+          y: SCROLLABLE_PART_HEIGHT + offset, 
+          animated: true 
+        });
       }
-    },
-    [selectedCategory]
-  );
+      console.log("handleCategorySelect", cat);
 
-  const handleCategoryVisible = useCallback(
-    (categoryId: string) => {
-      if (categoryUpdateTimeoutRef.current) {
-        clearTimeout(categoryUpdateTimeoutRef.current);
-      }
+      // Removed duplicate scroll logic
 
-      categoryUpdateTimeoutRef.current = setTimeout(() => {
-        const category = categoryList.find((cat) => cat._id === categoryId);
-        if (selectedCategory?._id !== categoryId) {
-          console.log("Setting selected category to:", categoryId);
-          setSelectedCategory(category);
-        }
-      }, 50);
-    },
-    [categoryList, selectedCategory]
-  );
-
-  const scrollY = useRef(new Animated.Value(0)).current;
-
-  // Add scroll handler to detect visible category
-  const handleScroll = (event) => {
-    // Update the animated value for header animations
-    scrollY.setValue(event.nativeEvent.contentOffset.y);
-
-    const scrollOffset = event.nativeEvent.contentOffset.y;
-    const adjustedOffset = scrollOffset - SCROLLABLE_PART_HEIGHT;
-
-    if (adjustedOffset < 0) return;
-
-    // Calculate which category should be visible based on scroll position
-    let accumulatedHeight = 0;
-    for (const category of categoryList) {
-      if (category.products && category.products.length > 0) {
-        const categoryHeaderHeight = 60;
-        const productHeight = 120;
-        const productsHeight = category.products.length * productHeight;
-        const sectionMargin = 24;
-        const categoryHeight =
-          categoryHeaderHeight + productsHeight + sectionMargin;
-
-        if (
-          adjustedOffset >= accumulatedHeight &&
-          adjustedOffset < accumulatedHeight + categoryHeight
-        ) {
-          if (selectedCategory?._id !== category._id) {
-            setSelectedCategory(category);
-          }
-          break;
-        }
-        accumulatedHeight += categoryHeight;
+        // Removed duplicate scroll logic
       }
     }
-  };
+  }, [selectedCategory]);
+
+  const handleCategoryVisible = useCallback((categoryId: string) => {
+    if (categoryUpdateTimeoutRef.current) {
+      clearTimeout(categoryUpdateTimeoutRef.current);
+    }
+
+    categoryUpdateTimeoutRef.current = setTimeout(() => {
+      const category = categoryList.find(cat => cat._id === categoryId);
+      if ( selectedCategory?._id !== categoryId) {
+        console.log("Setting selected category to:", categoryId);
+        setSelectedCategory(category);
+      }
+    }, 50);
+  }, [categoryList, selectedCategory]);
+
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const headerTranslateY = scrollY.interpolate({
     inputRange: [0, SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT],
     outputRange: [0, -(SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT)],
-    extrapolate: Extrapolate.CLAMP,
+    extrapolate: "clamp",
   });
 
   const stickyCategoryHeaderOpacity = scrollY.interpolate({
@@ -171,7 +124,7 @@ const MenuScreen = () => {
       SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT,
     ],
     outputRange: [0, 1],
-    extrapolate: Extrapolate.CLAMP,
+    extrapolate: "clamp",
   });
 
   if (!categoryList || !selectedCategory) {
@@ -209,14 +162,15 @@ const MenuScreen = () => {
           paddingBottom: 80,
         }}
         scrollEventThrottle={16}
-        onScroll={(event) => {
-          handleScroll(event);
-        }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false }
+        )}
       >
-        <View style={{ marginTop: 15 }}>
+        <View style={{ marginTop: STICKY_HEADER_HEIGHT }}>
           <AllCategoriesList
             ref={allCategoriesListRef}
             categoryList={categoryList}
+            onCategoryVisible={handleCategoryVisible}
           />
         </View>
       </Animated.ScrollView>
@@ -250,18 +204,6 @@ const MenuScreen = () => {
           },
         ]}
       >
-        <View
-          style={{ marginLeft: 15, flexDirection: "row", alignItems: "center" }}
-        >
-          <BackButton />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={{ fontSize: themeStyle.LG, fontWeight: "bold" }}>
-              {languageStore.selectedLang === "ar"
-                ? storeDataStore.storeData.name_ar
-                : storeDataStore.storeData.name_he}
-            </Text>
-          </View>
-        </View>
         <CategoryList
           style={{ width: "100%" }}
           categoryList={categoryList}
@@ -271,28 +213,38 @@ const MenuScreen = () => {
         />
       </Animated.View>
 
-      {/* <View style={styles.fixedButtons} pointerEvents="box-none">
-       <BackButton  />
-      </View> */}
+      <View style={styles.fixedButtons} pointerEvents="box-none">
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <View style={styles.circle}>
+            <Icon
+              name={I18nManager.isRTL ? "chevron-right" : "chevron-left"}
+              size={28}
+              color="#222"
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.heartButton} onPress={() => {}}>
+          <View style={styles.circle}>
+            <Icon name="heart" size={22} color={themeStyle.SECONDARY_COLOR} />
+          </View>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.cartContainer}>
         {cartCount > 0 && (
           <Button
             text={t("show-order")}
-            icon="orders"
-            iconSize={themeStyle.FONT_SIZE_XL}
-            fontSize={themeStyle.FONT_SIZE_XL}
-            iconColor={themeStyle.SECONDARY_COLOR}
-            onClickFn={() => {
-              handleCartClick();
-            }}
+            icon="shopping-bag-plus"
+            fontSize={17}
+            onClickFn={handleCartClick}
             fontFamily={`${getCurrentLang()}-Bold`}
             bgColor={themeStyle.PRIMARY_COLOR}
-            textColor={themeStyle.SECONDARY_COLOR}
+            textColor={themeStyle.WHITE_COLOR}
             borderRadious={100}
             countText={`${cartCount}`}
-            countTextColor={themeStyle.PRIMARY_COLOR}
-            extraText={`₪${cartPrice}`}
           />
         )}
       </View>
@@ -328,20 +280,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
     height: STICKY_HEADER_HEIGHT,
-    paddingTop: 0,
+    justifyContent: "center",
   },
   cartContainer: {
     position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "transparent",
+    backgroundColor: themeStyle.WHITE_COLOR,
     padding: 10,
     paddingHorizontal: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
   },
   fixedButtons: {
     position: "absolute",
-    top: 8,
+    top: 40,
     left: 0,
     right: 0,
     zIndex: 20,

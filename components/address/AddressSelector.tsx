@@ -1,15 +1,18 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, I18nManager, Dimensions, DeviceEventEmitter } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, I18nManager, Dimensions, DeviceEventEmitter } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { StoreContext } from '../../stores';
 import * as Animatable from 'react-native-animatable';
 import { DIALOG_EVENTS } from '../../consts/events';
-
+import Text from '../controls/Text';
+import { useTranslation } from 'react-i18next';
+import Icon from '../icon';
+import themeStyle from '../../styles/theme.style';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const AddressSelector = observer(({ onAddressSelect }) => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const { addressStore, userDetailsStore,shoofiAdminStore, authStore } = useContext(StoreContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -59,19 +62,30 @@ const AddressSelector = observer(({ onAddressSelect }) => {
   return (
     <View style={{ zIndex: 100,  }}>
       <TouchableOpacity style={styles.row} onPress={handleRowPress} activeOpacity={0.8}>
-        <Icon name="home" size={22} color="#444" style={styles.icon} />
+        {/* <Icon name="home" size={22} color="#444" style={styles.icon} /> */}
+        <Icon icon={!selectedAddress ? "location" : "home"} size={16}  style={{marginRight: 5}}  />
+
         <View >
           {!selectedAddress ? (
-            <Text style={styles.addPrompt}>הוסף את הכתובת שלך</Text>
+                        <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
+
+            <Text style={styles.addPrompt}>{t('add_your_address')}</Text>
+            <Icon icon="edit" size={18}  style={{marginLeft: 5}}  />
+
+            </View>
           ) : (
-            <Text  numberOfLines={1}>
+            <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
+            <Text style={{color: themeStyle.TEXT_PRIMARY_COLOR}}>
               {selectedAddress.street && selectedAddress.city
                 ? `${selectedAddress.street} ${selectedAddress.streetNumber ? selectedAddress.streetNumber + ', ' : ''}${selectedAddress.city}`
                 : selectedAddress.city || ''}
             </Text>
+            <Icon icon={dropdownOpen ? "chevron_down" : "chevron_down"} size={24}  />
+            </View>
+
           )}
         </View>
-        <Icon name={dropdownOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={24} color="#444" style={styles.arrowIcon} />
+
       </TouchableOpacity>
       {dropdownOpen && (
         <Animatable.View
@@ -85,8 +99,8 @@ const AddressSelector = observer(({ onAddressSelect }) => {
               style={styles.dropdownItem}
               onPress={() => handleSelectAddress(address)}
             >
-              <Icon name={address.isDefault ? "home" : "location-on"} size={20} color="#444" style={{  }} />
-              <Text style={styles.dropdownItemText} numberOfLines={1}>
+        <Icon icon={!selectedAddress ? "location" : "home"} size={16}  style={{marginRight: 5}}  />
+        <Text style={styles.dropdownItemText} numberOfLines={1}>
                 {address.street && address.city
                   ? `${address.street} ${address.houseNumber ? address.houseNumber + ', ' : ''}${address.city}`
                   : address.name || ''}
@@ -94,8 +108,8 @@ const AddressSelector = observer(({ onAddressSelect }) => {
             </TouchableOpacity>
           ))}
           <TouchableOpacity style={styles.addNewBtn} onPress={handleAddNew}>
-            <Icon name="add" size={20} color="#43a047" style={{ marginLeft: 10, marginRight: 10 }} />
-            <Text style={styles.addNewText}>הוסף עוד כתובת</Text>
+          <Icon icon="plus" size={12}  style={{marginRight: 5}} color={themeStyle.SUCCESS_COLOR}  />
+          <Text style={styles.addNewText}>{t('add_new_address')}</Text>
           </TouchableOpacity>
         </Animatable.View>
       )}
@@ -109,14 +123,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 12,
-    paddingVertical: 10,
     paddingHorizontal: 5,
-    marginBottom: 12,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+
   },
   icon: {
     marginRight:5,
@@ -141,16 +149,12 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: 'absolute',
-    top: 56,
+    top: "130%",
     left: 0,
     right: 0,
     backgroundColor: '#fff',
     borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 12,
+
     zIndex: 1000,
     paddingVertical: 0,
     paddingHorizontal: 0,
@@ -177,13 +181,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
- 
-    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    backgroundColor: '#f0f0f0',
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
   },
   addNewText: {
-    color: '#43a047',
+    color: themeStyle.SUCCESS_COLOR,
     fontSize: 16,
     fontWeight: '600',
   },

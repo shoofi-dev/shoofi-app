@@ -1,4 +1,15 @@
-import { StyleSheet, View, Image, ImageBackground, TouchableOpacity, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, DeviceEventEmitter } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  ImageBackground,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  DeviceEventEmitter,
+  Dimensions,
+} from "react-native";
 import InputText from "../../components/controls/input";
 import Button from "../../components/controls/button/button";
 import themeStyle from "../../styles/theme.style";
@@ -16,15 +27,28 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toBase64 } from "../../helpers/convert-base64";
 import Text from "../../components/controls/Text";
 import { LinearGradient } from "expo-linear-gradient";
-import { APP_NAME, arabicNumbers, reg_arNumbers, ROLES } from "../../consts/shared";
+import {
+  APP_NAME,
+  arabicNumbers,
+  reg_arNumbers,
+  ROLES,
+} from "../../consts/shared";
 import { ScrollView } from "react-native-gesture-handler";
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
+import BackButton from "../../components/back-button";
+import { PixelRatio } from "react-native";
 
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const scale = SCREEN_WIDTH / 375; // 375 is base iPhone width used in Figma
 
-
+export const normalizeFontSize = (size: number) => {
+  const newSize = size * scale;
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+};
 const LoginScreen = () => {
   const { t } = useTranslation();
-  const { userDetailsStore, authStore, adminCustomerStore, languageStore } = useContext(StoreContext);
+  const { userDetailsStore, authStore, adminCustomerStore, languageStore } =
+    useContext(StoreContext);
   const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
     useState(false);
   const navigation = useNavigation();
@@ -33,7 +57,7 @@ const LoginScreen = () => {
   const [isValid, setIsValid] = useState(true);
   const onChange = (value) => {
     setIsValid(true);
-    if(value.length === 10){
+    if (value.length === 10) {
       Keyboard.dismiss();
     }
     setPhoneNumber(value);
@@ -76,25 +100,28 @@ const LoginScreen = () => {
       };
       axiosInstance
         .post(
-          `${CUSTOMER_API.CONTROLLER}/${userDetailsStore.isAdmin() ? CUSTOMER_API.ADMIN_CUSTOMER_CREATE_API :  CUSTOMER_API.CUSTOMER_CREATE_API}`,
-          body,
-          
+          `${CUSTOMER_API.CONTROLLER}/${
+            userDetailsStore.isAdmin()
+              ? CUSTOMER_API.ADMIN_CUSTOMER_CREATE_API
+              : CUSTOMER_API.CUSTOMER_CREATE_API
+          }`,
+          body
         )
         .then(async function (response: any) {
           setIsLoading(false);
-          if (response.isBlocked ) {
-              setIsLoading(false);
-              await AsyncStorage.setItem("@storage_user_b", JSON.stringify(true));
-              return;
+          if (response.isBlocked) {
+            setIsLoading(false);
+            await AsyncStorage.setItem("@storage_user_b", JSON.stringify(true));
+            return;
           }
-          if(userDetailsStore.isAdmin()){
+          if (userDetailsStore.isAdmin()) {
             adminCustomerStore.setCustomer(response);
-            if(response.isExist){
+            if (response.isExist) {
               setIsOpenConfirmActiondDialog(true);
-            }else{
+            } else {
               navigation.navigate("insert-customer-name");
             }
-          }else{
+          } else {
             authStore.setVerifyCodeToken(response.phone);
             navigation.navigate("verify-code", {
               convertedValue: response.phone,
@@ -113,27 +140,24 @@ const LoginScreen = () => {
     }
   };
 
-  const handleLogoPress = () =>{
+  const handleLogoPress = () => {
     navigation.navigate("homeScreen");
-  }
-
+  };
 
   const handleConfirmActionAnswer = (answer: string) => {
     setIsOpenConfirmActiondDialog(false);
 
-    if(answer){
+    if (answer) {
       navigation.navigate("menuScreen");
-    }else{
+    } else {
       adminCustomerStore.setCustomer(null);
       navigation.navigate("homeScreen");
-
     }
-
   };
 
   return (
     <View style={styles.container}>
-        {/* <LinearGradient
+      {/* <LinearGradient
           colors={[
             "rgba(207, 207, 207, 0.4)",
             "rgba(246,246,247, 0.8)",
@@ -147,73 +171,110 @@ const LoginScreen = () => {
           end={{ x: 1, y: 1 }}
           style={[styles.background]}
         /> */}
-            {/* <ImageBackground
+      {/* <ImageBackground
           source={require("../../assets/bg/login-bg.jpg")}
           resizeMode="cover"
           style={{ height: "100%",width:"100%"}}
               > */}
-      <TouchableOpacity onPress={handleLogoPress}  style={{ marginTop: 10, width:"100%",  height:'30%' }}>
+      <BackButton />
+      <TouchableOpacity
+        onPress={handleLogoPress}
+        style={{
+          marginTop: "30%",
+          width: 173,
+          height: 38,
+          alignSelf: "center",
+        }}
+      >
         <Image
-          style={{  alignSelf: "center", width:"40%", height:"100%"}}
-          source={require("../../assets/icon4.png")}
+          style={{ alignSelf: "center", width: "100%" }}
+          source={require("../../assets/shoofi-purple.png")}
         />
       </TouchableOpacity>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={{ backgroundColor:'red', zIndex:10, height:"100%", width:"100%"}}>
-
-      <ScrollView style={{ width: "100%" }}>
-      <KeyboardAvoidingView
-        keyboardVerticalOffset={100}
-        behavior="position"
-        style={{ flex: 1 }}
+      <TouchableWithoutFeedback
+        onPress={Keyboard.dismiss}
+        accessible={false}
+        style={{
+          backgroundColor: "red",
+          zIndex: 10,
+          height: "100%",
+          width: "100%",
+        }}
       >
-
-
-        <View style={styles.inputsContainer}>
-          <Text style={{ fontSize: 26,fontWeight: 'bold', color: themeStyle.TEXT_PRIMARY_COLOR  }}>
-            {userDetailsStore.isAdmin() ? t("insert-phone-number-admin") : t("insert-phone-number")}
-          </Text>
-          <Text
-            style={{ marginTop: 20, fontSize: 20, color: themeStyle.TEXT_PRIMARY_COLOR }}
+        <View style={{ width: "100%", height: "50%", marginTop: 76 }}>
+          <KeyboardAvoidingView
+            keyboardVerticalOffset={100}
+            behavior="position"
+            style={{ flex: 1 }}
           >
-             {!userDetailsStore.isAdmin() && t("will-send-sms-with-code")}
-          </Text>
-
-          <View
-            style={{
-              width: "90%",
-              paddingHorizontal: 50,
-              marginTop: 50,
-              alignItems: "flex-start",
-            }}
-          >
-            <InputText
-              keyboardType="numeric"
-              onChange={onChange}
-              label={t("phone")}
-              isPreviewMode={isLoading}
-              color={themeStyle.TEXT_PRIMARY_COLOR}
-            />
-            {!isValid && (
-              <Text style={{ color: themeStyle.ERROR_COLOR, paddingLeft: 15 }}>
-                {t("invalid-phone")}
+            <View style={styles.inputsContainer}>
+              <Text
+                style={{
+                  fontSize: themeStyle.FONT_SIZE_SM,
+                  fontWeight: "bold",
+                  color: themeStyle.GRAY_80,
+                }}
+              >
+                {userDetailsStore.isAdmin()
+                  ? t("insert-phone-number-admin")
+                  : t("insert-phone-number")}
               </Text>
-            )}
-          </View>
 
-          <View style={{ width: "90%", paddingHorizontal: 50, marginTop: 70 }}>
-            <Button
-              text={t("approve")}
-              fontSize={20}
-              onClickFn={authinticate}
-              isLoading={isLoading}
-              disabled={isLoading}
-            />
-          </View>
+              <View
+                style={{
+                  width: "100%",
+                  marginTop: 8,
+                  alignItems: "flex-start",
+                }}
+              >
+                <InputText
+                  keyboardType="numeric"
+                  onChange={onChange}
+                  label={t("phone")}
+                  isPreviewMode={isLoading}
+                  color={themeStyle.TEXT_PRIMARY_COLOR}
+                />
+                <Text
+                  style={{
+                    marginTop: 20,
+                    fontSize: themeStyle.FONT_SIZE_SM,
+                    color: themeStyle.GRAY_60,
+                    alignSelf: "center",
+                  }}
+                >
+                  {!userDetailsStore.isAdmin() && t("will-send-sms-with-code")}
+                </Text>
+                {!isValid && (
+                  <Text
+                    style={{ color: themeStyle.ERROR_COLOR, paddingLeft: 15 }}
+                  >
+                    {t("invalid-phone")}
+                  </Text>
+                )}
+              </View>
+            </View>
+          </KeyboardAvoidingView>
         </View>
-              </KeyboardAvoidingView>
-      </ScrollView>
       </TouchableWithoutFeedback>
-
+      <View
+        style={{
+          width: "100%",
+          paddingHorizontal: 10,
+          marginTop: 70,
+          position: "absolute",
+          bottom: "10%",
+          left: 0,
+          right: 0,
+        }}
+      >
+        <Button
+          text={t("approve")}
+          fontSize={20}
+          onClickFn={authinticate}
+          isLoading={isLoading}
+          disabled={isLoading}
+        />
+      </View>
       {/* </ImageBackground> */}
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}
@@ -222,7 +283,6 @@ const LoginScreen = () => {
         positiveText="ok"
         negativeText="cancel"
       />
-      
     </View>
   );
 };
@@ -230,14 +290,12 @@ export default observer(LoginScreen);
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
     width: "100%",
     height: "100%",
   },
   inputsContainer: {
     width: "100%",
-    alignItems: "center",
-    paddingVertical: 20,
+    paddingHorizontal: 10,
   },
   footerTabs: {
     backgroundColor: "blue",

@@ -56,7 +56,7 @@ const StoresListScreen = () => {
         ))}
         {storesInCategory.length === 0 && (
           <Text style={{ textAlign: "center", marginTop: 40, color: "#888" }}>
-            לא נמצאו מסעדות בקטגוריה זו.
+            {t("no_stores_found")}
           </Text>
         )}
       </ScrollView>

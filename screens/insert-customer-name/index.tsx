@@ -15,6 +15,7 @@ import Text from "../../components/controls/Text";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { APP_NAME } from "../../consts/shared";
+import BackButton from "../../components/back-button";
 
 const InsertCustomerNameScreen = ({route}) => {
   const { t } = useTranslation();
@@ -88,28 +89,16 @@ const InsertCustomerNameScreen = ({route}) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={[
-          "rgba(207, 207, 207, 0.5)",
-          "rgba(232, 232, 230, 0.5)",
-          "rgba(232, 232, 230, 0.5)",
-          "rgba(232, 232, 230, 0.5)",
-          "rgba(207, 207, 207, 0.5)",
-        ]}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[styles.background]}
-      />
+      <BackButton/>
       <View style={styles.inputsContainer}>
 
-        <Text style={{ marginTop: 50, fontSize: 25 }}>
+        <Text style={{ marginTop: 50, fontSize: themeStyle.FONT_SIZE_MD }}>
           {t("insert-customer-name")}
         </Text>
 
         <View
           style={{
             width: "100%",
-            paddingHorizontal: 50,
             marginTop: 15,
             alignItems: "flex-start",
           }}
@@ -148,7 +137,6 @@ export default observer(InsertCustomerNameScreen);
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
     width: "100%",
     height: "100%",
   },
@@ -156,8 +144,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     width: "90%",
     height: "40%",
-    alignItems: "center",
-    
+    alignSelf:"center"
   },
   footerTabs: {
     backgroundColor: "blue",

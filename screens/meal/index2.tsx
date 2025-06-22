@@ -35,7 +35,6 @@ import {
   cdnUrl,
   ORDER_TYPE,
   shmareemId,
-  TASETS_LIST,
 } from "../../consts/shared";
 
 import CustomFastImage from "../../components/custom-fast-image";
@@ -48,6 +47,7 @@ import MealExtras from "./extras/Extras";
 import { useResponsive } from "../../hooks/useResponsive";
 import Counter from "../../components/controls/counter";
 import StoreChangeConfirmationDialog from "../../components/dialogs/store-change-confirmation";
+import GlassBG from "../../components/glass-background";
 
 const showCakeNoteList = ["3", "5"];
 
@@ -300,16 +300,19 @@ const MealScreen = ({ route }) => {
         Animated.timing(anim.current, {
           toValue: 1,
           duration: 200,
+          useNativeDriver: true,
         }),
         // shift element to the right by 2 units
         Animated.timing(anim.current, {
           toValue: 1.2,
           duration: 200,
+          useNativeDriver: true,
         }),
         // bring the element back to its original position
         Animated.timing(anim.current, {
           toValue: 1,
           duration: 200,
+          useNativeDriver: true,
         }),
       ]),
       // loops the above animation config 2 times
@@ -321,47 +324,15 @@ const MealScreen = ({ route }) => {
     return null;
   }
   return (
-    <View style={{ height: "100%" }}>
-      <View style={{ zIndex: 10 }}>
-        <TouchableOpacity
-          onPress={onClose}
-          style={{
-            zIndex: 1,
-            position: "absolute",
-            right: 10,
-            width: isTablet ? 60 : 45,
-            alignItems: "center",
-            height: isTablet ? 60 : 45,
-            justifyContent: "center",
-            top: 10,
-            backgroundColor: themeStyle.WHITE_COLOR,
-            borderRadius: 100,
-            padding: 5,
-            shadowColor: themeStyle.SHADOW_COLOR,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-          }}
-        >
-          <Text
-            style={{
-              color: themeStyle.GRAY_300,
-              fontSize: isTablet ? 40 : 30,
-            }}
-          >
-            X
-          </Text>
-        </TouchableOpacity>
-      </View>
+    <View style={{ flex: 1, backgroundColor: themeStyle.WHITE_COLOR }}>
       <Animated.ScrollView
         ref={scrollRef}
-        style={{ height: "100%" }}
+        
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
         )}
         scrollEventThrottle={16}
-        contentContainerStyle={{ paddingBottom: 110 }}
       >
         <View
           style={{
@@ -380,7 +351,7 @@ const MealScreen = ({ route }) => {
             )}
           </View>
           <View
-            style={{ alignItems: "center", alignSelf: "center", marginTop: 20 }}
+            style={{ alignItems: "center", alignSelf: "center", marginTop: 20, paddingBottom: 20 }}
           >
             <Counter
               value={meal.others.qty}
@@ -395,12 +366,10 @@ const MealScreen = ({ route }) => {
       </Animated.ScrollView>
       <View
         style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
           backgroundColor: themeStyle.WHITE_COLOR,
           padding: 10,
+          borderTopWidth: 1,
+          borderTopColor: '#eee',
         }}
       >
         <ProductFooter

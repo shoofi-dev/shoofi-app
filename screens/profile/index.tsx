@@ -14,14 +14,14 @@ import Constants from "expo-constants";
 const ProfileScreen = () => {
   const { t } = useTranslation();
   const version = Constants.nativeAppVersion;
-  const { userDetailsStore, authStore, storeDataStore } =
+  const { userDetailsStore, authStore, addressStore } =
     useContext(StoreContext);
   const navigation = useNavigation();
 
   // User info
   const userName = userDetailsStore?.userDetails?.name || "";
   const userAddress =
-    userDetailsStore?.userDetails?.address || "ארלוזורוב 135, תל אביב";
+    addressStore.defaultAddress || "ארלוזורוב 135, תל אביב";
 
   // Profile option groups
   const profileGroups = [
@@ -131,7 +131,7 @@ const ProfileScreen = () => {
         break;
     }
   };
-
+console.log(userAddress);
   return (
     <View style={{ flex: 1, backgroundColor: "#F7F8FA" }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
@@ -142,7 +142,7 @@ const ProfileScreen = () => {
           </View>
           <View style={{ flexDirection: "column", alignItems: "flex-start", marginLeft: 16 }}>
             <Text style={styles.userName}>{userName}</Text>
-            <Text style={styles.userAddress}>{userAddress}</Text>
+            <Text style={styles.userAddress}>{`${userAddress?.street}, ${userAddress?.streetNumber}, ${userAddress?.city}`}</Text>
           </View>
         </View>
         {/* Profile option groups */}

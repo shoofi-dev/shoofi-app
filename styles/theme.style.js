@@ -1,4 +1,5 @@
 export default {
+  // Font Sizes
   FONT_SIZE_XS: 12,
   FONT_SIZE_SM: 14,
   FONT_SIZE_MD: 16,
@@ -7,23 +8,46 @@ export default {
   FONT_SIZE_2XL: 24,
   FONT_SIZE_3XL: 26,
   FONT_SIZE_4XL: 30,
-  PRIMARY_COLOR: "#c1e300",
-  ERROR_COLOR: "red",
-  SECONDARY_COLOR: "#ECF0F4",
-  WHITE_COLOR: "white",
-  BLACK_COLOR: "black",
+
+  // Primary and Secondary
+  PRIMARY_COLOR: "#C1E300",
+  SECONDARY_COLOR: "#4E2E53",
+
+  // Grayscale
+  WHITE_COLOR: "#FFFFFF",
+  WHITE_COLOR_94: "rgba(255, 255, 255, 0.94)",
+  WHITE_COLOR_74: "rgba(255, 255, 255, 0.74)",
+  GRAY_10: "#F6F8FA",
+  GRAY_20: "#EFEFF0",
+  GRAY_30: "#DCDCDC",
+  GRAY_40: "#C7C7C7",
+  GRAY_60: "#898989",
+  GRAY_80: "#3B3B3B",
+
+  // Feedback
+  ERROR_COLOR: "#E43100",       // negative
+  SUCCESS_COLOR: "#00AC20",     // positive
+
+  // Gradients
+  GRADIENT_MAIN: ["#C1E300", "#A4C700"],
+  GRADIENT_SPLASH: ["#C1E300", "#A4C700"],
+
+  // Defaults
+  BLACK_COLOR: "#000000",
   WHITE_COLOR_300: "#F9F9F9",
-  SUCCESS_COLOR: "#558042",
-  SUCCESS_LIGHT_COLOR: "#6ED341",
-  ORANGE_COLOR: "#FF7F50",
   GRAY_300: "#3B3B3B",
   GRAY_600: "#ECF0F4",
   GRAY_700: "#442213",
   BROWN_700: "#4A0404",
+
+  // Typography Weights
   FONT_WEIGHT_LIGHT: "200",
   FONT_WEIGHT_MEDIUM: "600",
   FONT_WEIGHT_HEAVY: "800",
 
+  // Text
   TEXT_PRIMARY_COLOR: "#3B3B3B",
+
+  // Misc
   RGBA_BLACK: "rgba(36, 33, 30, 0.8)",
 };

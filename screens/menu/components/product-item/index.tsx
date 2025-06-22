@@ -27,7 +27,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import _useDeviceType from "../../../../hooks/use-device-type";
 import CustomFastImage from "../../../../components/custom-fast-image";
-
+import GlassBG from "../../../../components/glass-background";
 export type TProps = {
   item: any;
   onItemSelect: (item: any) => void;
@@ -70,6 +70,8 @@ const ProductItem = ({
     return t("call-store-to-order");
   };
 
+  const isInCart = cartStore.getProductByProductId(item._id);
+  const productCountInCart = cartStore.getProductCountInCart(item._id);
   const onAddToCart = (prodcut) => {
     // DeviceEventEmitter.emit(`add-to-cart-animate`, {
     //   imgUrl: meal.data.img,
@@ -84,27 +86,32 @@ const ProductItem = ({
   const productName =
     languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE;
   const price = item.price;
-  const imageUrl = `${cdnUrl}${item.img[0].uri}`;
+  const imageUrl = `${cdnUrl}${item?.img?.[0]?.uri}`;
   return (
     <TouchableOpacity style={styles.rowCard} onPress={() => onItemSelect(item)}>
       {/* Product Image on the right */}
       <View style={styles.rowImageWrapper}>
-        <CustomFastImage
-          source={{ uri: imageUrl }}
-          style={styles.rowImage}
-          cacheKey={`${APP_NAME}_${imageUrl.split(/[\/]/).pop()}`}
-        />
+        <CustomFastImage source={{ uri: imageUrl }} style={styles.rowImage} />
       </View>
       {/* Text and price on the left */}
       <View style={styles.rowTextContainer}>
-        <Text style={styles.rowProductName} >{productName}</Text>
-        <Text style={styles.rowProductDesc} >{item.descriptionHE || item.descriptionAR}</Text>
+        <Text style={styles.rowProductName}>{productName}</Text>
+        <Text style={styles.rowProductDesc}>
+          {languageStore.selectedLang === "ar" ? item.descriptionAR : item.descriptionHE}
+        </Text>
         <Text style={styles.rowPriceText}>₪{price}</Text>
       </View>
       {/* Add button */}
-      <TouchableOpacity style={styles.addButton} onPress={() => onAddToCart(item)}>
-        <Text style={styles.addButtonText}>+</Text>
-      </TouchableOpacity>
+      <GlassBG style={styles.addButton}>
+          <Text style={styles.addButtonText}>+</Text>
+      </GlassBG>
+      {isInCart && (
+        <View style={styles.countContainerWrapper}>
+          <View style={styles.countContainer}>
+            <Text style={styles.countText}>{productCountInCart}</Text>
+          </View>
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -113,71 +120,65 @@ export default observer(ProductItem);
 
 const styles = StyleSheet.create({
   rowCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderRadius: 16,
-    marginVertical: 8,
     marginHorizontal: 8,
-    padding: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
-    minHeight: 90,
+    borderBottomWidth: 1,
+    borderColor: themeStyle.GRAY_20,
+    paddingVertical: 20,
+
   },
   rowImageWrapper: {
     width: 96,
     height: 96,
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginLeft: 8,
-    backgroundColor: '#f3f3f3',
+    backgroundColor: "#f3f3f3",
   },
   rowImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 12,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   rowTextContainer: {
     flex: 1,
     marginHorizontal: 12,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   rowProductName: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: themeStyle.FONT_SIZE_MD,
     color: themeStyle.GRAY_900,
     marginBottom: 2,
-    textAlign: 'right',
+    textAlign: "right",
   },
   rowProductDesc: {
-    fontSize: 13,
-    color: '#666',
+    fontSize: themeStyle.FONT_SIZE_SM,
+    color: themeStyle.GRAY_60,
     marginBottom: 4,
-    textAlign: 'right',
+    textAlign: "right",
   },
   rowPriceText: {
-    color: '#232323',
+    color: "#232323",
     fontSize: 15,
-    fontWeight: 'bold',
-    textAlign: 'right',
+    fontWeight: "bold",
+    textAlign: "right",
   },
   addButton: {
-    position: 'absolute',
+    position: "absolute",
     left: 15,
     bottom: 15,
     width: 32,
     height: 32,
     borderRadius: 18,
-    backgroundColor: '#fff',
-  
-    alignItems: 'center',
-    justifyContent: 'center',
+
+    alignItems: "center",
+    justifyContent: "center",
     marginLeft: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
@@ -186,7 +187,30 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 22,
     color: themeStyle.GRAY_300,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  countContainerWrapper: {
+    borderRadius: 100,
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: themeStyle.PRIMARY_COLOR,
+  },
+  countContainer: {
+    backgroundColor: themeStyle.PRIMARY_COLOR,
+    borderRadius: 100,
+    width: 24,
+    height: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  countText: {
+    fontSize: themeStyle.FONT_SIZE_SM,
+    color: themeStyle.SECONDARY_COLOR,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

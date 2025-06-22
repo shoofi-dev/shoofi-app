@@ -19,9 +19,8 @@ export type TOrderSubmitResponse = {
     orderId: number;
     status: string;
     salt: string;
-  },
+  };
   cartData: any;
-
 };
 
 export type TUpdateCCPaymentRequest = {
@@ -88,33 +87,33 @@ const prodcutExtrasAdapter = (extras) => {
   }
   Object.keys(extras).map((key) => {
     const extra = extras[key];
-          if (extra.type === "CHOICE" && !extra.multiple_choice) {
-            if (extra.default !== extra.value) {
-              productExtras.push({
-                id: extra.id,
-                name: extra.name,
-                value: extra.value,
-              });
-            }
-          }
-          if (extra.type === "COUNTER") {
-            if (extra.counter_init_value !== extra.value) {
-              productExtras.push({
-                id: extra.id,
-                name: extra.name,
-                value: extra.value,
-              });
-            }
-          }
-          if (extra.type === "CHOICE" && extra.multiple_choice) {
-            if (extra.default !== extra.value) {
-              productExtras.push({
-                id: extra.id,
-                name: extra.name,
-                value: extra.value,
-              });
-            }
-          }
+    if (extra.type === "CHOICE" && !extra.multiple_choice) {
+      if (extra.default !== extra.value) {
+        productExtras.push({
+          id: extra.id,
+          name: extra.name,
+          value: extra.value,
+        });
+      }
+    }
+    if (extra.type === "COUNTER") {
+      if (extra.counter_init_value !== extra.value) {
+        productExtras.push({
+          id: extra.id,
+          name: extra.name,
+          value: extra.value,
+        });
+      }
+    }
+    if (extra.type === "CHOICE" && extra.multiple_choice) {
+      if (extra.default !== extra.value) {
+        productExtras.push({
+          id: extra.id,
+          name: extra.name,
+          value: extra.value,
+        });
+      }
+    }
   });
   return productExtras;
 };
@@ -130,7 +129,6 @@ const getPriceBySize = (product) => {
 const produtsAdapter = (order) => {
   let finalProducts = [];
   order.products.map((product) => {
-
     const finalProduct = {
       item_id: product.data._id,
       name: product.data.nameHE,
@@ -139,7 +137,8 @@ const produtsAdapter = (order) => {
       qty: product.others.qty,
       note: product.others.note,
       price: product.data.price,
-      selectedExtras: product.selectedExtras    };
+      selectedExtras: product.selectedExtras,
+    };
     finalProducts.push(finalProduct);
   });
   return finalProducts;
@@ -164,15 +163,14 @@ class CartStore {
 
   getShippingMethod = async () => {
     const jsonValue = await AsyncStorage.getItem("@storage_shippingMethod");
-    const value = jsonValue != null ? (jsonValue) : SHIPPING_METHODS.takAway;
-    console.log("valueAAAAA", value)
+    const value = jsonValue != null ? jsonValue : SHIPPING_METHODS.takAway;
+    console.log("valueAAAAA", value);
     this.shippingMethod = value;
     return value;
-
   };
 
   setShippingMethod = async (value) => {
-    console.log("storage_shippingMethod", value)
+    console.log("storage_shippingMethod", value);
     this.shippingMethod = value;
     await AsyncStorage.setItem("@storage_shippingMethod", value);
   };
@@ -194,7 +192,7 @@ class CartStore {
     await AsyncStorage.setItem("@storage_cart_storeDB", storeDBName);
   };
   getCartStoreDBName = async () => {
-    const storeDBName = await AsyncStorage.getItem("@storage_cart_storeDB")
+    const storeDBName = await AsyncStorage.getItem("@storage_cart_storeDB");
     return storeDBName;
   };
 
@@ -220,7 +218,7 @@ class CartStore {
 
   addProductToCart = async (product, isBcoin = false) => {
     if (this.cartItems.length === 0) {
-      const storeDBName = await AsyncStorage.getItem("@storage_storeDB")
+      const storeDBName = await AsyncStorage.getItem("@storage_storeDB");
       this.setCartStoreDBName(storeDBName);
       const storage_cartCreatedDate = {
         date: new Date(),
@@ -262,17 +260,30 @@ class CartStore {
 
   updateCartProduct = (index, product) => {
     this.cartItems[index] = { ...product };
-    this.cartItems = [...this.cartItems]
+    this.cartItems = [...this.cartItems];
   };
 
   getProductByIndex = (index) => {
     return JSON.parse(JSON.stringify(this.cartItems[index]));
   };
+  getProductByProductId = (productId) => {
+    return this.cartItems.find(
+      (item) => item.data._id.toString() === productId
+    );
+  };
+
+  getProductCountInCart = (productId) => {
+    return this.cartItems.reduce((total, item) => {
+      if (item.data._id.toString() === productId) {
+        return total + (item.others?.qty || 0);
+      }
+      return total;
+    }, 0);
+  };
 
   updateProductCount = (productId, count) => {
     this.cartItems = this.cartItems.map((item, index) => {
       if (item.data._id.toString() + index === productId) {
-
         // item.data.price = item.data.price + ((count - item.data.extras.counter.value) * (item.data.price / item.data.extras.counter.value));
         item.others.qty = count;
       }
@@ -289,6 +300,15 @@ class CartStore {
       }
     });
     return count;
+  };
+  getProductsPrice = () => {
+    let price = 0;
+    this.cartItems.forEach((product) => {
+      if (product) {
+        price += Number(product?.data?.price);
+      }
+    });
+    return price;
   };
 
   generateUniqueHash = (value: any) => {
@@ -331,7 +351,8 @@ class CartStore {
     const cartData: TCart = {
       order: finalOrder,
       total: order.totalPrice,
-      app_language: order?.app_language ?? getCurrentLang() === "ar" ? "0" : "1",
+      app_language:
+        order?.app_language ?? getCurrentLang() === "ar" ? "0" : "1",
       device_os: Platform.OS === "android" ? "Android" : "iOS",
       app_version: version,
       unique_hash: hashKey,
@@ -341,7 +362,7 @@ class CartStore {
       orderType: order.orderType,
       shippingPrice: order.shippingPrice,
       orderPrice: order.totalPrice - (order.shippingPrice || 0),
-      appliedCoupon: order.appliedCoupon
+      appliedCoupon: order.appliedCoupon,
     };
 
     // Add payment data for credit card payments
@@ -400,7 +421,7 @@ class CartStore {
         //   status: jsonValue.status,
         //   code: jsonValue.code,
         // }
-        return {response, cartData: body};
+        return { response, cartData: body };
       })
       .catch(function (error) {
         const data: TOrderSubmitResponse = {
@@ -481,20 +502,17 @@ class CartStore {
     creditcard_ReferenceNumber,
     datetime,
     ZCreditInvoiceReceiptResponse,
-    ZCreditChargeResponse
+    ZCreditChargeResponse,
   }: TUpdateCCPaymentRequest) => {
     const body: TUpdateCCPaymentRequest = {
       orderId,
       creditcard_ReferenceNumber,
       datetime,
       ZCreditInvoiceReceiptResponse,
-      ZCreditChargeResponse
+      ZCreditChargeResponse,
     };
     return axiosInstance
-      .post(
-        `${ORDER_API.CONTROLLER}/${ORDER_API.UPDATE_CCPAYMENT_API}`,
-        body
-      )
+      .post(`${ORDER_API.CONTROLLER}/${ORDER_API.UPDATE_CCPAYMENT_API}`, body)
       .then(function (response) {
         return response.data;
       })
@@ -518,20 +536,32 @@ class CartStore {
       });
   };
 
-  isDeltaTimeSupported = (item, birthdayCakesConfig)=>{
-    switch(item?.data?.categoryId){
+  isDeltaTimeSupported = (item, birthdayCakesConfig) => {
+    switch (item?.data?.categoryId) {
       case "5":
-        return (birthdayCakesConfig?.catDeltaTimeSupport?.indexOf(item?.data?.categoryId) > -1 &&
-        birthdayCakesConfig?.subcCatBirthdayDeltaTimeSupport?.indexOf(item?.data?.subCategoryId) > -1)
-        default:
-          return birthdayCakesConfig?.catDeltaTimeSupport?.indexOf(item?.data?.categoryId) > -1;
-        }
-  }
+        return (
+          birthdayCakesConfig?.catDeltaTimeSupport?.indexOf(
+            item?.data?.categoryId
+          ) > -1 &&
+          birthdayCakesConfig?.subcCatBirthdayDeltaTimeSupport?.indexOf(
+            item?.data?.subCategoryId
+          ) > -1
+        );
+      default:
+        return (
+          birthdayCakesConfig?.catDeltaTimeSupport?.indexOf(
+            item?.data?.categoryId
+          ) > -1
+        );
+    }
+  };
 
   isBirthdayCakeInCart = (birthdayCakesConfig) => {
-    const result = this.cartItems.filter((item)=> this.isDeltaTimeSupported(item,birthdayCakesConfig));
+    const result = this.cartItems.filter((item) =>
+      this.isDeltaTimeSupported(item, birthdayCakesConfig)
+    );
     return result.length > 0;
-  }
+  };
 }
 
 export const cartStore = new CartStore();

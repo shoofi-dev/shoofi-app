@@ -89,42 +89,45 @@ export default function InputText({
     );
   }
   return (
-    <View style={styles.container}>
-      <TextInputPaper
-        keyboardType={keyboardType}
-        onPressIn={onClick}
-        value={value}
-        editable={isEditable}
-        onChange={handleOnChange}
-        mode="flat"
-        disabled={isPreviewMode}
-        label={label}
-        theme={{
-          colors: {
-            text: color || themeStyle.TEXT_PRIMARY_COLOR,
-            placeholder: color || themeStyle.TEXT_PRIMARY_COLOR,
-          },
-          
-        }}
-        
-        outlineColor={
-          isError ? themeStyle.ERROR_COLOR : color || themeStyle.TEXT_PRIMARY_COLOR
-        }
-        activeUnderlineColor={
-          isError ? themeStyle.ERROR_COLOR : color || themeStyle.TEXT_PRIMARY_COLOR
-        }
-        underlineColor={
-          isError ? themeStyle.ERROR_COLOR : color || themeStyle.TEXT_PRIMARY_COLOR
-        }
-        style={{
-          fontSize: 20,
-           backgroundColor: isPreviewMode ? "transparent" : "transparent",
-          // borderRadius: 100,
-          fontFamily: `${getCurrentLang()}-SemiBold`,
-          
-        }}
-      />
-    </View>
+<View style={styles.container}>
+  <TextInputPaper
+    value={value}
+    onPressIn={onClick}
+    editable={isEditable}
+    onChange={handleOnChange}
+    mode="flat"
+    disabled={isPreviewMode}
+    placeholder={placeHolder}
+    keyboardType={keyboardType}
+    onFocus={onFocus}
+    onBlur={onBlur}
+    textAlign="center"
+    style={{
+      backgroundColor: 'transparent',
+      fontSize: 20,
+      fontFamily: `${getCurrentLang()}-SemiBold`,
+
+      textAlign: 'center',
+      color: color || themeStyle.TEXT_PRIMARY_COLOR,
+      borderWidth:1,
+      borderColor:isError ? themeStyle.ERROR_COLOR : themeStyle.GRAY_30,
+      paddingHorizontal:5,
+      paddingTop:5,
+      borderRadius:6,
+      height:48
+    }}
+    theme={{
+      colors: {
+        text: color || themeStyle.TEXT_PRIMARY_COLOR,
+        placeholder: '#A1A1A1',
+        primary: isError ? themeStyle.ERROR_COLOR : '#DCDCDC',
+        background: '#F5F5F5',
+      },
+    }}
+    underlineColor="transparent"
+    activeUnderlineColor="transparent"
+  />
+</View>
   );
 }
 const styles = StyleSheet.create({

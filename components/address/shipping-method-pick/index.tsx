@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: 10,
     paddingHorizontal: 0,
     height: '100%',
   },
@@ -191,9 +191,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F3F3',
   },
   pillOptionText: {
-    fontSize: 18,
+    fontSize: themeStyle.FONT_SIZE_MD,
     fontWeight: '400',
-    color: '#232323',
+    color: themeStyle.GRAY_80,
     marginBottom: 2,
   },
   pillOptionTextSelected: {
@@ -201,8 +201,8 @@ const styles = StyleSheet.create({
     color: '#232323',
   },
   pillOptionSubtext: {
-    fontSize: 13,
-    color: '#888',
+    fontSize: themeStyle.FONT_SIZE_XS,
+    color: themeStyle.GRAY_60,
     marginTop: -2,
     textAlign: 'center',
   },

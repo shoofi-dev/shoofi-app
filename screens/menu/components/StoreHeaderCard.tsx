@@ -115,7 +115,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
         customAnimation={animationStyle}
         scrollAnimationDuration={3000}
       />
-      {!showImageOnly && (
+      {!showImageOnly && onBack && (
         <>
           <TouchableOpacity
             style={[styles.iconButton, styles.backButton]}
@@ -158,65 +158,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
       })
     : 0;
 
-  if (onlyCarousel) {
-    return renderImageSection();
-  }
 
-  if (onlyInfoCard) {
-    return (
-      <View style={[styles.infoCard, { top: 10, zIndex: 2, }]}>
-        {/* 210 (image) - 50 (overlap) */}
-        <View style={styles.infoRow}>
-          <TouchableOpacity style={styles.arrowBtn}>
-            <Icon
-              name={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
-              size={28}
-              color="#bbb"
-            />
-          </TouchableOpacity>
-          <View
-            style={{ flex: 1, marginHorizontal: 8, alignItems: "flex-start" }}
-          >
-            <Text style={styles.storeName}>{storeName}</Text>
-            <Text style={styles.subtitle}>
-              {storeDescription}
-            </Text>
-            {/* <View style={styles.infoDetailsRow}>
-              <Text style={styles.infoDetail}>
-                <Icon name="star" size={16} color="#FFC107" />{" "}
-                <Text>{rating}</Text>
-              </Text>
-              <Text style={styles.infoDetail}>
-                <Icon name="clock-outline" size={16} color="#888" />{" "}
-                <Text>{deliveryTime} דקות</Text>
-              </Text>
-              <Text style={styles.infoDetail}>
-                <Icon name="bike" size={16} color="#888" />{" "}
-                <Text>משלוח: ₪{deliveryPrice}</Text>
-              </Text>
-            </View>
-            <View style={styles.bottomInfoRow}>
-              <TouchableOpacity>
-                <Icon name="share-variant" size={22} color="#bbb" />
-              </TouchableOpacity>
-              <Text style={styles.bottomInfoText}>₪{deliveryPrice}:משלוח</Text>
-              <Text style={styles.bottomInfoText}>
-                דקות {deliveryTime + 15}-{deliveryTime}:משלוח
-              </Text>
-              <Text style={styles.bottomInfoText}>
-                {rating} <Icon name="star" size={16} color="#FFC107" />
-              </Text>
-            </View> */}
-          </View>
-          <CustomFastImage
-            source={{ uri: cdnUrl + storeLogo }}
-            style={styles.logo}
-            cacheKey={`${storeLogo?.split(/[\\/]/).pop()}`}
-          />
-        </View>
-      </View>
-    );
-  }
 
   // Default: full card
   return (
@@ -261,36 +203,9 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
             >
               <Text style={styles.storeName}>{storeName}</Text>
               <Text style={styles.subtitle}>
-                {store?.description || "מסעדה איטלקית אורגינלית"}
+                {store?.description}
               </Text>
-              {/* <View style={styles.infoDetailsRow}>
-                <Text style={styles.infoDetail}>
-                  <Icon name="star" size={16} color="#FFC107" />{" "}
-                  <Text>{rating}</Text>
-                </Text>
-                <Text style={styles.infoDetail}>
-                  <Icon name="clock-outline" size={16} color="#888" />{" "}
-                  <Text>{deliveryTime} דקות</Text>
-                </Text>
-                <Text style={styles.infoDetail}>
-                  <Icon name="bike" size={16} color="#888" />{" "}
-                  <Text>משלוח: ₪{deliveryPrice}</Text>
-                </Text>
-              </View>
-              <View style={styles.bottomInfoRow}>
-                <TouchableOpacity>
-                  <Icon name="share-variant" size={22} color="#bbb" />
-                </TouchableOpacity>
-                <Text style={styles.bottomInfoText}>
-                  ₪{deliveryPrice}:משלוח
-                </Text>
-                <Text style={styles.bottomInfoText}>
-                  דקות {deliveryTime + 15}-{deliveryTime}:משלוח
-                </Text>
-                <Text style={styles.bottomInfoText}>
-                  {rating} <Icon name="star" size={16} color="#FFC107" />
-                </Text>
-              </View> */}
+  
             </View>
             <CustomFastImage
               source={{ uri: cdnUrl + storeLogo }}
@@ -384,7 +299,7 @@ const styles = StyleSheet.create({
   },
   storeNameCentered: {
     marginTop: 40,
-    fontSize: 22,
+    fontSize: themeStyle.FONT_SIZE_LG,
     fontWeight: "bold",
     color: themeStyle.GRAY_900,
     textAlign: "center",
@@ -455,9 +370,8 @@ const styles = StyleSheet.create({
    
   },
   storeName: {
-    fontSize: 22,
+    fontSize: themeStyle.FONT_SIZE_XL,
     fontWeight: "bold",
-    color: "#222",
     textAlign: "right",
   },
   subtitle: {

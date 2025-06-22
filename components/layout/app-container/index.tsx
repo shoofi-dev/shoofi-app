@@ -216,7 +216,7 @@ const AppContainer = () => {
         edges={["top"]}
         style={{
           flex: 0,
-          backgroundColor: topBgColor,
+          backgroundColor: 'transparent',
           marginBottom: 0,
           height: 0,
           zIndex: 10,

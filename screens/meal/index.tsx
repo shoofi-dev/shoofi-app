@@ -103,6 +103,14 @@ const MealScreen = ({ route }) => {
         tmpProduct.data = product;
       }
       tmpProduct.others = { count: 1, note: "" };
+      
+      // Initialize counter in extras if it doesn't exist
+      if (tmpProduct.data.extras && !tmpProduct.data.extras.counter) {
+        tmpProduct.data.extras.counter = {
+          value: 1,
+          type: "COUNTER"
+        };
+      }
     }
     if (index !== null && index !== undefined) {
       setIsEdit(true);
@@ -606,10 +614,10 @@ const MealScreen = ({ route }) => {
               }}
             >
               <Counter
-                value={meal.data.extras.counter.value}
+                value={meal.data.extras?.counter?.value || 1}
                 minValue={1}
                 onCounterChange={(value) => {
-                  updateMeal(value, "counter", meal.data.extras.counter.type);
+                  updateMeal(value, "counter", meal.data.extras?.counter?.type);
                 }}
                 variant={"gray"}
               />
@@ -725,7 +733,7 @@ const MealScreen = ({ route }) => {
                   >
                     ₪{" "}
                     {(getPriceBySize() || meal.data.price) *
-                      meal.data.extras.counter.value}
+                      (meal.data.extras?.counter?.value || 1)}
                   </Text>
                 </View>
               </View>}

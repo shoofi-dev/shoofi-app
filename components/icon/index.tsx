@@ -1,5 +1,6 @@
 import IcoMoon from "react-icomoon";
 import { Svg, Path } from "react-native-svg";
+import themeStyle from "../../styles/theme.style";
 const iconSet = require("./selection.json");
 
 const Icon = ({ ...props }) => {
@@ -11,6 +12,7 @@ const Icon = ({ ...props }) => {
       SvgComponent={Svg}
       PathComponent={Path}
       {...props}
+      color={props.color || themeStyle.GRAY_80}
     />
   );
 };

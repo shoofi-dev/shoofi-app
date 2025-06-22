@@ -1,23 +1,49 @@
-import { Text as ReactText } from "react-native";
-import themeStyle from "../../../styles/theme.style";
-import { getCurrentLang } from "../../../translations/i18n";
+import React from 'react';
+import {
+  Text as ReactText,
+  StyleSheet,
+  PixelRatio,
+  Dimensions,
+  TextStyle,
+} from 'react-native';
+import { getCurrentLang } from '../../../translations/i18n';
+import themeStyle from '../../../styles/theme.style';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const scale = SCREEN_WIDTH / 375;
+
+const normalizeFontSize = (size: number): number => {
+  if (typeof size !== 'number') return 14; // fallback
+  const newSize = size * scale;
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+};
 
 export type TProps = {
   children: any;
-  style?: any;
-  type?: any
+  style?: TextStyle | TextStyle[];
+  type?: any;
 };
 
-const Text = ({ children, style,type }: TProps) => {
-  if (!style?.color) {
-    style = { ...style, color: themeStyle.TEXT_PRIMARY_COLOR,  };
-  }
-  if (!style?.fontFamily ) {
-    style = { ...style, fontFamily: getCurrentLang() == 'ar' ? 'ar-SemiBold':  `he-SemiBold`,textAlign: "right"};
-  }
-  const customStyles = { ...style, direction: 'ltr' };
+const Text = ({ children, style = {}, type }: TProps) => {
+  const flatStyle = StyleSheet.flatten(style) || {};
+  const {
+    color = themeStyle.TEXT_PRIMARY_COLOR,
+    fontFamily = getCurrentLang() === 'ar' ? 'ar-SemiBold' : 'he-SemiBold',
+    textAlign = 'right',
+    fontSize = themeStyle.FONT_SIZE_SM,
+    ...rest
+  } = flatStyle;
 
-  return <ReactText style={customStyles}>{children}</ReactText>;
+  const finalStyle: TextStyle = {
+    ...rest, // include margins, paddings, etc.
+    color,
+    fontFamily,
+    textAlign,
+    direction: 'ltr',
+    fontSize: fontSize ? normalizeFontSize(fontSize) : undefined,
+  };
+
+  return <ReactText style={finalStyle}>{children}</ReactText>;
 };
 
 export default Text;
