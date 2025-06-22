@@ -190,15 +190,10 @@ class AddressStore {
 
   get defaultAddress() {
     console.log("no addresses", shoofiAdminStore.storeData?.systemAddress);
-
     if(!this.addresses?.length){
       return shoofiAdminStore.storeData?.systemAddress;
     }
-
     const defaultAddress = this.addresses?.find(addr => addr.isDefault);
-    console.log("addresses", this.addresses);
-    console.log("defaultAddress", defaultAddress);
-
     if(!defaultAddress){
       return this.addresses[0];
     }

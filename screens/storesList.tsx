@@ -5,9 +5,11 @@ import { StoreContext } from "../stores";
 import themeStyle from "../styles/theme.style";
 import StoreItem from "./stores/components/item";
 import { useRoute } from '@react-navigation/native';
+import { useTranslation } from "react-i18next";
 
 const StoresListScreen = () => {
   const { shoofiAdminStore, languageStore } = useContext(StoreContext);
+  const { t } = useTranslation();
   const route = useRoute();
   const { category } = route.params;
   const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ const StoresListScreen = () => {
     const fetchData = async () => {
       try {
         if (!shoofiAdminStore.storesList) {
-          await shoofiAdminStore.getStoresListData({});
+         // await shoofiAdminStore.getStoresListData({});
         }
       } catch (error) {
         console.error("Error fetching stores:", error);
@@ -50,7 +52,7 @@ const StoresListScreen = () => {
     <View style={{ backgroundColor: "#fff", flex: 1 }}>
       <ScrollView>
         {storesInCategory.map((data:any) => (
-          <View key={data.store._id} style={{ marginBottom: 20 }}>
+          <View key={data.store._id} style={{ marginBottom: 0 }}>
             <StoreItem storeItem={data} />
           </View>
         ))}

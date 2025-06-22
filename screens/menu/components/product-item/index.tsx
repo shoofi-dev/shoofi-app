@@ -28,6 +28,7 @@ import { useTranslation } from "react-i18next";
 import _useDeviceType from "../../../../hooks/use-device-type";
 import CustomFastImage from "../../../../components/custom-fast-image";
 import GlassBG from "../../../../components/glass-background";
+import Icon from "../../../../components/icon";
 export type TProps = {
   item: any;
   onItemSelect: (item: any) => void;
@@ -103,7 +104,7 @@ const ProductItem = ({
       </View>
       {/* Add button */}
       <GlassBG style={styles.addButton}>
-          <Text style={styles.addButtonText}>+</Text>
+          <Icon icon="plus" size={10} color={themeStyle.WHITE_COLOR} />
       </GlassBG>
       {isInCart && (
         <View style={styles.countContainerWrapper}>
@@ -169,20 +170,14 @@ const styles = StyleSheet.create({
   },
   addButton: {
     position: "absolute",
-    left: 15,
-    bottom: 15,
-    width: 32,
-    height: 32,
-    borderRadius: 18,
-
+    left: 12,
+    bottom: 25,
+    width: 36,
+    height: 36,
+    borderRadius: 100,
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 1,
+
   },
   addButtonText: {
     fontSize: 22,

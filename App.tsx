@@ -79,18 +79,16 @@ moment.locale("en");
 // Keep the splash screen visible while we fetch resources
 //SplashScreen.preventAutoHideAsync();
 let customARFonts = {
-  "ar-Black": require(`./assets/fonts/ar/zain/Zain-Black.ttf`),
-  "ar-GS-Black-Bold": require(`./assets/fonts/ar/GESSUniqueBold-Bold.otf`),
-  "ar-GS-Black-Light": require(`./assets/fonts/ar/GESSUniqueLight-Light.otf`),
-  "ar-Bold": require(`./assets/fonts/ar/zain/Zain-Bold.ttf`),
+  "ar-Black": require(`./assets/fonts/ar/Black.ttf`),
+  "ar-Bold": require(`./assets/fonts/ar/Bold.ttf`),
   "ar-ExtraBold": require(`./assets/fonts/ar/ExtraBold.ttf`),
-  "ar-Light": require(`./assets/fonts/ar/zain/Zain-Light.ttf`),
+  "ar-Light": require(`./assets/fonts/ar/Light.ttf`),
   "ar-Medium": require(`./assets/fonts/ar/Medium.ttf`),
   "ar-Regular": require(`./assets/fonts/ar/Regular.ttf`),
-  "ar-SemiBold": require(`./assets/fonts/ar/zain/Zain-ExtraBold.ttf`),
-  "ar-Arslan": require(`./assets/fonts/ar/Arslan.ttf`),
-  "ar-American": require(`./assets/fonts/ar/American-Typewriter-Light.ttf`),
-  "ar-American-bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
+  "ar-SemiBold": require(`./assets/fonts/ar/Medium.ttf`),
+  // "ar-Arslan": require(`./assets/fonts/ar/Arslan.ttf`),
+  // "ar-American": require(`./assets/fonts/ar/American-Typewriter-Light.ttf`),
+  // "ar-American-bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
 
   "he-Black": require(`./assets/fonts/he/Black.ttf`),
   "he-Bold": require(`./assets/fonts/he/Bold.ttf`),
@@ -99,10 +97,10 @@ let customARFonts = {
   "he-Medium": require(`./assets/fonts/he/Medium.ttf`),
   "he-Regular": require(`./assets/fonts/he/Regular.ttf`),
   "he-SemiBold": require(`./assets/fonts/he/SemiBold.ttf`),
-  "he-Arslan": require(`./assets/fonts/ar/Arslan.ttf`),
+  // "he-Arslan": require(`./assets/fonts/ar/Arslan.ttf`),
   "he-American": require(`./assets/fonts/he/American-Typewriter-Light.ttf`),
-  "he-American-bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
-  "he-GS-Black-Bold": require(`./assets/fonts/ar/GESSUniqueBold-Bold.otf`),
+  // "he-American-bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
+  // "he-GS-Black-Bold": require(`./assets/fonts/ar/GESSUniqueBold-Bold.otf`),
 
   "Poppins-Regular": require(`./assets/fonts/shared/Poppins-Regular.ttf`),
   "Rubik-Regular": require(`./assets/fonts/shared/Rubik-Regular.ttf`),
@@ -561,11 +559,11 @@ const App = () => {
      }
      console.log("XXXXXXXXXXA3")
       const fetchShoofiStoreData = shoofiAdminStore.getStoreData();
-      const fetchStoresList = shoofiAdminStore.getStoresListData(latitude && longitude ? {lat: '32.109276', lng: '34.963179'} : null);
+      // const fetchStoresList = shoofiAdminStore.getStoresListData(latitude && longitude ? {lat: '32.109276', lng: '34.963179'} : null);
       const fetchCategoryList = shoofiAdminStore.getCategoryListData();
       const fetchTranslations = translationsStore.getTranslations();
 
-      Promise.all([fetchShoofiStoreData, fetchStoresList, fetchCategoryList, fetchTranslations]).then(
+      Promise.all([fetchShoofiStoreData, fetchCategoryList, fetchTranslations]).then(
         async (responses) => {
           // const tempHomeSlides = storeDataStore.storeData.home_sliders.map(
           //   (slide) => {

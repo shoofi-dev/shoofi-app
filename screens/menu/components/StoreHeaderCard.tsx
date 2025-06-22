@@ -17,6 +17,7 @@ import { withTiming } from "react-native-reanimated";
 import Animated from "react-native-reanimated";
 import { cdnUrl } from "../../../consts/shared";
 import { StoreContext } from "../../../stores";
+import BackButton from "../../../components/back-button";
 
 interface StoreHeaderCardProps {
   store: any;
@@ -103,6 +104,9 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
 
   const renderImageSection = () => (
     <View style={styles.imageContainer}>
+      <View style={{ position: "absolute", top: 10, left: 10, zIndex: 100 }}>
+      <BackButton color={themeStyle.WHITE_COLOR}/>
+      </View>
       <Carousel
         loop
         width={screenWidth}
@@ -163,6 +167,8 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   // Default: full card
   return (
     <View style={{ position: "relative", height: 260 }}>
+                
+
       {/* Animated carousel */}
       <Animated.View
         style={{

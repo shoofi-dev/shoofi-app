@@ -2,8 +2,11 @@ import React, { useContext } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { StoreContext } from "../../stores";
 import Text from "../../components/controls/Text";
+import themeStyle from "../../styles/theme.style";
+import CustomFastImage from "../custom-fast-image";
+import Icon from "../icon";
 export type CheckboxGroupProps = {
-  options: { id: string; nameAR: string; nameHE: string; price?: number }[];
+  options: { id: string; nameAR: string; nameHE: string; price?: number; image?: string }[];
   value: string[];
   onChange: (value: string[]) => void;
   min?: number;
@@ -27,39 +30,73 @@ const CheckboxGroup = ({
   };
   return (
     <View style={styles.optionsRow}>
-      {options.map((opt) => {
+      {options.map((opt, idx) => {
         const selected = value.includes(opt.id);
+        const isLast = idx === options.length - 1;
+        const isFirst = idx === 0;
         return (
-          <TouchableOpacity
-          key={opt.id}
-          onPress={() => toggle(opt.id)}
-          style={styles.optionRow}
-          activeOpacity={0.7}
-        >
-      
-          <View style={styles.labelContainer}>
-            <Text style={styles.optionLabel}>
-              {languageStore.selectedLang === "ar" ? opt.nameAR : opt.nameHE}
-            </Text>
-            {opt.price !== undefined && (
-              <Text style={styles.optionPrice}>₪{opt.price}</Text>
-            )}
-          </View>
+          <View>
+            <TouchableOpacity
+              key={opt.id}
+              onPress={() => toggle(opt.id)}
+              style={[styles.optionRow, { paddingTop: isFirst ? 0 : 20, paddingBottom: isLast ? 0 : 20 }]}
+              activeOpacity={0.7}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flex: 1,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                
+                  <View style={styles.labelContainer}>
+                    <Text style={styles.optionLabel}>
+                      {languageStore.selectedLang === "ar"
+                        ? opt.nameAR
+                        : opt.nameHE}
+                    </Text>
+                    {opt.price > 0 && (
+                  <Text style={styles.optionPrice}>+₪{opt.price}</Text>
+                )}
+                  </View>
+                </View>
 
-          <View style={styles.checkboxOuter}>
-            {selected && (
-              <View style={styles.checkboxInner}>
-                <Text style={styles.checkmark}>✓</Text>
+                <View
+                    style={[
+                      styles.checkboxOuter,
+                      selected && styles.checkboxOuterSelected,
+                    ]}
+                  >
+                    {selected && (
+                     <Icon icon="v" size={20} color={themeStyle.SECONDARY_COLOR} />
+                    )}
+                  </View>
+
+         
               </View>
+
+              {opt?.image && (
+                <View style={styles.imageContainer}>
+                  <CustomFastImage
+                    source={{ uri: opt.image }}
+                    style={styles.optionImage}
+                  />
+                </View>
+              )}
+            </TouchableOpacity>
+            {!isLast && (
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: "#eee",
+                  marginHorizontal: -20,
+                }}
+              />
             )}
           </View>
-
-          {/* {opt.image && (
-            <View style={styles.imageContainer}>
-              <Image source={{ uri: opt.image }} style={styles.optionImage} />
-            </View>
-          )} */}
-        </TouchableOpacity>
         );
       })}
     </View>
@@ -68,29 +105,30 @@ const CheckboxGroup = ({
 
 const styles = StyleSheet.create({
   optionsRow: {
-    marginBottom: 16,
+    marginTop:10
   },
   optionRow: {
     flexDirection: "row", // RTL: label right, checkbox left
     alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 8,
     width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
     backgroundColor: "#fff",
     justifyContent: "space-between",
+    paddingVertical: 20,
   },
   checkboxOuter: {
-    width: 32,
-    height: 32,
+    width: 25,
+    height: 25,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: "#8BC34A",
+    borderColor: themeStyle.GRAY_40,
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 12,
     backgroundColor: "#fff",
+  },
+  checkboxOuterSelected: {
+    backgroundColor: themeStyle.PRIMARY_COLOR,
+    borderColor: themeStyle.PRIMARY_COLOR,
   },
   checkboxInner: {
     width: 28,
@@ -107,24 +145,27 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   labelContainer: {
-    flex: 1,
     flexDirection: "column",
     alignItems: "flex-start",
-    marginRight: 8,
+    marginRight: 12,
   },
   optionLabel: {
-    fontSize: 18,
-    color: "#333",
+    fontSize: themeStyle.FONT_SIZE_MD,
     textAlign: "right",
-    fontWeight: "bold",
+
   },
   optionPrice: {
-    fontSize: 16,
-    color: "#888",
+    fontSize: themeStyle.FONT_SIZE_SM,
+    color: themeStyle.GRAY_60,
     textAlign: "right",
   },
   imageContainer: {
-    marginLeft: 8,
+    marginLeft: 15,
+    height: 40,
+    width: 40,
+    borderRadius: 8,
+    overflow: "hidden",
+
   },
   optionImage: {
     width: 48,

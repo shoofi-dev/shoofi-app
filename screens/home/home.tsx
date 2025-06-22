@@ -310,15 +310,12 @@ const HomeScreen = ({ navigation }) => {
     }, 1000);
   }, []);
 
-  const handleCitySelect = (city) => {
-    setSelectedCity(city);
-    if (city?.location?.lat && city?.location?.lng) {
-      shoofiAdminStore.getStoresListData({
-        lat: parseFloat(city.location.lat),
-        lng: parseFloat(city.location.lng)
-      });
-    }
-  };
+  // const handleCitySelect = (city) => {
+  //   setSelectedCity(city);
+  //   if (city?.location?.lat && city?.location?.lng) {
+
+  //   }
+  // };
 
   if (!isAppReady || !shoofiAdminStore?.categoryList) {
     return;

@@ -5,6 +5,7 @@ import PizzaToppingGroup from "./PizzaToppingGroup";
 import { useContext } from "react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
+import { useTranslation } from "react-i18next";
 
 export type AreaOption = {
   id: string; // e.g. "full", "left", "right"
@@ -53,8 +54,23 @@ const ExtrasSection = ({
   onChange,
 }: ExtrasSectionProps) => {
   const { languageStore } = useContext(StoreContext);
+  const { t } = useTranslation();
 
-  // Group extras by groupId
+  // Handle default values for all extras in a single useEffect
+  useEffect(() => {
+    extras.forEach((extra) => {
+      const currentValue = selections[extra.id];
+      
+      if (extra.type === "single" && currentValue === undefined && extra.defaultOptionId) {
+        onChange(extra.id, extra.defaultOptionId);
+      }
+      
+      if (extra.type === "multi" && currentValue === undefined && Array.isArray(extra.defaultOptionIds)) {
+        onChange(extra.id, extra.defaultOptionIds);
+      }
+    });
+  }, []); // Run only once on mount
+
   const groupedExtras = extras.reduce((acc, extra) => {
     if (extra.groupId) {
       if (!acc[extra.groupId]) {
@@ -114,31 +130,12 @@ const ExtrasSection = ({
                         </View>
                       );
                     }
-                    // Handle default for single/multi
-                    let value = selections[extra.id];
-                    if (extra.type === "single") {
-                      if (value === undefined && extra.defaultOptionId) {
-                        value = extra.defaultOptionId;
-                        // Set default on first render
-                        useEffect(() => {
-                          onChange(extra.id, extra.defaultOptionId);
-                        }, []);
-                      }
-                    }
-                    if (extra.type === "multi") {
-                      if (value === undefined && Array.isArray(extra.defaultOptionIds)) {
-                        value = extra.defaultOptionIds;
-                        useEffect(() => {
-                          onChange(extra.id, extra.defaultOptionIds);
-                        }, []);
-                      }
-                    }
                     return (
                       <View style={styles.groupWrapper}>
                         <ExtraGroup
                           key={extra.id}
                           extra={extra}
-                          value={value}
+                          value={selections[extra.id]}
                           onChange={(val) => onChange(extra.id, val)}
                         />
                       </View>
@@ -160,7 +157,7 @@ const ExtrasSection = ({
                           </Text>
                           {groupHeader.freeCount > 0 && (
                             <Text style={styles.freeCountText}>
-                              {groupHeader.freeCount} תוספות ראשונות בחינם
+                              {groupHeader.freeCount} {t("freeExtras")}
                             </Text>
                           )}
                         </View>
@@ -184,30 +181,12 @@ const ExtrasSection = ({
                                 </View>
                               );
                             }
-                            // Handle default for single/multi
-                            let value = selections[extra.id];
-                            if (extra.type === "single") {
-                              if (value === undefined && extra.defaultOptionId) {
-                                value = extra.defaultOptionId;
-                                useEffect(() => {
-                                  onChange(extra.id, extra.defaultOptionId);
-                                }, []);
-                              }
-                            }
-                            if (extra.type === "multi") {
-                              if (value === undefined && Array.isArray(extra.defaultOptionIds)) {
-                                value = extra.defaultOptionIds;
-                                useEffect(() => {
-                                  onChange(extra.id, extra.defaultOptionIds);
-                                }, []);
-                              }
-                            }
                             return (
                               <View style={styles.groupWrapper}>
                                 <ExtraGroup
                                   key={extra.id}
                                   extra={extra}
-                                  value={value}
+                                  value={selections[extra.id]}
                                   onChange={(val) => onChange(extra.id, val)}
                                 />
                               </View>
@@ -225,10 +204,10 @@ const ExtrasSection = ({
 
 const styles = StyleSheet.create({
   groupWrapper: {
-    marginBottom: 30,
+    paddingVertical: 0,
   },
   container: {
-    backgroundColor: themeStyle.GRAY_600,
+    backgroundColor: themeStyle.GRAY_20,
   },
   groupContainer: {
     backgroundColor: "#fff",
@@ -239,6 +218,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     overflow: "hidden",
     marginBottom: 30,
+    paddingVertical:15
 
   },
   groupHeader: {
@@ -249,12 +229,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   groupTitle: {
-    fontSize: 18,
+    fontSize: themeStyle.FONT_SIZE_LG,
     fontWeight: "bold",
-    color: "#222",
   },
   groupContent: {
-    paddingHorizontal: 12,
+    // paddingHorizontal: 10,
+    
   },
   freeCountText: {
     color: "#007AFF",

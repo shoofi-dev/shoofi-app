@@ -12,7 +12,6 @@ export type TProps = {
 
 const StoresList = ({ storesList }: TProps) => {
   const { t } = useTranslation();
-  console.log("storesList", storesList);
 
   return (
     <View style={styles.container}>

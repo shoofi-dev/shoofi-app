@@ -36,6 +36,7 @@ const MenuScreen = () => {
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const allCategoriesListRef = useRef<AllCategoriesListRef>(null);
   const categoryUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const manualSelectionRef = useRef<boolean>(false);
 
   const { menuStore, storeDataStore, cartStore, languageStore } =
     useContext(StoreContext);
@@ -75,16 +76,26 @@ const MenuScreen = () => {
 
   const handleCategorySelect = useCallback(
     (cat) => {
+      console.log("=== Category Select Debug ===");
+      console.log("Selected category ID:", cat._id);
+      console.log("Selected category name:", cat.nameHE || cat.nameAR);
+      
       if (selectedCategory?._id !== cat._id) {
+        // Set flag to prevent scroll handler from overriding
+        manualSelectionRef.current = true;
+        
         setSelectedCategory(cat);
-        // Calculate the offset for the category in the main ScrollView
-        const categoryIndex = categoryList.findIndex((c) => c._id === cat._id);
+        
+        // Find the category index in the list
+        const categoryIndex = categoryList.findIndex(c => c._id === cat._id);
+        console.log("Category index:", categoryIndex);
+        
         if (categoryIndex !== -1) {
-          // Calculate offset: STICKY_HEADER_HEIGHT + accumulated height of previous categories
-          let offset = STICKY_HEADER_HEIGHT;
+          // Calculate approximate position based on category index
+          let offset = 0;
           for (let i = 0; i < categoryIndex; i++) {
             const category = categoryList[i];
-            if (category.products.length > 0) {
+            if (category.products && category.products.length > 0) {
               const categoryHeaderHeight = 60;
               const productHeight = 120;
               const productsHeight = category.products.length * productHeight;
@@ -92,17 +103,23 @@ const MenuScreen = () => {
               offset += categoryHeaderHeight + productsHeight + sectionMargin;
             }
           }
-
-          console.log("Scrolling main ScrollView to offset:", offset);
+          
+          const finalOffset = SCROLLABLE_PART_HEIGHT + offset + 15 - STICKY_HEADER_HEIGHT;
+          console.log("Scrolling to offset:", finalOffset);
+          
           scrollViewRef.current?.scrollTo({
-            y: SCROLLABLE_PART_HEIGHT + offset,
+            y: finalOffset,
             animated: true,
           });
         }
-        console.log("handleCategorySelect", cat);
+        
+        // Clear the flag after a delay to allow scroll handler to work again
+        setTimeout(() => {
+          manualSelectionRef.current = false;
+        }, 500);
       }
     },
-    [selectedCategory]
+    [selectedCategory, categoryList]
   );
 
   const handleCategoryVisible = useCallback(
@@ -133,6 +150,9 @@ const MenuScreen = () => {
     const adjustedOffset = scrollOffset - SCROLLABLE_PART_HEIGHT;
 
     if (adjustedOffset < 0) return;
+
+    // Don't update selected category if a manual selection was just made
+    if (manualSelectionRef.current) return;
 
     // Calculate which category should be visible based on scroll position
     let accumulatedHeight = 0;

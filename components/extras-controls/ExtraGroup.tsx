@@ -6,6 +6,8 @@ import Counter from "./Counter";
 import { Extra } from "./ExtrasSection";
 import { StoreContext } from "../../stores";
 import Text from "../../components/controls/Text";
+import { useTranslation } from "react-i18next";
+import themeStyle from "../../styles/theme.style";
 export type ExtraGroupProps = {
   extra: Extra;
   value: any;
@@ -14,7 +16,7 @@ export type ExtraGroupProps = {
 
 const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
   let { languageStore } = useContext(StoreContext);
-
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
       {/* <Text style={styles.title}>{languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}</Text> */}
@@ -34,7 +36,7 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
             {extra.maxCount && (
               <View style={styles.maxCountPill}>
                 <Text style={styles.maxCountText}>
-                  ניתן לבחור עד {extra.maxCount} אפשרויות
+                  {t("maxCount", { count: extra.maxCount })}
                 </Text>
               </View>
             )}
@@ -70,6 +72,7 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
+    paddingHorizontal: 10,
  
   },
   title: {
@@ -79,16 +82,15 @@ const styles = StyleSheet.create({
     color: "#222",
   },
   maxCountPill: {
-    backgroundColor: "#f0f4fa",
+    backgroundColor: themeStyle.GRAY_20,
     borderRadius: 20,
     alignSelf: "center",
     paddingHorizontal: 16,
-    paddingVertical: 4,
-    marginTop: 10,
+    marginTop: 15,
+    paddingVertical: 5,
   },
   maxCountText: {
-    color: "#007aff",
-    fontSize: 13,
+    fontSize: themeStyle.FONT_SIZE_XS,
     textAlign: "center",
     fontWeight: "500",
   },

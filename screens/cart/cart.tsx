@@ -477,10 +477,10 @@ const CartScreen = ({ route }) => {
                                   borderRadius: scale(15),
                                 }}
                                 source={{
-                                  uri: `${cdnUrl}${product.data.img[0].uri}`,
+                                  uri: `${cdnUrl}${product.data?.img?.[0]?.uri}`,
                                 }}
                                 resizeMode="contain"
-                                cacheKey={`${APP_NAME}_${product.data.img[0].uri
+                                cacheKey={`${APP_NAME}_${product.data?.img?.[0]?.uri
                                   .split(/[\\/]/)
                                   .pop()}`}
                               />

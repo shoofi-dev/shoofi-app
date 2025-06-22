@@ -62,7 +62,8 @@ const ExploreScreen = () => {
           await shoofiAdminStore.getCategoryListData();
         }
         if (!shoofiAdminStore.storesList) {
-          await shoofiAdminStore.getStoresListData({});
+          // CHECK HERE IF USER HAS ADDRESS SELECTED
+          //await shoofiAdminStore.getStoresListData({});
         }
         // Fetch ads
         const adsRes: any = await axiosInstance.get("/ads/list");

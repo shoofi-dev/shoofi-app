@@ -17,6 +17,7 @@ export type TProps = {
   onItemSelect: (item: any) => void;
   selectedItem: any;
   isDisabledCatItem?: any;
+  onLayout?: (event: any) => void;
 };
 
 const CategoryItem = ({
@@ -24,12 +25,14 @@ const CategoryItem = ({
   onItemSelect,
   selectedItem,
   isDisabledCatItem,
+  onLayout,
 }: TProps) => {
   const { t } = useTranslation();
   const { languageStore } = useContext(StoreContext);
   const isSelected = selectedItem._id === item._id;
   return (
     <TouchableOpacity
+      onLayout={onLayout}
       style={[
         styles.pill,
         isSelected ? styles.pillSelected : styles.pillUnselected,

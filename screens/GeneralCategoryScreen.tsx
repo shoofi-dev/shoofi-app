@@ -33,7 +33,7 @@ const GeneralCategoryScreen = () => {
     const fetchData = async () => {
       try {
         if (!shoofiAdminStore.storesList) {
-          await shoofiAdminStore.getStoresListData({});
+          //await shoofiAdminStore.getStoresListData({});
         }
       } catch (error) {
         console.error("Error fetching stores:", error);

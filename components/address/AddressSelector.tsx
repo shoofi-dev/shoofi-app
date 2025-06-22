@@ -1,20 +1,28 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, I18nManager, Dimensions, DeviceEventEmitter } from 'react-native';
-import { observer } from 'mobx-react-lite';
-import { useNavigation } from '@react-navigation/native';
-import { StoreContext } from '../../stores';
-import * as Animatable from 'react-native-animatable';
-import { DIALOG_EVENTS } from '../../consts/events';
-import Text from '../controls/Text';
-import { useTranslation } from 'react-i18next';
-import Icon from '../icon';
-import themeStyle from '../../styles/theme.style';
-const SCREEN_WIDTH = Dimensions.get('window').width;
+import React, { useContext, useEffect, useState, useRef } from "react";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  I18nManager,
+  Dimensions,
+  DeviceEventEmitter,
+} from "react-native";
+import { observer } from "mobx-react-lite";
+import { useNavigation } from "@react-navigation/native";
+import { StoreContext } from "../../stores";
+import * as Animatable from "react-native-animatable";
+import { DIALOG_EVENTS } from "../../consts/events";
+import Text from "../controls/Text";
+import { useTranslation } from "react-i18next";
+import Icon from "../icon";
+import themeStyle from "../../styles/theme.style";
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const AddressSelector = observer(({ onAddressSelect }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { addressStore, userDetailsStore,shoofiAdminStore, authStore } = useContext(StoreContext);
+  const { addressStore, userDetailsStore, shoofiAdminStore, authStore } =
+    useContext(StoreContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -36,17 +44,38 @@ const AddressSelector = observer(({ onAddressSelect }) => {
     if (address?.location?.coordinates) {
       shoofiAdminStore.getStoresListData({
         lat: parseFloat(address.location.coordinates[1]),
-        lng: parseFloat(address.location.coordinates[0])
+        lng: parseFloat(address.location.coordinates[0]),
       });
     }
   };
+
   const handleSelectAddress = async (address) => {
-    console.log("address", address.location.coordinates);
     setDropdownOpen(false);
-    await addressStore.setDefaultAddress(userDetailsStore?.userDetails?.customerId, address._id);
+    await addressStore.setDefaultAddress(
+      userDetailsStore?.userDetails?.customerId,
+      address._id
+    );
     updateStoresBasedOnSelectedAddress(address);
     onAddressSelect?.(address);
   };
+
+  const initStoresList = async () => {
+    if (shoofiAdminStore.storeData?.systemAddress) {
+      await shoofiAdminStore.getStoresListData({
+        lat: parseFloat(shoofiAdminStore.storeData?.systemAddress.location.coordinates[1]),
+        lng: parseFloat(shoofiAdminStore.storeData?.systemAddress.location.coordinates[0]),
+      });
+    }
+  };
+
+  useEffect(() => {
+    console.log(
+      "selectedAddress.location.coordinatess",
+      shoofiAdminStore.storeData?.systemAddress
+    );
+
+    initStoresList();
+  }, [shoofiAdminStore.storeData?.systemAddress]);
 
   const handleAddNew = () => {
     // if(!authStore.isLoggedIn()){
@@ -54,38 +83,59 @@ const AddressSelector = observer(({ onAddressSelect }) => {
     //   return;
     // }
     setDropdownOpen(false);
-      DeviceEventEmitter.emit(
-        DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG
-      );
+    DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG);
   };
 
   return (
-    <View style={{ zIndex: 100,  }}>
-      <TouchableOpacity style={styles.row} onPress={handleRowPress} activeOpacity={0.8}>
+    <View style={{ zIndex: 100 }}>
+      <TouchableOpacity
+        style={styles.row}
+        onPress={handleRowPress}
+        activeOpacity={0.8}
+      >
         {/* <Icon name="home" size={22} color="#444" style={styles.icon} /> */}
-        <Icon icon={!selectedAddress ? "location" : "home"} size={16}  style={{marginRight: 5}}  />
+        <Icon
+          icon={!selectedAddress ? "location" : "home"}
+          size={16}
+          style={{ marginRight: 5 }}
+        />
 
-        <View >
+        <View>
           {!selectedAddress ? (
-                        <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
-
-            <Text style={styles.addPrompt}>{t('add_your_address')}</Text>
-            <Icon icon="edit" size={18}  style={{marginLeft: 5}}  />
-
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Text style={styles.addPrompt}>{t("add_your_address")}</Text>
+              <Icon icon="edit" size={18} style={{ marginLeft: 5 }} />
             </View>
           ) : (
-            <View style={{flexDirection: 'row', alignItems: 'center', width: '100%'}}>
-            <Text style={{color: themeStyle.TEXT_PRIMARY_COLOR}}>
-              {selectedAddress.street && selectedAddress.city
-                ? `${selectedAddress.street} ${selectedAddress.streetNumber ? selectedAddress.streetNumber + ', ' : ''}${selectedAddress.city}`
-                : selectedAddress.city || ''}
-            </Text>
-            <Icon icon={dropdownOpen ? "chevron_down" : "chevron_down"} size={24}  />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Text style={{ color: themeStyle.TEXT_PRIMARY_COLOR }}>
+                {selectedAddress.street && selectedAddress.city
+                  ? `${selectedAddress.street} ${
+                      selectedAddress.streetNumber
+                        ? selectedAddress.streetNumber + ", "
+                        : ""
+                    }${selectedAddress.city}`
+                  : selectedAddress.city || ""}
+              </Text>
+              <Icon
+                icon={dropdownOpen ? "chevron_down" : "chevron_down"}
+                size={24}
+              />
             </View>
-
           )}
         </View>
-
       </TouchableOpacity>
       {dropdownOpen && (
         <Animatable.View
@@ -99,17 +149,28 @@ const AddressSelector = observer(({ onAddressSelect }) => {
               style={styles.dropdownItem}
               onPress={() => handleSelectAddress(address)}
             >
-        <Icon icon={!selectedAddress ? "location" : "home"} size={16}  style={{marginRight: 5}}  />
-        <Text style={styles.dropdownItemText} numberOfLines={1}>
+              <Icon
+                icon={!selectedAddress ? "location" : "home"}
+                size={16}
+                style={{ marginRight: 5 }}
+              />
+              <Text style={styles.dropdownItemText} numberOfLines={1}>
                 {address.street && address.city
-                  ? `${address.street} ${address.houseNumber ? address.houseNumber + ', ' : ''}${address.city}`
-                  : address.name || ''}
+                  ? `${address.street} ${
+                      address.houseNumber ? address.houseNumber + ", " : ""
+                    }${address.city}`
+                  : address.name || ""}
               </Text>
             </TouchableOpacity>
           ))}
           <TouchableOpacity style={styles.addNewBtn} onPress={handleAddNew}>
-          <Icon icon="plus" size={12}  style={{marginRight: 5}} color={themeStyle.SUCCESS_COLOR}  />
-          <Text style={styles.addNewText}>{t('add_new_address')}</Text>
+            <Icon
+              icon="plus"
+              size={12}
+              style={{ marginRight: 5 }}
+              color={themeStyle.SUCCESS_COLOR}
+            />
+            <Text style={styles.addNewText}>{t("add_new_address")}</Text>
           </TouchableOpacity>
         </Animatable.View>
       )}
@@ -119,40 +180,39 @@ const AddressSelector = observer(({ onAddressSelect }) => {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderRadius: 12,
     paddingHorizontal: 5,
-
   },
   icon: {
-    marginRight:5,
+    marginRight: 5,
   },
   textContainer: {
     flex: 1,
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   addPrompt: {
     fontSize: 16,
-    color: '#444',
-    fontWeight: '400',
+    color: "#444",
+    fontWeight: "400",
   },
   addressText: {
     fontSize: 16,
-    color: 'black',
-    fontWeight: '700',
+    color: "black",
+    fontWeight: "700",
   },
   arrowIcon: {
     marginRight: 10,
     marginLeft: 0,
   },
   dropdown: {
-    position: 'absolute',
+    position: "absolute",
     top: "130%",
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 16,
 
     zIndex: 1000,
@@ -162,36 +222,36 @@ const styles = StyleSheet.create({
     minWidth: SCREEN_WIDTH - 32,
   },
   dropdownItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 16,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    backgroundColor: '#fff',
+    borderBottomColor: "#f0f0f0",
+    backgroundColor: "#fff",
   },
   dropdownItemText: {
     fontSize: 16,
-    color: '#222',
+    color: "#222",
     flex: 1,
-    textAlign: 'left',
+    textAlign: "left",
     marginLeft: 10,
   },
   addNewBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 16,
     paddingHorizontal: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: "#f0f0f0",
   },
   addNewText: {
     color: themeStyle.SUCCESS_COLOR,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 

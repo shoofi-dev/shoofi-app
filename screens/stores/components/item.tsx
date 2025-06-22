@@ -62,7 +62,7 @@ const StoreItem = ({ storeItem }: TProps) => {
       <View style={styles.imageWrapper}>
         <CustomFastImage
           style={styles.image}
-          source={{ uri: `${cdnUrl}${storeItem?.store?.cover_sliders?.[0]}` }}
+          source={{ uri: `${cdnUrl}${storeItem?.store?.cover_sliders?.[0]?.uri}` }}
           resizeMode="cover"
         />
         {/* Logo overlay */}
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     width: "100%",
-    height: 160,
+    height: 216,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     overflow: "hidden",
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   logoOverlay: {
     position: "absolute",
-    top: 120,
+    top: 170,
     right: 8,
     backgroundColor: "#fff",
     borderRadius: 10,

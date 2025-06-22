@@ -68,7 +68,7 @@ const gradiantColors =
         "rgba(199, 199, 199, 0.1)",
       ];
 
-const MealScreen = ({ route }) => {
+const MealScreen = ({ route, handleClose }) => {
   const { t } = useTranslation();
   const scrollRef = useRef();
 
@@ -207,7 +207,7 @@ const MealScreen = ({ route }) => {
       ...meal,
       selectedExtras: { ...extrasStore.selections },
     });
-    navigation.goBack();
+    handleClose();
   };
 
   const handleStoreChangeApprove = async () => {
@@ -324,7 +324,7 @@ const MealScreen = ({ route }) => {
     return null;
   }
   return (
-    <View style={{ flex: 1, backgroundColor: themeStyle.WHITE_COLOR }}>
+    <View style={{ backgroundColor: themeStyle.WHITE_COLOR }}>
       <Animated.ScrollView
         ref={scrollRef}
         
@@ -366,10 +366,9 @@ const MealScreen = ({ route }) => {
       </Animated.ScrollView>
       <View
         style={{
-          backgroundColor: themeStyle.WHITE_COLOR,
+          backgroundColor: 'transparent',
           padding: 10,
-          borderTopWidth: 1,
-          borderTopColor: '#eee',
+
         }}
       >
         <ProductFooter
@@ -406,7 +405,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    backgroundColor: "rgba(254, 254, 254, 0.1)",
     // bottom: 20,
     // marginTop: 60,
     paddingVertical: 10,

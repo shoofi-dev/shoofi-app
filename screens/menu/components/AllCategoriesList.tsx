@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import { observer } from "mobx-react";
 import { useContext } from "react";
@@ -164,10 +165,9 @@ const MealModal = ({ product, category, onClose }) => {
         </View>
       </TouchableOpacity>
       </GlassBG>
-      <View style={{ height: "100%" }}> 
-      <MealScreen route={route} />
-
-      </View>
+      <ScrollView>
+        <MealScreen route={route} handleClose={onClose} />
+      </ScrollView>
     </View>
   );
 };

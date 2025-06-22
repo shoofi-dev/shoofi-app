@@ -32,20 +32,25 @@ const ProductFooter = ({
       style={{
         flexDirection: "row",
         alignItems: "center",
-        marginHorizontal:10
+        width: "90%",
+        alignSelf: "center",
+        marginBottom: 20,
+        bottom: 10,
       }}
     >
         <Button
           text={isEdit ? t("save") : t("add-to-cart")}
-          icon="shopping-bag-plus"
+          icon="cart"
+          iconColor={themeStyle.SECONDARY_COLOR}
+          iconSize={20}
           fontSize={17}
           onClickFn={isEdit ? onUpdateCartProduct : onAddToCart}
           fontFamily={`${getCurrentLang()}-Bold`}
           disabled={!isValidForm}
           bgColor={themeStyle.PRIMARY_COLOR}
-          textColor={themeStyle.WHITE_COLOR}
+          textColor={themeStyle.SECONDARY_COLOR}
           borderRadious={100}
-          extraText={`₪ ${Number(price)*Number(qty)}`}
+          extraText={`₪${Number(price)*Number(qty)}`}
         />
     </View>
   );

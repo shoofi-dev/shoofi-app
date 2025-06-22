@@ -32,7 +32,7 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
             width: "100%",
             height: "100%",
           }}
-          source={{ uri: `${cdnUrl}${product.data.img[0].uri}` }}
+          source={{ uri: `${cdnUrl}${product.data?.img?.[0]?.uri}` }}
    
         />
       </Animated.View>
@@ -40,7 +40,8 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
         style={{
           flexDirection: "column",
           alignItems: "flex-start",
-          padding: 10,
+          paddingHorizontal: 10,
+          marginTop: 10,
         }}
       >
         <Text
@@ -54,11 +55,10 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
             ? product.data.nameAR
             : product.data.nameHE}
         </Text>
-        <View style={{ marginTop: 15 }}>
+        <View style={{ marginTop: 10 }}>
           <Text
             style={{
               fontSize: themeStyle.FONT_SIZE_SM,
-              fontWeight: "600",
               fontFamily: `${getCurrentLang()}-Bold`,
             }}
           >

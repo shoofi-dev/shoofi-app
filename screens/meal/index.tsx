@@ -117,8 +117,8 @@ const MealScreen = ({ route }) => {
       tmpProduct = cartStore.getProductByIndex(index);
     }
     DeviceEventEmitter.emit(`update-meal-uri`, {
-      imgUrl: `${cdnUrl}${tmpProduct.data.img[0].uri}`,
-      cacheKey: `${cdnUrl}${tmpProduct.data.img[0].uri}`.split(/[\\/]/).pop(),
+      imgUrl: `${cdnUrl}${tmpProduct.data?.img?.[0]?.uri}`,
+      cacheKey: `${cdnUrl}${tmpProduct.data?.img?.[0]?.uri}`.split(/[\\/]/).pop(),
     });
     if (tmpProduct.data.subCategoryId == "1" || tmpProduct.data.subCategoryId == "6") {
       if(tmpProduct.data.subCategoryId == "1"){
