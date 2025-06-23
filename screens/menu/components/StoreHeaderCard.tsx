@@ -65,7 +65,6 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
     <CustomFastImage
       style={styles.image}
       source={{ uri: cdnUrl + item }}
-      cacheKey={`${item?.split(/[\\/]/).pop()}`}
     />
   );
   const animationStyle: any = useCallback((value: number) => {
@@ -104,13 +103,13 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
 
   const renderImageSection = () => (
     <View style={styles.imageContainer}>
-      <View style={{ position: "absolute", top: 10, left: 10, zIndex: 100 }}>
+      <View style={{ position: "absolute", top: 15, left: 15, zIndex: 1000 }}>
       <BackButton color={themeStyle.WHITE_COLOR}/>
       </View>
       <Carousel
         loop
         width={screenWidth}
-        height={210}
+        height={280}
         data={storeImages}
         renderItem={renderCarouselItem}
         onSnapToItem={setActiveSlide}
@@ -189,12 +188,15 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
           transform: [{ translateY: carouselTranslateY }],
           position: "absolute",
           top: 0,
-          left: 0,
-          right: 0,
+          left: 10,
+          right: 10,
           zIndex: 1,
+         
+          alignItems: "center", 
+ 
         }}
       >
-        <View style={[styles.infoCard, { top: 160, zIndex: 2 }]}>
+        <View style={[styles.infoCard, { top: 240, zIndex: 2, }]}>
           {/* 210 (image) - 50 (overlap) */}
           <View style={styles.infoRow}>
             <TouchableOpacity style={styles.arrowBtn}>
@@ -216,7 +218,6 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
             <CustomFastImage
               source={{ uri: cdnUrl + storeLogo }}
               style={styles.logo}
-              cacheKey={`${storeLogo?.split(/[\\/]/).pop()}`}
             />
           </View>
         </View>
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: "100%",
-    height: 210,
+    height: 280,
 
     overflow: "hidden",
     position: "relative",

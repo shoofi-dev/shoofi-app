@@ -4,8 +4,9 @@ import {
   Image,
   TouchableOpacity,
   I18nManager,
+  ActivityIndicator,
 } from "react-native";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
 import Text from "../../../components/controls/Text";
@@ -23,13 +24,22 @@ export type TProps = {
 const StoreItem = ({ storeItem }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
   let { menuStore, storeDataStore, shoofiAdminStore, languageStore } =
     useContext(StoreContext);
   const onStoreSelect = async (store: any) => {
-    await shoofiAdminStore.setStoreDBName(store.appName);
-    await menuStore.getMenu();
-    await storeDataStore.getStoreData();
-    (navigation as any).navigate("menuScreen");
+    try {
+      // setIsLoading(true);
+      // Clear the menu cache first to prevent showing old store data
+      menuStore.clearMenu();
+      await shoofiAdminStore.setStoreDBName(store.appName);
+      // await menuStore.getMenu();
+      // await storeDataStore.getStoreData();
+      (navigation as any).navigate("menuScreen");
+    } catch (error) {
+      console.error("Error loading store:", error);
+      // You could show an error message here
+    }
   };
   // Placeholder values for demo
   const isNew = storeItem.store.isNew || false;
@@ -57,6 +67,7 @@ const StoreItem = ({ storeItem }: TProps) => {
       onPress={() => onStoreSelect(storeItem.store)}
       style={styles.card}
       activeOpacity={0.9}
+      disabled={isLoading}
     >
       {/* Store Image */}
       <View style={styles.imageWrapper}>
@@ -65,16 +76,14 @@ const StoreItem = ({ storeItem }: TProps) => {
           source={{ uri: `${cdnUrl}${storeItem?.store?.cover_sliders?.[0]?.uri}` }}
           resizeMode="cover"
         />
-        {/* Logo overlay */}
-
-        {/* Favorite icon */}
-        {/* <View style={styles.favoriteIcon}>
-          <Icon
-            name="heart-outline"
-            size={24}
-            color={"#3B3B3B"}
-          />
-        </View> */}
+        
+        {/* Loading overlay */}
+        {/* {isLoading && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color={themeStyle.PRIMARY_COLOR} />
+            <Text style={styles.loadingText}>{t("loading")}</Text>
+          </View>
+        )} */}
       </View>
       {logoUri && (
         <View style={styles.logoOverlay}>
@@ -215,5 +224,20 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     marginTop: 4,
     textAlign: "left",
+  },
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: themeStyle.PRIMARY_COLOR,
   },
 });

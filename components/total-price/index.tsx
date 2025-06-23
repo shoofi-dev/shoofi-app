@@ -17,6 +17,7 @@ export type TProps = {
 };
 export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = false }: TProps) {
   const { t } = useTranslation();
+  const { cartStore } = useContext(StoreContext);
 
   const [shippingMethod, setShippingMethod] = useState(null);
 
@@ -24,9 +25,8 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
     cartStore.getShippingMethod().then((shippingMethodTmp) => {
       setShippingMethod(shippingMethodTmp);
     });
-  }, []);
+  }, [cartStore]);
 
-  const { cartStore } = useContext(StoreContext);
   const {
     availableDrivers,
     loading: driversLoading,
@@ -39,9 +39,10 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
   const [discount, setDiscount] = useState(0);
   const [deliveryPrice, setDeliveryPrice] = useState(0);
   const areaDeliveryPrice = availableDrivers?.area?.price;
+  
   useEffect(() => {
     getItemsPrice();
-  }, []);
+  }, [cartStore.cartItems]);
 
   useEffect(() => {
     const deliveryPriceTmp =
@@ -49,7 +50,7 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
       ? areaDeliveryPrice || 0
       : null;
     setDeliveryPrice(deliveryPriceTmp);
-  }, [availableDrivers]);
+  }, [availableDrivers, shippingMethod]);
 
   useEffect(() => {
     getTotalPrice();
@@ -64,11 +65,11 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
   ]);
 
   const getTotalPrice = () => {
-
     const totalPriceTmp = itemsPrice + deliveryPrice - discount;
     setTotalPrice(totalPriceTmp);
     onChangeTotalPrice(totalPriceTmp);
   };
+  
   const getItemsPrice = () => {
     let tmpOrderPrice = 0;
     cartStore.cartItems.forEach((item) => {
@@ -87,36 +88,44 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
     rows.push({ label: t("discount"), value: discount });
   }
 
+  const renderCouponInput = () => {
+    if (hideCouponInput) return null;
+    
+    return (
+      <CouponInput
+        orderAmount={totalPrice}
+        userId="current-user-id"
+        onCouponApplied={(couponApp) => {
+          console.log("couponApp", couponApp);
+          setDiscount(couponApp.discountAmount);
+          console.log("Coupon applied:", couponApp);
+        }}
+        onCouponRemoved={() => {
+          console.log("Coupon removed");
+          setDiscount(0);
+        }}
+      />
+    );
+  };
+
+  const renderRows = () => {
+    return rows.map((row, idx) => (
+      <View
+        key={row.label}
+        style={[styles.row, idx === rows.length - 1 ? styles.lastRow : null]}
+      >
+        <Text style={styles.price} type="number">
+          ₪{row.value.toFixed(2)}
+        </Text>
+        <Text style={styles.label}>{row.label}</Text>
+      </View>
+    ));
+  };
+
   return (
     <View style={styles.totalPriceContainer}>
-      {!hideCouponInput && (
-        <CouponInput
-          orderAmount={totalPrice}
-          userId="current-user-id" // Replace with actual user ID
-          onCouponApplied={(couponApp) => {
-            // Handle coupon applied
-            console.log("couponApp", couponApp);
-            setDiscount(couponApp.discountAmount);
-            console.log("Coupon applied:", couponApp);
-          }}
-          onCouponRemoved={() => {
-            // Handle coupon removed
-            console.log("Coupon removed");
-            setDiscount(0);
-          }}
-        />
-      )}
-      {rows.map((row, idx) => (
-        <View
-          key={row.label}
-          style={[styles.row, idx === rows.length - 1 ? styles.lastRow : null]}
-        >
-          <Text style={styles.price} type="number">
-            ₪{row.value.toFixed(2)}
-          </Text>
-          <Text style={styles.label}>{row.label}</Text>
-        </View>
-      ))}
+      {renderCouponInput()}
+      {renderRows()}
       <View style={[styles.row, styles.lastRow, { marginTop: 8 }]}>
         <Text style={styles.priceTotal} type="number">
           ₪{totalPrice.toFixed(2)}
@@ -125,7 +134,6 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
       </View>
     </View>
   );
-  // --- NEW DESIGN END ---
 }
 
 const styles = StyleSheet.create({

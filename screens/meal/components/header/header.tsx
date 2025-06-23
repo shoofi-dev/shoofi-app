@@ -55,10 +55,10 @@ const ProductHeader = ({ product, updateOthers }: TProps) => {
             ? product.data.nameAR
             : product.data.nameHE}
         </Text>
-        <View style={{ marginTop: 10 }}>
+        <View style={{ marginTop: 5 }}>
           <Text
             style={{
-              fontSize: themeStyle.FONT_SIZE_SM,
+              fontSize: themeStyle.FONT_SIZE_LG,
               fontFamily: `${getCurrentLang()}-Bold`,
             }}
           >

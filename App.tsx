@@ -89,6 +89,7 @@ let customARFonts = {
   // "ar-Arslan": require(`./assets/fonts/ar/Arslan.ttf`),
   // "ar-American": require(`./assets/fonts/ar/American-Typewriter-Light.ttf`),
   // "ar-American-bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
+  "ar-GS-Black-Bold": require(`./assets/fonts/ar/GESSUniqueBold-Bold.otf`),
 
   "he-Black": require(`./assets/fonts/he/Black.ttf`),
   "he-Bold": require(`./assets/fonts/he/Bold.ttf`),
@@ -100,7 +101,7 @@ let customARFonts = {
   // "he-Arslan": require(`./assets/fonts/ar/Arslan.ttf`),
   "he-American": require(`./assets/fonts/he/American-Typewriter-Light.ttf`),
   // "he-American-bold": require(`./assets/fonts/ar/American-Typewriter-Bold.ttf`),
-  // "he-GS-Black-Bold": require(`./assets/fonts/ar/GESSUniqueBold-Bold.otf`),
+   "he-GS-Black-Bold": require(`./assets/fonts/ar/GESSUniqueBold-Bold.otf`),
 
   "Poppins-Regular": require(`./assets/fonts/shared/Poppins-Regular.ttf`),
   "Rubik-Regular": require(`./assets/fonts/shared/Rubik-Regular.ttf`),
@@ -383,10 +384,6 @@ const App = () => {
   }, [lastJsonMessage, userDetailsStore.userDetails]);
 
   const initPrinter = async () => {
-    console.log(
-      "storeDataStore.storeData.printerTarget",
-      storeDataStore.storeData.printerTarget
-    );
     await EscPosPrinter.init({
       target: storeDataStore.storeData.printerTarget,
       seriesName: getPrinterSeriesByName("EPOS2_TM_M50"),
@@ -570,7 +567,6 @@ const App = () => {
           //     return `${cdnUrl}${slide}`;
           //   }
           // );
-
           setTimeout(async () => {
             const isShouldUpdateVersion =
               await storeDataStore.isUpdateAppVersion();
@@ -614,20 +610,20 @@ const App = () => {
               }
               setTimeout(() => {
                 setAppIsReady(true);
-              }, 2000);
+              }, 0);
               setTimeout(() => {
                 setIsExtraLoadFinished(true);
-              }, 2400);
+              }, 400);
             });
           } else {
             const data = await AsyncStorage.getItem("@storage_terms_accepted");
             userDetailsStore.setIsAcceptedTerms(JSON.parse(data));
             setTimeout(() => {
               setAppIsReady(true);
-            }, 2000);
+            }, 0);
             setTimeout(() => {
               setIsExtraLoadFinished(true);
-            }, 2400);
+            }, 400);
           }
         }
       );
@@ -654,11 +650,17 @@ const App = () => {
     };
   }, []);
 
+  const initApp = async () => {
+    await shoofiAdminStore.setStoreDBName("");
+    prepare();
+
+  }
+
   useEffect(() => {
-    if(!appIsReady && latitude && longitude){
-      prepare();
+    if(!appIsReady){
+      initApp();
     }
-  }, [latitude]);
+  }, []);
 
   useEffect(() => {
     const ExpDatePicjkerChange = DeviceEventEmitter.addListener(

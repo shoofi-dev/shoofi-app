@@ -18,6 +18,7 @@ class MenuStore {
   imagesUrl = [];
   categoriesImages = [];
   selectedCategoryId = null;
+  isLoading = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -36,11 +37,16 @@ class MenuStore {
   };
   getMenu = () => {
     return new Promise((resolve) => {
+      runInAction(() => {
+        this.isLoading = true;
+      });
+      
       this.getMenuFromServer().then((res: any) => {
         runInAction(() => {
           this.categories = res.menu;
           this.imagesUrl = res.productsImagesList;
           this.categoriesImages = res.categoryImages;
+          this.isLoading = false;
           // Object.keys(this.meals).map((key) => {
           //   const extras = this.getMealTags(key);
           //   this.meals[key].extras = extras;
@@ -50,6 +56,11 @@ class MenuStore {
           // });
           resolve(true);
         });
+      }).catch((error) => {
+        runInAction(() => {
+          this.isLoading = false;
+        });
+        resolve(false);
       });
     });
   };
@@ -356,6 +367,21 @@ class MenuStore {
 
   updateSelectedCategory = (categoryId) =>{
     this.selectedCategoryId = categoryId;
+  }
+
+  // Clear all menu data when switching stores
+  clearMenu = () => {
+    runInAction(() => {
+      this.menu = null;
+      this.categories = null;
+      this.meals = null;
+      this.dictionary = null;
+      this.homeSlides = null;
+      this.imagesUrl = [];
+      this.categoriesImages = [];
+      this.selectedCategoryId = null;
+      this.isLoading = false;
+    });
   }
 
   createExtraFromServer = (extra) => {

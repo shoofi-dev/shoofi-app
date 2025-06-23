@@ -26,7 +26,7 @@ axiosInstance.interceptors.request.use(
     config.headers["app-version"] = version;
     
     // config.headers["app-name"] = APP_NAME;
-    const storeDB = await AsyncStorage.getItem("@storage_storeDB")
+    const storeDB = await AsyncStorage.getItem("@storage_storeDB");
     config.headers["app-name"] = config.headers["app-name"] || storeDB || APP_NAME;
 
 

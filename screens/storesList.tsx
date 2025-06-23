@@ -6,6 +6,7 @@ import themeStyle from "../styles/theme.style";
 import StoreItem from "./stores/components/item";
 import { useRoute } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
+import StorePlaceHolder from "../components/placeholders/StorePlaceHolder";
 
 const StoresListScreen = () => {
   const { shoofiAdminStore, languageStore } = useContext(StoreContext);
@@ -42,9 +43,8 @@ const StoresListScreen = () => {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color={themeStyle.PRIMARY_COLOR} />
-      </View>
+      // <StorePlaceHolder />
+      <View></View>
     );
   }
 

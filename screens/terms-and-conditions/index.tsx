@@ -96,7 +96,7 @@ export default function TermsAndConditionsScreen() {
           >
             <Text
               style={{
-                fontFamily: "ar-American-bold",
+               // fontFamily: "ar-American-bold",
                 color: themeStyle.TEXT_PRIMARY_COLOR,
               }}
             >

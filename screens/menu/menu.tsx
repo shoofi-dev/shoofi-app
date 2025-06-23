@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useContext, useCallback } from "react";
 import { observer } from "mobx-react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -25,7 +25,8 @@ import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
 import { getCurrentLang } from "../../translations/i18n";
 import BackButton from "../../components/back-button";
 import Text from "../../components/controls/Text";
-const HEADER_HEIGHT = 260;
+import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
+const HEADER_HEIGHT = 340;
 const SHIPPING_PICKER_CONTAINER_HEIGHT = 60;
 const STICKY_HEADER_HEIGHT = 90;
 const SCROLLABLE_PART_HEIGHT = HEADER_HEIGHT + SHIPPING_PICKER_CONTAINER_HEIGHT;
@@ -73,6 +74,35 @@ const MenuScreen = () => {
   useEffect(() => {
     getMenu();
   }, [menuStore.categories]);
+
+
+    // Clear menu data when navigating back to prevent showing old store data
+    useFocusEffect(
+      useCallback(() => {
+        // Clear store data first to prevent showing old data
+        menuStore.clearMenu();
+        
+        // Clear local state when entering the screen to prevent showing old data
+        setCategoryList(null);
+        setSelectedCategory(null);
+        storeDataStore.storeData = null;
+        
+        // Small delay to ensure store data is cleared before fetching new data
+        
+        return () => {
+          // Clear menu data when leaving the screen
+          menuStore.clearMenu();
+        };
+      }, [menuStore])
+    );
+    
+  const initMenu = async () => {
+    await menuStore.getMenu();
+    await storeDataStore.getStoreData();
+  }
+  useEffect(() => {
+    initMenu();
+  }, []);
 
   const handleCategorySelect = useCallback(
     (cat) => {
@@ -194,13 +224,7 @@ const MenuScreen = () => {
     extrapolate: Extrapolate.CLAMP,
   });
 
-  if (!categoryList || !selectedCategory) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+
 
   const takeAwayReadyTime = {
     min: storeDataStore.storeData?.minReady,
@@ -218,6 +242,12 @@ const MenuScreen = () => {
   const handleShippingMethodChange = async (value) => {
     await cartStore.setShippingMethod(value);
   };
+
+  if (!storeDataStore.storeData ||!categoryList || !selectedCategory) {
+    return (
+      <StorePlaceHolder />
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -337,6 +367,7 @@ const styles = StyleSheet.create({
     height: SHIPPING_PICKER_CONTAINER_HEIGHT,
     justifyContent: "center",
     paddingHorizontal: 10,
+    marginTop: 80,
   },
   stickyHeader: {
     position: "absolute",

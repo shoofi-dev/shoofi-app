@@ -118,19 +118,25 @@ class ShoofiAdminStore {
         }
       )
       .then(function (response) {
+        console.log("getStoreData1", response)
+
         const res = response.data;
         return res;
       }).catch((error) => {
-        console.log(error);
+        console.log("getStoreData3",error);
       })
   };
 
   getStoreData = () => {
     return this.getStoreDataFromServer().then((res:any) => {
       runInAction(() => {
+        console.log("getStoreData3", res)
+
         this.storeData = res[0];
       })
       return res[0];
+    }).catch((error) => {
+      console.log(error);
     })
   };
 

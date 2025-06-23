@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef, useCallback, useState } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useCallback, useState, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -30,6 +30,43 @@ export interface AllCategoriesListRef {
 
 const screenHeight = Dimensions.get('window').height;
 
+// Memoized ProductItem for better performance
+const MemoizedProductItem = ProductItem;
+
+// Memoized category section component
+const CategorySection = ({ category, languageStore, onItemSelect }: {
+  category: any;
+  languageStore: any;
+  onItemSelect: (item: any, category: any) => void;
+}) => {
+  if (!category.products || category.products.length === 0) {
+    return null;
+  }
+
+  const categoryName = languageStore.selectedLang === "ar" 
+    ? category.nameAR 
+    : category.nameHE;
+
+  return (
+    <View style={styles.categorySection}>
+      <View style={styles.categoryHeader}>
+        <Text style={styles.categoryTitle}>{categoryName}</Text>
+      </View>
+      <View style={styles.productsContainer}>
+        {category.products.map((product) => (
+          <MemoizedProductItem
+            key={product._id}
+            item={product}
+            onItemSelect={(item) => onItemSelect(item, category)}
+            onDeleteProduct={() => {}}
+            onEditProduct={() => {}}
+          />
+        ))}
+      </View>
+    </View>
+  );
+};
+
 const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProps>(
   ({ categoryList, ListHeaderComponent }, ref) => {
     const navigation = useNavigation<any>();
@@ -39,22 +76,30 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
     
-    // Calculate estimated heights for each category
-    const getCategoryOffset = (categoryIndex: number) => {
-      let offset = 0;
-      for (let i = 0; i < categoryIndex; i++) {
+    // Memoize category offsets calculation
+    const categoryOffsets = useMemo(() => {
+      const offsets = [];
+      let currentOffset = 0;
+      
+      for (let i = 0; i < categoryList.length; i++) {
+        offsets.push(currentOffset);
         const category = categoryList[i];
         if (category && category.products && category.products.length > 0) {
-          // Category header height + products height + margins
-          const categoryHeaderHeight = 60; // header + padding
-          const productHeight = 120; // estimated product height
+          const categoryHeaderHeight = 60;
+          const productHeight = 120;
           const productsHeight = category.products.length * productHeight;
           const sectionMargin = 24;
-          offset += categoryHeaderHeight + productsHeight + sectionMargin;
+          currentOffset += categoryHeaderHeight + productsHeight + sectionMargin;
         }
       }
-      return offset;
-    };
+      
+      return offsets;
+    }, [categoryList]);
+
+    // Calculate estimated heights for each category
+    const getCategoryOffset = useCallback((categoryIndex: number) => {
+      return categoryOffsets[categoryIndex] || 0;
+    }, [categoryOffsets]);
 
     useImperativeHandle(ref, () => ({
       scrollToCategory: (categoryId: string) => {
@@ -72,55 +117,60 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
           });
         }
       },
-    }));
+    }), [categoryList, getCategoryOffset]);
 
-    const onItemSelect = (item, category) => {
+    const onItemSelect = useCallback((item, category) => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setSelectedProduct(item);
       setSelectedCategory(category);
       setIsModalOpen(true);
-    };
+    }, []);
 
-    const renderCategorySection = ({ item: category }) => {
-      if (!category.products || category.products.length === 0) {
-        return null;
-      }
-
-      const categoryName = languageStore.selectedLang === "ar" 
-        ? category.nameAR 
-        : category.nameHE;
-
+    const renderCategorySection = useCallback(({ item: category }) => {
       return (
-        <View style={styles.categorySection}>
-          <View style={styles.categoryHeader}>
-            <Text style={styles.categoryTitle}>{categoryName}</Text>
-          </View>
-          <View style={styles.productsContainer}>
-            {category.products.map((product) => (
-              <ProductItem
-                key={product._id}
-                item={product}
-                onItemSelect={(item) => onItemSelect(item, category)}
-                onDeleteProduct={() => {}}
-                onEditProduct={() => {}}
-              />
-            ))}
-          </View>
-        </View>
+        <CategorySection
+          category={category}
+          languageStore={languageStore}
+          onItemSelect={onItemSelect}
+        />
       );
-    };
+    }, [languageStore, onItemSelect]);
+
+    const keyExtractor = useCallback((item) => item._id, []);
+
+    const getItemLayout = useCallback((data, index) => {
+      const category = data[index];
+      if (!category || !category.products || category.products.length === 0) {
+        return { length: 0, offset: 0, index };
+      }
+      
+      const categoryHeaderHeight = 60;
+      const productHeight = 120;
+      const productsHeight = category.products.length * productHeight;
+      const sectionMargin = 24;
+      const length = categoryHeaderHeight + productsHeight + sectionMargin;
+      
+      return { length, offset: categoryOffsets[index] || 0, index };
+    }, [categoryOffsets]);
 
     return (
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}
           data={categoryList}
-          keyExtractor={(item) => item._id}
+          keyExtractor={keyExtractor}
           renderItem={renderCategorySection}
           ListHeaderComponent={ListHeaderComponent}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
           scrollEventThrottle={16}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={5}
+          windowSize={10}
+          initialNumToRender={3}
+          getItemLayout={getItemLayout}
+          updateCellsBatchingPeriod={50}
+          disableVirtualization={false}
         />
         <Modal 
           isVisible={isModalOpen} 
@@ -142,28 +192,30 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
 );
 
 // Wrapper component to adapt props for MealScreen
-const MealModal = ({ product, category, onClose }) => {
-  const route = {
+const MealModal = ({ product, category, onClose }: {
+  product: any;
+  category: any;
+  onClose: () => void;
+}) => {
+  const route = useMemo(() => ({
     params: {
       product,
       category,
       index: null
     }
-  };
+  }), [product, category]);
 
   return (
     <View style={styles.modalContainer}>
       <GlassBG style={styles.closeButton}>
-
-      <TouchableOpacity 
-         
-        onPress={onClose}
-        activeOpacity={0.7}
-      >
-        <View style={styles.closeButtonInner}>
-          <Text style={styles.closeButtonText}>✕</Text>
-        </View>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          onPress={onClose}
+          activeOpacity={0.7}
+        >
+          <View style={styles.closeButtonInner}>
+            <Text style={styles.closeButtonText}>✕</Text>
+          </View>
+        </TouchableOpacity>
       </GlassBG>
       <ScrollView>
         <MealScreen route={route} handleClose={onClose} />

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   StyleSheet,
   View,
@@ -7,7 +8,7 @@ import {
   I18nManager,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { observer } from "mobx-react";
 import { useContext } from "react";
 import { StoreContext } from "../../../../stores";
@@ -29,12 +30,14 @@ import _useDeviceType from "../../../../hooks/use-device-type";
 import CustomFastImage from "../../../../components/custom-fast-image";
 import GlassBG from "../../../../components/glass-background";
 import Icon from "../../../../components/icon";
+
 export type TProps = {
   item: any;
   onItemSelect: (item: any) => void;
   onDeleteProduct: (item: any) => void;
   onEditProduct: (item: any) => void;
 };
+
 const ProductItem = ({
   item,
   onItemSelect,
@@ -52,54 +55,67 @@ const ProductItem = ({
   } = useContext(StoreContext);
   const { deviceType } = _useDeviceType();
 
-  const isDisabled = (item) => {
+  // Memoize expensive calculations
+  const isDisabled = useMemo(() => {
     return !userDetailsStore.isAdmin() && item.count == 0;
-  };
-  const isInStore = (item) => {
+  }, [userDetailsStore.isAdmin(), item.count]);
+
+  const isInStore = useMemo(() => {
     if (ordersStore.orderType == ORDER_TYPE.now && !item.isInStore) {
       return false;
     }
     return true;
-  };
+  }, [ordersStore.orderType, item.isInStore]);
 
-  const getOutOfStockMessage = (item) => {
+  const getOutOfStockMessage = useCallback((item) => {
     if (item.notInStoreDescriptionAR || item.notInStoreDescriptionHE) {
       return languageStore.selectedLang === "ar"
         ? item.notInStoreDescriptionAR
         : item.notInStoreDescriptionHE;
     }
     return t("call-store-to-order");
-  };
+  }, [languageStore.selectedLang, t]);
+
 
   const isInCart = cartStore.getProductByProductId(item._id);
   const productCountInCart = cartStore.getProductCountInCart(item._id);
-  const onAddToCart = (prodcut) => {
-    // DeviceEventEmitter.emit(`add-to-cart-animate`, {
-    //   imgUrl: meal.data.img,
-    // });
-    // cartStore.resetCart();
+
+  const onAddToCart = useCallback((product) => {
     let tmpProduct: any = {};
     tmpProduct.others = { count: 1, note: "" };
-    tmpProduct.data = prodcut;
+    tmpProduct.data = product;
     cartStore.addProductToCart(tmpProduct);
-  };
+  }, [cartStore]);
 
-  const productName =
-    languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE;
-  const price = item.price;
-  const imageUrl = `${cdnUrl}${item?.img?.[0]?.uri}`;
+  // Memoize computed values
+  const productName = useMemo(() => {
+    return languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE;
+  }, [languageStore.selectedLang, item.nameAR, item.nameHE]);
+
+  const productDescription = useMemo(() => {
+    return languageStore.selectedLang === "ar" ? item.descriptionAR : item.descriptionHE;
+  }, [languageStore.selectedLang, item.descriptionAR, item.descriptionHE]);
+
+  const price = useMemo(() => item.price, [item.price]);
+  
+  const imageUrl = useMemo(() => {
+    return `${cdnUrl}${item?.img?.[0]?.uri}`;
+  }, [item?.img?.[0]?.uri]);
+
+  const handleItemPress = useCallback(() => {
+    onItemSelect(item);
+  }, [onItemSelect, item]);
+
   return (
-    <TouchableOpacity style={styles.rowCard} onPress={() => onItemSelect(item)}>
+    <TouchableOpacity style={styles.rowCard} onPress={handleItemPress}>
       {/* Product Image on the right */}
       <View style={styles.rowImageWrapper}>
         <CustomFastImage source={{ uri: imageUrl }} style={styles.rowImage} />
       </View>
-      {/* Text and price on the left */}
+{/* Text and price on the left */}
       <View style={styles.rowTextContainer}>
         <Text style={styles.rowProductName}>{productName}</Text>
-        <Text style={styles.rowProductDesc}>
-          {languageStore.selectedLang === "ar" ? item.descriptionAR : item.descriptionHE}
-        </Text>
+        <Text style={styles.rowProductDesc}>{productDescription}</Text>
         <Text style={styles.rowPriceText}>₪{price}</Text>
       </View>
       {/* Add button */}
