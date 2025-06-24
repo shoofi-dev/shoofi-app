@@ -69,11 +69,6 @@ const AddressSelector = observer(({ onAddressSelect }) => {
   };
 
   useEffect(() => {
-    console.log(
-      "selectedAddress.location.coordinatess",
-      shoofiAdminStore.storeData?.systemAddress
-    );
-
     initStoresList();
   }, [shoofiAdminStore.storeData?.systemAddress]);
 

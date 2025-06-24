@@ -43,7 +43,6 @@ class UserDetailsStore {
 
   getUserDetails = (params?: {isDriver?: boolean}) => {
     return this.getUserDetailsFromServer(params).then((res: any)=>{
-      console.log("resUserDetails", res)
       const userDetailsTmp: TUserDetails = {
         name: res.fullName,
         phone: res.phone,

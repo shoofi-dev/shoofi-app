@@ -15,7 +15,10 @@ export type TProps = {
   onChangeTotalPrice: any;
   hideCouponInput?: boolean;
 };
-export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = false }: TProps) {
+export default function TotalPriceCMP({
+  onChangeTotalPrice,
+  hideCouponInput = false,
+}: TProps) {
   const { t } = useTranslation();
   const { cartStore } = useContext(StoreContext);
 
@@ -39,16 +42,16 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
   const [discount, setDiscount] = useState(0);
   const [deliveryPrice, setDeliveryPrice] = useState(0);
   const areaDeliveryPrice = availableDrivers?.area?.price;
-  
+
   useEffect(() => {
     getItemsPrice();
   }, [cartStore.cartItems]);
 
   useEffect(() => {
     const deliveryPriceTmp =
-    shippingMethod === SHIPPING_METHODS.shipping
-      ? areaDeliveryPrice || 0
-      : null;
+      shippingMethod === SHIPPING_METHODS.shipping
+        ? areaDeliveryPrice || 0
+        : null;
     setDeliveryPrice(deliveryPriceTmp);
   }, [availableDrivers, shippingMethod]);
 
@@ -61,7 +64,7 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
     availableDrivers,
     driversLoading,
     discount,
-    deliveryPrice
+    deliveryPrice,
   ]);
 
   const getTotalPrice = () => {
@@ -69,7 +72,7 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
     setTotalPrice(totalPriceTmp);
     onChangeTotalPrice(totalPriceTmp);
   };
-  
+
   const getItemsPrice = () => {
     let tmpOrderPrice = 0;
     cartStore.cartItems.forEach((item) => {
@@ -90,7 +93,7 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
 
   const renderCouponInput = () => {
     if (hideCouponInput) return null;
-    
+
     return (
       <CouponInput
         orderAmount={totalPrice}
@@ -110,21 +113,37 @@ export default function TotalPriceCMP({ onChangeTotalPrice, hideCouponInput = fa
 
   const renderRows = () => {
     return rows.map((row, idx) => (
-      <View
-        key={row.label}
-        style={[styles.row, idx === rows.length - 1 ? styles.lastRow : null]}
-      >
-        <Text style={styles.price} type="number">
-          ₪{row.value.toFixed(2)}
-        </Text>
-        <Text style={styles.label}>{row.label}</Text>
-      </View>
+      <>
+        <View
+          key={row.label}
+          style={[styles.row, idx === rows.length - 1 ? styles.lastRow : null]}
+        >
+          <Text style={styles.price} type="number">
+            ₪{row.value.toFixed(2)}
+          </Text>
+          <Text style={styles.label}>{row.label}</Text>
+        </View>
+        <View
+          style={{
+            height: 1,
+            width: "100%",
+            backgroundColor: themeStyle.GRAY_20,
+          }}
+        ></View>
+      </>
     ));
   };
 
   return (
     <View style={styles.totalPriceContainer}>
-      {renderCouponInput()}
+      {/* {renderCouponInput()} */}
+      <View
+        style={{
+          height: 1,
+          width: "100%",
+          backgroundColor: "#E5E7EB",
+        }}
+      ></View>
       {renderRows()}
       <View style={[styles.row, styles.lastRow, { marginTop: 8 }]}>
         <Text style={styles.priceTotal} type="number">
@@ -150,34 +169,32 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
     paddingVertical: 12,
-    paddingHorizontal: 8,
+    paddingHorizontal: 20,
   },
   lastRow: {
     borderBottomWidth: 0,
   },
   price: {
-    color: "#888",
-    fontSize: 16,
+    color: themeStyle.GRAY_60,
+    fontSize: themeStyle.FONT_SIZE_SM,
     minWidth: 70,
     textAlign: "left",
   },
   label: {
-    color: "#222",
-    fontSize: 16,
+    fontSize: themeStyle.FONT_SIZE_MD,
     textAlign: "right",
     flex: 1,
   },
   priceTotal: {
-    color: "#222",
+    color: themeStyle.GRAY_60,
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: themeStyle.FONT_SIZE_SM,
     minWidth: 70,
     textAlign: "left",
   },
   labelTotal: {
-    color: "#222",
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: themeStyle.FONT_SIZE_MD,
     textAlign: "right",
     flex: 1,
   },

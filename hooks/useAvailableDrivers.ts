@@ -26,6 +26,7 @@ export function useAvailableDrivers({ isEnabled = true }: { isEnabled?: boolean 
       defaultAddress.location.coordinates
     ) {
       const [lng, lat] = defaultAddress.location.coordinates;
+      console.log("defaultAddress222@@", defaultAddress.location.coordinates);
       setCustomerLocation({ lat, lng });
       let storeLocation = undefined;
       if (storeDataStore.storeData?.location) {

@@ -11,6 +11,7 @@ import { Platform } from "react-native";
 import { bcoindId, SHIPPING_METHODS } from "../../consts/shared";
 import moment from "moment";
 var hash = require("object-hash");
+import { storeDataStore } from "../store";
 
 export type TOrderSubmitResponse = {
   response: {
@@ -77,7 +78,8 @@ type TCart = {
     discountAmount: number;
     couponId: string;
   };
-  paymentData?: any;
+  paymentData?: any;  
+  storeData?: any;
 };
 
 const prodcutExtrasAdapter = (extras) => {
@@ -138,6 +140,7 @@ const produtsAdapter = (order) => {
       note: product.others.note,
       price: product.data.price,
       selectedExtras: product.selectedExtras,
+      img: product.data?.img,
     };
     finalProducts.push(finalProduct);
   });
@@ -261,6 +264,8 @@ class CartStore {
   updateCartProduct = (index, product) => {
     this.cartItems[index] = { ...product };
     this.cartItems = [...this.cartItems];
+    this.updateLocalStorage();
+
   };
 
   getProductByIndex = (index) => {
@@ -337,6 +342,7 @@ class CartStore {
   };
 
   getCartData = async (order: any) => {
+    console.log("storeDataStore.storeData", storeDataStore.storeData);
     let finalOrder: TOrder = {
       payment_method: order.paymentMthod,
       receipt_method: order.shippingMethod,
@@ -344,6 +350,7 @@ class CartStore {
       address: order.address,
       locationText: order.locationText,
       items: produtsAdapter(order),
+
     };
     const version = Constants.nativeAppVersion;
     const hashKey = await this.getHashKey(finalOrder);
@@ -394,6 +401,16 @@ class CartStore {
     const imagesList = this.getProductsImages(cartData);
     let formData = new FormData();
     cartData.isAdmin = order?.isAdmin;
+    cartData.storeData = {
+      storeName: storeDataStore.storeData?.storeName,
+      storeId: storeDataStore.storeData?.id,
+      storeLogo: storeDataStore.storeData?.storeLogo,
+      location: storeDataStore.storeData?.location,
+      phone: storeDataStore.storeData?.phone,
+      cover_sliders: storeDataStore.storeData?.cover_sliders,
+      name_ar: storeDataStore.storeData?.name_ar,
+      name_he: storeDataStore.storeData?.name_he,
+    };
     const body = cartData;
     formData.append("body", JSON.stringify(body));
     // formData.append("images", JSON.stringify(imagesList));

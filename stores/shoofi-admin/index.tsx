@@ -97,11 +97,7 @@ class ShoofiAdminStore {
   };
 
   getStoreById = (storeId) => {
-    console.log("storesList",this.storesList)
-    console.log("storeId",storeId)
     const store = this.storesList?.find((store)=> store.appName === storeId);
-    console.log("store",store)
-
     return store;
   }
 
@@ -118,20 +114,15 @@ class ShoofiAdminStore {
         }
       )
       .then(function (response) {
-        console.log("getStoreData1", response)
-
         const res = response.data;
         return res;
       }).catch((error) => {
-        console.log("getStoreData3",error);
       })
   };
 
   getStoreData = () => {
     return this.getStoreDataFromServer().then((res:any) => {
       runInAction(() => {
-        console.log("getStoreData3", res)
-
         this.storeData = res[0];
       })
       return res[0];
@@ -157,7 +148,6 @@ class ShoofiAdminStore {
   getStoreZCrData = () => {
     return this.getStoreZCrDataFromServer().then((res:any) => {
       runInAction(() => {
-        console.log("getStoreZCrDataFromServer", res)
         this.paymentCredentials = res;
       })
       return res;

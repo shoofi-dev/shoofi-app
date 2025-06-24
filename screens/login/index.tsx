@@ -157,26 +157,9 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* <LinearGradient
-          colors={[
-            "rgba(207, 207, 207, 0.4)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(207, 207, 207, 0.4)",
-          ]}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.background]}
-        /> */}
-      {/* <ImageBackground
-          source={require("../../assets/bg/login-bg.jpg")}
-          resizeMode="cover"
-          style={{ height: "100%",width:"100%"}}
-              > */}
-      <BackButton />
+      <View style={styles.backContainer}>
+        <BackButton />
+      </View>
       <TouchableOpacity
         onPress={handleLogoPress}
         style={{
@@ -292,6 +275,12 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
+  },
+  backContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    paddingHorizontal: 15,
   },
   inputsContainer: {
     width: "100%",

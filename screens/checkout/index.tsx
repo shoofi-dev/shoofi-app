@@ -34,6 +34,9 @@ import * as Animatable from "react-native-animatable";
 import { storeDataStore } from "../../stores/store";
 import Text from "../../components/controls/Text";
 import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
+import { getCurrentLang } from "../../translations/i18n";
+import Modal from "react-native-modal";
+import OrderSubmittedScreen from "../order/submitted";
 
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -58,7 +61,10 @@ const CheckoutScreen = ({ route }) => {
   const [editOrderData, setEditOrderData] = useState(null);
 
   const [shippingMethod, setShippingMethod] = useState(null);
-
+  const [cartCount, setCartCount] = useState(0);
+  useEffect(() => {
+    setCartCount(cartStore.getProductsCount());
+  }, [cartStore.cartItems]);
   const {
     availableDrivers,
     loading: driversLoading,
@@ -166,28 +172,28 @@ const CheckoutScreen = ({ route }) => {
   };
 
   // SHIPPING METHOD AGGRE - START
-  useEffect(() => {
-    const subscription = DeviceEventEmitter.addListener(
-      `${DIALOG_EVENTS.OPEN_DELIVER_METHOD_AGGREE_BASED_EVENT_DIALOG}_HIDE`,
-      handleShippingMethodAgrreAnswer
-    );
-    return () => {
-      subscription.remove();
-    };
-  }, [
-    paymentMthod,
-    shippingMethod,
-    totalPrice,
-    selectedDate,
-    ordersStore.editOrderData,
-    addressLocation,
-    addressLocationText,
-    paymentData
-  ]);
-  const handleShippingMethodAgrreAnswer = (data) => {
-    setIsShippingMethodAgrred(data.value);
-    handleCheckout(data.value);
-  };
+  // useEffect(() => {
+  //   const subscription = DeviceEventEmitter.addListener(
+  //     `${DIALOG_EVENTS.OPEN_DELIVER_METHOD_AGGREE_BASED_EVENT_DIALOG}_HIDE`,
+  //     handleShippingMethodAgrreAnswer
+  //   );
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, [
+  //   paymentMthod,
+  //   shippingMethod,
+  //   totalPrice,
+  //   selectedDate,
+  //   ordersStore.editOrderData,
+  //   addressLocation,
+  //   addressLocationText,
+  //   paymentData
+  // ]);
+  // const handleShippingMethodAgrreAnswer = (data) => {
+  //   setIsShippingMethodAgrred(data.value);
+  //   handleCheckout(data.value);
+  // };
   const toggleShippingMethodAgrreeAnswer = () => {
     DeviceEventEmitter.emit(
       DIALOG_EVENTS.OPEN_DELIVER_METHOD_AGGREE_BASED_EVENT_DIALOG,
@@ -204,6 +210,9 @@ const CheckoutScreen = ({ route }) => {
   };
   // SHIPPING METHOD AGGRE - END
 
+  const [isOrderSubmittedModalOpen, setIsOrderSubmittedModalOpen] = useState(false);
+  const [submittedShippingMethod, setSubmittedShippingMethod] = useState(null);
+
   const postChargeOrderActions = () => {
     onLoadingOrderSent(false);
     cartStore.resetCart();
@@ -215,11 +224,11 @@ const CheckoutScreen = ({ route }) => {
       (navigation as any).navigate("admin-orders");
       return;
     }
-    (navigation as any).navigate("order-submitted", { shippingMethod });
+    setSubmittedShippingMethod(shippingMethod);
+    setIsOrderSubmittedModalOpen(true);
   };
 
-  const handleCheckout = async (isShippingMethodAgrredValue) => {
-    if (isShippingMethodAgrredValue) {
+  const handleCheckout = async () => {
       const isCheckoutValidRes = await isCheckoutValid({
         shippingMethod,
         addressLocation,
@@ -230,12 +239,11 @@ const CheckoutScreen = ({ route }) => {
       if (!isCheckoutValidRes) {
         return;
       }
-    }
 
-    if (!isShippingMethodAgrredValue) {
-      isShippingMethodAgrredCheck();
-      return false;
-    }
+    // if (!isShippingMethodAgrredValue) {
+    //   isShippingMethodAgrredCheck();
+    //   return false;
+    // }
 
     // Redeem coupon if applied
     if (couponsStore.appliedCoupon) {
@@ -283,17 +291,7 @@ const CheckoutScreen = ({ route }) => {
         <Animatable.View
           animation="fadeInLeft"
           duration={animationDuration}
-          style={{
-            width: 40,
-            height: 35,
-            alignItems: "center",
-            justifyContent: "center",
-            marginVertical: 0,
-            marginLeft: 10,
-            backgroundColor: themeStyle.GRAY_600,
-            paddingHorizontal: 5,
-            borderRadius: 10,
-          }}
+     
         >
           <BackButton />
         </Animatable.View>
@@ -350,43 +348,35 @@ const CheckoutScreen = ({ route }) => {
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: themeStyle.SECONDARY_COLOR,
-          padding: 20,
-          borderTopStartRadius: 30,
-          borderTopEndRadius: 30,
-          shadowColor: themeStyle.BLACK_COLOR,
-          shadowOffset: {
-            width: 2,
-            height: 2,
-          },
-          shadowOpacity: 1,
-          shadowRadius: 20,
+          backgroundColor: "transparent",
+          flexDirection: "row",
+          borderTopStartRadius: (30),
+          borderTopEndRadius: (30),
+
           alignItems: "center",
+          height: (100),
+          justifyContent: "center",
         }}
       >
-        <View style={{ width: "100%", marginBottom: 10 }}>
-          <Text style={{ fontSize: 18, textAlign: "center", color: themeStyle.TEXT_PRIMARY_COLOR }}>
-            {t("total-price")}: ₪{totalPrice.toFixed(2)}
-          </Text>
-        </View>
-        <View style={{ width: "90%", marginTop: 10 }}>
+
+        <View style={{ width: "90%", alignSelf: "center" }}>
           <Button
-            onClickFn={() => handleCheckout(isShippingMethodAgrred)}
-            // onClickFn={onSendCart}
+            onClickFn={() => handleCheckout()}
             disabled={isLoadingOrderSent}
-            // disabled={
-            //   isLoadingOrderSent ||
-            //   // isOpenShippingMethodDialog ||
-            //   isloadingLocation
-            //   //  ||
-            //   // isPickTimeValid()
-            // }
             text={t("send-order")}
-            fontSize={18}
-            textColor={themeStyle.TEXT_PRIMARY_COLOR}
             isLoading={isLoadingOrderSent}
-            borderRadious={50}
-            textPadding={0}
+
+            icon="kupa"
+            iconSize={themeStyle.FONT_SIZE_LG}
+            fontSize={themeStyle.FONT_SIZE_LG}
+            iconColor={themeStyle.SECONDARY_COLOR}
+            fontFamily={`${getCurrentLang()}-Bold`}
+            bgColor={themeStyle.PRIMARY_COLOR}
+            textColor={themeStyle.SECONDARY_COLOR}
+            borderRadious={100}
+            extraText={`₪${totalPrice}`}
+            countText={`${cartCount}`}
+            countTextColor={themeStyle.PRIMARY_COLOR}
           />
         </View>
       </Animatable.View>
@@ -399,6 +389,20 @@ const CheckoutScreen = ({ route }) => {
       <StoreIsCloseBasedEventDialog />
       <InvalidAddressdBasedEventDialog />
       <PaymentFailedBasedEventDialog />
+      <Modal
+        isVisible={isOrderSubmittedModalOpen}
+        onBackdropPress={() => setIsOrderSubmittedModalOpen(false)}
+        style={{ margin: 0, justifyContent: "flex-end" }}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        backdropOpacity={0.5}
+      >
+        <OrderSubmittedScreen
+          route={{ params: { shippingMethod: submittedShippingMethod } }}
+          onClose={() => setIsOrderSubmittedModalOpen(false)}
+          isModal={true}
+        />
+      </Modal>
     </View>
   );
 };
@@ -414,10 +418,10 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   backContainer: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     marginTop: 10,
   },
 });

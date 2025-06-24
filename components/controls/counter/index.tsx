@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import themeStyle from "../../../styles/theme.style";
 import * as Haptics from "expo-haptics";
+import Icon from "../../icon";
 
 export default function Counter({
   onCounterChange,
@@ -11,6 +12,9 @@ export default function Counter({
   isVertical = false,
   variant = null,
   size = 35,
+  showTrashAtMinValue = false,
+  onDelete,
+  useCartStyle = false,
 }) {
   const [couter, setCounter] = useState(value || 0);
   const onBtnClick = (value) => {
@@ -26,69 +30,93 @@ export default function Counter({
     setCounter(value || 0);
   }, [value]);
 
+  const isTrashState = showTrashAtMinValue && couter === minValue;
+
+  const containerStyles = [
+    styles.container,
+    useCartStyle && styles.cartContainer,
+  ];
+  
+  const textStyles = [
+    styles.buttonText,
+    useCartStyle && styles.cartButtonText,
+  ];
+
+  const countTextStyles = [
+    styles.countText,
+    useCartStyle && styles.cartCountText,
+  ];
+
   return (
-    <>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          backgroundColor: "#f7f9fa",
-          borderRadius: 999,
-          borderWidth: 1,
-          borderColor: "#d1d5db",
-          paddingHorizontal: 16,
-          paddingVertical: 8,
-          minWidth: 50,
-          justifyContent: "space-between",
+    <View style={containerStyles}>
+      <TouchableOpacity
+        onPress={() => {
+          onBtnClick(stepValue);
         }}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            onBtnClick(stepValue);
-          }}
-        >
-          <Text
-            style={{
-              fontSize: themeStyle.FONT_SIZE_MD,
-              color: "#444",
-              fontWeight: "300",
-            }}
-          >
-            +
-          </Text>
-        </TouchableOpacity>
-        <Text
-          style={{
-            fontSize: themeStyle.FONT_SIZE_MD,
-            fontWeight: "bold",
-            marginHorizontal: 16,
-            minWidth: 40,
-            textAlign: "center",
-          }}
-        >
-          {couter}
-        </Text>
-        <TouchableOpacity
-          onPress={() => {
+        <Text style={textStyles}>+</Text>
+      </TouchableOpacity>
+      <Text style={countTextStyles}>{couter}</Text>
+      <TouchableOpacity
+        onPress={() => {
+          if (isTrashState) {
+            onDelete && onDelete();
+          } else {
             onBtnClick(-stepValue);
-          }}
-        >
-          <Text
-            style={{
-              fontSize: themeStyle.FONT_SIZE_MD,
-              color: "#444",
-              fontWeight: "300",
-            }}
-          >
-            -
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </>
+          }
+        }}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        {isTrashState ? (
+          <Icon icon="trash" size={18} color={useCartStyle ? '#374151' : "#444"} />
+        ) : (
+          <Text style={textStyles}>-</Text>
+        )}
+      </TouchableOpacity>
+    </View>
   );
 }
+
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: themeStyle.GRAY_10,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: themeStyle.GRAY_40,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    minWidth: 50,
+    justifyContent: "space-between",
+  },
+  cartContainer: {
+    backgroundColor: "white",
+    borderColor: '#E5E7EB',
+    borderWidth: 1,
+
+  },
+  buttonText: {
+    fontSize: themeStyle.FONT_SIZE_MD,
+  },
+  cartButtonText: {
+    color: '#374151',
+    fontWeight: 'normal',
+    fontSize: 22,
+  },
+  countText: {
+    fontSize: themeStyle.FONT_SIZE_MD,
+    fontWeight: "bold",
+    marginHorizontal: 16,
+    minWidth: 40,
+    textAlign: "center",
+  },
+  cartCountText: {
+    color: '#1F2937',
+    fontWeight: '600',
+    fontSize: 18
+  },
   containerGray: {
     borderRadius: 50,
     shadowColor: themeStyle.GRAY_600,
@@ -163,8 +191,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: themeStyle.SECONDARY_COLOR,
     fontFamily: "Poppins-Regular",
-    // alignSelf:"center",
-    // top:1,
-    // right:0
   },
 });

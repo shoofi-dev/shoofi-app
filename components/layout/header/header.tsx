@@ -223,9 +223,9 @@ const Header = () => {
   };
 
   const onLogoClick = async () => {
-    if(!userDetailsStore.isAdmin()){
-      await shoofiAdminStore.setStoreDBName("");
-    }
+    // if(!userDetailsStore.isAdmin()){
+    //   await shoofiAdminStore.setStoreDBName("");
+    // }
 
     if (
       navigation?.getCurrentRoute()?.name === "terms-and-conditions" ||

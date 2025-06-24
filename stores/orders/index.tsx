@@ -139,6 +139,25 @@ class OrdersStore {
     });
   };
 
+  getCustomerActiveOrdersFromServer = async () => {
+    const api =  `${ORDER_API.CONTROLLER}/${ORDER_API.GET_CUSTOMER_ACTIVE_ORDERS_API}`
+
+    return axiosInstance
+      .get(
+        api,
+      )
+      .then(function (response: any) {
+        return response;
+      });
+  };
+
+  getCustomerActiveOrders = () => {
+    return this.getCustomerActiveOrdersFromServer().then((res) => {
+      const customerOrdersList = res;
+      return customerOrdersList;
+    });
+  };
+
 
   updateOrderStatusServer = async (status: string,orderId: string, shouldSendSms: boolean) => {
     const api =  `${ORDER_API.CONTROLLER}/${ORDER_API.UPDATE_ADMIN_ORDERS_API}`

@@ -18,6 +18,7 @@ import * as Haptics from "expo-haptics";
 import Modal from "react-native-modal";
 import MealScreen from "../../meal/index2";
 import GlassBG from "../../../components/glass-background";
+import MealModal from './../../../components/MealModal';
 
 interface AllCategoriesListProps {
   categoryList: any[];
@@ -190,39 +191,6 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
     );
   }
 );
-
-// Wrapper component to adapt props for MealScreen
-const MealModal = ({ product, category, onClose }: {
-  product: any;
-  category: any;
-  onClose: () => void;
-}) => {
-  const route = useMemo(() => ({
-    params: {
-      product,
-      category,
-      index: null
-    }
-  }), [product, category]);
-
-  return (
-    <View style={styles.modalContainer}>
-      <GlassBG style={styles.closeButton}>
-        <TouchableOpacity 
-          onPress={onClose}
-          activeOpacity={0.7}
-        >
-          <View style={styles.closeButtonInner}>
-            <Text style={styles.closeButtonText}>✕</Text>
-          </View>
-        </TouchableOpacity>
-      </GlassBG>
-      <ScrollView>
-        <MealScreen route={route} handleClose={onClose} />
-      </ScrollView>
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {

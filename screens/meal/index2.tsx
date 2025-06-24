@@ -68,11 +68,10 @@ const gradiantColors =
         "rgba(199, 199, 199, 0.1)",
       ];
 
-const MealScreen = ({ route, handleClose }) => {
+const MealScreen = ({ handleClose,product, category, index }) => {
   const { t } = useTranslation();
   const scrollRef = useRef();
 
-  const { product, index, category } = route.params;
   const navigation = useNavigation();
   let { cartStore, ordersStore, languageStore, storeDataStore, extrasStore } =
     useContext(StoreContext);
@@ -226,9 +225,8 @@ const MealScreen = ({ route, handleClose }) => {
       ...meal,
       selectedExtras: { ...extrasStore.selections },
     });
-    setTimeout(() => {
-      navigation.goBack();
-    }, 1000);
+    handleClose();
+
   };
 
   const handleConfirmActionAnswer = (answer: string) => {

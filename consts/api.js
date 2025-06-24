@@ -3,8 +3,8 @@
 // export const WS_URL = "wss://shoofi-api-95miq.ondigitalocean.app";
 
 //DEV
- export const BASE_URL = "http://192.168.68.56:1111/api";
- export const WS_URL = "ws://192.168.68.56:1111";
+ export const BASE_URL = "http://192.168.68.58:1111/api";
+ export const WS_URL = "ws://192.168.68.58:1111";
 
 // export const BASE_URL = "http://192.168.0.100:1111/api";
 // export const WS_URL = "ws://192.168.0.100:1111";
@@ -80,6 +80,7 @@ export const ORDER_API = {
     GET_ADMIN_ALL_NOT_VIEWD_ORDERS_API: "admin/all/not-viewd",
     GET_CUSTOMER_INVOICES_API: "customer-invoices",
     GET_CUSTOMER_ORDERS_API: "customer-orders",
+    GET_CUSTOMER_ACTIVE_ORDERS_API: "customer-active-orders",
     UPDATE_ADMIN_ORDERS_API: "update",
     UPDATE_ADMIN_ORDERS_VIEWD_API: "update/viewd",
     UPDATE_ADMIN_ORDERS_BOOK_DELIVERY_API: "book-delivery",

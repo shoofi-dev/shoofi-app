@@ -133,7 +133,7 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
           {deliveryTime?.min} - {deliveryTime?.max} {t('minutes')}
         </Text>
         : driversLoading ? <ActivityIndicator size="small" color={themeStyle.GRAY_300} style={{ marginTop: 2 }} />
-        : <Text style={{color: themeStyle.GRAY_300}}>
+        : <Text style={{color: themeStyle.GRAY_60}}>
           {t('delivery-not-supported')}
         </Text>
         }
@@ -166,39 +166,39 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
 
 const styles = StyleSheet.create({
   pillContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#F3F3F3',
+    flexDirection: "row",
+    backgroundColor: themeStyle.GRAY_20,
     borderRadius: 50,
-    overflow: 'hidden',
-    width: '100%',
-    alignSelf: 'center',
+    overflow: "hidden",
+    width: "100%",
+    alignSelf: "center",
     marginVertical: 8,
-    height: 54,
-    padding:5
+    height: 55,
+    padding: 5,
   },
   pillOption: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 0,
-    height: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    borderWidth: 0,
   },
   pillOptionSelected: {
-    backgroundColor: '#fff',
+    backgroundColor: themeStyle.WHITE_COLOR,
   },
   pillOptionUnselected: {
-    backgroundColor: '#F3F3F3',
+    backgroundColor: themeStyle.GRAY_20,
   },
   pillOptionText: {
     fontSize: themeStyle.FONT_SIZE_MD,
-    fontWeight: '400',
-    color: themeStyle.GRAY_80,
-    marginBottom: 2,
+    textAlign: "center",
+
   },
   pillOptionTextSelected: {
-    fontWeight: 'bold',
-    color: '#232323',
+  },
+  pillOptionContent: {
+    alignItems: "center",
+    justifyContent: "center",
   },
   pillOptionSubtext: {
     fontSize: themeStyle.FONT_SIZE_XS,

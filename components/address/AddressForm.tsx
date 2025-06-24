@@ -148,7 +148,6 @@ const AddressForm = observer(({ route,address }: any) => {
     const location = { lat, lng };  
     try {
       addressStore.getLocationSupported(location).then(async (res: any) => {
-        console.log("res", res);
         if (res.available) {
           if (address) {
             console.log("updateAddress", address);

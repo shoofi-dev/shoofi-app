@@ -588,7 +588,6 @@ const App = () => {
               fetchStoreZCrData,
               // fetchOrders,
             ]).then(async (res: any) => {
-              console.log("res", res)
               const store = res[0];
               if(store?.appName){
                 console.log("storexxx", store)
@@ -651,7 +650,10 @@ const App = () => {
   }, []);
 
   const initApp = async () => {
-    await shoofiAdminStore.setStoreDBName("");
+    if(!cartStore.cartItems.length){
+      console.log("XXXXXXXXXXA4", cartStore.cartItems)
+      await shoofiAdminStore.setStoreDBName("");
+    }
     prepare();
 
   }

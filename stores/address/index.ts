@@ -189,7 +189,6 @@ class AddressStore {
   }
 
   get defaultAddress() {
-    console.log("no addresses", shoofiAdminStore.storeData?.systemAddress);
     if(!this.addresses?.length){
       return shoofiAdminStore.storeData?.systemAddress;
     }

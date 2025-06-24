@@ -50,7 +50,6 @@ const ExploreScreen = () => {
         const generalCategoriesRes: any = await axiosInstance.get(
           "/category/general/all"
         );
-        console.log("generalCategoriesRes", generalCategoriesRes);
         setGeneralCategories(generalCategoriesRes);
 
         // Set default selected general category

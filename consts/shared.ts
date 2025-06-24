@@ -1,4 +1,17 @@
 export const APP_NAME = 'shoofi';
+
+export const ORDER_STATUS = {
+  PENDING: "1",
+  APPROVED: "2",
+  IN_PROGRESS: "3",
+  COMPLETED: "4",
+  CANCELLED: "5",
+  REJECTED: "6",
+  CANCELLED_BY_ADMIN: "7",
+  CANCELLED_BY_CUSTOMER: "8",
+  CANCELLED_BY_DRIVER: "9",
+};
+
 export const SHIPPING_METHODS = {
   shipping: "DELIVERY",
   takAway: "TAKEAWAY",

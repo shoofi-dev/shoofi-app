@@ -117,12 +117,12 @@ export const PaymentMethodMethodPick = ({
           </Text>
           <Icon
             icon="shekel"
-            size={20}
+            size={18}
             style={{
               color:
                 paymentMthod === PAYMENT_METHODS.cash
-                  ? themeStyle.TEXT_PRIMARY_COLOR
-                  : themeStyle.WHITE_COLOR,
+                  ? themeStyle.GRAY_60
+                  : themeStyle.GRAY_60,
             }}
           />
         </View>
@@ -158,12 +158,12 @@ export const PaymentMethodMethodPick = ({
           ) : (
             <Icon
               icon="credit-card-1"
-              size={25}
+              size={18}
               style={{
                 color:
                   paymentMthod === PAYMENT_METHODS.creditCard
-                    ? themeStyle.TEXT_PRIMARY_COLOR
-                    : themeStyle.WHITE_COLOR,
+                    ? themeStyle.GRAY_60
+                    : themeStyle.GRAY_60,
               }}
             />
           )}
@@ -176,40 +176,34 @@ export const PaymentMethodMethodPick = ({
 const styles = StyleSheet.create({
   pillContainer: {
     flexDirection: "row",
-    backgroundColor: "#F3F3F3",
+    backgroundColor: themeStyle.GRAY_20,
     borderRadius: 50,
     overflow: "hidden",
     width: "100%",
     alignSelf: "center",
     marginVertical: 8,
-    height: 54,
+    height: 55,
     padding: 5,
   },
   pillOption: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 6,
-    paddingHorizontal: 0,
     height: "100%",
     borderWidth: 0,
   },
   pillOptionSelected: {
-    backgroundColor: "#fff",
+    backgroundColor: themeStyle.WHITE_COLOR,
   },
   pillOptionUnselected: {
-    backgroundColor: "#F3F3F3",
+    backgroundColor: themeStyle.GRAY_20,
   },
   pillOptionText: {
-    fontSize: 18,
-    fontWeight: "400",
-    color: "#232323",
-    marginBottom: 2,
-    marginLeft: 8,
+    fontSize: themeStyle.FONT_SIZE_MD,
+    textAlign: "center",
+
   },
   pillOptionTextSelected: {
-    fontWeight: "bold",
-    color: "#232323",
   },
   pillOptionContent: {
     alignItems: "center",

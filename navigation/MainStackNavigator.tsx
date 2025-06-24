@@ -43,7 +43,7 @@ import StoresListScreen from "../screens/storesList";
 import GeneralCategoryScreen from "../screens/GeneralCategoryScreen";
 import CreditCardsListScreen from "../screens/credit-cards";
 import AddCreditCardScreen from "../components/credit-card/AddCreditCard";
-
+import ActiveOrdersScreen from "../screens/order/active";
 // Delivery Driver Screens
 import DeliveryDriverDashboard from "../screens/delivery-driver";
 import DeliveryDriverOrderDetails from "../screens/delivery-driver/order-details";
@@ -116,6 +116,7 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="about-us" component={AboutUsScreen} />
       <Stack.Screen name="contact-us" component={ContactUs} />
       <Stack.Screen name="order-history" component={OrderHistoryScreen} />
+      <Stack.Screen name="active-orders" component={ActiveOrdersScreen} />
       <Stack.Screen name="upload-images" component={uploadImages} />
       <Stack.Screen name="edit-translations" component={EditTranslationsScreen} />
       <Stack.Screen name="stock-management" component={StockManagementScreen} />
