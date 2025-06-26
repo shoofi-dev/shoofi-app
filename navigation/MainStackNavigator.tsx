@@ -63,6 +63,7 @@ function MainTabs() {
       <Tab.Screen name="homeScreen" component={HomeScreen} />
       <Tab.Screen name="Orders" component={OrdersStatusScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="active-orders" component={ActiveOrdersScreen} />
     </Tab.Navigator>
   );
 }

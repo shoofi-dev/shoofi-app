@@ -56,7 +56,7 @@ const OrderHeader = ({ order }) => {
       </View>
     );
   };
-  console.log("order", order?.storeData);
+
   return (
     <View style={{ width: "100%" }}>
       <View style={[styles.orderContainer]}>

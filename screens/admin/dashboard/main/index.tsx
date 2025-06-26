@@ -239,7 +239,7 @@ const DashboardScreen = () => {
           shadowOpacity: 0.5,
           shadowRadius: 6,
           elevation: 20,
-          backgroundColor: themeStyle.SECONDARY_COLOR,
+          backgroundColor: themeStyle.WHITE_COLOR,
           borderRadius:20
         }}
       >
@@ -259,13 +259,14 @@ const DashboardScreen = () => {
                 <Icon
                   icon={item.icon}
                   size={35}
-                  style={{ color: themeStyle.PRIMARY_COLOR, opacity: 1 }}
+                  style={{ color: themeStyle.SECONDARY_COLOR
+                    , opacity: 1 }}
                 />
               </View>
               <View>
                 <Text
                   style={{
-                    fontSize: 24,
+                    fontSize: themeStyle.FONT_SIZE_MD,
                     color: themeStyle.TEXT_PRIMARY_COLOR,
                     textAlign: "center",
                   }}

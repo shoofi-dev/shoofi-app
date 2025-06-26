@@ -327,7 +327,7 @@ const App = () => {
       ordersStore
         .getOrders(
           true,
-          ["1", "2", "3", "4", "5"],
+          ["1", "2", "3", "4", "5","6"],
           null,
           true,
           null,
@@ -706,10 +706,6 @@ const App = () => {
   };
 
   const getOrderTotalPrice = (order) => {
-    const oOrder = order?.order;
-    if (oOrder.receipt_method == SHIPPING_METHODS.shipping) {
-      return order?.total - storeDataStore?.storeData?.delivery_price;
-    }
     return order?.total;
   };
 

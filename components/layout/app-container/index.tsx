@@ -230,6 +230,7 @@ const AppContainer = () => {
           position: "relative",
           backgroundColor: "transparent",
           marginTop: -60,
+          borderWidth: 1,
         }}
       >
         {/* <ImageBackground

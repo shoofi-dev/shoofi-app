@@ -354,7 +354,7 @@ class CartStore {
     };
     const version = Constants.nativeAppVersion;
     const hashKey = await this.getHashKey(finalOrder);
-
+    console.log("order.shippingPrice", order.shippingPrice);
     const cartData: TCart = {
       order: finalOrder,
       total: order.totalPrice,
@@ -410,6 +410,8 @@ class CartStore {
       cover_sliders: storeDataStore.storeData?.cover_sliders,
       name_ar: storeDataStore.storeData?.name_ar,
       name_he: storeDataStore.storeData?.name_he,
+      maxReady: storeDataStore.storeData?.maxReady,
+      minReady: storeDataStore.storeData?.minReady,
     };
     const body = cartData;
     formData.append("body", JSON.stringify(body));

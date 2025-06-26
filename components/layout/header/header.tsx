@@ -281,7 +281,7 @@ const Header = () => {
   };
  const isHomeScreen = navigation?.getCurrentRoute()?.name === 'homeScreen';
   return (
-    <View style={{ ...styles.container,marginBottom: isHomeScreen ? 0 : 40 }}>
+    <View style={{ ...styles.container,marginBottom: 5 }}>
       {/* <LinearGradient
         colors={[
           "rgba(36, 33, 30, 0.9)",
@@ -324,7 +324,7 @@ const Header = () => {
               <Icon
                 icon="cog"
                 size={35}
-                style={{ color: theme.SECONDARY_COLOR }}
+                style={{ color: theme.PRIMARY_COLOR }}
               />
             </TouchableOpacity>
           ) : (
@@ -340,15 +340,7 @@ const Header = () => {
                 borderBottomStartRadius: 50,
                 height: "70%",
                 alignSelf: "center",
-                shadowColor: themeStyle.SECONDARY_COLOR,
-                shadowOffset: {
-                  width: 0,
-                  height: 3,
-                },
-                shadowOpacity: 1,
-                shadowRadius: 6,
-                elevation: 5,
-                borderWidth: 0,
+      
                 
               },
             ]}
@@ -461,7 +453,7 @@ const Header = () => {
             style={{ color: theme.GRAY_700,  width:100 }}
           /> */}
           <Image
-            style={{ maxWidth: "45%", maxHeight: "40%" }}
+            style={{ maxWidth: "45%", maxHeight: "60%" }}
             source={require("../../../assets/icon4.png")}
           />
         </TouchableOpacity>
@@ -527,7 +519,7 @@ const Header = () => {
           <Icon
             icon="delivery-active"
             size={40}
-            style={{ color: themeStyle.SECONDARY_COLOR }}
+            style={{ color: themeStyle.PRIMARY_COLOR }}
           />
         </TouchableOpacity>
       )}
@@ -543,15 +535,7 @@ const Header = () => {
             borderBottomEndRadius: 50,
             height: "70%",
             alignSelf: "center",
-            shadowColor: themeStyle.SECONDARY_COLOR,
-            shadowOffset: {
-              width: 0,
-              height: 3,
-            },
-            shadowOpacity: 1,
-            shadowRadius: 6,
-            elevation: 5,
-            borderWidth: 0,
+      
           },
         ]}
       >
@@ -577,7 +561,7 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     flexDirection: "row-reverse",
-    height: "10%",
+    height: 70,
     justifyContent: "space-between",
     paddingRight: 15,
     paddingLeft: 15,
@@ -591,7 +575,7 @@ const styles = StyleSheet.create({
     // elevation: 20,
     // borderWidth: 0,
     // marginBottom: 40,
-   backgroundColor: themeStyle.TEXT_PRIMARY_COLOR,
+   backgroundColor: themeStyle.GRAY_80,
     // backgroundColor: themeStyle.WHITE_COLOR
   },
   headerItem: {

@@ -1,16 +1,57 @@
 export const APP_NAME = 'shoofi';
 
 export const ORDER_STATUS = {
-  PENDING: "1",
-  APPROVED: "2",
-  IN_PROGRESS: "3",
-  COMPLETED: "4",
-  CANCELLED: "5",
-  REJECTED: "6",
+  IN_PROGRESS: "1",
+  COMPLETED: "2",
+  WAITING_FOR_DRIVER: "3",
+  CANCELLED: "4",
+  REJECTED: "5",
+  PENDING: "6",
   CANCELLED_BY_ADMIN: "7",
   CANCELLED_BY_CUSTOMER: "8",
   CANCELLED_BY_DRIVER: "9",
+  PICKED_UP: "10",
+  PICKED_UP_BY_DRIVER: "11",
+  DELIVERED: "12",
 };
+export const ORDER_STATUS_TEXT = {
+  [ORDER_STATUS.COMPLETED]: "completed",
+  [ORDER_STATUS.WAITING_FOR_DRIVER]: "waiting-for-driver",
+  [ORDER_STATUS.COMPLETED]: "ready",
+  [ORDER_STATUS.IN_PROGRESS]: "preparing",
+  [ORDER_STATUS.CANCELLED]: "cancelled",
+  [ORDER_STATUS.REJECTED]: "rejected",
+  [ORDER_STATUS.PENDING]: "pending",
+  [ORDER_STATUS.CANCELLED_BY_ADMIN]: "cancelled-by-admin",
+  [ORDER_STATUS.CANCELLED_BY_CUSTOMER]: "cancelled-by-customer",
+  [ORDER_STATUS.CANCELLED_BY_DRIVER]: "cancelled-by-driver",
+  [ORDER_STATUS.PICKED_UP]: "picked-up",
+  [ORDER_STATUS.PICKED_UP_BY_DRIVER]: "picked-up-by-driver",
+  [ORDER_STATUS.DELIVERED]: "delivered",
+};
+
+export const DELIVERY_STATUS = {
+  WAITING_FOR_APPROVE: "0",
+  APPROVED: "1",
+  COLLECTED_FROM_RESTAURANT: "2",
+  DELIVERED: "3",
+  CANCELLED_BY_DRIVER: "-1",
+  CANCELLED_BY_STORE: "-2",
+  CANCELLED_BY_ADMIN: "-3",
+};
+export const DELIVERY_STATUS_TEXT = {
+  [DELIVERY_STATUS.WAITING_FOR_APPROVE]: "waiting-for-approve",
+  [DELIVERY_STATUS.APPROVED]: "approved",
+  [DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT]: "picked-up-by-driver",
+  [DELIVERY_STATUS.DELIVERED]: "delivered",
+  [DELIVERY_STATUS.CANCELLED_BY_DRIVER]: "cancelled-by-driver",
+};
+
+//1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
+export const inProgressStatuses = ["1","6"];
+export const deliveryStatuses = ["3"];
+export const readyStatuses = ["2"];
+export const canceledStatuses = ["4", "5"];
 
 export const SHIPPING_METHODS = {
   shipping: "DELIVERY",

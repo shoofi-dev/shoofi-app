@@ -381,8 +381,8 @@ const NewOrdersListScreen = ({ route }) => {
       <View
         style={{
           borderColor: "#707070",
-          paddingTop: 20,
-          marginTop: 15,
+          paddingTop: 0,
+          marginTop: 0,
           marginHorizontal: 10,
           flexDirection: "row",
           justifyContent: "space-between",
@@ -391,7 +391,7 @@ const NewOrdersListScreen = ({ route }) => {
         <View
           style={{
             justifyContent: "space-between",
-            flexBasis: "30%",
+            flexBasis: "40%",
           }}
         >
           {true && (
@@ -429,19 +429,7 @@ const NewOrdersListScreen = ({ route }) => {
                   <Text style={styles.totalPriceText}>₪{order.total} </Text>
                 </View>
               </View>
-              <View style={{ flexDirection: "row" }}>
-                <View>
-                  <Text style={styles.totalPriceText}>
-                    {t("order-status")}:
-                  </Text>
-                </View>
-                <View>
-                  <Text style={styles.totalPriceText}>
-                    {" "}
-                    {t(getStatusTextByStatus(order.status))}{" "}
-                  </Text>
-                </View>
-              </View>
+   
             </View>
           )}
         </View>
@@ -633,13 +621,13 @@ const NewOrdersListScreen = ({ route }) => {
                   borderWidth: 1,
                   width: "100%",
                   justifyContent: "center",
-                  borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+                  borderColor: themeStyle.GRAY_60,
                   padding: 10,
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: themeStyle.FONT_SIZE_LG,
                   }}
                 >
                   {languageStore.selectedLang === "ar"
@@ -665,7 +653,7 @@ const NewOrdersListScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: themeStyle.FONT_SIZE_LG,
                     }}
                   >
                     {t("size")} : {t(item.size)}
@@ -681,7 +669,7 @@ const NewOrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: themeStyle.FONT_SIZE_LG,
                   }}
                 >
                   {t("count")} : {item.qty}
@@ -689,7 +677,7 @@ const NewOrdersListScreen = ({ route }) => {
                 <View style={{ marginHorizontal: 15 }}>
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: themeStyle.FONT_SIZE_LG,
                     }}
                   >
                     |
@@ -698,7 +686,7 @@ const NewOrdersListScreen = ({ route }) => {
 
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: themeStyle.FONT_SIZE_LG,
                   }}
                 >
                   {t("price")} : ₪{item.price * item.qty}
@@ -714,7 +702,7 @@ const NewOrdersListScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: themeStyle.FONT_SIZE_LG,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                     }}
                   >
@@ -722,7 +710,7 @@ const NewOrdersListScreen = ({ route }) => {
                   </Text>
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: themeStyle.FONT_SIZE_LG,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                       textAlign: "left",
                       marginVertical: 5,
@@ -824,13 +812,13 @@ const NewOrdersListScreen = ({ route }) => {
           }}
         >
           <View>
-            <Text style={{ fontSize: 20 }}>{t("loading-orders")}</Text>
+            <Text style={{ fontSize: themeStyle.FONT_SIZE_LG }}>{t("loading-orders")}</Text>
             <ActivityIndicator size="large" style={{}} />
           </View>
         </View>
       )}
 
-      <View style={{ width: "100%", marginTop: 15 }}>
+      <View style={{ width: "100%", marginTop: 0 }}>
         <View
           style={{
             alignItems: "center",
@@ -840,14 +828,14 @@ const NewOrdersListScreen = ({ route }) => {
             style={{
               fontSize: 30,
               fontFamily: `${getCurrentLang()}-SemiBold`,
-              color: themeStyle.WHITE_COLOR,
+              color: themeStyle.TEXT_PRIMARY_COLOR,
             }}
           >
             {"طلبيات جديدة"}
           </Text>
         </View>
       </View>
-      <View style={{ zIndex: 1, position: "absolute", right: 15 }}>
+      <View style={{ zIndex: 1, position: "absolute", left: 15, top: 10 }}>
         <BackButton />
       </View>
       <ScrollView style={styles.container}>
@@ -860,7 +848,7 @@ const NewOrdersListScreen = ({ route }) => {
                 height: "100%",
               }}
             >
-              <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>
+              <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, color: themeStyle.WHITE_COLOR }}>
                 {t("لا يوجد طلبيات")}
               </Text>
             </View>
@@ -874,16 +862,9 @@ const NewOrdersListScreen = ({ route }) => {
                       style={[
                         styles.orderContainer,
                         {
-                          shadowColor: getColorTextByStatus(order.status),
-                          shadowOffset: {
-                            width: 0,
-                            height: 0,
-                          },
-                          shadowOpacity: 1,
-                          shadowRadius: 10.84,
-                          elevation: 30,
+                     
                           borderRadius: 20,
-                          backgroundColor: themeStyle.SECONDARY_COLOR,
+                          backgroundColor: themeStyle.GRAY_10,
                         },
                       ]}
                     >
@@ -940,7 +921,7 @@ const NewOrdersListScreen = ({ route }) => {
                         dashLength={5}
                         dashThickness={1}
                         dashGap={0}
-                        dashColor={themeStyle.TEXT_PRIMARY_COLOR}
+                        dashColor={themeStyle.GRAY_60}
                         style={{ marginBottom: 15, marginTop: 15 }}
                       />
                       <View
@@ -949,84 +930,6 @@ const NewOrdersListScreen = ({ route }) => {
                           alignItems: "center",
                         }}
                       >
-                        <View
-                          style={{
-                            marginRight: 10,
-                            width: 200,
-                            justifyContent: "center",
-                          }}
-                        >
-                          {activeEditNote != order.orderId && (
-                            <Button
-                              text={
-                                order?.note ? "تعديل الملاحظة" : "اضف ملاحظة"
-                              }
-                              fontSize={17}
-                              onClickFn={() => updateActiveEditNote(order)}
-                              bgColor={themeStyle.ORANGE_COLOR}
-                              textColor={themeStyle.TEXT_PRIMARY_COLOR}
-                              fontFamily={`${getCurrentLang()}-Bold`}
-                              borderRadious={19}
-                            />
-                          )}
-                          {activeEditNote == order.orderId && (
-                            <Button
-                              text={"حفظ الملاحظة"}
-                              fontSize={17}
-                              onClickFn={() => saveOrderNote(order)}
-                              bgColor={themeStyle.ORANGE_COLOR}
-                              textColor={themeStyle.TEXT_PRIMARY_COLOR}
-                              fontFamily={`${getCurrentLang()}-Bold`}
-                              borderRadious={19}
-                            />
-                          )}
-                          {activeEditNote == order.orderId && (
-                            <View style={{ marginTop: 10 }}>
-                              <Button
-                                text={"اغلاق"}
-                                fontSize={17}
-                                onClickFn={() => updateActiveEditNote(null)}
-                                bgColor={themeStyle.ERROR_COLOR}
-                                textColor={themeStyle.TEXT_PRIMARY_COLOR}
-                                fontFamily={`${getCurrentLang()}-Bold`}
-                                borderRadious={19}
-                              />
-                            </View>
-                          )}
-                        </View>
-                        {activeEditNote == null && (
-                          <View style={{ width: "40%", flexDirection: "row" }}>
-                            <Text style={{ fontSize: 20, textAling: "left" }}>
-                              {order.note}
-                            </Text>
-                          </View>
-                        )}
-                        {activeEditNote == order.orderId && (
-                          <View style={{ width: "40%" }}>
-                            <TextInput
-                              onChange={(e) => {
-                                setOrderNoteText(e.nativeEvent.text);
-                                // updateOrderNote(orderId, e.nativeEvent.text);
-                              }}
-                              value={orderNoteText}
-                              placeholderTextColor={themeStyle.GRAY_600}
-                              multiline={true}
-                              selectionColor="black"
-                              underlineColorAndroid="transparent"
-                              numberOfLines={5}
-                              style={{
-                                backgroundColor: "white",
-                                borderWidth: 1,
-                                textAlignVertical: "top",
-                                textAlign: "right",
-                                padding: 10,
-                                height: 80,
-                                width: "100%",
-                                // fontFamily: `${getCurrentLang()}-SemiBold`,
-                              }}
-                            />
-                          </View>
-                        )}
                         {order.order.receipt_method ==
                           SHIPPING_METHODS.shipping && (
                           <View
@@ -1043,12 +946,19 @@ const NewOrdersListScreen = ({ route }) => {
                             <Icon
                               icon="delivery-active"
                               size={80}
-                              style={{ color: "#a77948" }}
+                              style={{ color: themeStyle.PRIMARY_COLOR }}
                             />
                           </View>
                         )}
                       </View>
                       {renderOrderTotalRaw(order)}
+                      <DashedLine
+                        dashLength={5}
+                        dashThickness={1}
+                        dashGap={0}
+                        dashColor={themeStyle.GRAY_60}
+                        style={{ marginBottom: 15, marginTop: 15 }}
+                      />
                       {/*{renderStatus(order)} */}
                       {/* 
                       <View
@@ -1071,7 +981,7 @@ const NewOrdersListScreen = ({ route }) => {
                       {!storeDataStore.storeData?.isOrderLaterSupport && (
                         <View
                           style={{
-                            marginVertical: 40,
+                            marginBottom: 40,
                             // alignItems: "flex-start",
                             width: "100%",
                           }}
@@ -1084,7 +994,7 @@ const NewOrdersListScreen = ({ route }) => {
                               justifyContent: "center",
                             }}
                           >
-                            <Text style={{ fontSize: 22 }}>
+                            <Text style={{ fontSize: themeStyle.FONT_SIZE_XL }}>
                               ستكون جاهزة خلال
                             </Text>
                           </View>
@@ -1122,7 +1032,7 @@ const NewOrdersListScreen = ({ route }) => {
                                 >
                                   <Text
                                     style={{
-                                      fontSize: 22,
+                                      fontSize: themeStyle.FONT_SIZE_XL,
                                       color:
                                         selectedTime[order._id] == time.value
                                           ? themeStyle.WHITE_COLOR
@@ -1142,12 +1052,12 @@ const NewOrdersListScreen = ({ route }) => {
                         style={{
                           maxWidth: "50%",
                           alignSelf: "center",
-                          marginTop: 20,
+                          marginTop: 0,
                         }}
                       >
                         <Button
                           text={t("approve")}
-                          fontSize={22}
+                          fontSize={themeStyle.FONT_SIZE_XL}
                           onClickFn={() =>
                             updateViewedOrder(
                               order,
@@ -1197,17 +1107,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   dateRawText: {
-    fontSize: 20,
+    fontSize: themeStyle.FONT_SIZE_LG,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     color: themeStyle.TEXT_PRIMARY_COLOR,
   },
   totalPriceText: {
-    fontSize: 20,
+    fontSize: themeStyle.FONT_SIZE_LG,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     marginBottom: 15,
   },
   dateText: {
-    fontSize: 20,
+    fontSize: themeStyle.FONT_SIZE_LG,
     fontFamily: `${getCurrentLang()}-Bold`,
     marginBottom: 15,
 

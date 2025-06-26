@@ -17,7 +17,7 @@ export type TPropsCheckoutSubmit = {
   paymentData?: any;
 };
 const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
-  const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, storeDataStore, couponsStore } =
+  const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, shoofiAdminStore, couponsStore } =
     useContext(StoreContext);
   const { chargeCC } = _useCheckoutChargeCC();
 
@@ -96,15 +96,13 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
             : address?.location?.coordinates?.[0],
         };
       }
-      console.log("order.geo_positioning", order.geo_positioning);
       if (locationText) {
         order.locationText = editOrderData
           ? editOrderData?.order?.locationText ? editOrderData?.order?.locationText : locationText
           : locationText;
       }
-      order.shippingPrice = storeDataStore.storeData.delivery_price;
+      order.shippingPrice = shoofiAdminStore.storeData.delivery_price;
     }
-    
     if (!!editOrderData) {
       const updateOrderAdminRes = updateOrderAdmin(
         order,

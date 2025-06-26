@@ -42,6 +42,7 @@ const OrderSubmittedScreen = ({ route, onClose, isModal = false }) => {
   }, [isModal, onClose, navigation]);
 
   const goToOrderStatus = () => {
+    onClose();
     if(userDetailsStore.isAdmin()){
       navigation.navigate("homeScreen");
     }else{

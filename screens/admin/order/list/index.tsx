@@ -54,8 +54,11 @@ import OrderExtrasDisplay from "../../../../components/shared/OrderExtrasDisplay
 //1 -SENT 3 -COMPLETE 2-READY 4-CANCELLED 5-REJECTED
 export const inProgressStatuses = ["1"];
 export const deliveryStatuses = ["3"];
-export const readyStatuses = ["2"];
+export const readyStatuses = ["2","3"];
 export const canceledStatuses = ["4", "5"];
+export const pickedUpStatuses = ["10","11"];
+export const deliveredStatuses = ["11"];
+
 
 const OrdersListScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -230,9 +233,18 @@ const OrdersListScreen = ({ route }) => {
     if (authStore.isLoggedIn() && selectedDay?.date) {
       setIsloading(true);
       console.log("selectedDay?.date?.format()", selectedDay?.date?.format());
+      let statusList = [selectedStatus];
+      switch (selectedStatus) {
+        case "2":
+          statusList = ["2","3"];
+          break;
+        case "10":
+          statusList = ["10","11"];
+          break;
+      }
       ordersStore.getOrders(
         userDetailsStore.isAdmin(),
-        [selectedStatus],
+        statusList,
         selectedDay?.date?.format(),
         false,
         pageNum,
@@ -306,6 +318,26 @@ const OrdersListScreen = ({ route }) => {
 
   const getStatusCountById = (id) => {
     if (ordersStore.statusCount) {
+      if(id == "2"){
+        const result2 = ordersStore.statusCount.find((item) => {
+          return item._id == "2";
+        });
+        const result3 = ordersStore.statusCount.find((item) => {
+          return item._id == "3";
+        });
+
+        return (result2?.count || 0) + (result3?.count || 0);
+      }
+      if(id == "10"){
+        const result10 = ordersStore.statusCount.find((item) => {
+          return item._id == "10";
+        });
+        const result11 = ordersStore.statusCount.find((item) => {
+          return item._id == "11";
+        });
+
+        return (result10?.count || 0) + (result11?.count || 0);
+      }
       const result = ordersStore.statusCount.find((item) => {
         return item._id == id;
       });
@@ -368,9 +400,12 @@ const OrdersListScreen = ({ route }) => {
       return "جاهزة";
     }
     if (deliveryStatuses.indexOf(order.status) > -1) {
-      return "ارسل";
+      return "استلم";
     }
     if (readyStatuses.indexOf(order.status) > -1) {
+      return "استلم";
+    }
+    if (pickedUpStatuses.indexOf(order.status) > -1) {
       return "الغاء";
     }
     if (canceledStatuses.indexOf(order.status) > -1) {
@@ -407,6 +442,9 @@ const OrdersListScreen = ({ route }) => {
       return themeStyle.SUCCESS_COLOR;
     }
     if (readyStatuses.indexOf(status) > -1) {
+      return themeStyle.SUCCESS_COLOR;
+    }
+    if (pickedUpStatuses.indexOf(status) > -1) {
       return themeStyle.ERROR_COLOR;
     }
     if (deliveryStatuses.indexOf(status) > -1) {
@@ -418,7 +456,7 @@ const OrdersListScreen = ({ route }) => {
   };
   const getPrevColorTextByStatus = (status: string) => {
     if (readyStatuses.indexOf(status) > -1) {
-      return themeStyle.SUCCESS_COLOR;
+      return themeStyle.WARNING_COLOR;
     }
     if (deliveryStatuses.indexOf(status) > -1) {
       return themeStyle.SUCCESS_COLOR;
@@ -487,7 +525,7 @@ const OrdersListScreen = ({ route }) => {
   const getOrderTotalPrice = (order) => {
     const oOrder = order.order;
     if (oOrder.receipt_method == SHIPPING_METHODS.shipping) {
-      return order?.total - storeDataStore?.storeData?.delivery_price;
+      return order?.total - order?.shippingPrice;
     }
     return order?.total;
   };
@@ -534,7 +572,7 @@ const OrdersListScreen = ({ route }) => {
             {storeDataStore.storeData?.isOrderLaterSupport && (
               <Text
                 style={{
-                  fontSize: 30,
+                  fontSize: themeStyle.FONT_SIZE_3XL,
                   fontFamily: `${getCurrentLang()}-Bold`,
                   color: themeStyle.ERROR_COLOR,
                 }}
@@ -544,7 +582,7 @@ const OrdersListScreen = ({ route }) => {
             )}
             <Text
               style={{
-                fontSize: 30,
+                fontSize: themeStyle.FONT_SIZE_3XL,
                 //fontFamily: `${getCurrentLang()}-American-bold`,
 
                 color: themeStyle.SUCCESS_COLOR,
@@ -590,7 +628,7 @@ const OrdersListScreen = ({ route }) => {
                 <View style={{ flexDirection: "row" }}>
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: themeStyle.FONT_SIZE_XL,
                       backgroundColor:
                         oOrder.payment_method === PAYMENT_METHODS.creditCard
                           ? "yellow"
@@ -631,7 +669,7 @@ const OrdersListScreen = ({ route }) => {
                   </View>
                   <View>
                     <Text style={styles.totalPriceText}>
-                      ₪{storeDataStore?.storeData?.delivery_price}{" "}
+                      ₪{order.shippingPrice}{" "}
                       {order.isShippingPaid && " - مدفوع"}
                     </Text>
                   </View>
@@ -723,8 +761,8 @@ const OrdersListScreen = ({ route }) => {
               marginTop: 10,
             }}
           >
-            <View style={{ flexBasis: "45%" }}>
-              {inProgressStatuses.indexOf(order.status) === -1 && (
+           {inProgressStatuses.indexOf(order.status) === -1 && pickedUpStatuses.indexOf(order.status) === -1 && (  <View style={{ flexBasis: "45%" }}>
+             
                 <View>
                   <View style={{}}>
                     <Button
@@ -738,8 +776,7 @@ const OrdersListScreen = ({ route }) => {
                     />
                   </View>
                 </View>
-              )}
-            </View>
+            </View>)}
             <View style={{ flexBasis: "45%" }}>
               {order.order.payment_method == PAYMENT_METHODS.creditCard && (
                 <View>
@@ -838,7 +875,7 @@ const OrdersListScreen = ({ route }) => {
                 <View
                   style={{
                     flexBasis: "20%",
-                    height: 150,
+                    height: 120,
                     marginVertical: 10,
                   }}
                 >
@@ -887,7 +924,7 @@ const OrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: themeStyle.FONT_SIZE_XL,
                   }}
                 >
                   {languageStore.selectedLang === "ar"
@@ -913,7 +950,7 @@ const OrdersListScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: themeStyle.FONT_SIZE_XL,
                     }}
                   >
                     {t("size")} : {t(item.size)}
@@ -931,7 +968,7 @@ const OrdersListScreen = ({ route }) => {
               >
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: themeStyle.FONT_SIZE_XL,
                   }}
                 >
                   {t("count")} : {item.qty}
@@ -939,7 +976,7 @@ const OrdersListScreen = ({ route }) => {
                 <View style={{ marginHorizontal: 15 }}>
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: themeStyle.FONT_SIZE_XL,
                     }}
                   >
                     |
@@ -948,7 +985,7 @@ const OrdersListScreen = ({ route }) => {
 
                 <Text
                   style={{
-                    fontSize: 20,
+                    fontSize: themeStyle.FONT_SIZE_XL,
                   }}
                 >
                   {t("price")} : ₪{item.price * item.qty}
@@ -964,7 +1001,7 @@ const OrdersListScreen = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: themeStyle.FONT_SIZE_XL,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                     }}
                   >
@@ -972,7 +1009,7 @@ const OrdersListScreen = ({ route }) => {
                   </Text>
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: themeStyle.FONT_SIZE_XL,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                       textAlign: "left",
                       marginVertical: 5,
@@ -1035,7 +1072,7 @@ const OrdersListScreen = ({ route }) => {
         <View style={{ alignItems: "center", marginBottom: 30 }}>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: themeStyle.FONT_SIZE_XL,
               fontFamily: `${getCurrentLang()}-SemiBold`,
               color: themeStyle.GRAY_700,
             }}
@@ -1048,7 +1085,7 @@ const OrdersListScreen = ({ route }) => {
             <View>
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: themeStyle.FONT_SIZE_XL,
                   fontFamily: `${getCurrentLang()}-SemiBold`,
                   color: themeStyle.GRAY_700,
                 }}
@@ -1064,7 +1101,7 @@ const OrdersListScreen = ({ route }) => {
             <View>
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: themeStyle.FONT_SIZE_XL,
                   fontFamily: `${getCurrentLang()}-SemiBold`,
                   color: themeStyle.GRAY_700,
                 }}
@@ -1151,7 +1188,7 @@ const OrdersListScreen = ({ route }) => {
   //         height: "100%",
   //       }}
   //     >
-  //       <Text style={{ fontSize: 20 }}>{t("empty-orders")}</Text>
+  //       <Text style={{ fontSize: themeStyle.FONT_SIZE_XL }}>{t("empty-orders")}</Text>
   //     </View>
   //   );
   // }
@@ -1194,7 +1231,7 @@ const OrdersListScreen = ({ route }) => {
           >
             <Text
               style={{
-                fontSize: 30,
+                fontSize: themeStyle.FONT_SIZE_3XL,
                 fontFamily: `${getCurrentLang()}-SemiBold`,
                 color: themeStyle.TEXT_PRIMARY_COLOR,
               }}
@@ -1220,12 +1257,12 @@ const OrdersListScreen = ({ route }) => {
           </View>
         </View>
       </View>
-      <View style={{ right: 15, zIndex: 1, position: "absolute", top: 5 }}>
+      <View style={{ left: 15, zIndex: 1, position: "absolute", top: 10, }}>
         <BackButton goTo={"homeScreen"} />
       </View>
       <ScrollView
         style={{
-          height: 120,
+          height: 0,
           marginLeft: 10,
           marginHorizontal: 10,
           marginTop: 10,
@@ -1253,7 +1290,8 @@ const OrdersListScreen = ({ route }) => {
                 marginRight: 10,
                 height: 70,
                 marginTop: 20,
-                borderWidth:1
+                borderWidth:1,
+                borderColor:themeStyle.GRAY_30
               }}
               onPress={() => handleSelectDay(day)}
             >
@@ -1276,7 +1314,7 @@ const OrdersListScreen = ({ route }) => {
                 >
                   <Text
                     type="number"
-                    style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}
+                    style={{ fontSize: themeStyle.FONT_SIZE_XL, color: themeStyle.WHITE_COLOR }}
                   >
                     {ordersStore?.totalOrderItems}
                   </Text>
@@ -1284,7 +1322,7 @@ const OrdersListScreen = ({ route }) => {
               )} */}
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: themeStyle.FONT_SIZE_XL,
                   fontFamily: `${getCurrentLang()}-Bold`,
                   color: isSelectedDay
                     ? themeStyle.TEXT_PRIMARY_COLOR
@@ -1295,7 +1333,7 @@ const OrdersListScreen = ({ route }) => {
               </Text>
               <Text
                 style={{
-                  fontSize: 18,
+                  fontSize: themeStyle.FONT_SIZE_XL,
                   //fontFamily: `${getCurrentLang()}-American-bold`,
                   color: isSelectedDay
                     ? themeStyle.TEXT_PRIMARY_COLOR
@@ -1332,13 +1370,15 @@ const OrdersListScreen = ({ route }) => {
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: 20 }}>{getStatusCountById("1")}</Text>
+              <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("1")}</Text>
             </View>
             <Button
               text={t("in-progress")}
               fontSize={17}
               onClickFn={() => handleSelectedStatus("1")}
-              bgColor={selectedStatus === "1" ? "" : themeStyle.WHITE_COLOR}
+              bgColor={selectedStatus === "1" ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR}
+              borderColor={selectedStatus === "1" ? themeStyle.PRIMARY_COLOR : themeStyle.GRAY_30}
+              borderWidthNumber={selectedStatus === "1" ? 0 : 1}
               textColor={
                 selectedStatus === "1"
                   ? themeStyle.TEXT_PRIMARY_COLOR
@@ -1349,7 +1389,7 @@ const OrdersListScreen = ({ route }) => {
             />
           </View>
         </View>
-        <View style={{ width: 150 }}>
+        {/* <View style={{ width: 150 }}>
           <View
             style={{
               position: "absolute",
@@ -1363,22 +1403,24 @@ const OrdersListScreen = ({ route }) => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: 20 }}>{getStatusCountById("3")}</Text>
+            <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("3")}</Text>
           </View>
           <Button
             text={t("ارسالية")}
             fontSize={17}
             onClickFn={() => handleSelectedStatus("3")}
-            bgColor={selectedStatus === "3" ? "" : themeStyle.WHITE_COLOR}
+            bgColor={selectedStatus === "3" ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR}
+            borderColor={selectedStatus === "3" ? themeStyle.PRIMARY_COLOR : themeStyle.GRAY_30}
+            borderWidthNumber={selectedStatus === "3" ? 0 : 1}
             textColor={
               selectedStatus === "3"
-                ? themeStyle.WHITE_COLOR
-                : themeStyle.TEXT_PRIMARY_COLOR
+              ? themeStyle.TEXT_PRIMARY_COLOR
+                  : themeStyle.TEXT_PRIMARY_COLOR
             }
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
           />
-        </View>
+        </View> */}
         <View style={{ width: 150 }}>
           <View
             style={{
@@ -1393,23 +1435,24 @@ const OrdersListScreen = ({ route }) => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: 20 }}>{getStatusCountById("2")}</Text>
+            <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("2")}</Text>
           </View>
           <Button
             text={t("ready")}
             fontSize={17}
             onClickFn={() => handleSelectedStatus("2")}
-            bgColor={selectedStatus === "2" ? "" : themeStyle.WHITE_COLOR}
+            bgColor={selectedStatus === "2" ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR}
+            borderColor={selectedStatus === "2" ? themeStyle.PRIMARY_COLOR : themeStyle.GRAY_30}
+            borderWidthNumber={selectedStatus === "2" ? 0 : 1}
             textColor={
               selectedStatus === "2"
-                ? themeStyle.WHITE_COLOR
-                : themeStyle.TEXT_PRIMARY_COLOR
+              ? themeStyle.TEXT_PRIMARY_COLOR
+              : themeStyle.TEXT_PRIMARY_COLOR
             }
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
           />
         </View>
-
         <View style={{ width: 150 }}>
           <View
             style={{
@@ -1424,17 +1467,51 @@ const OrdersListScreen = ({ route }) => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: 20 }}>{getStatusCountById("4")}</Text>
+            <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("10")}</Text>
+          </View>
+          <Button
+            text={t("استلمت")}
+            fontSize={17}
+            onClickFn={() => handleSelectedStatus("10")}
+            bgColor={selectedStatus === "10" ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR}
+            borderColor={selectedStatus === "10" ? themeStyle.PRIMARY_COLOR : themeStyle.GRAY_30}
+            borderWidthNumber={selectedStatus === "10" ? 0 : 1}
+            textColor={
+              selectedStatus === "10"
+              ? themeStyle.TEXT_PRIMARY_COLOR
+              : themeStyle.TEXT_PRIMARY_COLOR
+            }
+            fontFamily={`${getCurrentLang()}-Bold`}
+            borderRadious={19}
+          />
+        </View>
+        <View style={{ width: 150 }}>
+          <View
+            style={{
+              position: "absolute",
+              backgroundColor: themeStyle.SECONDARY_COLOR,
+              height: 30,
+              width: 30,
+              zIndex: 10,
+              top: -10,
+              borderRadius: 20,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: themeStyle.FONT_SIZE_XL,color:themeStyle.WHITE_COLOR }}>{getStatusCountById("4")}</Text>
           </View>
           <Button
             text={t("canceled")}
             fontSize={17}
             onClickFn={() => handleSelectedStatus("4")}
-            bgColor={selectedStatus === "4" ? "" : themeStyle.WHITE_COLOR}
+            bgColor={selectedStatus === "4" ? themeStyle.PRIMARY_COLOR : themeStyle.WHITE_COLOR}
+            borderColor={selectedStatus === "4" ? themeStyle.PRIMARY_COLOR : themeStyle.GRAY_30}
+            borderWidthNumber={selectedStatus === "4" ? 0 : 1}
             textColor={
               selectedStatus === "4"
-                ? themeStyle.WHITE_COLOR
-                : themeStyle.TEXT_PRIMARY_COLOR
+              ? themeStyle.TEXT_PRIMARY_COLOR
+              : themeStyle.TEXT_PRIMARY_COLOR
             }
             fontFamily={`${getCurrentLang()}-Bold`}
             borderRadious={19}
@@ -1452,7 +1529,7 @@ const OrdersListScreen = ({ route }) => {
                 height: "100%",
               }}
             >
-              <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>
+              <Text style={{ fontSize: themeStyle.FONT_SIZE_XL, color: themeStyle.WHITE_COLOR }}>
                 {t("لا يوجد طلبيات")}
               </Text>
             </View>
@@ -1465,16 +1542,16 @@ const OrdersListScreen = ({ route }) => {
                     style={[
                       styles.orderContainer,
                       {
-                        shadowColor: getColorTextByStatus(order.status),
-                        shadowOffset: {
-                          width: 0,
-                          height: 0,
-                        },
-                        shadowOpacity: 1,
-                        shadowRadius: 10.84,
-                        elevation: 30,
-                        borderRadius: 20,
-                        backgroundColor: themeStyle.SECONDARY_COLOR,
+                        // shadowColor: getColorTextByStatus(order.status),
+                        // shadowOffset: {
+                        //   width: 0,
+                        //   height: 0,
+                        // },
+                        // shadowOpacity: 1,
+                        // shadowRadius: 10.84,
+                        // elevation: 30,
+                        // borderRadius: 20,
+                        backgroundColor: themeStyle.GRAY_10,
                       },
                     ]}
                   >
@@ -1538,6 +1615,7 @@ const OrdersListScreen = ({ route }) => {
                         style={{
                           flexDirection: "row",
                           alignItems: "center",
+                          marginTop: 30,
                         }}
                       >
                         <View
@@ -1552,7 +1630,7 @@ const OrdersListScreen = ({ route }) => {
                               text={
                                 order?.note ? "تعديل الملاحظة" : "اضف ملاحظة"
                               }
-                              fontSize={17}
+                              fontSize={themeStyle.FONT_SIZE_MD}
                               onClickFn={() =>
                                 updateActiveEditNote(order, index)
                               }
@@ -1577,10 +1655,10 @@ const OrdersListScreen = ({ route }) => {
                             <View style={{ marginTop: 10 }}>
                               <Button
                                 text={"اغلاق"}
-                                fontSize={17}
+                                fontSize={themeStyle.FONT_SIZE_MD}
                                 onClickFn={() => updateActiveEditNote(null)}
                                 bgColor={themeStyle.ERROR_COLOR}
-                                textColor={themeStyle.TEXT_PRIMARY_COLOR}
+                                textColor={themeStyle.WHITE_COLOR}
                                 fontFamily={`${getCurrentLang()}-Bold`}
                                 borderRadious={19}
                               />
@@ -1589,7 +1667,7 @@ const OrdersListScreen = ({ route }) => {
                         </View>
                         {activeEditNote == null && (
                           <View style={{ width: "40%", flexDirection: "row" }}>
-                            <Text style={{ fontSize: 20, textAlign: "left" }}>
+                            <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, textAlign: "left" }}>
                               {order.note}
                             </Text>
                           </View>
@@ -1684,7 +1762,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   orderContainer: {
-    backgroundColor: themeStyle.WHITE_COLOR,
+    backgroundColor: themeStyle.GRAY_80,
     borderRadius: 10,
     marginBottom: 15,
     marginHorizontal: 20,
@@ -1693,17 +1771,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   dateRawText: {
-    fontSize: 20,
+    fontSize: themeStyle.FONT_SIZE_XL,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     color: themeStyle.TEXT_PRIMARY_COLOR,
   },
   totalPriceText: {
-    fontSize: 20,
+    fontSize: themeStyle.FONT_SIZE_XL,
     fontFamily: `${getCurrentLang()}-SemiBold`,
     marginBottom: 15,
   },
   dateText: {
-    fontSize: 20,
+    fontSize: themeStyle.FONT_SIZE_XL,
     fontFamily: `${getCurrentLang()}-Bold`,
     marginBottom: 15,
 

@@ -102,11 +102,6 @@ export default function ConfirmRefundActiondDialog({
   };
 
   const getOrderTotalPrice = (order) => {
-    const oOrder = order?.order;
-    console.log("oOrder", oOrder);
-    if (oOrder.receipt_method == SHIPPING_METHODS.shipping) {
-      return order?.total - storeDataStore?.storeData?.delivery_price;
-    }
     return order?.total;
   };
 

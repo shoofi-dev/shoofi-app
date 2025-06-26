@@ -106,10 +106,10 @@ const AtiveOrdersScreen = ({ route }) => {
   };
 
   // Use mock data if no real orders
-  const displayOrders = ordersList.length > 0 ? ordersList : mockOrders;
-
+  const displayOrders = ordersList.length > 0 && ordersList;
+  if(!displayOrders) return null;
   return (
-    <View style={{ width: "100%", marginTop: 20 }}>
+    <View style={{ width: "100%", marginTop: 20, paddingBottom: 100 }}>
       <View style={{ alignItems: "center", width: "100%" }}>
         <View style={{ alignItems: "center", width: "100%" }}>
           <View style={{flexDirection:'row', width:"100%", alignItems:'center', justifyContent:'center'}}>
@@ -121,8 +121,7 @@ const AtiveOrdersScreen = ({ route }) => {
           >
             {t("order-list")}
           </Text>
-          <View style={{position:'absolute', right:10}}>
-      <BackButton />
+          <View style={{position:'absolute', left:10}}>
       </View>
           </View>
  
@@ -212,9 +211,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   textLang: {
-    fontSize: 25,
-    textAlign: "left",
-    color: themeStyle.WHITE_COLOR
+    fontSize: themeStyle.FONT_SIZE_LG,
+    textAlign: "center",
+    fontWeight: "bold",
   },
   background: {
     position: "absolute",

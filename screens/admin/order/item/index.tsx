@@ -127,9 +127,9 @@ const getOrderTotalPrice = (order) => {
   if (
     oOrder.receipt_method == SHIPPING_METHODS.shipping
   ) {
-    return order?.total - storeDataStore?.storeData?.delivery_price;
+    return order?.orderPrice;
   }
-  return order?.total;
+  return order?.orderPrice;
 };
 
 const gerRefundAmount = (order: any) => {

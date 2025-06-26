@@ -27,7 +27,7 @@ export default {
   // Feedback
   ERROR_COLOR: "#E43100",       // negative
   SUCCESS_COLOR: "#00AC20",     // positive
-
+  WARNING_COLOR: "#FFA500",     // warning
   // Gradients
   GRADIENT_MAIN: ["#C1E300", "#A4C700"],
   GRADIENT_SPLASH: ["#C1E300", "#A4C700"],

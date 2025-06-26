@@ -115,7 +115,8 @@ export default function Button({
         style={{
           width: "100%",
           borderRadius: 999,
-
+          borderWidth: borderWidthNumber ? borderWidthNumber : 0,
+          borderColor: borderColor ? borderColor : themeStyle.GRAY_30,
           justifyContent: "center",
           alignItems: "center",
           padding: 15,
@@ -137,7 +138,7 @@ export default function Button({
                 <Text style={{
                 color: countTextColor ? countTextColor : "#fff",
                 fontWeight: "bold",
-                fontSize: themeStyle.FONT_SIZE_MD,
+                fontSize: fontSize ? fontSize : themeStyle.FONT_SIZE_MD,
               }}>{countText}</Text>
             </View>
           )}
