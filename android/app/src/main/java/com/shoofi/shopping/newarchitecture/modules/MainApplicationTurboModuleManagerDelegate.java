@@ -1,4 +1,4 @@
-package com.sariq.shoofi.newarchitecture.modules;
+package com.shoofi.shopping.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

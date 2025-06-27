@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useContext, useCallback } from "react";
 import { observer } from "mobx-react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -30,10 +30,13 @@ const HEADER_HEIGHT = 340;
 const SHIPPING_PICKER_CONTAINER_HEIGHT = 60;
 const STICKY_HEADER_HEIGHT = 90;
 const SCROLLABLE_PART_HEIGHT = HEADER_HEIGHT + SHIPPING_PICKER_CONTAINER_HEIGHT;
-
+const categoryHeaderHeight = 35;
+const productHeight = 140;
+const sectionMargin = 28;
 const MenuScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const allCategoriesListRef = useRef<AllCategoriesListRef>(null);
   const categoryUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -79,21 +82,31 @@ const MenuScreen = () => {
     // Clear menu data when navigating back to prevent showing old store data
     useFocusEffect(
       useCallback(() => {
-        // Clear store data first to prevent showing old data
-        menuStore.clearMenu();
+        // Check if we're coming from stores-list via route params
+        const isFromStoresList = route.params?.fromStoresList;
         
-        // Clear local state when entering the screen to prevent showing old data
-        setCategoryList(null);
-        setSelectedCategory(null);
-        storeDataStore.storeData = null;
+        console.log("isFromStoresList", !!isFromStoresList, "route params:", route.params);
         
-        // Small delay to ensure store data is cleared before fetching new data
+        if (isFromStoresList) {
+          // Clear store data first to prevent showing old data
+          menuStore.clearMenu();
+          
+          // Clear local state when entering the screen to prevent showing old data
+          setCategoryList(null);
+          setSelectedCategory(null);
+          storeDataStore.storeData = null;
+          
+          // Clear the route params to prevent future resets
+          navigation.setParams({ fromStoresList: undefined });
+        }
         
         return () => {
-          // Clear menu data when leaving the screen
-          menuStore.clearMenu();
+          // Only clear menu data when leaving the screen if we came from stores-list
+          if (isFromStoresList) {
+            menuStore.clearMenu();
+          }
         };
-      }, [menuStore])
+      }, [menuStore, navigation, route.params])
     );
     
   const initMenu = async () => {
@@ -126,10 +139,7 @@ const MenuScreen = () => {
           for (let i = 0; i < categoryIndex; i++) {
             const category = categoryList[i];
             if (category.products && category.products.length > 0) {
-              const categoryHeaderHeight = 60;
-              const productHeight = 120;
               const productsHeight = category.products.length * productHeight;
-              const sectionMargin = 24;
               offset += categoryHeaderHeight + productsHeight + sectionMargin;
             }
           }
@@ -188,10 +198,7 @@ const MenuScreen = () => {
     let accumulatedHeight = 0;
     for (const category of categoryList) {
       if (category.products && category.products.length > 0) {
-        const categoryHeaderHeight = 60;
-        const productHeight = 120;
         const productsHeight = category.products.length * productHeight;
-        const sectionMargin = 24;
         const categoryHeight =
           categoryHeaderHeight + productsHeight + sectionMargin;
 
@@ -221,6 +228,15 @@ const MenuScreen = () => {
       SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT,
     ],
     outputRange: [0, 1],
+    extrapolate: Extrapolate.CLAMP,
+  });
+
+  const stickyHeaderZIndex = scrollY.interpolate({
+    inputRange: [
+      SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT - 1,
+      SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT,
+    ],
+    outputRange: [0, 100], // zIndex 0 when opacity 0, 100 when opacity 1
     extrapolate: Extrapolate.CLAMP,
   });
 
@@ -297,6 +313,7 @@ const MenuScreen = () => {
           {
             opacity: stickyCategoryHeaderOpacity,
             transform: [{ translateY: headerTranslateY }],
+            zIndex: stickyHeaderZIndex,
           },
         ]}
       >

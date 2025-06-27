@@ -94,7 +94,7 @@ const GEOAddress = ({ onChange }: any) => {
     if (value) {
       Platform.OS === "android"
         ? Linking.sendIntent("android.settings.LOCATION_SOURCE_SETTINGS")
-        : Linking.openURL("App-Prefs:com.sariq.creme.caramel");
+        : Linking.openURL("App-Prefs:com.shoofi.shopping"); 
         toggleDialog(false);
     } else {
       toggleDialog(false);

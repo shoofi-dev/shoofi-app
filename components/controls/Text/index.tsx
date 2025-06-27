@@ -22,9 +22,10 @@ export type TProps = {
   children: any;
   style?: TextStyle | TextStyle[];
   type?: any;
+  numberOfLines?: number;
 };
 
-const Text = ({ children, style = {}, type }: TProps) => {
+const Text = ({ children, style = {}, type, numberOfLines = null }: TProps) => {
   const flatStyle = StyleSheet.flatten(style) || {};
   const {
     color = themeStyle.TEXT_PRIMARY_COLOR,
@@ -43,7 +44,7 @@ const Text = ({ children, style = {}, type }: TProps) => {
     fontSize: fontSize ? normalizeFontSize(fontSize) : undefined,
   };
 
-  return <ReactText style={finalStyle}>{children}</ReactText>;
+  return <ReactText lineBreakMode="tail" numberOfLines={numberOfLines} style={finalStyle}>{children}</ReactText>;
 };
 
 export default Text;

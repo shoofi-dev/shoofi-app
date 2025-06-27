@@ -30,6 +30,7 @@ import _useDeviceType from "../../../../hooks/use-device-type";
 import CustomFastImage from "../../../../components/custom-fast-image";
 import GlassBG from "../../../../components/glass-background";
 import Icon from "../../../../components/icon";
+import DashedLine from "react-native-dashed-line";
 
 export type TProps = {
   item: any;
@@ -107,7 +108,8 @@ const ProductItem = ({
   }, [onItemSelect, item]);
 
   return (
-    <TouchableOpacity style={styles.rowCard} onPress={handleItemPress}>
+    <TouchableOpacity style={{}} onPress={handleItemPress}>
+      <View style={styles.rowCard}>
       {/* Product Image on the right */}
       <View style={styles.rowImageWrapper}>
         <CustomFastImage source={{ uri: imageUrl }} style={styles.rowImage} />
@@ -115,7 +117,7 @@ const ProductItem = ({
 {/* Text and price on the left */}
       <View style={styles.rowTextContainer}>
         <Text style={styles.rowProductName}>{productName}</Text>
-        <Text style={styles.rowProductDesc}>{productDescription}</Text>
+        <Text style={styles.rowProductDesc} numberOfLines={3}>{productDescription}</Text>
         <Text style={styles.rowPriceText}>₪{price}</Text>
       </View>
       {/* Add button */}
@@ -129,6 +131,15 @@ const ProductItem = ({
           </View>
         </View>
       )}
+      </View>
+
+      <DashedLine
+        style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
+        dashThickness={1}
+        dashGap={1}
+        dashColor={themeStyle.GRAY_20}
+        dashLength={10}
+      />
     </TouchableOpacity>
   );
 };
@@ -140,11 +151,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    borderRadius: 16,
-    marginHorizontal: 8,
-    borderBottomWidth: 1,
-    borderColor: themeStyle.GRAY_20,
-    paddingVertical: 20,
+    paddingHorizontal: 5,
+    height: 140,
+
 
   },
   rowImageWrapper: {

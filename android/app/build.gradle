@@ -143,7 +143,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId 'com.sariq.shoofi'
+        applicationId 'com.shoofi.shopping'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -233,10 +233,10 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('abdelhai_butcher_release_keystore.keystore')
-            storePassword 'Paris2023!'
-            keyAlias 'abdelhai_butcher_release_keystore'
-            keyPassword 'Paris2023!'
+            storeFile file('shoofi_shopping_release_keystore.keystore')
+            storePassword 'London2020!'
+            keyAlias 'shoofi_shopping_keystore'
+            keyPassword 'London2020!'
         }
     }
     buildTypes {

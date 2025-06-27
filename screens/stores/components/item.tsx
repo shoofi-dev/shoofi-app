@@ -35,7 +35,7 @@ const StoreItem = ({ storeItem }: TProps) => {
       await shoofiAdminStore.setStoreDBName(store.appName);
       // await menuStore.getMenu();
       // await storeDataStore.getStoreData();
-      (navigation as any).navigate("menuScreen");
+      (navigation as any).navigate("menuScreen", { fromStoresList: Date.now() });
     } catch (error) {
       console.error("Error loading store:", error);
       // You could show an error message here

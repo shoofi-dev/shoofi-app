@@ -77,12 +77,11 @@ const HomeScreen = ({ navigation }) => {
   const cities = shoofiAdminStore?.storeData?.cities || [];
 
   const displayTemrsAndConditions = async () => {
-    if (!userDetailsStore.isAcceptedTerms) {
-      setTimeout(() => {
-        navigation.navigate("terms-and-conditions");
-      }, 0);
-    }
-    console.log("userDetailsStore.isDriver()", userDetailsStore.isDriver());
+    // if (!userDetailsStore.isAcceptedTerms) {
+    //   setTimeout(() => {
+    //     navigation.navigate("terms-and-conditions");
+    //   }, 0);
+    // }
     if(userDetailsStore.isDriver()){
       setTimeout(() => {
         navigation.navigate("delivery-driver-dashboard");

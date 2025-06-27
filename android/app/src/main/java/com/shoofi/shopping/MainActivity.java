@@ -1,4 +1,4 @@
-package com.sariq.shoofi;
+package com.shoofi.shopping;
 
 import android.os.Build;
 import android.os.Bundle;

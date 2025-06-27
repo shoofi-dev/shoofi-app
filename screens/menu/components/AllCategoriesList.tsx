@@ -19,6 +19,9 @@ import Modal from "react-native-modal";
 import MealScreen from "../../meal/index2";
 import GlassBG from "../../../components/glass-background";
 import MealModal from './../../../components/MealModal';
+const categoryHeaderHeight = 40;
+const productHeight = 140;
+const sectionMargin = 24;
 
 interface AllCategoriesListProps {
   categoryList: any[];
@@ -48,21 +51,37 @@ const CategorySection = ({ category, languageStore, onItemSelect }: {
     ? category.nameAR 
     : category.nameHE;
 
+  const renderProduct = useCallback(({ item: product }) => (
+    <ProductItem
+      key={product._id}
+      item={product}
+      onItemSelect={(item) => onItemSelect(item, category)}
+      onDeleteProduct={() => {}}
+      onEditProduct={() => {}}
+    />
+  ), [category, onItemSelect]);
+
+  const keyExtractor = useCallback((item) => item._id, []);
+
   return (
     <View style={styles.categorySection}>
       <View style={styles.categoryHeader}>
         <Text style={styles.categoryTitle}>{categoryName}</Text>
       </View>
       <View style={styles.productsContainer}>
-        {category.products.map((product) => (
-          <MemoizedProductItem
-            key={product._id}
-            item={product}
-            onItemSelect={(item) => onItemSelect(item, category)}
-            onDeleteProduct={() => {}}
-            onEditProduct={() => {}}
-          />
-        ))}
+        <FlatList
+          data={category.products}
+          keyExtractor={keyExtractor}
+          renderItem={renderProduct}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          initialNumToRender={5}
+          updateCellsBatchingPeriod={50}
+          disableVirtualization={false}
+        />
       </View>
     </View>
   );
@@ -86,10 +105,7 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
         offsets.push(currentOffset);
         const category = categoryList[i];
         if (category && category.products && category.products.length > 0) {
-          const categoryHeaderHeight = 60;
-          const productHeight = 120;
           const productsHeight = category.products.length * productHeight;
-          const sectionMargin = 24;
           currentOffset += categoryHeaderHeight + productsHeight + sectionMargin;
         }
       }
@@ -145,15 +161,11 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
         return { length: 0, offset: 0, index };
       }
       
-      const categoryHeaderHeight = 60;
-      const productHeight = 120;
       const productsHeight = category.products.length * productHeight;
-      const sectionMargin = 24;
       const length = categoryHeaderHeight + productsHeight + sectionMargin;
       
       return { length, offset: categoryOffsets[index] || 0, index };
     }, [categoryOffsets]);
-
     return (
       <View style={styles.container}>
         <FlatList
@@ -205,8 +217,8 @@ const styles = StyleSheet.create({
   },
   categoryHeader: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginBottom: 8,
+    height: 40,
+    justifyContent: "center",
   },
   categoryTitle: {
     fontSize: themeStyle.FONT_SIZE_XL,
@@ -221,7 +233,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   productsContainer: {
-    paddingHorizontal: 8,
   },
   modalContainer: {
     maxHeight: screenHeight * 0.9,

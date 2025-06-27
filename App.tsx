@@ -130,19 +130,19 @@ const App = () => {
   // const invoiceRef = useRef();
   const invoicesRef = useRef([]);
 
-  const {
-    latitude,
-    longitude,
-    errorMsg,
-    isLoading,
-    requestLocationPermission,
-    getCurrentLocation
-  } = useLocation();
+  // const {
+  //   latitude,
+  //   longitude,
+  //   errorMsg,
+  //   isLoading,
+  //   requestLocationPermission,
+  //   getCurrentLocation
+  // } = useLocation();
 
   // Request permission and get location when component mounts
-  useEffect(() => {
-    requestLocationPermission();
-  }, []);
+  // useEffect(() => {
+  //   requestLocationPermission();
+  // }, []);
 
   const [assetsIsReady, setAssetsIsReady] = useState(false);
   const [appIsReady, setAppIsReady] = useState(false);
@@ -540,7 +540,7 @@ const App = () => {
       // const fetchStoreDataStore = storeDataStore.getStoreData();
       if (authStore.isLoggedIn() && userDetailsStore.isDriver()) {
         console.log("XXXXXXXXXXA")
-        userDetailsStore.setIsAcceptedTerms(true);
+        // userDetailsStore.setIsAcceptedTerms(true);
         const fetchUserDetails = userDetailsStore.getUserDetails({isDriver: true});
         Promise.all([
           fetchUserDetails,
@@ -582,7 +582,7 @@ const App = () => {
             const fetchUserDetails = userDetailsStore.getUserDetails();
             const fetchStoreZCrData = shoofiAdminStore.getStoreZCrData();
             //const fetchOrders = ordersStore.getOrders(userDetailsStore.isAdmin());
-            userDetailsStore.setIsAcceptedTerms(true);
+            // userDetailsStore.setIsAcceptedTerms(true);
             Promise.all([
               fetchUserDetails,
               fetchStoreZCrData,
@@ -593,7 +593,7 @@ const App = () => {
                 console.log("storexxx", store)
                 const storeData = shoofiAdminStore.getStoreById(store.appName);
                 await shoofiAdminStore.setStoreDBName(storeData?.appName || store?.appName);
-                await menuStore.getMenu();
+                // await menuStore.getMenu();
                 await storeDataStore.getStoreData();
                 console.log("storeId", store.appName)
                 
@@ -603,8 +603,8 @@ const App = () => {
                 if(appNameStorage){
                   await shoofiAdminStore.setStoreDBName(appNameStorage);
 
-                await menuStore.getMenu();
-                await storeDataStore.getStoreData();
+                // await menuStore.getMenu();
+                // await storeDataStore.getStoreData();
                 }
               }
               setTimeout(() => {
@@ -616,7 +616,7 @@ const App = () => {
             });
           } else {
             const data = await AsyncStorage.getItem("@storage_terms_accepted");
-            userDetailsStore.setIsAcceptedTerms(JSON.parse(data));
+            // userDetailsStore.setIsAcceptedTerms(JSON.parse(data));
             setTimeout(() => {
               setAppIsReady(true);
             }, 0);

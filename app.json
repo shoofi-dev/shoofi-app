@@ -34,20 +34,16 @@
     "ios": {
       "buildNumber": "1.0.0",
       "supportsTablet": true,
-      "bundleIdentifier": "com.sariq.shoofi"
+      "bundleIdentifier": "com.shoofi.shopping"
     },
     "android": {
       "versionCode": 1,
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon-butcher.png",
-        "backgroundColor": "#FFFFFF"
-      },
       "splash": {
         "image": "./assets/splash-screen.png",
         "backgroundColor": "#FFFFFF",
         "resizeMode":"cover"
       },
-      "package": "com.sariq.shoofi",
+      "package": "com.shoofi.shopping",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyD0CSVYW-UxSDEnderEtAB9YDmYYZLu8q8"

@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ActivityIndicator, Dimensions, Platform } from "react-native";
 
 /* styles */
 import theme from "../../styles/theme.style";
@@ -14,11 +14,18 @@ import Text from "../../components/controls/Text";
 import { temrsText } from "./texts";
 import { ScrollView } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
+import { WebView } from "react-native-webview";
 
 export default function TermsAndConditionsScreen() {
   const { t } = useTranslation();
 
-  let { userDetailsStore } = useContext(StoreContext);
+  const pdfUrl = 'https://shoofi-spaces.fra1.cdn.digitaloceanspaces.com/terms-and-conditions/terms-and-conditions.pdf';
+
+  const viewerUrl =
+    Platform.OS === 'android'
+      ? `https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(pdfUrl)}`
+      : pdfUrl; // iOS WebView can open PDFs directly
+
 
   const [visible, setVisible] = useState(false);
   const navigation = useNavigation();
@@ -50,61 +57,16 @@ export default function TermsAndConditionsScreen() {
           end={{ x: 1, y: 1 }}
           style={[styles.background]}
         />
-        <View style={{ alignItems: "center", marginTop: 20, paddingBottom: 8 }}>
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-           אטליז עבדאלחי
-          </Text>
-          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-            תנאי שימוש / מדיניות פרטיות
-          </Text>
-        </View>
-        <ScrollView
-          style={{
-            flexDirection: "column",
-          }}
-        >
-          {temrsText.map((section) => (
-            <View
-              style={{
-                marginHorizontal: 20,
-                shadowColor: "#C19A6B",
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.3,
-                shadowRadius: 6,
-                elevation: 0,
-                borderWidth:0,
-                backgroundColor:'transparent'
-              }}
-            >
-              <Text style={styles.sectionTitle}>{section.title}</Text>
-              <View>
-                {section?.rows?.map((row) => (
-                  <Text style={styles.sectionRow}>{row}</Text>
-                ))}
-              </View>
-            </View>
-          ))}
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: 10,
-            }}
-          >
-            <Text
-              style={{
-               // fontFamily: "ar-American-bold",
-                color: themeStyle.TEXT_PRIMARY_COLOR,
-              }}
-            >
-              Ⓒ Sari Qashuw
-            </Text>
-          </View>
-        </ScrollView>
-        <View
+
+        <View style={styles.container}>
+      <WebView
+        source={{ uri: viewerUrl }}
+        style={styles.webview}
+        startInLoadingState
+        allowsBackForwardNavigationGestures
+      />
+    </View>
+        {/* <View
           style={{
             width: "100%",
             paddingHorizontal: 15,
@@ -126,7 +88,7 @@ export default function TermsAndConditionsScreen() {
               fontSize={20}
             />
           </View>
-        </View>
+        </View> */}
       </View>
       <TremsDialog handleAnswer={acceptTerms} isOpen={visible} />
     </View>
@@ -136,8 +98,9 @@ export default function TermsAndConditionsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  },
+  webview: {
+    flex: 1,
   },
   button: {
     backgroundColor: theme.PRIMARY_COLOR,
