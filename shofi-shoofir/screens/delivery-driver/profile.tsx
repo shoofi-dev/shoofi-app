@@ -8,6 +8,7 @@ import {
   Alert,
   TextInput,
   Switch,
+  I18nManager,
 } from 'react-native';
 import { observer } from 'mobx-react';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +16,9 @@ import { useContext } from 'react';
 import { StoreContext } from '../../stores';
 import DeliveryDriverHeader from '../../components/delivery-driver/DeliveryDriverHeader';
 import { colors } from '../../styles/colors';
+
+// Force RTL layout
+I18nManager.forceRTL(true);
 
 const DeliveryDriverProfile = observer(() => {
   const navigation = useNavigation();
@@ -289,15 +293,15 @@ const DeliveryDriverProfile = observer(() => {
 
         {/* Statistics */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Statistics</Text>
+          <Text style={styles.sectionTitle}>الإحصائيات</Text>
           <View style={styles.statsCard}>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>{deliveryDriverStore.profile.totalDeliveries || 0}</Text>
-              <Text style={styles.statLabel}>Total Deliveries</Text>
+              <Text style={styles.statLabel}>إجمالي التوصيلات</Text>
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>₪{deliveryDriverStore.profile.totalEarnings || 0}</Text>
-              <Text style={styles.statLabel}>Total Earnings</Text>
+              <Text style={styles.statLabel}>إجمالي الأرباح</Text>
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>{deliveryDriverStore.profile.rating?.toFixed(1) || 'غير متوفر'}</Text>
@@ -385,6 +389,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     color: colors.gray,
+    textAlign: 'center',
   },
   errorContainer: {
     flex: 1,
@@ -395,6 +400,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: colors.red,
+    textAlign: 'center',
   },
   profileHeader: {
     alignItems: 'center',
@@ -422,11 +428,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
     marginBottom: 4,
+    textAlign: 'center',
   },
   driverPhone: {
     fontSize: 16,
     color: colors.gray,
     marginBottom: 8,
+    textAlign: 'center',
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -436,6 +444,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.orange,
     fontWeight: '600',
+    textAlign: 'center',
   },
   editToggle: {
     flexDirection: 'row',
@@ -457,6 +466,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.gray,
+    textAlign: 'center',
   },
   activeToggleText: {
     color: colors.white,
@@ -469,6 +479,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
     marginBottom: 8,
+    textAlign: 'right',
   },
   infoCard: {
     backgroundColor: colors.white,
@@ -482,10 +493,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.gray,
     marginBottom: 4,
+    textAlign: 'right',
   },
   value: {
     fontSize: 16,
     color: colors.text,
+    textAlign: 'right',
   },
   input: {
     fontSize: 16,
@@ -510,11 +523,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: colors.primary,
+    textAlign: 'center',
   },
   statLabel: {
     fontSize: 14,
     color: colors.gray,
     marginTop: 4,
+    textAlign: 'center',
   },
   actionButtons: {
     flexDirection: 'row',
@@ -540,6 +555,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 16,
     fontWeight: '600',
+    textAlign: 'center',
   },
 });
 

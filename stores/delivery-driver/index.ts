@@ -113,6 +113,9 @@ class DeliveryDriverStore {
   isOnline: boolean = true;
   currentLocation: { latitude: number; longitude: number } | null = null;
 
+  // Notifications state
+  notifications: Notification[] = [];
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -128,6 +131,10 @@ class DeliveryDriverStore {
 
   get completedOrdersCount() {
     return this.completedOrders.length;
+  }
+
+  get unreadNotificationsCount() {
+    return this.notifications.filter(n => !n.isRead).length;
   }
 
   // Orders methods
@@ -484,6 +491,9 @@ class DeliveryDriverStore {
   getNotifications = async (driverId: string, limit: number = 20, offset: number = 0) => {
     try {
       const notificationsData = await this.getNotificationsFromServer(driverId, limit, offset);
+      runInAction(() => {
+        this.notifications = notificationsData.notifications || [];
+      });
       return notificationsData;
     } catch (error) {
       console.error('Error fetching notifications:', error);

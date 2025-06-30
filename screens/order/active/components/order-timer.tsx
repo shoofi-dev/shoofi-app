@@ -148,13 +148,6 @@ async function getTotalAndRemainingMinutes(
             );
             console.log("elivery.status", delivery.status);
             let status = "";
-            if (
-              DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT === delivery.status
-                ? DELIVERY_STATUS_TEXT[
-                    DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT
-                  ]
-                : ORDER_STATUS_TEXT[order.status]
-            )
               switch (delivery.status) {
                 case DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT:
                   status =
@@ -331,6 +324,7 @@ const OrderTimer: React.FC<OrderTimerProps> = ({ mockData, order }) => {
     console.log("deliveryxxx", delivery.status);
     if (delivery?.status == DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT) {
       setShowCartIcon(false);
+      updateTimerData();
       return;
     }
     if (delivery?.status == DELIVERY_STATUS.DELIVERED) {
