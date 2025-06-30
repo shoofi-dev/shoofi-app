@@ -75,7 +75,6 @@ const CheckoutScreen = ({ route }) => {
 
   useEffect(()=>{
     cartStore.getShippingMethod().then((shippingMethodTmp)=>{
-      console.log("shippingMethodTmp", shippingMethodTmp)
       setShippingMethod(shippingMethodTmp)
     })
   }, [])
@@ -140,35 +139,28 @@ const CheckoutScreen = ({ route }) => {
 
   const onShippingMethodChange = (data: any) => {
     setShippingMethod(data);
-    console.log("onShippingMethodChange", data);
   };
 
   const onPlaceChange = (data: any) => {
     setPlace(data);
-    console.log("onPlaceChange", data);
   };
   const onGeoAddressChange = (data: any) => {
-    console.log("onGeoAddressChange", data);
     setAddressLocation(data);
   };
   const onTextAddressChange = (addressObj: any) => {
-    console.log("onTextAddressChange", addressObj);
     setAddressLocationText(addressObj);
   };
   const onAddressChange = (addressObj: any) => {
-    console.log("onAddressChange", addressObj);
     setAddressLocation(addressObj);
   };
 
   const onPaymentMethodChange = (data: any) => {
     setPaymentMthod(data);
-    console.log("data", data);
   };
 
   // Handle payment data from credit card component
   const onPaymentDataChange = (data: any) => {
     setPaymentData(data);
-    console.log("paymentData", data);
   };
 
   // SHIPPING METHOD AGGRE - START
@@ -329,7 +321,7 @@ const CheckoutScreen = ({ route }) => {
         <Animatable.View
           animation="fadeInLeft"
           duration={animationDuration}
-          style={{ marginTop: 25 }}
+          style={{ marginTop: 40 }}
         >
           <PaymentMethodCMP
             onChange={onPaymentMethodChange}

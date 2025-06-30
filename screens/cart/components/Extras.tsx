@@ -4,6 +4,7 @@ import Text from "../../../components/controls/Text";
 import { extrasStore } from "../../../stores/extras";
 import { isEmpty } from "lodash";
 import { StoreContext } from "../../../stores";
+import Icon from "../../../components/icon";
 
 const CartExtras = ({
   extrasDef,
@@ -23,8 +24,22 @@ const CartExtras = ({
   const getName = (item) => {
     return languageStore.selectedLang === "ar" ? item.nameAR : item.nameHE;
   };
+
+  const getToppingIcon = (area: any) => {
+    switch (area.id) {
+      case "full":
+        return <Icon icon="pizza-full" size={25} color="black" />;
+      case "half1":
+        return <Icon icon="pizza-right" size={25} color="black" />;
+      case "half2":
+        return <Icon icon="pizza-right" size={25} color="black" />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <View style={{ marginTop: 5,}}>
+    <View style={{ marginTop: 5 }}>
       {extrasDef.map((extra) => {
         const value = selectedExtras[extra.id];
         if (
@@ -75,7 +90,8 @@ const CartExtras = ({
                 {opts.map((o) => (
                   <View>
                     <Text>
-                    {getName(o)}{o.price ? ` (+₪${o.price})` : ""}
+                      {getName(o)}
+                      {o.price ? ` (+₪${o.price})` : ""}
                     </Text>
                   </View>
                 ))}
@@ -136,8 +152,9 @@ const CartExtras = ({
               {toppingSelections.map(([toppingId, areaData]) => {
                 const topping = extra.options.find((o) => o.id === toppingId);
                 if (!topping) return null;
-                const area = topping.areaOptions?.find((a) => a.id === areaData.areaId);
-                console.log("area", area);
+                const area = topping.areaOptions?.find(
+                  (a) => a.id === areaData.areaId
+                );
                 return (
                   <View
                     key={toppingId}
@@ -146,11 +163,14 @@ const CartExtras = ({
                       alignItems: "center",
                     }}
                   >
+                    {getToppingIcon(area)}
                     <Text style={{ fontSize: fontSize(14), color: "#333" }}>
                       {getName(topping)}
                       {area
-                        ? ` (${area.name}${
-                            area.price && areaData.isFree ? ` +₪${area.price}` : ""
+                        ? ` (${
+                            area.price && areaData.isFree
+                              ? `+₪${area.price}`
+                              : ""
                           })`
                         : ""}
                     </Text>

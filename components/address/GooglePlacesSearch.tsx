@@ -14,7 +14,6 @@ const GooglePlacesSearch = ({ onPlaceSelected }) =>{
     return (
         <View style={styles.container}>
           <GooglePlacesAutocomplete
-            placeholder={t('search-address')}
             onPress={(data, details = null) => {
               onPlaceSelected && onPlaceSelected(data, details);
             }}

@@ -51,37 +51,21 @@ const CategorySection = ({ category, languageStore, onItemSelect }: {
     ? category.nameAR 
     : category.nameHE;
 
-  const renderProduct = useCallback(({ item: product }) => (
-    <ProductItem
-      key={product._id}
-      item={product}
-      onItemSelect={(item) => onItemSelect(item, category)}
-      onDeleteProduct={() => {}}
-      onEditProduct={() => {}}
-    />
-  ), [category, onItemSelect]);
-
-  const keyExtractor = useCallback((item) => item._id, []);
-
   return (
     <View style={styles.categorySection}>
       <View style={styles.categoryHeader}>
         <Text style={styles.categoryTitle}>{categoryName}</Text>
       </View>
       <View style={styles.productsContainer}>
-        <FlatList
-          data={category.products}
-          keyExtractor={keyExtractor}
-          renderItem={renderProduct}
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={false}
-          removeClippedSubviews={true}
-          maxToRenderPerBatch={10}
-          windowSize={5}
-          initialNumToRender={5}
-          updateCellsBatchingPeriod={50}
-          disableVirtualization={false}
-        />
+        {category.products.map(product => (
+          <ProductItem
+            key={product._id}
+            item={product}
+            onItemSelect={(item) => onItemSelect(item, category)}
+            onDeleteProduct={() => {}}
+            onEditProduct={() => {}}
+          />
+        ))}
       </View>
     </View>
   );
@@ -96,14 +80,20 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
     
+    // Filter out categories with no products
+    const filteredCategoryList = useMemo(
+      () => categoryList.filter(cat => cat.products && cat.products.length > 0),
+      [categoryList]
+    );
+    
     // Memoize category offsets calculation
     const categoryOffsets = useMemo(() => {
       const offsets = [];
       let currentOffset = 0;
       
-      for (let i = 0; i < categoryList.length; i++) {
+      for (let i = 0; i < filteredCategoryList.length; i++) {
         offsets.push(currentOffset);
-        const category = categoryList[i];
+        const category = filteredCategoryList[i];
         if (category && category.products && category.products.length > 0) {
           const productsHeight = category.products.length * productHeight;
           currentOffset += categoryHeaderHeight + productsHeight + sectionMargin;
@@ -111,7 +101,7 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
       }
       
       return offsets;
-    }, [categoryList]);
+    }, [filteredCategoryList]);
 
     // Calculate estimated heights for each category
     const getCategoryOffset = useCallback((categoryIndex: number) => {
@@ -120,7 +110,7 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
 
     useImperativeHandle(ref, () => ({
       scrollToCategory: (categoryId: string) => {
-        const categoryIndex = categoryList.findIndex(cat => cat._id === categoryId);
+        const categoryIndex = filteredCategoryList.findIndex(cat => cat._id === categoryId);
         if (categoryIndex !== -1) {
           console.log("categoryIndex", categoryIndex);
           
@@ -134,7 +124,7 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
           });
         }
       },
-    }), [categoryList, getCategoryOffset]);
+    }), [filteredCategoryList, getCategoryOffset]);
 
     const onItemSelect = useCallback((item, category) => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -170,7 +160,7 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}
-          data={categoryList}
+          data={filteredCategoryList}
           keyExtractor={keyExtractor}
           renderItem={renderCategorySection}
           ListHeaderComponent={ListHeaderComponent}

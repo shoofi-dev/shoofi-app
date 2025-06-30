@@ -360,7 +360,7 @@ const NewOrdersListScreen = ({ route }) => {
             <Text
               style={{
                 fontSize: 36,
-                fontFamily: `${getCurrentLang()}-American-bold`,
+                fontFamily: `${getCurrentLang()}-Bold`,
 
                 color: themeStyle.SUCCESS_COLOR,
               }}

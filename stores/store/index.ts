@@ -15,12 +15,18 @@ class StoreDataStore {
 
   }
 
-  getStoreDataFromServer = async () => {
+  getStoreDataFromServer = async (storeDBName?: string) => {
     const body = { date: moment().format()}
+   
     return axiosInstance
       .post(
         `${STORE_API.GET_STORE_API}`,
-        body
+        body,
+        {
+          headers: {
+            "app-name": storeDBName
+          }
+        }
       )
       .then(function (response) {
         const res = response.data;
@@ -30,8 +36,8 @@ class StoreDataStore {
       })
   };
 
-  getStoreData = () => {
-    return this.getStoreDataFromServer().then((res:any) => {
+  getStoreData = (storeDBName?: string) => {
+    return this.getStoreDataFromServer(storeDBName).then((res:any) => {
       runInAction(() => {
         this.storeData = res[0];
       })

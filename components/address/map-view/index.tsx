@@ -57,29 +57,23 @@ export const MapViewAddress = ({ region, location }: TProps) => {
 
 const styles = StyleSheet.create({
   mapContainerDefault: {
-    height: 150,
+    height: 120,
     borderRadius: 10,
-    minHeight: 150,
+    minHeight: 120,
   },
   mapContainer: {
     width: "100%",
-    height: 150,
+    height: 120,
     borderRadius: 10,
-    minHeight: 150,
+    minHeight: 120,
   },
   mapViewContainer: {
     width: "100%",
-    height: 150,
-    borderRadius: 10,
-    minHeight: 150,
+    height: 130,
+    borderRadius: 4,
+    minHeight: 140,
     alignSelf: "center",
-    shadowColor: "black",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.9,
-    shadowRadius: 6,
-    elevation: 20,
+    backgroundColor: theme.GRAY_10,  
+    padding: 10,
   },
 });

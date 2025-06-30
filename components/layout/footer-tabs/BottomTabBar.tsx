@@ -85,8 +85,6 @@ export default function BottomTabBar({ state, navigation }) {
             // For RTL, reverse the order
             const index = I18nManager.isRTL ? tabs2.length - 1 - idx : idx;
             const route = tabs2[index];
-            console.log("route",route)
-            console.log("state",state.index)
             const isActive = state.index === 3;
             return (
               <TouchableOpacity

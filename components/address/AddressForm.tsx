@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -21,7 +20,7 @@ import GooglePlacesSearch from "./GooglePlacesSearch";
 import themeStyle from "../../styles/theme.style";
 import { useTranslation } from "react-i18next";
 import { DIALOG_EVENTS } from "../../consts/events";
-
+import Text from "../controls/Text";
 interface AddressFormProps {
   address?: any;
   onSuccess?: () => void;
@@ -143,7 +142,6 @@ const AddressForm = observer(({ route,address }: any) => {
       return;
     }
     setLoading(true);
-    console.log("formData", formData.location);
     const [lng, lat] = address ? address.location.coordinates : formData.location.coordinates;
     const location = { lat, lng };  
     try {
@@ -187,39 +185,33 @@ const AddressForm = observer(({ route,address }: any) => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.form}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 24,
-            }}
-          >
-            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-              {t("new-address")}
-            </Text>
-          </View>
-          <View style={styles.inputGroup}>
+
+          
+          <View style={[styles.inputGroup,{marginBottom: 20}]}>
             <Text style={styles.label}>{t("address-name")} *</Text>
             <TextInput
               style={styles.input}
               value={formData.name}
               onChangeText={(value) => handleInputChange("name", value)}
-              placeholder={t("address-name-placeholder")}
             />
           </View>
           {/* Google Places Autocomplete */}
+          <View style={styles.row}>
+
           <TouchableOpacity
             style={styles.locationButton}
             onPress={getCurrentLocation}
             disabled={loading}
           >
-            <Icon name="my-location" size={20} color={themeStyle.PRIMARY_COLOR} />
+            <Icon name="my-location" size={20} color={themeStyle.SUCCESS_COLOR} />
+            <View style={styles.locationButtonTextContainer}>
             <Text style={styles.locationButtonText}>
               {t("user-current-location")}
             </Text>
+            </View>
           </TouchableOpacity>
-
-          <View style={styles.inputGroup}>
+          </View> 
+          <View style={[styles.inputGroup,{flex: 1,}]}>
             <Text style={styles.label}>{t("street-address")}</Text>
             <GooglePlacesSearch onPlaceSelected={handlePlaceSelected} />
 
@@ -227,21 +219,12 @@ const AddressForm = observer(({ route,address }: any) => {
               style={styles.input}
               value={formData.street}
               onChangeText={(value) => handleInputChange('street', value)}
-              placeholder="Enter street address"
             /> */}
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>{t("city")}</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.city}
-              onChangeText={(value) => handleInputChange("city", value)}
-            />
-          </View>
 
           <View style={styles.row}>
-            <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
+            <View style={[styles.inputGroup, {  marginRight: 30 }]}>
               <Text style={styles.label}>{t("street-number")}</Text>
               <TextInput
                 style={styles.input}
@@ -250,15 +233,14 @@ const AddressForm = observer(({ route,address }: any) => {
               />
             </View>
 
-            {/* <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-              <Text style={styles.label}>State *</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.streetNumber}
-                onChangeText={(value) => handleInputChange('streetNumber', value)}
-                placeholder="Enter state"
-              />
-            </View> */}
+          <View style={[styles.inputGroup,{flex: 1,}]}>
+            <Text style={styles.label}>{t("city")}</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.city}
+              onChangeText={(value) => handleInputChange("city", value)}
+            />
+          </View>
           </View>
 
           {/* <CitiesList
@@ -274,7 +256,10 @@ const AddressForm = observer(({ route,address }: any) => {
               size={24}
               color={formData.isDefault ? "#FFD700" : "#666"}
             />
+            <View style={styles.defaultTextContainer}>
             <Text style={styles.defaultText}>{t('set-as-default-address')}</Text>
+
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -298,7 +283,6 @@ const AddressForm = observer(({ route,address }: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: themeStyle.WHITE_COLOR,
   },
   form: {
@@ -308,11 +292,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    fontSize: 14,
+    fontSize: themeStyle.FONT_SIZE_SM,
     fontWeight: "600",
     color: "#333",
     marginBottom: 8,
-    textAlign: "left",
   },
   input: {
     backgroundColor: "#fff",
@@ -321,7 +304,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#ddd",
-    textAlign: "right",
   },
   row: {
     flexDirection: "row",
@@ -334,9 +316,11 @@ const styles = StyleSheet.create({
     marginTop: -5,
   },
   locationButtonText: {
-    marginLeft: 8,
-    color: themeStyle.PRIMARY_COLOR,
-    fontSize: 16,
+    color: themeStyle.SUCCESS_COLOR,
+    fontSize: themeStyle.FONT_SIZE_SM,
+  },
+  locationButtonTextContainer: {
+    marginLeft: 5,
   },
   defaultToggle: {
     flexDirection: "row",
@@ -348,13 +332,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
   },
+  defaultTextContainer: {
+    marginLeft: 8,
+  },
   defaultText: {
     marginLeft: 8,
-    fontSize: 16,
+    fontSize: themeStyle.FONT_SIZE_SM,
     color: "#333",
   },
   submitButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: themeStyle.SUCCESS_COLOR,
     padding: 16,
     borderRadius: 8,
     alignItems: "center",

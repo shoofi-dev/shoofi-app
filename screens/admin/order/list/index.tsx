@@ -583,7 +583,7 @@ const OrdersListScreen = ({ route }) => {
             <Text
               style={{
                 fontSize: themeStyle.FONT_SIZE_3XL,
-                //fontFamily: `${getCurrentLang()}-American-bold`,
+                //fontFamily: `${getCurrentLang()}-Bold`,
 
                 color: themeStyle.SUCCESS_COLOR,
               }}
@@ -1334,7 +1334,7 @@ const OrdersListScreen = ({ route }) => {
               <Text
                 style={{
                   fontSize: themeStyle.FONT_SIZE_XL,
-                  //fontFamily: `${getCurrentLang()}-American-bold`,
+                  //fontFamily: `${getCurrentLang()}-Bold`,
                   color: isSelectedDay
                     ? themeStyle.TEXT_PRIMARY_COLOR
                     : themeStyle.TEXT_PRIMARY_COLOR,

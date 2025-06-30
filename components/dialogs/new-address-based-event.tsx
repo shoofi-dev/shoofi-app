@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, StyleSheet, DeviceEventEmitter, KeyboardAvoidingView, Platform, Text } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  DeviceEventEmitter,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+} from "react-native";
 import Modal from "react-native-modal";
 import CreditCard from "../credit-card";
 import { useTranslation } from "react-i18next";
@@ -7,6 +15,8 @@ import { DIALOG_EVENTS } from "../../consts/events";
 import theme from "../../styles/theme.style";
 import ExpiryDate from "../expiry-date";
 import AddressForm from "../address/AddressForm";
+import BackButton from "../back-button";
+import themeStyle from "../../styles/theme.style";
 
 export default function NewAddressBasedEventDialog() {
   const { t } = useTranslation();
@@ -25,6 +35,7 @@ export default function NewAddressBasedEventDialog() {
   const openDialog = () => setVisible(true);
 
   const hideDialog = () => {
+    console.log("hideDialog");
     setVisible(false);
   };
 
@@ -41,8 +52,8 @@ export default function NewAddressBasedEventDialog() {
   return (
     <Modal
       isVisible={visible}
-      onBackdropPress={() => hideDialog("close")}
-      onBackButtonPress={() => hideDialog("close")}
+      onBackdropPress={() => hideDialog()}
+      onBackButtonPress={() => hideDialog()}
       style={styles.modal}
       backdropOpacity={0.4}
       animationIn="slideInUp"
@@ -58,17 +69,41 @@ export default function NewAddressBasedEventDialog() {
         <View style={styles.sheet}>
           {/* Header */}
           <View style={styles.headerRow}>
-            <TouchableOpacity onPress={() => hideDialog("close")} style={styles.closeBtn}>
-              <Text style={styles.closeBtnText}>×</Text>
-            </TouchableOpacity>
- 
+            <View
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                justifyContent: "center",
+                zIndex: 1000,
+              }}
+            >
+              <BackButton onClick={hideDialog} isDisableGoBack={true} />
+            </View>
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                flex: 1,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: themeStyle.FONT_SIZE_XL,
+                  fontWeight: "bold",
+                }}
+              >
+                {t("new-address")}
+              </Text>
+            </View>
           </View>
           {/* Credit Card Form */}
-          <AddressForm/> 
+          <AddressForm />
         </View>
       </KeyboardAvoidingView>
       <ExpiryDate />
-
     </Modal>
   );
 }
@@ -92,19 +127,13 @@ const styles = StyleSheet.create({
     width: "100%",
     alignSelf: "center",
     overflow: "hidden",
-    padding:15
-
+    padding: 15,
   },
   headerRow: {
-    flexDirection: "row-reverse",
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingTop: 18,
-    paddingBottom: 8,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    backgroundColor: "#fff",
+    marginVertical: 15,
+    marginBottom: 30,
   },
   closeBtn: {
     width: 32,

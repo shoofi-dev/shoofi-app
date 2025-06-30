@@ -199,7 +199,7 @@ class MenuStore {
   };
   getFromCategoriesMealByKey = (mealId) => {
     let foundedMeal = null;
-    this.categories.forEach((category) => {
+    this.categories?.forEach((category) => {
       if (foundedMeal) {
         return;
       }

@@ -321,6 +321,7 @@ const MealScreen = ({ handleClose,product, category, index }) => {
   if (!meal) {
     return null;
   }
+  console.log("mealxx", meal.data);
   return (
     <View style={{ backgroundColor: themeStyle.WHITE_COLOR }}>
       <Animated.ScrollView

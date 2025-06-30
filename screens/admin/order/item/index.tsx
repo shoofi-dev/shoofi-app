@@ -184,7 +184,7 @@ const gerRefundAmount = (order: any) => {
             <Text
               style={{
                 fontSize: 20,
-                // fontFamily: `${getCurrentLang()}-American-bold`,
+                // fontFamily: `${getCurrentLang()}-Bold`,
 
                 color: themeStyle.SUCCESS_COLOR,
               }}

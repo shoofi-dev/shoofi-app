@@ -1,25 +1,27 @@
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import Modal from "react-native-modal";
+import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
+import { StoreContext } from "../../stores";
 import {
   animationDuration,
   PLACE,
   SHIPPING_METHODS,
 } from "../../consts/shared";
-import { useContext, useEffect, useState } from "react";
-import isStoreSupportAction from "../../helpers/is-store-support-action";
-import theme from "../../styles/theme.style";
+import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
 import { ShippingMethodPick } from "./shipping-method-pick";
 import { MapViewAddress } from "./map-view";
-import { PlacePickCmp } from "./place-pick";
-import TextAddress from "./text-address";
-import GEOAddress from "./geo-address";
-import { StoreContext } from "../../stores";
 import * as Animatable from "react-native-animatable";
-import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
 import Icon from "../icon";
 import Text from "../controls/Text";
 import { useNavigation } from "@react-navigation/native";
-import { observer } from "mobx-react-lite";
+import themeStyle from "../../styles/theme.style";
+import AddressModal from "./AddressModal";
 
 export type TProps = {
   onShippingMethodChangeFN: any;
@@ -29,6 +31,7 @@ export type TProps = {
   onAddressChange: any;
   shippingMethod: any;
 };
+
 export const AddressCMP = observer(({
   onShippingMethodChangeFN,
   onGeoAddressChange,
@@ -47,10 +50,6 @@ export const AddressCMP = observer(({
     customerLocation,
   } = useAvailableDrivers();
   const [defaultAddress, setDefaultAddress] = useState(null);
-  useEffect(() => {
-    console.log("addressStore.defaultAddress", addressStore.defaultAddress)
-    setDefaultAddress(addressStore.defaultAddress);
-  }, [addressStore.defaultAddress]);
   const [place, setPlace] = useState(PLACE.current);
   const [textAddress, setTextAddress] = useState("");
   const [location, setLocation] = useState(null);
@@ -65,34 +64,43 @@ export const AddressCMP = observer(({
   });
   const [isOpenRecipetNotSupportedDialog, setIOpenRecipetNotSupportedDialog] =
     useState(false);
+  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
 
+  useEffect(() => {
+    setDefaultAddress(addressStore.defaultAddress);
+  }, [addressStore.defaultAddress]);
 
   const onShippingMethodChange = async (shippingMethodValue: string) => {
-    // setShippingMethod(shippingMethodValue);
     onShippingMethodChangeFN(shippingMethodValue);
   };
 
   const onPlaceChange = (placeValue) => {
     setPlace(placeValue);
     onPlaceChangeFN(placeValue);
-    // if(placeValue === PLACE.other){
-    //   setIsOpenConfirmActiondDialog(true);
-    // }
   };
+
   const onChangeTextAddress = (addressObj) => {
     setTextAddress(addressObj ? `${addressObj.name}: ${addressObj.street || ''}${addressObj.streetNumber ? ',' + addressObj.streetNumber : ''}${addressObj.city ? ', ' + addressObj.city : ''}` : '');
     onTextAddressChange(addressObj);
   };
+
   useEffect(() => {
-    console.log("defaultAddress", defaultAddress);
     if (defaultAddress) {
-      setAddress(`${defaultAddress.name}: ${defaultAddress.street || ''}${defaultAddress.streetNumber ? ',' + defaultAddress.streetNumber : ''}${defaultAddress.city ? ', ' + defaultAddress.city : ''}`);
+      setAddress(
+        [
+          defaultAddress.name && `${defaultAddress.name}:`,
+          defaultAddress.street,
+          defaultAddress.streetNumber && defaultAddress.street && defaultAddress.streetNumber,
+          defaultAddress.city,
+        ]
+          .filter(Boolean)
+          .join(', ')
+      );
       onAddressChange(defaultAddress);
     }
   }, [defaultAddress]);
   
   const onGEOChange = (locationValue, regionValue) => {
-    console.log("onGEOChange", locationValue, regionValue);
     setLocation(locationValue);
     setRegion(regionValue);
     onGeoAddressChange(locationValue);
@@ -113,16 +121,10 @@ export const AddressCMP = observer(({
     max: availableDrivers?.area?.maxETA,
   };
   const distanceKm = availableDrivers?.distanceKm;
-  console.log("address", address);
 
   return (
     <View style={{}}>
-    
       <View>
-        {/* <ShippingMethodPick
-          onChange={onShippingMethodChange}
-          shippingMethodValue={shippingMethod}
-        /> */}
         <ShippingMethodPick
           onChange={onShippingMethodChange}
           shippingMethodValue={""}
@@ -134,70 +136,83 @@ export const AddressCMP = observer(({
           shippingMethod={shippingMethod}
         />
       </View>
+      
       {shippingMethod === SHIPPING_METHODS.shipping && (
         <View style={{ alignItems: "center" }}>
           <Animatable.View
             animation="fadeInLeft"
             duration={animationDuration}
             style={{
-              height: 60,
               marginTop: 10,
-              width: "90%",
+              width: "100%",
               alignItems: "center",
             }}
           >
-            {/* Default Address Bar */}
-      {address && (
-        <TouchableOpacity style={styles.defaultAddressBar} onPress={()=>{
-          navigation.navigate("AddressList");
-        }}>
-          <Icon name="home" size={20} color="#888" style={{ marginLeft: 6, marginRight: 2 }} />
-          <Text style={styles.defaultAddressText}>
-            {address}
-          </Text>
-        </TouchableOpacity>
-      )}
-            {/* <PlacePickCmp onChnage={onPlaceChange} selectedPlace={place} /> */}
-          </Animatable.View>
-            <View style={{ width: "100%" }}>
-              {/* <GEOAddress onChange={onGEOChange} /> */}
-              <Animatable.View
-                animation="fadeInLeft"
-                duration={animationDuration}
-                style={{ width: "100%", marginTop: 10, }}
+            {address && (
+              <TouchableOpacity 
+                style={styles.defaultAddressBar} 
+                onPress={() => setIsAddressModalVisible(true)}
               >
-                {customerLocation && (
-                  <MapViewAddress location={customerLocation} region={region} />
-                )}
-              </Animatable.View>
-            </View>
-      
-          {/* {place === PLACE.other && (
+                <View>
+                  <Text style={styles.defaultAddressText}>
+                    {address}
+                  </Text>
+                </View>
+                <View>
+                  <Icon icon="chevron" size={20} color="#888" style={{ marginLeft: 6, marginRight: 2 }} />
+                </View>
+              </TouchableOpacity>
+            )}
+          </Animatable.View>
+          
+          <View style={{ width: "100%" }}>
             <Animatable.View
               animation="fadeInLeft"
-              style={{ marginTop: 10, width: "100%" }}
+              duration={animationDuration}
+              style={{ width: "100%" }}
             >
-              <TextAddress onChange={onChangeTextAddress} />
+              {customerLocation && (
+                <MapViewAddress location={customerLocation} region={region} />
+              )}
             </Animatable.View>
-          )} */}
+          </View>
         </View>
       )}
+      
+      <Modal
+        isVisible={isAddressModalVisible}
+        onBackdropPress={() => setIsAddressModalVisible(false)}
+        style={{ justifyContent: 'flex-end', margin: 0, }}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        backdropOpacity={0.5}
+      >
+        <AddressModal 
+          onClose={() => setIsAddressModalVisible(false)}
+          onAddressSelect={(selectedAddress) => {
+            setDefaultAddress(selectedAddress);
+            onAddressChange(selectedAddress);
+          }}
+          selectionMode={true}
+        />
+      </Modal>
     </View>
   );
 });
+
 const styles = StyleSheet.create({
   defaultAddressBar: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    backgroundColor: '#f5f6f7',
+    backgroundColor: themeStyle.GRAY_10,
     borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
     marginBottom: 6,
-    minHeight: 32,
+    width: '100%',
+    padding: 10,
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between'
   },
   defaultAddressText: {
-    fontSize: 15,
+    fontSize: themeStyle.FONT_SIZE_MD,
     color: '#222',
     flexShrink: 1,
     textAlign: 'right',

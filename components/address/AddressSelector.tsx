@@ -80,7 +80,19 @@ const AddressSelector = observer(({ onAddressSelect }) => {
     setDropdownOpen(false);
     DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG);
   };
+  console.log("addressStore.addresses", addressStore.addresses);
 
+  const getAddressText = (address: any) => {
+    return [
+      address.name && `${address.name}:`,
+      address.street,
+      address.streetNumber && address.street && address.streetNumber,
+      address.city,
+    ]
+      .filter(Boolean)
+      .join(", ");
+  };
+console.log("selectedAddress",selectedAddress)
   return (
     <View style={{ zIndex: 100 }}>
       <TouchableOpacity
@@ -90,7 +102,7 @@ const AddressSelector = observer(({ onAddressSelect }) => {
       >
         {/* <Icon name="home" size={22} color="#444" style={styles.icon} /> */}
         <Icon
-          icon={!selectedAddress ? "location" : "home"}
+          icon={!selectedAddress ? "home" : "home"}
           size={16}
           style={{ marginRight: 5 }}
         />
@@ -116,13 +128,7 @@ const AddressSelector = observer(({ onAddressSelect }) => {
               }}
             >
               <Text style={{ color: themeStyle.TEXT_PRIMARY_COLOR }}>
-                {selectedAddress.street && selectedAddress.city
-                  ? `${selectedAddress.street} ${
-                      selectedAddress.streetNumber
-                        ? selectedAddress.streetNumber + ", "
-                        : ""
-                    }${selectedAddress.city}`
-                  : selectedAddress.city || ""}
+                {getAddressText(selectedAddress)}
               </Text>
               <Icon
                 icon={dropdownOpen ? "chevron_down" : "chevron_down"}
@@ -145,17 +151,18 @@ const AddressSelector = observer(({ onAddressSelect }) => {
               onPress={() => handleSelectAddress(address)}
             >
               <Icon
-                icon={!selectedAddress ? "location" : "home"}
+                icon={!selectedAddress ? "location" : "location"}
                 size={16}
                 style={{ marginRight: 5 }}
               />
               <Text style={styles.dropdownItemText} numberOfLines={1}>
-                {address.street && address.city
-                  ? `${address.street} ${
-                      address.houseNumber ? address.houseNumber + ", " : ""
-                    }${address.city}`
-                  : address.name || ""}
+                {getAddressText(address)}
               </Text>
+              <Icon
+                icon={selectedAddress?._id === address._id ? "v" : ""}
+                size={20}
+                style={{ marginRight: 5 }}
+              />
             </TouchableOpacity>
           ))}
           <TouchableOpacity style={styles.addNewBtn} onPress={handleAddNew}>
@@ -226,10 +233,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   dropdownItemText: {
-    fontSize: 16,
-    color: "#222",
+    fontSize: themeStyle.FONT_SIZE_MD,
     flex: 1,
-    textAlign: "left",
+    textAlign: "right",
     marginLeft: 10,
   },
   addNewBtn: {
@@ -237,7 +243,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 16,
     paddingHorizontal: 10,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: themeStyle.GRAY_10,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
     borderTopWidth: 1,

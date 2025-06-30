@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
   View,
-  Text,
   FlatList,
   TouchableOpacity,
   StyleSheet,
@@ -9,21 +8,29 @@ import {
   DeviceEventEmitter,
 } from "react-native";
 import { observer } from "mobx-react-lite";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import { StoreContext } from "../../stores";
 import { useTranslation } from "react-i18next";
 import themeStyle from "../../styles/theme.style";
 import BackButton from "../back-button";
 import { DIALOG_EVENTS } from "../../consts/events";
+import Text from "../controls/Text";
+import Icon from "../icon";
 
 interface AddressListProps {
   onAddressSelect?: (address: any) => void;
   selectionMode?: boolean;
+  modalMode?: boolean;
+  onClose?: () => void;
 }
 
 const AddressList = observer(
-  ({ onAddressSelect, selectionMode = false }: AddressListProps) => {
+  ({
+    onAddressSelect,
+    selectionMode = false,
+    modalMode = false,
+    onClose,
+  }: AddressListProps) => {
     const { t } = useTranslation();
 
     const navigation = useNavigation();
@@ -82,33 +89,41 @@ const AddressList = observer(
     };
 
     const openNewAddressDialog = () => {
-      DeviceEventEmitter.emit(
-        DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG
-      );
+      onClose?.();
+      setTimeout(() => {
+      DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG);
+      }, 400);
+    };
+
+    const getAddressText = (address: any) => {
+      return [
+        address.name && `${address.name}:`,
+        address.street,
+        address.streetNumber && address.street && address.streetNumber,
+        address.city,
+      ]
+        .filter(Boolean)
+        .join(", ");
     };
 
     const renderAddress = ({ item }: { item: any }) => (
-      <View style={styles.addressCard}>
+      <TouchableOpacity style={styles.addressCard} onPress={() => onAddressSelect?.(item)}>
         <View style={styles.addressInfo}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 10,
-            }}
-          >
-            <Text style={styles.addressName}>{item.name}</Text>
-            {item.isDefault && (
-              <View style={styles.defaultBadge}>
-                <Text style={styles.defaultText}>{t("default")}</Text>
-              </View>
-            )}
-          </View>
-          <Text style={styles.addressText}>{item.city}</Text>
-          <Text
-            style={styles.addressText}
-          >{`${item.street}, ${item.streetNumber} `}</Text>
+          <Text style={styles.addressName}>{getAddressText(item)}</Text>
         </View>
+        {(item.isDefault || addressStore.addresses.length === 1) && (
+          <Icon icon="v" size={26} color={themeStyle.SUCCESS_COLOR} />
+        )}
+        {/* <View>
+          {selectionMode && (
+            <TouchableOpacity
+              onPress={() => onAddressSelect?.(item)}
+              style={styles.selectButton}
+            >
+              <Text style={styles.selectButtonText}>{t("select")}</Text>
+            </TouchableOpacity>
+          )}
+        </View> */}
 
         <View style={styles.actions}>
           {!selectionMode && (
@@ -139,17 +154,8 @@ const AddressList = observer(
               </TouchableOpacity>
             </>
           )}
-
-          {selectionMode && (
-            <TouchableOpacity
-              onPress={() => onAddressSelect?.(item)}
-              style={styles.selectButton}
-            >
-              <Text style={styles.selectButtonText}>{t("select")}</Text>
-            </TouchableOpacity>
-          )}
         </View>
-      </View>
+      </TouchableOpacity>
     );
 
     if (addressStore.loading) {
@@ -162,41 +168,37 @@ const AddressList = observer(
 
     return (
       <View style={styles.container}>
-        <View style={styles.backContainer}>
-          <BackButton onClick={() => {}} />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>
-              {t("my-order")}
-            </Text>
-          </View>
-        </View>
         <FlatList
           data={addressStore.addresses}
           renderItem={renderAddress}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.list}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{t("no-addresses-found")}</Text>
-              {!selectionMode && (
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={openNewAddressDialog}
-                >
-                  <Text style={styles.addButtonText}>
-                    {t("add-new-address")}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
+          ListFooterComponent={
+            <TouchableOpacity style={styles.addNewAddress} onPress={openNewAddressDialog}>
+              <View style={styles.addNewAddressIcon}>
+                <Icon icon="plus" size={14} color={themeStyle.SUCCESS_COLOR} />
+              </View>
+              <View style={styles.addNewAddressTextContainer}>
+                <Text style={styles.addNewAddressText}>{t("add-new-address")}</Text>
+              </View>
+            </TouchableOpacity>
           }
+          // ListEmptyComponent={
+          //   <View style={styles.emptyContainer}>
+          //     <Text style={styles.emptyText}>{t("no-addresses-found")}</Text>
+
+          //     <TouchableOpacity
+          //       style={styles.addButton}
+          //       onPress={openNewAddressDialog}
+          //     >
+          //       <Text style={styles.addButtonText}>{t("add-new-address")}</Text>
+          //     </TouchableOpacity>
+          //   </View>
+          // }
         />
 
         {!selectionMode && addressStore.addresses.length > 0 && (
-          <TouchableOpacity
-            style={styles.fab}
-            onPress={openNewAddressDialog}
-          >
+          <TouchableOpacity style={styles.fab} onPress={openNewAddressDialog}>
             <Icon name="add" size={24} color="#fff" />
           </TouchableOpacity>
         )}
@@ -207,34 +209,34 @@ const AddressList = observer(
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: themeStyle.WHITE_COLOR,
+    marginBottom: 100,
+    borderTopWidth: 1,
+    borderColor: themeStyle.GRAY_20,
   },
-  list: {
-    padding: 16,
-  },
+  list: {},
   addressCard: {
     backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 16,
     marginBottom: 12,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: themeStyle.GRAY_20,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
   },
   addressInfo: {
     flex: 1,
     alignItems: "flex-start",
+    flexDirection: "row",
   },
   addressName: {
-    fontSize: 16,
+    fontSize: themeStyle.FONT_SIZE_MD,
     fontWeight: "bold",
     marginBottom: 4,
   },
   addressText: {
-    fontSize: 14,
+    fontSize: themeStyle.FONT_SIZE_MD,
     color: "#666",
     marginBottom: 2,
   },
@@ -255,8 +257,6 @@ const styles = StyleSheet.create({
   },
   selectButton: {
     backgroundColor: "#007AFF",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
     borderRadius: 4,
   },
   selectButtonText: {
@@ -297,9 +297,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  emptyContainer: {
+  addNewAddress: {
+    paddingHorizontal: 16,
+    flexDirection: "row",
     alignItems: "center",
-    padding: 32,
+  },
+  addNewAddressTextContainer: {
+    marginLeft: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addNewAddressText: {
+    fontSize: themeStyle.FONT_SIZE_MD,
+    fontWeight: "bold",
+    color: themeStyle.SUCCESS_COLOR,
+  },
+  addNewAddressIcon: {
+    backgroundColor: themeStyle.GRAY_10,
+    padding: 10,
+    borderRadius: 50,
   },
   emptyText: {
     fontSize: 16,

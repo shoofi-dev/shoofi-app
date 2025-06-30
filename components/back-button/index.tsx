@@ -13,17 +13,23 @@ export type TProps = {
   goTo?: string;
   onClick?: any;
   color?: string;
+  isDisableGoBack?: boolean;
 };
-export default function BackButton({ goTo, onClick, color = themeStyle.BLACK_COLOR }: TProps) {
-  const navigation = useNavigation();
+export default function BackButton({ goTo, onClick, color = themeStyle.BLACK_COLOR, isDisableGoBack = false }: TProps) {
+  const navigation = isDisableGoBack ? null: useNavigation();
   const { isTablet, scale, fontSize } = useResponsive();
 
   const onBtnClick = () => {
+    console.log("onBtnClick");
     onClick && onClick();
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (isDisableGoBack) {
+      return;
+    }
     const routes = navigation.getState()?.routes;
     const currentRoute = routes[routes.length - 1]; // -2 because -1 is the current route
     const prevRoute = routes[routes.length - 2]; // -2 because -1 is the current route
+
     if (
       (currentRoute.name === "cart" || currentRoute.name === "profile") &&
       (prevRoute.name === "verify-code" ||

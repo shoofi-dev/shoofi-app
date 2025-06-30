@@ -167,13 +167,11 @@ class CartStore {
   getShippingMethod = async () => {
     const jsonValue = await AsyncStorage.getItem("@storage_shippingMethod");
     const value = jsonValue != null ? jsonValue : SHIPPING_METHODS.takAway;
-    console.log("valueAAAAA", value);
     this.shippingMethod = value;
     return value;
   };
 
   setShippingMethod = async (value) => {
-    console.log("storage_shippingMethod", value);
     this.shippingMethod = value;
     await AsyncStorage.setItem("@storage_shippingMethod", value);
   };
