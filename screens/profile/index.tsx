@@ -26,18 +26,18 @@ const ProfileScreen = () => {
   // Profile option groups
   const profileGroups = [
     [
-      {
-        key: "details",
-        label: t("פרטים כלליים"),
-        icon: "profile-1",
-        color: themeStyle.TEXT_PRIMARY_COLOR,
-      },
-      {
-        key: "address",
-        label: t("כתובת"),
-        icon: "location",
-        color: themeStyle.TEXT_PRIMARY_COLOR,
-      },
+      // {
+      //   key: "details",
+      //   label: t("פרטים כלליים"),
+      //   icon: "profile-1",
+      //   color: themeStyle.TEXT_PRIMARY_COLOR,
+      // },
+      // {
+      //   key: "address",
+      //   label: t("כתובת"),
+      //   icon: "location",
+      //   color: themeStyle.TEXT_PRIMARY_COLOR,
+      // },
       {
         key: "language",
         label: t("שפה"),
@@ -45,51 +45,57 @@ const ProfileScreen = () => {
         color: themeStyle.TEXT_PRIMARY_COLOR,
       },
     ],
-    [
+     [
       {
         key: "orders",
         label: t("עגלה קניות"),
         icon: "orders-icon",
         color: themeStyle.TEXT_PRIMARY_COLOR,
       },
-      {
-        key: "favorites",
-        label: t("מועדפים"),
-        icon: "heart-outline",
-        color: themeStyle.TEXT_PRIMARY_COLOR,
-      },
-      {
-        key: "notifications",
-        label: t("התראות"),
-        icon: "bell",
-        color: themeStyle.TEXT_PRIMARY_COLOR,
-      },
-      {
-        key: "payments",
-        label: t("אמצעי תשלום"),
-        icon: "credit-card",
-        color: themeStyle.TEXT_PRIMARY_COLOR,
-      },
-    ],
-    [
-      {
-        key: "faq",
-        label: t("שאלות ותשובות"),
-        icon: "help-circle",
-        color: themeStyle.TEXT_PRIMARY_COLOR,
-      },
-      {
-        key: "user-reviews",
-        label: t("תגובות משתמשים"),
-        icon: "star",
-        color: themeStyle.TEXT_PRIMARY_COLOR,
-      },
-    ],
+    //   {
+    //     key: "favorites",
+    //     label: t("מועדפים"),
+    //     icon: "heart-outline",
+    //     color: themeStyle.TEXT_PRIMARY_COLOR,
+    //   },
+    //   {
+    //     key: "notifications",
+    //     label: t("התראות"),
+    //     icon: "bell",
+    //     color: themeStyle.TEXT_PRIMARY_COLOR,
+    //   },
+    //   {
+    //     key: "payments",
+    //     label: t("אמצעי תשלום"),
+    //     icon: "credit-card",
+    //     color: themeStyle.TEXT_PRIMARY_COLOR,
+    //   },
+    // ],
+    // [
+    //   {
+    //     key: "faq",
+    //     label: t("שאלות ותשובות"),
+    //     icon: "help-circle",
+    //     color: themeStyle.TEXT_PRIMARY_COLOR,
+    //   },
+    //   {
+    //     key: "user-reviews",
+    //     label: t("תגובות משתמשים"),
+    //     icon: "star",
+    //     color: themeStyle.TEXT_PRIMARY_COLOR,
+    //   },
+     ],
     [
       {
         key: "logout",
         label: t("התנתק"),
         icon: "logout-icon",
+        color: themeStyle.ERROR_COLOR,
+      },
+      {
+        key: "delete-account",
+        label: t("delete-account"),
+        icon: "trash",
         color: themeStyle.ERROR_COLOR,
       },
     ],
@@ -127,6 +133,11 @@ const ProfileScreen = () => {
       case "logout":
         authStore.logOut();
         userDetailsStore.resetUser();
+        navigation.navigate("homeScreen");
+        break;
+      case "delete-account":
+        // Go to delete account
+        authStore.deleteAccount();
         navigation.navigate("homeScreen");
         break;
     }

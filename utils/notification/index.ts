@@ -13,7 +13,7 @@ Notifications.setNotificationHandler({
 export async function schedulePushNotification(data: any) {
     await Notifications.scheduleNotificationAsync({
         content: {
-            title: "אטליז עבד אלחי",
+            title: "Shoofi",
             body: 'طلبية جديدة',
             data: data,
             sound: 'buffalosound.wav',
@@ -26,7 +26,7 @@ export async function schedulePushNotification(data: any) {
 export async function schedulePushNotificationDeliveryDelay(data: any) {
     await Notifications.scheduleNotificationAsync({
         content: {
-            title: "אטליז עבד אלחי",
+            title: "Shoofi",
             body: 'تاخير بالارسالية',
             data: data,
             sound: 'deliverysound.wav',
@@ -58,7 +58,7 @@ export async function registerForPushNotificationsAsync() {
         //     // alert('Failed to get push token for push notification!');
         //     return;
         // }
-        token = (await Notifications.getExpoPushTokenAsync({projectId:'5ba01fc0-6005-4e0a-b5b1-4e16e5aecc76'})).data;
+        token = (await Notifications.getExpoPushTokenAsync({projectId:'9019b715-65e9-4970-9f38-764b936d1abf'})).data;
     } else {
        // alert('Must use physical device for Push Notifications');
     }

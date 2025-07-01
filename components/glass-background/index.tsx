@@ -18,7 +18,7 @@ type GGlassBGProps = {
 const GlassBG: React.FC<GGlassBGProps> = ({
   children,
   style,
-  blurAmount = 20,
+  blurAmount = 0,
   borderRadius = 0,
 }) => {
   const isAndroid = Platform.OS === 'android';
@@ -29,17 +29,27 @@ const GlassBG: React.FC<GGlassBGProps> = ({
       {isBlurSupported && (
         <BlurView
           style={StyleSheet.absoluteFill}
-          blurType="regular"
+          blurType="light"
           blurAmount={blurAmount}
-          reducedTransparencyFallbackColor="rgba(255,255,255,0.15)"
+          reducedTransparencyFallbackColor="rgba(0, 0, 0, 0.3)"
         />
       )}
       
-      {/* Always apply semi-transparent overlay for contrast on white */}
+      {/* Glassmorphism: semi-transparent white overlay for glass effect */}
       <View
         style={[
           StyleSheet.absoluteFill,
-          { backgroundColor: 'rgba(0, 0, 0, 0.1)' }, // adjust opacity if needed
+          {
+            backgroundColor: 'rgba(0, 0, 0, 0.20)', // lower opacity for better glass effect
+            // backgroundColor: 'rgba(43, 41, 41, 0.18)', // lower opacity for better glass effect
+            borderWidth: 1,
+            borderColor: 'rgba(162, 162, 162, 0.18)',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.08,
+            shadowRadius: 16,
+            elevation: 8,
+          },
         ]}
       />
 
