@@ -14,7 +14,6 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { StoreContext } from "../../../../stores";
 import themeStyle from "../../../../styles/theme.style";
-import { fromBase64 } from "../../../../helpers/convert-base64";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { getCurrentLang } from "../../../../translations/i18n";
@@ -1065,63 +1064,7 @@ const OrdersListScreen = ({ route }) => {
     contentOffset,
     contentSize,
   }) => {};
-  const renderStatus = (order) => {
-    const oOrder = JSON.parse(fromBase64(order.order));
-    return (
-      <View style={{ marginTop: 40 }}>
-        <View style={{ alignItems: "center", marginBottom: 30 }}>
-          <Text
-            style={{
-              fontSize: themeStyle.FONT_SIZE_XL,
-              fontFamily: `${getCurrentLang()}-SemiBold`,
-              color: themeStyle.GRAY_700,
-            }}
-          >
-            {t(getTextByShippingMethod(oOrder.receipt_method))}
-          </Text>
-        </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          <View style={{ alignItems: "center" }}>
-            <View>
-              <Text
-                style={{
-                  fontSize: themeStyle.FONT_SIZE_XL,
-                  fontFamily: `${getCurrentLang()}-SemiBold`,
-                  color: themeStyle.GRAY_700,
-                }}
-              >
-                {t("in-progress")}
-              </Text>
-            </View>
-            <View style={{ marginTop: 10 }}>
-              <Icon icon={getIconByStatus(order.status, 1)} size={40} />
-            </View>
-          </View>
-          <View style={{ alignItems: "center" }}>
-            <View>
-              <Text
-                style={{
-                  fontSize: themeStyle.FONT_SIZE_XL,
-                  fontFamily: `${getCurrentLang()}-SemiBold`,
-                  color: themeStyle.GRAY_700,
-                }}
-              >
-                {t(
-                  getTextStatusByShippingMethod(
-                    oOrder.receipt_method,
-                    order.status
-                  )
-                )}
-              </Text>
-            </View>
-            <View style={{ marginTop: 10 }}>
-              <Icon icon={getIconByStatus(order.status, 2)} size={40} />
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  };
+
 
   const onOrderEdit = (editOrderData) => {
     adminCustomerStore.setCustomer(editOrderData.customerDetails);

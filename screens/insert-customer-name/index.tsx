@@ -10,7 +10,6 @@ import { observer } from "mobx-react";
 import { useNavigation } from "@react-navigation/native";
 import { axiosInstance } from "../../utils/http-interceptor";
 import { useTranslation } from "react-i18next";
-import { toBase64 } from "../../helpers/convert-base64";
 import Text from "../../components/controls/Text";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";

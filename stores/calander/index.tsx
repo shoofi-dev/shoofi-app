@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { axiosInstance } from "../../utils/http-interceptor";
-import { STORE_API, CALANDER_API } from "../../consts/api";
-import { fromBase64, toBase64 } from "../../helpers/convert-base64";
+import { CALANDER_API } from "../../consts/api";
 
 class CalanderStore {
   calanderData = null;

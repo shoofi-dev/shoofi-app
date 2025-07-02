@@ -1,7 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../../consts/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { fromBase64 } from "../../helpers/convert-base64";
 import { DeviceEventEmitter } from "react-native";
 import Constants from "expo-constants";
 import { APP_NAME } from "../../consts/shared";

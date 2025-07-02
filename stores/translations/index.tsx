@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { axiosInstance } from "../../utils/http-interceptor";
 import { STORE_API, CALANDER_API, TRANSLATIONS_API } from "../../consts/api";
-import { fromBase64, toBase64 } from "../../helpers/convert-base64";
 import { setTranslations } from "../../translations/i18n";
 import { APP_NAME } from "../../consts/shared";
 

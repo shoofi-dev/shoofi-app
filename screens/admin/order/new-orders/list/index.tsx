@@ -13,7 +13,6 @@ import { useContext, useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { StoreContext } from "../../../../../stores";
 import themeStyle from "../../../../../styles/theme.style";
-import { fromBase64 } from "../../../../../helpers/convert-base64";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { getCurrentLang } from "../../../../../translations/i18n";

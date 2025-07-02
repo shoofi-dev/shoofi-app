@@ -10,16 +10,14 @@ import {
 } from "react-native";
 import Button from "../../components/controls/button/button";
 import themeStyle from "../../styles/theme.style";
-import { AUTH_API, CUSTOMER_API } from "../../consts/api";
+import { CUSTOMER_API } from "../../consts/api";
 import { useState, useEffect } from "react";
 import { useContext } from "react";
 import { StoreContext } from "../../stores";
-import base64 from "react-native-base64";
 import { observer } from "mobx-react";
 import { useNavigation } from "@react-navigation/native";
 import { axiosInstance } from "../../utils/http-interceptor";
 import { useTranslation } from "react-i18next";
-import { getCurrentLang } from "../../translations/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import moment from "moment";
 import Text from "../../components/controls/Text";
@@ -30,7 +28,6 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
-import { toBase64 } from "../../helpers/convert-base64";
 import React from "react";
 import AnimatedExample from "../../components/verify-code";
 import { LinearGradient } from "expo-linear-gradient";

@@ -73,7 +73,6 @@
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-dropdown-picker": "^5.4.4",
     "react-native-error-boundary": "^1.2.3",
-    "react-native-esc-pos-printer": "3.1.1",
     "react-native-gesture-handler": "~2.5.0",
     "react-native-get-random-values": "~1.8.0",
     "react-native-google-places-autocomplete": "^2.5.7",

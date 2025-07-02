@@ -1,8 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { axiosInstance } from "../../utils/http-interceptor";
-import { AUTH_API, CUSTOMER_API } from "../../consts/api";
-import { fromBase64, toBase64 } from "../../helpers/convert-base64";
-import { menuStore } from "../menu";
+import { CUSTOMER_API } from "../../consts/api";
 import { APP_NAME } from "../../consts/shared";
 
 type TUserDetails = {

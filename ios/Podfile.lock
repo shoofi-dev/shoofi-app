@@ -359,8 +359,6 @@ PODS:
     - React-Core
   - react-native-cameraroll (5.10.0):
     - React-Core
-  - react-native-esc-pos-printer (3.1.1):
-    - React-Core
   - react-native-get-random-values (1.8.0):
     - React-Core
   - react-native-image-picker (5.7.0):
@@ -549,7 +547,6 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
-  - react-native-esc-pos-printer (from `../node_modules/react-native-esc-pos-printer`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-maps (from `../node_modules/react-native-maps`)
@@ -689,8 +686,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/blur"
   react-native-cameraroll:
     :path: "../node_modules/@react-native-camera-roll/camera-roll"
-  react-native-esc-pos-printer:
-    :path: "../node_modules/react-native-esc-pos-printer"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-image-picker:
@@ -806,7 +801,6 @@ SPEC CHECKSUMS:
   React-logger: 96d904c5bc87c2660d48e6a36fb2edf65f9cfb11
   react-native-blur: 32db1a8e94964c17f3f85424dd822b2ffa1a83c4
   react-native-cameraroll: 4701ae7c3dbcd3f5e9e150ca17f250a276154b35
-  react-native-esc-pos-printer: e4cd8ce58a3850e62f8809734c409c247683b17d
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
   react-native-image-picker: 3269f75c251cdcd61ab51b911dd30d6fff8c6169
   react-native-maps: 8b8bfada2c86205a7f5a07dd1f92f29b33ea83aa

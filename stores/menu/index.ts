@@ -1,10 +1,8 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { groupBy } from "lodash";
 import { MENU_API } from "../../consts/api";
-import { fromBase64 } from "../../helpers/convert-base64";
 import { axiosInstance } from "../../utils/http-interceptor";
-import i18n from "../../translations/index-x";
-import { setTranslations, getCurrentLang } from "../../translations/i18n";
+import { getCurrentLang } from "../../translations/i18n";
 import { orderBy } from "lodash";
 import { TProduct } from "../../screens/admin/product/add";
 import { APP_NAME } from "../../consts/shared";
@@ -70,7 +68,7 @@ class MenuStore {
     return axiosInstance
       .post(`${MENU_API.CONTROLLER}/${MENU_API.GET_SLIDER_API}`, body)
       .then(function (response) {
-        const res = JSON.parse(fromBase64(response.data));
+        const res =response.data;
         return res;
       });
   };

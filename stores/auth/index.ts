@@ -2,8 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { makeAutoObservable, runInAction } from "mobx";
 import { ordersStore } from "../orders";
 import { axiosInstance } from "../../utils/http-interceptor";
-import { AUTH_API, CUSTOMER_API } from "../../consts/api";
-import { toBase64, fromBase64 } from "../../helpers/convert-base64";
+import { CUSTOMER_API } from "../../consts/api";
 import { cartStore } from "../cart";
 
 class AuthStore {

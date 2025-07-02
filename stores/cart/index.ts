@@ -1,14 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { makeAutoObservable } from "mobx";
-import { toBase64, fromBase64 } from "../../helpers/convert-base64";
 import { ORDER_API, GEO_API } from "../../consts/api";
 import Constants from "expo-constants";
-import * as Device from "expo-device";
-import i18n from "../../translations/index-x";
 import { axiosInstance } from "../../utils/http-interceptor";
 import { getCurrentLang } from "../../translations/i18n";
 import { Platform } from "react-native";
-import { bcoindId, SHIPPING_METHODS } from "../../consts/shared";
+import { SHIPPING_METHODS } from "../../consts/shared";
 import moment from "moment";
 var hash = require("object-hash");
 import { storeDataStore } from "../store";
@@ -395,7 +392,6 @@ class CartStore {
       "@storage_orderHashKey",
       JSON.stringify(cartData.unique_hash)
     );
-    const orderBase64 = toBase64(cartData).toString();
     const imagesList = this.getProductsImages(cartData);
     let formData = new FormData();
     cartData.isAdmin = order?.isAdmin;
@@ -460,7 +456,6 @@ class CartStore {
       "@storage_orderHashKey",
       JSON.stringify(cartData.unique_hash)
     );
-    const orderBase64 = toBase64(cartData).toString();
     const imagesList = this.getProductsImages(cartData);
     let formData = new FormData();
     cartData.orderId = order.orderId;
