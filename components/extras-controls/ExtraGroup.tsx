@@ -20,9 +20,13 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
   return (
     <View style={styles.card}>
       {/* <Text style={styles.title}>{languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}</Text> */}
-      <View style={{ }}>
+      <View style={{}}>
         {extra.type === "single" && extra.options && (
-          <RadioGroup options={extra.options} value={value} onChange={onChange} />
+          <RadioGroup
+            options={extra.options}
+            value={value}
+            onChange={onChange}
+          />
         )}
         {extra.type === "multi" && extra.options && (
           <>
@@ -33,7 +37,7 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
               min={extra.min}
               max={extra.maxCount ?? extra.max}
             />
-            {extra.maxCount && (
+            {!!extra?.maxCount && (
               <View style={styles.maxCountPill}>
                 <Text style={styles.maxCountText}>
                   {t("maxCount", { count: extra.maxCount })}
@@ -43,26 +47,26 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
           </>
         )}
         {extra.type === "counter" && (
-            <Counter
-              value={value || extra.defaultValue ||  0}
-              min={extra.min}
-              max={extra.max}
-              onChange={onChange}
-              price={extra.price}
-              step={extra.step}
-              extra={extra}
-            />
+          <Counter
+            value={value || extra.defaultValue || 0}
+            min={extra.min}
+            max={extra.max}
+            onChange={onChange}
+            price={extra.price}
+            step={extra.step}
+            extra={extra}
+          />
         )}
         {extra.type === "weight" && (
-            <Counter
-              value={value || extra.defaultValue || 0}
-              min={extra.min}
-              max={extra.max}
-              onChange={onChange}
-              price={extra.price}
-              step={extra.step}
-              extra={extra}
-            />
+          <Counter
+            value={value || extra.defaultValue || 0}
+            min={extra.min}
+            max={extra.max}
+            onChange={onChange}
+            price={extra.price}
+            step={extra.step}
+            extra={extra}
+          />
         )}
       </View>
     </View>
@@ -73,7 +77,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     paddingHorizontal: 10,
- 
   },
   title: {
     fontWeight: "bold",
@@ -96,4 +99,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExtraGroup; 
+export default ExtraGroup;
