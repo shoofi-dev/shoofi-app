@@ -42,31 +42,29 @@ import { adminCustomerStore } from "./stores/admin-customer";
 import { errorHandlerStore } from "./stores/error-handler";
 import InterntConnectionDialog from "./components/dialogs/internet-connection";
 import UpdateVersion from "./components/dialogs/update-app-version";
-import { CUSTOMER_API } from "./consts/api";
+
 import themeStyle from "./styles/theme.style";
 import { isLatestGreaterThanCurrent } from "./helpers/check-version";
 import moment from "moment";
 import "moment/locale/ar"; // without this line it didn't work
 import "moment/locale/he"; // without this line it didn't work
-import useWebSocket, { ReadyState } from "react-use-websocket";
+
 import i18n, { setTranslations } from "./translations/i18n";
-import {
-  registerForPushNotificationsAsync,
-  schedulePushNotification,
-} from "./utils/notification";
+
 import { testPrint } from "./helpers/printer/print";
 import { APP_NAME, ROLES, SHIPPING_METHODS, cdnUrl } from "./consts/shared";
 import _useAppCurrentState from "./hooks/use-app-current-state";
 import OrderInvoiceCMP from "./components/order-invoice";
 import { axiosInstance } from "./utils/http-interceptor";
 import getPizzaCount from "./helpers/get-pizza-count";
-import _useWebSocketUrl from "./hooks/use-web-socket-url";
+
 import { useLocation } from "./hooks/useLocation";
 import { addressStore } from "./stores/address";
 import NewAddressBasedEventDialog from "./components/dialogs/new-address-based-event";
 import { couponsStore } from "./stores/coupons";
 import { creditCardsStore } from "./stores/creditCards";
 import { deliveryDriverStore } from "./stores/delivery-driver";
+import useNotifications from "./hooks/use-notifications";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -143,41 +141,15 @@ const App = () => {
   const [appIsReady, setAppIsReady] = useState(false);
   const [isExtraLoadFinished, setIsExtraLoadFinished] = useState(false);
   const [isFontReady, setIsFontReady] = useState(false);
-  const [expoPushToken, setExpoPushToken] = useState("123");
-  const [notification, setNotification] = useState(null);
 
-
-
-  const notificationListener = useRef(null);
-  const responseListener = useRef(null);
+  // Use the notifications hook
+  const notifications = useNotifications();
   const [isOpenInternetConnectionDialog, setIsOpenInternetConnectionDialog] =
     useState(false);
   const [isOpenUpdateVersionDialog, setIsOpenUpdateVersionDialog] =
     useState(false);
 
-    const { webScoketURL } = _useWebSocketUrl();
 
-  const { readyState, sendJsonMessage, lastJsonMessage } = useWebSocket(
-    webScoketURL,
-    {
-      share: true,
-      onOpen: (data) => {
-         console.log("connected", data);
-      },
-      onClose: () => {
-        console.log("closed websocket");
-      },
-      shouldReconnect: (closeEvent) => true,
-      queryParams: { customerId: userDetailsStore.userDetails?.customerId },
-    }
-  );
-
-  useEffect(() => {
-    if (userDetailsStore.userDetails?.customerId) {
-      // WebSocket will automatically connect once the customerId is available
-      console.log("WebSocket connection established.");
-    }
-  }, [userDetailsStore.userDetails?.customerId, webScoketURL]);
 
  
 
@@ -191,39 +163,7 @@ const App = () => {
     return () => subscription.remove();
   }, [storeDataStore.repeatNotificationInterval]);
 
-  useEffect(() => {
-    if (authStore.isLoggedIn() && userDetailsStore.userDetails) {
-      registerForPushNotificationsAsync().then((token) => {
-        axiosInstance
-          .post(
-            `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.UPDATE_CUSTOMER_NOTIFIVATION_TOKEN}`,
-            { notificationToken: token },
-            {
-              headers: { "Content-Type": "application/json", "app-name":  APP_NAME }
-            }
-          )
-          .then(function (response) {
-            return setExpoPushToken(token);
-          })
-          .catch(function (error) {});
-      });
 
-      notificationListener.current =
-        Notifications.addNotificationReceivedListener((notification) => {
-          setNotification(notification);
-        });
-
-      responseListener.current =
-        Notifications.addNotificationResponseReceivedListener((response) => {});
-
-      return () => {
-        Notifications.removeNotificationSubscription(
-          notificationListener.current
-        );
-        Notifications.removeNotificationSubscription(responseListener.current);
-      };
-    }
-  }, [userDetailsStore.userDetails]);
 
 
 

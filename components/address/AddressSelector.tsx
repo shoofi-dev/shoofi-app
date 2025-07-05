@@ -80,7 +80,6 @@ const AddressSelector = observer(({ onAddressSelect }) => {
     setDropdownOpen(false);
     DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG);
   };
-  console.log("addressStore.addresses", addressStore.addresses);
 
   const getAddressText = (address: any) => {
     return [
@@ -92,7 +91,6 @@ const AddressSelector = observer(({ onAddressSelect }) => {
       .filter(Boolean)
       .join(", ");
   };
-console.log("selectedAddress",selectedAddress)
   return (
     <View style={{ zIndex: 100 }}>
       <TouchableOpacity

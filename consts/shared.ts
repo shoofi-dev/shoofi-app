@@ -1,4 +1,5 @@
 export const APP_NAME = 'shoofi';
+export const APP_TYPE = 'shoofi-shopping';
 
 export const ORDER_STATUS = {
   IN_PROGRESS: "1",
@@ -26,7 +27,7 @@ export const ORDER_STATUS_TEXT = {
   [ORDER_STATUS.CANCELLED_BY_CUSTOMER]: "cancelled-by-customer",
   [ORDER_STATUS.CANCELLED_BY_DRIVER]: "cancelled-by-driver",
   [ORDER_STATUS.PICKED_UP]: "picked-up",
-  [ORDER_STATUS.PICKED_UP_BY_DRIVER]: "picked-up-by-driver",
+  [ORDER_STATUS.PICKED_UP_BY_DRIVER]: "waiting-for-driver",
   [ORDER_STATUS.DELIVERED]: "delivered",
 };
 
