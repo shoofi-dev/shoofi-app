@@ -6,7 +6,6 @@ import {
   DeviceEventEmitter,
   KeyboardAvoidingView,
   Platform,
-  Text,
 } from "react-native";
 import Modal from "react-native-modal";
 import CreditCard from "../credit-card";
@@ -17,6 +16,7 @@ import ExpiryDate from "../expiry-date";
 import AddressForm from "../address/AddressForm";
 import BackButton from "../back-button";
 import themeStyle from "../../styles/theme.style";
+import Text from "../controls/Text";
 
 export default function NewAddressBasedEventDialog() {
   const { t } = useTranslation();
@@ -62,10 +62,7 @@ export default function NewAddressBasedEventDialog() {
       hideModalContentWhileAnimating
       avoidKeyboard
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.keyboardAvoiding}
-      >
+
         <View style={styles.sheet}>
           {/* Header */}
           <View style={styles.headerRow}>
@@ -102,7 +99,6 @@ export default function NewAddressBasedEventDialog() {
           {/* Credit Card Form */}
           <AddressForm />
         </View>
-      </KeyboardAvoidingView>
       <ExpiryDate />
     </Modal>
   );
@@ -120,14 +116,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    paddingTop: 0,
-    paddingBottom: 16,
-    minHeight: 700,
-    maxHeight: "70%",
+    paddingBottom: 0,
+    flex: 1,
     width: "100%",
     alignSelf: "center",
     overflow: "hidden",
-    padding: 15,
+    paddingHorizontal: 15,
+    marginTop: 100,
   },
   headerRow: {
     flexDirection: "row",

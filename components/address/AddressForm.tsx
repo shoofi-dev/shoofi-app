@@ -174,110 +174,102 @@ const AddressForm = observer(({ route,address }: any) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={0}
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled"
     >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.form}>
-
-          
-          <View style={[styles.inputGroup,{marginBottom: 20}]}>
-            <Text style={styles.label}>{t("address-name")} *</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.name}
-              onChangeText={(value) => handleInputChange("name", value)}
-            />
-          </View>
-          {/* Google Places Autocomplete */}
-          <View style={styles.row}>
-
-          <TouchableOpacity
-            style={styles.locationButton}
-            onPress={getCurrentLocation}
-            disabled={loading}
-          >
-            <Icon name="my-location" size={20} color={themeStyle.SUCCESS_COLOR} />
-            <View style={styles.locationButtonTextContainer}>
-            <Text style={styles.locationButtonText}>
-              {t("user-current-location")}
-            </Text>
-            </View>
-          </TouchableOpacity>
-          </View> 
-          <View style={[styles.inputGroup,{flex: 1,}]}>
-            <Text style={styles.label}>{t("street-address")}</Text>
-            <GooglePlacesSearch onPlaceSelected={handlePlaceSelected} />
-
-            {/* <TextInput
-              style={styles.input}
-              value={formData.street}
-              onChangeText={(value) => handleInputChange('street', value)}
-            /> */}
-          </View>
-
-
-          <View style={styles.row}>
-            <View style={[styles.inputGroup, {  marginRight: 30 }]}>
-              <Text style={styles.label}>{t("street-number")}</Text>
-              <TextInput
-                style={styles.input}
-                value={formData.streetNumber}
-                onChangeText={(value) => handleInputChange("streetNumber", value)}
-              />
-            </View>
-
-          <View style={[styles.inputGroup,{flex: 1,}]}>
-            <Text style={styles.label}>{t("city")}</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.city}
-              onChangeText={(value) => handleInputChange("city", value)}
-            />
-          </View>
-          </View>
-
-          {/* <CitiesList
-            onCitySelect={(value) => handleInputChange("selectedCity", value)}
-            selectedCity={formData.selectedCity}
-          /> */}
-          <TouchableOpacity
-            style={styles.defaultToggle}
-            onPress={() => handleInputChange("isDefault", !formData.isDefault)}
-          >
-            <Icon
-              name={formData.isDefault ? "star" : "star-border"}
-              size={24}
-              color={formData.isDefault ? "#FFD700" : "#666"}
-            />
-            <View style={styles.defaultTextContainer}>
-            <Text style={styles.defaultText}>{t('set-as-default-address')}</Text>
-
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.submitButtonText}>
-                {address ? t('update-address') : t('add-address')}
-              </Text>
-            )}
-          </TouchableOpacity>
+      <View style={styles.form}>
+        <View style={[styles.inputGroup,{marginBottom: 20}]}>
+          <Text style={styles.label}>{t("address-name")} *</Text>
+          <TextInput
+            style={styles.input}
+            value={formData.name}
+            onChangeText={(value) => handleInputChange("name", value)}
+          />
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        {/* Google Places Autocomplete */}
+        <View style={styles.row}>
+
+        <TouchableOpacity
+          style={styles.locationButton}
+          onPress={getCurrentLocation}
+          disabled={loading}
+        >
+          <Icon name="my-location" size={20} color={themeStyle.SUCCESS_COLOR} />
+          <View style={styles.locationButtonTextContainer}>
+          <Text style={styles.locationButtonText}>
+            {t("user-current-location")}
+          </Text>
+          </View>
+        </TouchableOpacity>
+        </View> 
+        <View style={[styles.inputGroup,{flex: 1,}]}>
+          <Text style={styles.label}>{t("street-address")}</Text>
+          <GooglePlacesSearch onPlaceSelected={handlePlaceSelected} />
+
+          {/* <TextInput
+            style={styles.input}
+            value={formData.street}
+            onChangeText={(value) => handleInputChange('street', value)}
+          /> */}
+        </View>
+
+
+        <View style={styles.row}>
+          <View style={[styles.inputGroup, {  marginRight: 30 }]}>
+            <Text style={styles.label}>{t("street-number")}</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.streetNumber}
+              onChangeText={(value) => handleInputChange("streetNumber", value)}
+            />
+          </View>
+
+        <View style={[styles.inputGroup,{flex: 1,}]}>
+          <Text style={styles.label}>{t("city")}</Text>
+          <TextInput
+            style={styles.input}
+            value={formData.city}
+            onChangeText={(value) => handleInputChange("city", value)}
+          />
+        </View>
+        </View>
+
+        {/* <CitiesList
+          onCitySelect={(value) => handleInputChange("selectedCity", value)}
+          selectedCity={formData.selectedCity}
+        /> */}
+        <TouchableOpacity
+          style={styles.defaultToggle}
+          onPress={() => handleInputChange("isDefault", (!formData.isDefault).toString())}
+        >
+          <Icon
+            name={formData.isDefault ? "star" : "star-border"}
+            size={24}
+            color={formData.isDefault ? "#FFD700" : "#666"}
+          />
+          <View style={styles.defaultTextContainer}>
+          <Text style={styles.defaultText}>{t('set-as-default-address')}</Text>
+
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.submitButton}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.submitButtonText}>
+              {address ? t('update-address') : t('add-address')}
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 });
 

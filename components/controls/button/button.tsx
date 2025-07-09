@@ -121,6 +121,7 @@ export default function Button({
           alignItems: "center",
           padding: 15,
           backgroundColor: bgColor || themeStyle.PRIMARY_COLOR,
+          opacity: disabled ? 0.5 : 1,
         }}
         disabled={disabled}
         onPress={onBtnClick}

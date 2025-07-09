@@ -226,10 +226,10 @@ const ExploreScreen = () => {
                 style={{
                   alignItems: "center",
                   marginHorizontal: 8,
-                  shadowColor: "#000",
+                  shadowColor: themeStyle.BLACK_COLOR,
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.1,
-                  shadowRadius: 6,
+                  shadowRadius: 5,
                   elevation: 4,
                   backgroundColor: "#fff",
                   borderRadius: 20,

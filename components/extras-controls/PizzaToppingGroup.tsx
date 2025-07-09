@@ -4,6 +4,7 @@ import { Extra, PizzaToppingOption, AreaOption } from "./ExtrasSection";
 import { useContext } from "react";
 import { StoreContext } from "../../stores";
 import Icon from "../icon";
+import themeStyle from "../../styles/theme.style";
 export type PizzaToppingGroupProps = {
   extra: Extra;
   value: Record<string, { areaId: string; isFree: boolean }>; // { [toppingId]: { areaId, isFree } }
@@ -48,11 +49,38 @@ const PizzaToppingGroup = ({
   const getToppingIcon = (area: AreaOption, toppingId: string) => {
     switch (area.id) {
       case "full":
-        return <Icon icon="pizza-full" size={30} color="black" style={{opacity: getSelectedArea(toppingId) === area.id ? 1 : 0.5}} />;
+        return (
+          <Icon
+            icon="pizza-full"
+            size={30}
+            color={getSelectedArea(toppingId) === area.id ? themeStyle.PRIMARY_COLOR : themeStyle.text}
+            style={{
+              opacity: getSelectedArea(toppingId) === area.id ? 1 : 1,
+            }}
+          />
+        );
       case "half1":
-        return <Icon icon="pizza-right" size={30} color="black" style={{opacity: getSelectedArea(toppingId) === area.id ? 1 : 0.5}} />;
+        return (
+          <Icon
+            icon="pizza-right"
+            size={30}
+            color={getSelectedArea(toppingId) === area.id ? themeStyle.PRIMARY_COLOR : themeStyle.text}
+            style={{
+              opacity: getSelectedArea(toppingId) === area.id ? 1 : 1,
+            }}
+          />
+        );
       case "half2":
-        return <Icon icon="pizza-right" size={30} color="black" style={{opacity: getSelectedArea(toppingId) === area.id ? 1 : 0.5}} />;
+        return (
+          <Icon
+            icon="pizza-left"
+            size={30}
+            color={getSelectedArea(toppingId) === area.id ? themeStyle.PRIMARY_COLOR : themeStyle.text}
+            style={{
+              opacity: getSelectedArea(toppingId) === area.id ? 1 : 1,
+            }}
+          />
+        );
       default:
         return null;
     }
@@ -68,30 +96,32 @@ const PizzaToppingGroup = ({
           <View key={topping.id} style={styles.toppingRow}>
             <View style={styles.toppingNameContainer}>
               <View>
-              <Text style={styles.toppingName}>
-              {languageStore.selectedLang === "ar"
-                ? topping.nameAR
-                : topping.nameHE}
-            </Text>
-                </View>
-                {/* <View>
+                <Text style={styles.toppingName}>
+                  {languageStore.selectedLang === "ar"
+                    ? topping.nameAR
+                    : topping.nameHE}
+                </Text>
+              </View>
+              {/* <View>
                   <Text style={styles.toppingPrice}>{topping.price}</Text>
-                </View> */}
-   
+                </View>  */}
             </View>
-    
+
             <View style={styles.areaSelector}>
               {topping.areaOptions?.map((area: AreaOption) => (
                 <TouchableOpacity
                   key={area.id}
-                  style={[
-                    styles.areaButton,
-          
-                  ]}
+                  style={[styles.areaButton]}
                   onPress={() => handleAreaSelect(topping.id, area.id)}
                 >
-                  {getToppingIcon(area, topping.id)}
-         
+                  <View style={{ alignItems: "center" }}>
+                    {getToppingIcon(area, topping.id)}
+                    {area.price > 0 && !isToppingFree(topping.id) && (
+                      <View>
+                        <Text style={styles.toppingPrice}>₪{area.price}</Text>
+                      </View>
+                    )}
+                  </View>
                 </TouchableOpacity>
               ))}
             </View>
@@ -146,7 +176,6 @@ const styles = StyleSheet.create({
   },
   toppingPrice: {
     fontSize: 12,
-    color: "#666",
   },
 });
 

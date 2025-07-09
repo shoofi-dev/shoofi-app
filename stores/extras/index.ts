@@ -26,11 +26,19 @@ class ExtrasStore {
         return true;
     }
     for (const extra of extras) {
+      // Skip group headers - they don't need validation
+      if (extra.isGroupHeader) {
+        continue;
+      }
+      
       const val = this.selections[extra.id];
-      if (extra.required) {
+      if (extra.required || true) {
+        console.log("extra.id",extra.id)
+        console.log("this.selections", this.selections);
+        console.log("val", val);
         if (extra.type === "single" && !val) return false;
-        if (extra.type === "multi" && (!val || val.length < (extra.min || 1))) return false;
-        if (extra.type === "counter" && (val === undefined || val < (extra.min || 0))) return false;
+        // if (extra.type === "multi" && (!val || val.length < (extra.min || 1))) return false;
+        // if (extra.type === "counter" && (val === undefined || val < (extra.min || 0))) return false;
         if (extra.type === "pizza-topping") {
           // At least one topping must be selected
           if (!val || Object.keys(val).length === 0) return false;
@@ -93,29 +101,37 @@ class ExtrasStore {
         let remainingFreeCount = freeCount - usedFreeCount;
 
         for (const toppingId in val) {
-          const areaId = val[toppingId];
+          const areaData = val[toppingId];
+          const areaId = areaData.areaId;
+          const isFree = areaData.isFree;
           const topping = extra.options.find(o => o.id === toppingId);
           if (topping && topping.areaOptions) {
             const area = topping.areaOptions.find(a => a.id === areaId);
             if (area && area.price) {
-              if (remainingFreeCount > 0) {
-                remainingFreeCount--;
-                groupUsedFreeCounts.set(extra.groupId, usedFreeCount + 1);
+              if (isFree || remainingFreeCount > 0) {
+                if (!isFree) {
+                  remainingFreeCount--;
+                  groupUsedFreeCounts.set(extra.groupId, usedFreeCount + 1);
+                }
               } else {
                 total += area.price;
               }
             } else if (topping.price) {
-              if (remainingFreeCount > 0) {
-                remainingFreeCount--;
-                groupUsedFreeCounts.set(extra.groupId, usedFreeCount + 1);
+              if (isFree || remainingFreeCount > 0) {
+                if (!isFree) {
+                  remainingFreeCount--;
+                  groupUsedFreeCounts.set(extra.groupId, usedFreeCount + 1);
+                }
               } else {
                 total += topping.price;
               }
             }
           } else if (topping && topping.price) {
-            if (remainingFreeCount > 0) {
-              remainingFreeCount--;
-              groupUsedFreeCounts.set(extra.groupId, usedFreeCount + 1);
+            if (isFree || remainingFreeCount > 0) {
+              if (!isFree) {
+                remainingFreeCount--;
+                groupUsedFreeCounts.set(extra.groupId, usedFreeCount + 1);
+              }
             } else {
               total += topping.price;
             }

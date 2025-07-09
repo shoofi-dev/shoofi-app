@@ -81,8 +81,9 @@ const DeliveryDriverDashboard = observer(() => {
               }
               
               if (userDetailsStore.userDetails?.customerId) {
-                deliveryDriverStore.getOrders(userDetailsStore.userDetails.customerId);
+                await deliveryDriverStore.getOrders(userDetailsStore.userDetails.customerId);
               }
+
               Alert.alert('Success', 'Order status updated successfully');
             } catch (error) {
               Alert.alert('Error', 'Failed to update order status');

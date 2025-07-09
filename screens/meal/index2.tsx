@@ -10,6 +10,7 @@ import {
   Dimensions,
   Platform,
 } from "react-native";
+import React, { useContext, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import ProductHeader from "./components/header/header";
 import ProductFooter from "./components/footer/footer";
 
@@ -21,7 +22,6 @@ import { isEmpty } from "lodash";
 
 import GradiantRow from "../../components/gradiant-row";
 import Button from "../../components/controls/button/button";
-import { useContext, useState, useEffect, useRef, useCallback } from "react";
 import { StoreContext } from "../../stores";
 import { ScrollView } from "react-native-gesture-handler";
 import themeStyle from "../../styles/theme.style";
@@ -70,7 +70,7 @@ const gradiantColors =
 
 const MealScreen = ({ handleClose,product, category, index }) => {
   const { t } = useTranslation();
-  const scrollRef = useRef();
+  const scrollRef = useRef(null);
 
   const navigation = useNavigation();
   let { cartStore, ordersStore, languageStore, storeDataStore, extrasStore } =
@@ -180,6 +180,7 @@ const MealScreen = ({ handleClose,product, category, index }) => {
   }, [extrasStore?.selections]);
 
   const handleAddToCart = async () => {
+    console.log("mealxx2", ordersStore.orderType, meal.data.isInStore);
     if (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) {
       setConfirmActiondDialogText(
         getOutOfStockMessage() || "call-store-to-order"
@@ -189,6 +190,8 @@ const MealScreen = ({ handleClose,product, category, index }) => {
     }
 
     const isDifferentStore = await cartStore.isDifferentStore();
+    console.log("mealxx1", isDifferentStore);
+
     if (isDifferentStore) {
       setPendingProduct({
         ...meal,
@@ -197,7 +200,6 @@ const MealScreen = ({ handleClose,product, category, index }) => {
       setIsStoreChangeDialogOpen(true);
       return;
     }
-
     addProductToCart();
   };
 
@@ -253,10 +255,12 @@ const MealScreen = ({ handleClose,product, category, index }) => {
   };
 
   const tasteScorll = () => {
-    scrollRef.current?.scrollTo({
-      y: 500,
-      animated: true,
-    });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        y: 500,
+        animated: true,
+      });
+    }
   };
 
   const updateOthers = (value, key, type) => {
@@ -318,10 +322,24 @@ const MealScreen = ({ handleClose,product, category, index }) => {
     ).start();
   }, []);
 
+  // Validation function for meal extras
+  const validateMealExtras = () => {
+    if (!meal?.data?.extras || meal.data.extras.length === 0) {
+      return true;
+    }
+    const validationResult = extrasStore.validate(meal.data.extras);
+    console.log("validationResult", validationResult);
+    return validationResult;
+  };
+
+  // Get validation state - make it reactive to extras selections
+  const isValidForm = React.useMemo(() => {
+    return validateMealExtras();
+  }, [meal?.data?.extras, extrasStore.selections]);
+
   if (!meal) {
     return null;
   }
-  console.log("mealxx", meal.data);
   return (
     <View style={{ backgroundColor: themeStyle.WHITE_COLOR }}>
       <Animated.ScrollView
@@ -358,6 +376,9 @@ const MealScreen = ({ handleClose,product, category, index }) => {
               onCounterChange={(value) => {
                 updateOthers(value, "qty", "others");
               }}
+              onDelete={() => {
+                // Handle delete if needed
+              }}
               variant={"gray"}
             />
           </View>
@@ -372,7 +393,7 @@ const MealScreen = ({ handleClose,product, category, index }) => {
       >
         <ProductFooter
           isEdit={isEdit}
-          isValidForm={true}
+          isValidForm={isValidForm}
           onAddToCart={handleAddToCart}
           onUpdateCartProduct={onUpdateCartProduct}
           price={meal.data.price}

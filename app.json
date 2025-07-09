@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "shoofi",
-    "slug": "shoofi",
-    "version": "1.0.0",
+    "name": "Shoofi",
+    "slug": "Shoofi",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -32,12 +32,12 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "1.0.0",
+      "buildNumber": "1.0.1",
       "supportsTablet": true,
       "bundleIdentifier": "com.shoofi.shopping"
     },
     "android": {
-      "versionCode": 2,
+      "versionCode": 3,
       "splash": {
         "image": "./assets/splash-screen.png",
         "backgroundColor": "#FFFFFF",

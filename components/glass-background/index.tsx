@@ -26,14 +26,14 @@ const GlassBG: React.FC<GGlassBGProps> = ({
 
   return (
     <View style={[styles.container, { borderRadius, overflow: 'hidden' }, style]}>
-      {/* {isBlurSupported && (
+       {isBlurSupported && (
         <BlurView
           style={StyleSheet.absoluteFill}
           blurType="light"
           blurAmount={blurAmount}
           reducedTransparencyFallbackColor="rgba(0, 0, 0, 0.3)"
         />
-      )} */}
+      )} 
       
       {/* Glassmorphism: semi-transparent white overlay for glass effect */}
       <View

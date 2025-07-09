@@ -194,7 +194,7 @@ const CheckoutScreen = ({ route }) => {
   };
   const isShippingMethodAgrredCheck = () => {
     if (isShippingMethodAgrred) {
-      handleCheckout(isShippingMethodAgrred);
+      handleCheckout();
       return true;
     }
     toggleShippingMethodAgrreeAnswer();
@@ -221,6 +221,7 @@ const CheckoutScreen = ({ route }) => {
   };
 
   const handleCheckout = async () => {
+    setIsLoadingOrderSent(true);
       const isCheckoutValidRes = await isCheckoutValid({
         shippingMethod,
         addressLocation,
@@ -229,6 +230,8 @@ const CheckoutScreen = ({ route }) => {
       });
 
       if (!isCheckoutValidRes) {
+        //todo: show error message
+        setIsLoadingOrderSent(false);
         return;
       }
 

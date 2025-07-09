@@ -65,6 +65,7 @@ import { couponsStore } from "./stores/coupons";
 import { creditCardsStore } from "./stores/creditCards";
 import { deliveryDriverStore } from "./stores/delivery-driver";
 import useNotifications from "./hooks/use-notifications";
+import useWebSocket from "./hooks/use-websocket";
 // import { cacheImage } from "./components/custom-fast-image";
 
 moment.locale("en");
@@ -122,7 +123,15 @@ const App = () => {
   // const { t } = useTranslation();
   // const invoiceRef = useRef();
   const invoicesRef = useRef([]);
-
+  const {
+    isConnected: wsConnected,
+    connectionStatus: wsStatus,
+    lastMessage: wsMessage,
+    error: wsError,
+    sendMessage,
+    reconnect,
+    getStats: getWebSocketStats
+  } = useWebSocket();
   // const {
   //   latitude,
   //   longitude,
@@ -486,7 +495,28 @@ const App = () => {
             addressStore: addressStore,
             couponsStore: couponsStore,
             creditCardsStore: creditCardsStore,
-            deliveryDriverStore: deliveryDriverStore
+            deliveryDriverStore: deliveryDriverStore,
+            notifications: {
+              notifications: [],
+              stats: { total: 0, unread: 0, read: 0, byType: {} },
+              unreadCount: 0,
+              isLoading: false,
+              error: null,
+              markAsRead: async (notificationId: string) => {},
+              markAllAsRead: async () => {},
+              deleteNotification: async (notificationId: string) => {},
+              refreshNotifications: async () => {},
+              connectionStatus: 'Unknown'
+            },
+            websocket: {
+              isConnected: wsConnected,
+              connectionStatus: wsStatus,
+              lastMessage: wsMessage,
+              error: wsError,
+              sendMessage,
+              reconnect,
+              getStats: getWebSocketStats
+            }
           }}
         >
           <View style={{ height: "100%" }}>

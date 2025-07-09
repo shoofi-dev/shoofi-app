@@ -1,13 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, I18nManager } from "react-native";
+import React, { useContext, useEffect, useState, useRef } from "react";
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  I18nManager,
+} from "react-native";
 import { observer } from "mobx-react";
 import { StoreContext } from "../stores";
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation } from "@react-navigation/native";
 import themeStyle from "../styles/theme.style";
 import StoreItem from "./stores/components/item";
 import CustomFastImage from "../components/custom-fast-image";
 import { cdnUrl } from "../consts/shared";
-
+import Text from "../components/controls/Text";
 const CATEGORY_BG = "#f5f5f5";
 
 const GeneralCategoryScreen = () => {
@@ -17,12 +23,13 @@ const GeneralCategoryScreen = () => {
   const { generalCategory } = route.params;
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
+  const storesScrollViewRef = useRef(null);
 
   useEffect(() => {
     if (shoofiAdminStore.categoryList && generalCategory) {
-      const cats = shoofiAdminStore.categoryList.filter(cat =>
+      const cats = shoofiAdminStore.categoryList.filter((cat) =>
         cat.supportedGeneralCategoryIds?.some(
-          id => id.$oid === generalCategory._id || id === generalCategory._id
+          (id) => id.$oid === generalCategory._id || id === generalCategory._id
         )
       );
       if (cats.length > 0) setSelectedCategory(cats[0]);
@@ -44,24 +51,33 @@ const GeneralCategoryScreen = () => {
     fetchData();
   }, [shoofiAdminStore]);
 
+  // Reset scroll position when category changes
+  useEffect(() => {
+    if (storesScrollViewRef.current) {
+      storesScrollViewRef.current.scrollTo({ x: 0, y: 0, animated: false });
+    }
+  }, [selectedCategory]);
+
   if (!generalCategory) return null;
 
   const categories = shoofiAdminStore.categoryList
-    ? shoofiAdminStore.categoryList.filter(cat =>
+    ? shoofiAdminStore.categoryList.filter((cat) =>
         cat.supportedGeneralCategoryIds?.some(
-          id => id.$oid === generalCategory._id || id === generalCategory._id
+          (id) => id.$oid === generalCategory._id || id === generalCategory._id
         )
       )
     : [];
 
   const stores = shoofiAdminStore.storesList || [];
   const storesInCategory = selectedCategory
-    ? stores.filter((data:any) =>
-        data.store.categoryIds &&
-        data.store.categoryIds.some(
-          (categoryId) =>
-            categoryId.$oid === selectedCategory._id || categoryId === selectedCategory._id
-        )
+    ? stores.filter(
+        (data: any) =>
+          data.store.categoryIds &&
+          data.store.categoryIds.some(
+            (categoryId) =>
+              categoryId.$oid === selectedCategory._id ||
+              categoryId === selectedCategory._id
+          )
       )
     : [];
 
@@ -74,88 +90,115 @@ const GeneralCategoryScreen = () => {
   }
 
   return (
-    <View style={{ backgroundColor: "#fff", flex: 1 }}>
+    <View style={{  }}>
       {/* Horizontal scroller of categories */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ paddingVertical: 16, paddingHorizontal: 8, marginBottom: 10 }}
-        contentContainerStyle={{ flexDirection: I18nManager.isRTL ? "row" : "row" }}
-      >
-        {categories.map((cat) => (
-          <TouchableOpacity
-            key={cat.categoryId}
-            style={{
-              alignItems: "center",
-              marginHorizontal: 8,
-              opacity: selectedCategory && selectedCategory._id === cat._id ? 1 : 0.5,
-            }}
-            onPress={() => setSelectedCategory(cat)}
-            activeOpacity={0.8}
-          >
-            <View
+      <View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{
+            marginBottom: 20,
+            paddingBottom: 5,
+          }}
+          contentContainerStyle={{
+            flexDirection: I18nManager.isRTL ? "row" : "row",
+          }}
+        >
+          {categories.map((cat) => (
+            <TouchableOpacity
+              key={cat.categoryId}
               style={{
-                width: 70,
-                height: 70,
-                borderRadius: 20,
-                backgroundColor: CATEGORY_BG,
-                justifyContent: "center",
                 alignItems: "center",
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.08,
-                shadowRadius: 4,
-                elevation: 2,
-                borderWidth: selectedCategory && selectedCategory._id === cat._id ? 2 : 0,
-                borderColor: themeStyle.PRIMARY_COLOR,
+                marginHorizontal: 8,
+
+                height: 155, // Fixed height for all cards
               }}
+              onPress={() => setSelectedCategory(cat)}
+              activeOpacity={0.8}
             >
-              {cat.image ? (
-                <CustomFastImage
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  opacity:
+                    selectedCategory && selectedCategory._id === cat._id
+                      ? 1
+                      : 0.8,
+                  shadowColor: themeStyle.BLACK_COLOR,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 5,
+                  elevation: 4,
+                  backgroundColor: themeStyle.WHITE_COLOR,
+                  borderRadius: 20,
+                  borderWidth: 0,
+                  height: "100%",
+                  // borderWidth: selectedCategory && selectedCategory._id === cat._id ? 2 : 0,
+                }}
+              >
+                <View style={{ width: 98, height: 98 }}>
+                  {cat.image ? (
+                    <CustomFastImage
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 20,
+                      }}
+                      source={{ uri: `${cdnUrl}${cat.image.uri}` }}
+                      cacheKey={`${cat.image.uri.split(/[\\/]/).pop()}`}
+                    />
+                  ) : (
+                    <View
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 15,
+                      }}
+                    />
+                  )}
+                </View>
+                <View
                   style={{
-                    width: "100%",
-                    height: "100%",
-                    borderRadius: 20,
+                    position: "relative",
+                    flex: 1,
+                    justifyContent: "center",
                   }}
-                  source={{ uri: `${cdnUrl}${cat.image.uri}` }}
-                  cacheKey={`${cat.image.uri.split(/[\\/]/).pop()}`}
-                />
-              ) : (
-                <View style={{ width: 50, height: 50, borderRadius: 15, backgroundColor: "#fff" }} />
-              )}
-            </View>
-            <Text
-              style={{
-                fontSize: 16,
-                color: "#222",
-                fontWeight: "500",
-                marginTop: 6,
-                textAlign: "center",
-                maxWidth: 70,
-              }}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {languageStore.selectedLang === "ar" ? cat.nameAR : cat.nameHE}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      textAlign: "center",
+                      maxWidth: 90,
+                    }}
+                    numberOfLines={2}
+                  >
+                    {languageStore.selectedLang === "ar"
+                      ? cat.nameAR
+                      : cat.nameHE}
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
       {/* Stores for selected category */}
-      <ScrollView>
-        {storesInCategory.map((data:any) => (
-          <View key={data.store._id} style={{ marginBottom: 20 }}>
-            <StoreItem storeItem={data} />
-          </View>
-        ))}
-        {storesInCategory.length === 0 && (
-          <Text style={{ textAlign: "center", marginTop: 40, color: "#888" }}>
-            לא נמצאו מסעדות בקטגוריה זו.
-          </Text>
-        )}
-      </ScrollView>
+      <View style={{paddingBottom: 350}}>
+        <ScrollView ref={storesScrollViewRef}>
+          {storesInCategory.map((data: any) => (
+            <View key={data.store._id} style={{}}>
+              <StoreItem storeItem={data} />
+            </View>
+          ))}
+          {storesInCategory.length === 0 && (
+            <Text style={{ textAlign: "center", marginTop: 40, color: "#888" }}>
+              לא נמצאו מסעדות בקטגוריה זו.
+            </Text>
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 };
 
-export default observer(GeneralCategoryScreen); 
+export default observer(GeneralCategoryScreen);

@@ -37,7 +37,7 @@ const ExtraGroup = ({ extra, value, onChange }: ExtraGroupProps) => {
               min={extra.min}
               max={extra.maxCount ?? extra.max}
             />
-            {!!extra?.maxCount && (
+            {!!extra?.maxCount && extra.options && extra.maxCount !== extra.options.length && (
               <View style={styles.maxCountPill}>
                 <Text style={styles.maxCountText}>
                   {t("maxCount", { count: extra.maxCount })}

@@ -101,7 +101,6 @@ const CartExtras = ({
         }
         // Counter
         if (extra.type === "counter") {
-          console.log("extra", extra);
           return (
             <View
               key={extra.id}
@@ -168,7 +167,7 @@ const CartExtras = ({
                       {getName(topping)}
                       {area
                         ? ` (${
-                            area.price && areaData.isFree
+                            area.price && !areaData.isFree
                               ? `+₪${area.price}`
                               : ""
                           })`

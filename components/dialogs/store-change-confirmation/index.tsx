@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import Modal from 'react-native-modal';
+import { useTranslation } from 'react-i18next';
 import Text from '../../controls/Text';
 import Button from '../../controls/button/button';
 import themeStyle from '../../../styles/theme.style';
@@ -15,53 +17,68 @@ const StoreChangeConfirmationDialog: React.FC<StoreChangeConfirmationDialogProps
   onApprove,
   onCancel,
 }) => {
-  if (!isOpen) return null;
-
+  const { t } = useTranslation();
   return (
-    <View style={styles.overlay}>
-      <View style={styles.container}>
-        <Text style={styles.title}>New Store Selected</Text>
-        <Text style={styles.message}>
-          You are choosing a new store. This will reset your current cart. Would you like to continue?
-        </Text>
-        <View style={styles.buttonContainer}>
-          <Button
-            text="Cancel"
-            onClickFn={onCancel}
-            variant="gray"
-            style={styles.button}
-          />
-          <View style={styles.buttonSeparator} /> 
-          <Button
-            text="Continue"
-            onClickFn={onApprove}
-            variant="primary"
-            style={styles.button}
-          />
+    <Modal
+      isVisible={isOpen}
+      onBackdropPress={onCancel}
+      onBackButtonPress={onCancel}
+      style={styles.modal}
+      backdropOpacity={0.4}
+      animationIn="slideInUp"
+      animationOut="slideOutDown"
+      useNativeDriver
+      hideModalContentWhileAnimating
+    >
+      <View style={styles.sheet}>
+                <View style={styles.container}>
+          <Text style={styles.title}>{t('new-store-selected')}</Text>
+          <Text style={styles.message}>
+            {t('store-change-confirmation-message')}
+          </Text>
+          <View style={styles.buttonContainer}>
+            <View style={styles.buttonWrapper}>
+              <Button
+                text={t('cancel')}
+                onClickFn={onCancel}
+                bgColor={themeStyle.WARNING_COLOR}
+              />
+            </View>
+            <View style={styles.buttonSeparator} /> 
+            <View style={styles.buttonWrapper}>
+              <Button
+                text={t('ok')}
+                onClickFn={onApprove}
+                bgColor={themeStyle.PRIMARY_COLOR}
+              />
+            </View>
+          </View>
         </View>
       </View>
-    </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
+  modal: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
+  sheet: {
+    backgroundColor: themeStyle.WHITE_COLOR,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingBottom: 0,
+    width: '100%',
+    alignSelf: 'center',
+    overflow: 'hidden',
+    paddingHorizontal: 15,
+    marginTop: 100,
+    
   },
   container: {
-    backgroundColor: themeStyle.WHITE_COLOR,
-    borderRadius: 10,
     padding: 20,
-    width: '80%',
-    maxWidth: 400,
+    width: '100%',
   },
   title: {
     fontSize: 20,
@@ -78,15 +95,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    width: '50%',
-    alignItems:'center',
-    marginLeft: -5
+    width: '100%',
+    alignItems: 'center',
+  },
+  buttonWrapper: {
+    flex: 1,
   },
   buttonSeparator: {
     width: 10,
-  },
-  button: {
-    flex: 1,
   },
 });
 

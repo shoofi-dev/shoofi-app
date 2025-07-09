@@ -1,10 +1,9 @@
-import { useContext, useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import useWebSocket, { ReadyState } from "react-use-websocket";
 import { StoreContext } from '../stores';
-import { CUSTOMER_API, WS_URL } from '../consts/api';
-import { APP_NAME, APP_TYPE } from '../consts/shared';
+import { CUSTOMER_API } from '../consts/api';
+import { APP_NAME } from '../consts/shared';
 import { registerForPushNotificationsAsync } from '../utils/notification';
 import { axiosInstance } from '../utils/http-interceptor';
 
@@ -39,7 +38,7 @@ interface UseNotificationsReturn {
 }
 
 const useNotifications = (): UseNotificationsReturn => {
-  const { userDetailsStore, storeDataStore, authStore } = useContext(StoreContext);
+  const { userDetailsStore, storeDataStore, authStore, ordersStore, websocket } = useContext(StoreContext);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [stats, setStats] = useState<NotificationStats>({
     total: 0,
@@ -47,74 +46,32 @@ const useNotifications = (): UseNotificationsReturn => {
     read: 0,
     byType: {}
   });
+  const [unviewedOrdersCount, setUnviewedOrdersCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const appState = useRef(AppState.currentState);
   const notificationListener = useRef<any>();
   const responseListener = useRef<any>();
-  const reconnectAttempts = useRef(0);
-  const maxReconnectAttempts = 5;
 
-  // Memoize WebSocket URL to prevent unnecessary reconnections
-  const webSocketUrl = useMemo(() => {
-    if (!userDetailsStore.userDetails?.customerId || !authStore.userToken) {
-      return null;
-    }
-    
-    const appName = userDetailsStore.isAdmin() 
-      ? (storeDataStore.storeData?.appName || APP_NAME)
-      : APP_NAME;
-    
-    return `${WS_URL}?customerId=${userDetailsStore.userDetails.customerId}&appName=${appName}&token=${authStore.userToken}&appType=${APP_TYPE}`;
-  }, [
-    userDetailsStore.userDetails?.customerId,
-    authStore.userToken,
-    userDetailsStore.isAdmin(),
-    storeDataStore.storeData?.appName
-  ]);
+  // Use WebSocket connection from context
+  const { isConnected, connectionStatus, lastMessage } = websocket;
 
-  // WebSocket connection with improved reconnection logic
-  const { readyState, lastJsonMessage } = useWebSocket(webSocketUrl, {
-    share: true,
-    onOpen: () => {
+
+  // Handle WebSocket connection status changes
+  useEffect(() => {
+    if (isConnected) {
       console.log('WebSocket connected for notifications');
       setError(null);
-      reconnectAttempts.current = 0; // Reset reconnect attempts on successful connection
-    },
-    onClose: (event) => {
-      console.log('WebSocket disconnected for notifications', event.code, event.reason);
-      if (event.code !== 1000) { // Not a normal closure
-        reconnectAttempts.current++;
-        if (reconnectAttempts.current > maxReconnectAttempts) {
-          setError('Max reconnection attempts reached');
-        }
-      }
-    },
-    onError: (error) => {
-      console.error('WebSocket error:', error);
-      setError('Connection error');
-    },
-    shouldReconnect: (closeEvent) => {
-      // Only reconnect if it's not a normal closure and we haven't exceeded max attempts
-      return closeEvent.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts;
-    },
-    reconnectAttempts: maxReconnectAttempts,
-    reconnectInterval: (attemptNumber) => Math.min(1000 * Math.pow(2, attemptNumber), 30000), // Exponential backoff with max 30s
-    retryOnError: true,
-  });
 
-  // Connection status mapping
-  const connectionStatus = {
-    0: 'Connecting',
-    1: 'Open',
-    2: 'Closing',
-    3: 'Closed',
-  }[readyState] || 'Unknown';
+    } else if (connectionStatus === 'error') {
+      setError('WebSocket connection error');
+    }
+  }, [isConnected, connectionStatus, userDetailsStore.userDetails?.customerId, userDetailsStore.isAdmin()]);
 
   // Handle incoming WebSocket messages
   useEffect(() => {
-    if (lastJsonMessage) {
-      const message = lastJsonMessage as any;
+    if (lastMessage) {
+      const message = lastMessage;
       
       if (message.type === 'notification') {
         // Add new notification to the list
@@ -138,12 +95,12 @@ const useNotifications = (): UseNotificationsReturn => {
             [message.data.type]: (prev.byType[message.data.type] || 0) + 1
           }
         }));
-
+        
         // Show local notification
         showLocalNotification(newNotification);
-      }
+      } 
     }
-  }, [lastJsonMessage]);
+  }, [lastMessage]);
 
   // Show local notification
   const showLocalNotification = useCallback(async (notification: Notification) => {
@@ -213,6 +170,8 @@ const useNotifications = (): UseNotificationsReturn => {
       console.error('Error fetching notification stats:', err);
     }
   }, [userDetailsStore.userDetails?.customerId, authStore.userToken, userDetailsStore.isAdmin(), storeDataStore.storeData?.appName]);
+
+
 
   // Mark notification as read
   const markAsRead = useCallback(async (notificationId: string) => {
@@ -306,13 +265,29 @@ const useNotifications = (): UseNotificationsReturn => {
       console.error('Error deleting notification:', err);
     }
   }, [userDetailsStore.userDetails?.customerId, authStore.userToken, userDetailsStore.isAdmin(), storeDataStore.storeData?.appName, notifications]);
-
   // Refresh notifications
   const refreshNotifications = useCallback(async () => {
     await Promise.all([fetchNotifications(), fetchStats()]);
   }, [fetchNotifications, fetchStats]);
 
-  // Initialize push notifications
+    // Handle app state changes
+    useEffect(() => {
+      const handleAppStateChange = (nextAppState: AppStateStatus) => {
+        if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+          // App came to foreground, refresh notifications and unviewed orders
+         // refreshNotifications();
+          
+          // Also fetch unviewed orders count separately to ensure it's up to date
+    
+        }
+        appState.current = nextAppState;
+      };
+  
+      const subscription = AppState.addEventListener('change', handleAppStateChange);
+      return () => subscription?.remove();
+    }, [refreshNotifications, userDetailsStore.userDetails?.customerId, userDetailsStore.isAdmin()]);
+  
+
   useEffect(() => {
     const initializeNotifications = async () => {
       try {
@@ -333,8 +308,15 @@ const useNotifications = (): UseNotificationsReturn => {
         console.error('Failed to register for push notifications:', error);
       }
     };
+    if(authStore.isLoggedIn() && userDetailsStore.userDetails?.customerId){
+      initializeNotifications();
+    }
+  }, [userDetailsStore.userDetails?.customerId]);
 
-    initializeNotifications();
+
+  // Initialize push notifications
+  useEffect(() => {
+
 
     // Set up notification listeners
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -362,22 +344,16 @@ const useNotifications = (): UseNotificationsReturn => {
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-        // App came to foreground, refresh notifications
-        refreshNotifications();
+        // App came to foreground, refresh notifications and unviewed orders
       }
       appState.current = nextAppState;
     };
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription?.remove();
-  }, [refreshNotifications]);
+  }, [userDetailsStore.userDetails?.customerId, userDetailsStore.isAdmin()]);
 
-  // Fetch notifications when user is available
-  useEffect(() => {
-    if (userDetailsStore.userDetails?.customerId) {
-      refreshNotifications();
-    }
-  }, [userDetailsStore.userDetails?.customerId, refreshNotifications]);
+
 
   return {
     notifications,

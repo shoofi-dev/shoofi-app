@@ -21,7 +21,7 @@ const RadioGroup = ({ options, value, onChange }: RadioGroupProps) => {
           <View>
             <TouchableOpacity
               key={opt.id}
-              onPress={() => onChange(opt.id)}
+              onPress={() => !selected && onChange(opt.id)}
               style={[styles.optionRow, { paddingTop: isFirst ? 0 : 20, paddingBottom: isLast ? 0 : 20 }]}
               activeOpacity={0.7}
             >

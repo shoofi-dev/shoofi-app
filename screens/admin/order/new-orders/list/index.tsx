@@ -32,16 +32,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Button from "../../../../../components/controls/button/button";
 import { testPrint } from "../../../../../helpers/printer/print";
-import useWebSocket from "react-use-websocket";
 import { schedulePushNotification } from "../../../../../utils/notification";
 import { orderBy } from "lodash";
 import sizeTitleAdapter from "../../../../../helpers/size-name-adapter";
 import ShowImageDialog from "../../../../../components/dialogs/show-image/show-image";
 import { useNavigation } from "@react-navigation/native";
 import { adminCustomerStore } from "../../../../../stores/admin-customer";
-import DropDown from "../../../../../components/controls/dropdown";
 import isShowSize from "../../../../../helpers/is-show-size";
-import _useWebSocketUrl from "../../../../../hooks/use-web-socket-url";
 import CustomFastImage from "../../../../../components/custom-fast-image";
 import OrderExtrasDisplay from "../../../../../components/shared/OrderExtrasDisplay";
 
@@ -152,26 +149,13 @@ const NewOrdersListScreen = ({ route }) => {
     updateActiveEditNote(null);
   };
 
-  const getOrders = () => {
+  const getOrders = async () => {
     if (authStore.isLoggedIn()) {
       setIsloading(true);
       ordersStore.getNotViewdOrders(userDetailsStore.isAdmin(ROLES.all));
     }
   };
 
-  const { webScoketURL } = _useWebSocketUrl();
-
-  const { lastJsonMessage } = useWebSocket(webScoketURL, {
-    share: true,
-    shouldReconnect: (closeEvent) => true,
-  });
-
-  useEffect(() => {
-    if (lastJsonMessage) {
-      setOrdersList([]);
-      getOrders();
-    }
-  }, [lastJsonMessage]);
 
   useEffect(() => {
     if (ordersStore.notViewdOrders) {
@@ -1068,7 +1052,7 @@ const NewOrdersListScreen = ({ route }) => {
                           fontFamily={`${getCurrentLang()}-Bold`}
                           borderRadious={19}
                           disabled={
-                            !selectedTime[order._id] &&
+                            (!selectedTime[order._id] || isLoading) &&
                             !storeDataStore.storeData?.isOrderLaterSupport
                           }
                         />
