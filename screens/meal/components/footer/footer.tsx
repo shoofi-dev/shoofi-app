@@ -25,7 +25,6 @@ const ProductFooter = ({
   qty
 }: TProps) => {
   const { t } = useTranslation();
-  let { languageStore } = useContext(StoreContext);
 
   return (
     <View

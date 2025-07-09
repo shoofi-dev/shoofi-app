@@ -93,7 +93,7 @@ const MealScreen = ({ handleClose,product, category, index }) => {
   const [confirmActiondDialogText, setConfirmActiondDialogText] = useState("");
   const [isStoreChangeDialogOpen, setIsStoreChangeDialogOpen] = useState(false);
   const [pendingProduct, setPendingProduct] = useState(null);
-
+  const [isValidForm, setIsValidForm] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   // Animated image height and opacity
@@ -328,13 +328,12 @@ const MealScreen = ({ handleClose,product, category, index }) => {
       return true;
     }
     const validationResult = extrasStore.validate(meal.data.extras);
-    console.log("validationResult", validationResult);
     return validationResult;
   };
 
   // Get validation state - make it reactive to extras selections
-  const isValidForm = React.useMemo(() => {
-    return validateMealExtras();
+  useEffect(() => {
+    setIsValidForm(validateMealExtras());
   }, [meal?.data?.extras, extrasStore.selections]);
 
   if (!meal) {

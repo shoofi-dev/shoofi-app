@@ -69,7 +69,7 @@ const ExtrasSection = ({
         onChange(extra.id, extra.defaultOptionIds);
       }
     });
-  }, []); // Run only once on mount
+  }, [extras, selections, onChange]); // Run only once on mount
 
   const groupedExtras = extras.reduce((acc, extra) => {
     if (extra.groupId) {
