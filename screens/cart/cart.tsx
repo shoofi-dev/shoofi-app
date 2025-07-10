@@ -45,6 +45,8 @@ import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
 import { useResponsive } from "../../hooks/useResponsive";
 import CartExtras from "./components/Extras";
 import TotalPriceCMP from "../../components/total-price";
+import StoreErrorMsgModal from "../../components/dialogs/StoreErrorMsgModal";
+import StoreIsCloseModal from "../../components/dialogs/StoreIsCloseModal";
 const barcodeString = "https://onelink.to/zky772";
 
 const hideExtras = ["counter"];
@@ -98,6 +100,9 @@ const CartScreen = ({ route }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedProductIndex, setSelectedProductIndex] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isStoreErrorModalVisible, setIsStoreErrorModalVisible] = useState(false);
+  const [isStoreCloseModalVisible, setIsStoreCloseModalVisible] = useState(false);
+  const [storeErrorText, setStoreErrorText] = useState("");
 
   useEffect(() => {
     if (ordersStore.editOrderData) {
@@ -380,7 +385,22 @@ const CartScreen = ({ route }) => {
     goToPickTimeScreen();
   };
 
-  const handleSubmintButton = () => {
+  const handleSubmintButton = async () => {
+    // Check store availability first
+    const storeStatus = await isStoreAvailable();
+    console.log("storeStatus", storeStatus);
+    
+    const isCustomErrorMessage = await isErrCustomMessage(storeStatus);
+    if (isCustomErrorMessage) {
+      return;
+    }
+
+    const isStoreOpenRes = await isStoreOpen(storeStatus);
+    if (!isStoreOpenRes) {
+      return;
+    }
+
+    // Continue with existing logic
     if (storeDataStore.storeData?.isOrderLaterSupport) {
       onPickTime();
     } else {
@@ -396,6 +416,47 @@ const CartScreen = ({ route }) => {
     console.log("toalPriceValue", toalPriceValue);
     setTotalPrice(toalPriceValue);
   };
+
+  // Store validation functions
+  const isStoreAvailable = () => {
+    return storeDataStore.getStoreData().then((res) => {
+      return {
+        ar: res["invalid_message_ar"],
+        he: res["invalid_message_he"],
+        isOpen: res.alwaysOpen || userDetailsStore.isAdmin() || res.isOpen,
+        isBusy: false,
+      };
+    });
+  };
+
+  // STORE ERROR MESSAGE - START
+  const toggleStoreErrorMsgDialog = (value) => {
+    setStoreErrorText(value);
+    setIsStoreErrorModalVisible(true);
+  };
+  
+  const isErrCustomMessage = async (storeStatus) => {
+    if ((storeStatus.ar || storeStatus.he) && !userDetailsStore.isAdmin()) {
+      toggleStoreErrorMsgDialog(storeStatus[getCurrentLang()]);
+      return true;
+    }
+    return false;
+  };
+  // STORE ERROR MESSAGE - END
+
+  // STORE IS CLOSE - START
+  const toggleStoreIsCloseDialog = () => {
+    setIsStoreCloseModalVisible(true);
+  };
+  
+  const isStoreOpen = async (storeStatus) => {
+    if (!storeStatus.isOpen && !userDetailsStore.isAdmin()) {
+      toggleStoreIsCloseDialog();
+      return false;
+    }
+    return true;
+  };
+  // STORE IS CLOSE - END
 
   return (
     <View style={{ position: "relative", height: "100%", flex: 1, bottom: 0 }}>
@@ -707,6 +768,15 @@ const CartScreen = ({ route }) => {
         text={"pick-time-note"}
         positiveText="ok"
       />
+              <StoreErrorMsgModal 
+          visible={isStoreErrorModalVisible}
+          textValue={storeErrorText}
+          onClose={() => setIsStoreErrorModalVisible(false)}
+        />
+        <StoreIsCloseModal 
+          visible={isStoreCloseModalVisible}
+          onClose={() => setIsStoreCloseModalVisible(false)}
+        />
 
       <Modal
         isVisible={isModalOpen}

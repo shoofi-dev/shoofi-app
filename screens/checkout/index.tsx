@@ -381,7 +381,6 @@ const CheckoutScreen = ({ route }) => {
       <NewPaymentMethodBasedEventDialog />
       <StoreErrorMsgDialogEventBased />
       <DeliveryMethodAggreeBasedEventDialog />
-      <StoreIsCloseBasedEventDialog />
       <InvalidAddressdBasedEventDialog />
       <PaymentFailedBasedEventDialog />
       <Modal

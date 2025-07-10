@@ -5,7 +5,6 @@ import { StoreContext } from "../../stores";
 import { PLACE, SHIPPING_METHODS } from "../../consts/shared";
 import { useNavigation } from "@react-navigation/native";
 import { DIALOG_EVENTS } from "../../consts/events";
-import { getCurrentLang } from "../../translations/i18n";
 import { useTranslation } from "react-i18next";
 
 export type TProps = {
@@ -22,16 +21,7 @@ const _useCheckoutValidate = () => {
   const { cartStore, userDetailsStore, storeDataStore } =
     useContext(StoreContext);
 
-  const isStoreAvailable = () => {
-    return storeDataStore.getStoreData().then((res) => {
-      return {
-        ar: res["invalid_message_ar"],
-        he: res["invalid_message_he"],
-        isOpen: res.alwaysOpen || userDetailsStore.isAdmin() || res.isOpen,
-        isBusy: false,
-      };
-    });
-  };
+
 
   const validateAdress = async (addressLocation) => {
     return new Promise(async (resolve) => {
@@ -48,61 +38,9 @@ const _useCheckoutValidate = () => {
     });
   };
 
-  // STORE ERROR MESSAGE - START
-  useEffect(() => {
-    const subscription = DeviceEventEmitter.addListener(
-      `${DIALOG_EVENTS.OPEN_STORE_ERROR_MSG_BASED_EVENT_DIALOG}_HIDE`,
-      handleStoreErrorMsgAnswer
-    );
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-  const handleStoreErrorMsgAnswer = (data) => {};
-  const toggleStoreErrorMsgDialog = (value) => {
-    DeviceEventEmitter.emit(
-      DIALOG_EVENTS.OPEN_STORE_ERROR_MSG_BASED_EVENT_DIALOG,
-      {
-        text: value,
-      }
-    );
-  };
-  const isErrCustomMessage = async (storeStatus) => {
-    if ((storeStatus.ar || storeStatus.he) && !userDetailsStore.isAdmin()) {
-      toggleStoreErrorMsgDialog(storeStatus[getCurrentLang()]);
-      return true;
-    }
-    return false;
-  };
-  // STORE ERROR MESSAGE - END
 
-  // STORE IS CLOSE - START
-  useEffect(() => {
-    const subscription = DeviceEventEmitter.addListener(
-      `${DIALOG_EVENTS.OPEN_STORE_IS_CLOSE_BASED_EVENT_DIALOG}_HIDE`,
-      handleStoreIsCloseAnswer
-    );
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-  const handleStoreIsCloseAnswer = (data) => {};
-  const toggleStoreIsCloseDialog = () => {
-    DeviceEventEmitter.emit(
-      DIALOG_EVENTS.OPEN_STORE_IS_CLOSE_BASED_EVENT_DIALOG,
-      {
-        text: t("store-is-close"),
-      }
-    );
-  };
-  const isStoreOpen = async (storeStatus) => {
-    if (!storeStatus.isOpen && !userDetailsStore.isAdmin()) {
-      toggleStoreIsCloseDialog();
-      return false;
-    }
-    return true;
-  };
-  // STORE IS CLOSE - END
+
+
 
   // VALIDATE SHIPPING ADDRESS - START
   useEffect(() => {
@@ -156,18 +94,9 @@ const _useCheckoutValidate = () => {
     addressLocationText,
     place,
   }: TProps) => {
-    const storeStatus = await isStoreAvailable();
-    console.log("storeStatus",storeStatus)
-    const isCustomErromMessage = await isErrCustomMessage(storeStatus);
-    if (isCustomErromMessage) {
-      return false;
-    }
-
-    const isStoreOpenRes = await isStoreOpen(storeStatus);
-    if (!isStoreOpenRes) {
-      return false;
-    }
-
+    // Store validation is now handled in cart screen
+    // Only shipping validation remains here
+    
     // const isValidShipping = await isValidShippingCheck(
     //   shippingMethod,
     //   addressLocation,

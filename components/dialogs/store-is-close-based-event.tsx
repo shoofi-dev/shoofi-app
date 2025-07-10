@@ -72,7 +72,7 @@ export default function StoreIsCloseBasedEventDialog() {
                 fontWeight: "bold",
               }}
             >
-              {textValue}
+              {t('store_is_closed')}
             </Text>
           </Dialog.Content>
           <Dialog.Actions>

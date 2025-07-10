@@ -293,7 +293,6 @@ const App = () => {
 
   const initApp = async () => {
     if(!cartStore.cartItems.length){
-      console.log("XXXXXXXXXXA4", cartStore.cartItems)
       await shoofiAdminStore.setStoreDBName("");
     }
     prepare();

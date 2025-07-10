@@ -76,6 +76,7 @@ const StoreItem = ({ storeItem }: TProps) => {
           source={{ uri: `${cdnUrl}${storeItem?.store?.cover_sliders?.[0]?.uri}` }}
           resizeMode="cover"
         />
+
         
         {/* Loading overlay */}
         {/* {isLoading && (
@@ -107,7 +108,7 @@ const StoreItem = ({ storeItem }: TProps) => {
             <Text style={styles.infoText}>{distance} {t("km")}</Text>
           </View>
           <View style={{marginRight: 5, marginLeft: 5}}>
-            <Text style={styles.openStatus}>
+            <Text style={[styles.openStatus, {color: isOpen ? themeStyle.SUCCESS_COLOR : themeStyle.ERROR_COLOR}]}>
               {isOpen ? t("open") : t("closed")}
             </Text>
           </View>
@@ -239,5 +240,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: themeStyle.PRIMARY_COLOR,
+  },
+  storeStatus: {
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    backgroundColor: themeStyle.GRAY_40,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
+  storeStatusText: {
+    fontSize: themeStyle.FONT_SIZE_XS,
   },
 });

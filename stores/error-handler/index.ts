@@ -9,6 +9,11 @@ class ErrorHandlerStore {
       .post(
         `${ERROR_HANDLER.CONTROLLER}/${ERROR_HANDLER.INSERT_CLIENT_ERROR}`,
         body,
+        {
+          headers: {
+            appName: "shoofi",
+          },
+        }
       )
       .then(function (response) {
         const res = response;

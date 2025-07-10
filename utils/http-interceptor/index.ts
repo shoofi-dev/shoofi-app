@@ -67,33 +67,32 @@ axiosInstance.interceptors.response.use(
     return response.data;
   },
   function (error) {
-    if (error?.message?.includes("Network Error")) {
-      DeviceEventEmitter.emit(`OPEN_INTERNET_CONNECTION_DIALOG`, {
-        show: true,
-        isSignOut: false,
-      });
-    }
+    // if (error?.message?.includes("Network Error")) {
+    //   DeviceEventEmitter.emit(`OPEN_INTERNET_CONNECTION_DIALOG`, {
+    //     show: true,
+    //     isSignOut: false,
+    //   });
+    // }
     if (
-      error?.message?.includes("timeout") ||
-      error?.message?.includes("Network Error")
+      error?.message?.includes("timeout")
     ) {
       DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
         show: true,
         isSignOut: false,
       });
     }
-    if (error?.message?.includes("401")) {
-      DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
-        show: true,
-        isSignOut: true,
-      });
-    }
-    if (error?.message?.includes("402")) {
-      DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
-        show: true,
-        isSignOut: true,
-      });
-    }
+    // if (error?.message?.includes("401")) {
+    //   DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
+    //     show: true,
+    //     isSignOut: true,
+    //   });
+    // }
+    // if (error?.message?.includes("402")) {
+    //   DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
+    //     show: true,
+    //     isSignOut: true,
+    //   });
+    // }
     // console.log(error)
     return Promise.reject(error);
   }

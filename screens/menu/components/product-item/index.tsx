@@ -55,38 +55,42 @@ const ProductItem = ({
     storeDataStore,
   } = useContext(StoreContext);
   const { deviceType } = _useDeviceType();
-
   // Memoize expensive calculations
   const isDisabled = useMemo(() => {
     return !userDetailsStore.isAdmin() && item.count == 0;
   }, [userDetailsStore.isAdmin(), item.count]);
 
   const isInStore = useMemo(() => {
-    if (ordersStore.orderType == ORDER_TYPE.now && !item.isInStore) {
+    if (!item.isInStore) {
       return false;
     }
     return true;
   }, [ordersStore.orderType, item.isInStore]);
 
-  const getOutOfStockMessage = useCallback((item) => {
-    if (item.notInStoreDescriptionAR || item.notInStoreDescriptionHE) {
-      return languageStore.selectedLang === "ar"
-        ? item.notInStoreDescriptionAR
-        : item.notInStoreDescriptionHE;
-    }
-    return t("call-store-to-order");
-  }, [languageStore.selectedLang, t]);
-
+  const getOutOfStockMessage = useCallback(
+    (item) => {
+      if (item.notInStoreDescriptionAR || item.notInStoreDescriptionHE) {
+        return languageStore.selectedLang === "ar"
+          ? item.notInStoreDescriptionAR
+          : item.notInStoreDescriptionHE;
+      }
+      return t("call-store-to-order");
+    },
+    [languageStore.selectedLang, t]
+  );
 
   const isInCart = cartStore.getProductByProductId(item._id);
   const productCountInCart = cartStore.getProductCountInCart(item._id);
 
-  const onAddToCart = useCallback((product) => {
-    let tmpProduct: any = {};
-    tmpProduct.others = { count: 1, note: "" };
-    tmpProduct.data = product;
-    cartStore.addProductToCart(tmpProduct);
-  }, [cartStore]);
+  const onAddToCart = useCallback(
+    (product) => {
+      let tmpProduct: any = {};
+      tmpProduct.others = { count: 1, note: "" };
+      tmpProduct.data = product;
+      cartStore.addProductToCart(tmpProduct);
+    },
+    [cartStore]
+  );
 
   // Memoize computed values
   const productName = useMemo(() => {
@@ -94,11 +98,13 @@ const ProductItem = ({
   }, [languageStore.selectedLang, item.nameAR, item.nameHE]);
 
   const productDescription = useMemo(() => {
-    return languageStore.selectedLang === "ar" ? item.descriptionAR : item.descriptionHE;
+    return languageStore.selectedLang === "ar"
+      ? item.descriptionAR
+      : item.descriptionHE;
   }, [languageStore.selectedLang, item.descriptionAR, item.descriptionHE]);
 
   const price = useMemo(() => item.price, [item.price]);
-  
+
   const imageUrl = useMemo(() => {
     return `${cdnUrl}${item?.img?.[0]?.uri}`;
   }, [item?.img?.[0]?.uri]);
@@ -110,27 +116,35 @@ const ProductItem = ({
   return (
     <TouchableOpacity style={{}} onPress={handleItemPress}>
       <View style={styles.rowCard}>
-      {/* Product Image on the right */}
-      <View style={styles.rowImageWrapper}>
-        <CustomFastImage source={{ uri: imageUrl }} style={styles.rowImage} />
-      </View>
-{/* Text and price on the left */}
-      <View style={styles.rowTextContainer}>
-        <Text style={styles.rowProductName}>{productName}</Text>
-        <Text style={styles.rowProductDesc} numberOfLines={3}>{productDescription}</Text>
-        <Text style={styles.rowPriceText}>₪{price}</Text>
-      </View>
-      {/* Add button */}
-      <GlassBG style={styles.addButton}>
-          <Icon icon="plus" size={10} color={themeStyle.WHITE_COLOR} />
-      </GlassBG>
-      {isInCart && (
-        <View style={styles.countContainerWrapper}>
-          <View style={styles.countContainer}>
-            <Text style={styles.countText}>{productCountInCart}</Text>
-          </View>
+        {/* Product Image on the right */}
+        <View style={styles.rowImageWrapper}>
+          <CustomFastImage source={{ uri: imageUrl }} style={styles.rowImage} />
         </View>
-      )}
+        {/* Text and price on the left */}
+        <View style={styles.rowTextContainer}>
+          <Text style={styles.rowProductName}>{productName}</Text>
+          <Text style={styles.rowProductDesc} numberOfLines={3}>
+            {productDescription}
+          </Text>
+          <Text style={styles.rowPriceText}>₪{price}</Text>
+        </View>
+        {/* Add button */}
+        {isInStore ? (
+          <GlassBG style={styles.addButton}>
+            <Icon icon="plus" size={10} color={themeStyle.WHITE_COLOR} />
+          </GlassBG>
+        ) : (
+          <View style={styles.notInStore}>
+            <Text style={styles.notInStoreText}>{t("not-in-store")}</Text>
+          </View>
+        )}
+        {isInCart && (
+          <View style={styles.countContainerWrapper}>
+            <View style={styles.countContainer}>
+              <Text style={styles.countText}>{productCountInCart}</Text>
+            </View>
+          </View>
+        )}
       </View>
 
       <DashedLine
@@ -153,8 +167,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 5,
     height: 140,
-
-
   },
   rowImageWrapper: {
     width: 96,
@@ -202,7 +214,6 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignItems: "center",
     justifyContent: "center",
-
   },
   addButtonText: {
     fontSize: 22,
@@ -230,6 +241,20 @@ const styles = StyleSheet.create({
   countText: {
     fontSize: themeStyle.FONT_SIZE_SM,
     color: themeStyle.SECONDARY_COLOR,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  notInStore: {
+    backgroundColor: themeStyle.GRAY_40,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 100,
+    position: "absolute",
+    left: 12,
+    bottom: 25,
+  },
+  notInStoreText: {
+    fontSize: themeStyle.FONT_SIZE_XS,
     fontWeight: "bold",
     textAlign: "center",
   },

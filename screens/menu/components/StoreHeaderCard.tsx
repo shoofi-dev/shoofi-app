@@ -18,6 +18,7 @@ import Animated from "react-native-reanimated";
 import { cdnUrl } from "../../../consts/shared";
 import { StoreContext } from "../../../stores";
 import BackButton from "../../../components/back-button";
+import { t } from "i18next";
 
 interface StoreHeaderCardProps {
   store: any;
@@ -161,8 +162,6 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
       })
     : 0;
 
-
-
   // Default: full card
   return (
     <View style={{ position: "relative", height: 260 }}>
@@ -196,7 +195,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
  
         }}
       >
-        <View style={[styles.infoCard, { top: 240, zIndex: 2, }]}>
+        <View style={[styles.infoCard, { top: 220, zIndex: 2, }]}>
           {/* 210 (image) - 50 (overlap) */}
           <View style={styles.infoRow}>
             <TouchableOpacity style={styles.arrowBtn}>
@@ -215,12 +214,26 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               </Text>
   
             </View>
+       
             <CustomFastImage
               source={{ uri: cdnUrl + storeLogo }}
               style={styles.logo}
             />
           </View>
+          <View style={{flexDirection: "row", alignItems: "center", marginTop: 10, marginLeft: 20}}>
+          <View style={styles.storeStatus}>
+              <Text style={[styles.storeStatusText, {color: store?.isOpen ? themeStyle.SUCCESS_COLOR : themeStyle.ERROR_COLOR}]}>{store?.isOpen ? t("open") : t("closed")}</Text>
+            </View>
+            <View style={{flexDirection: "row", alignItems: "center", marginTop: 10, marginLeft: 20}}>
+              <Text style={styles.storeStatusText}>{t("working-hours")}</Text>      
+              <Text style={styles.storeStatusText}>
+                {store?.workingHours ? `${store.workingHours.start} - ${store.workingHours.end}` : 'N/A'}
+              </Text>
+            </View>
+          </View>
+    
         </View>
+        
       </Animated.View>
     </View>
   );
@@ -363,8 +376,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 20,
     padding: 10,
-    flexDirection: "row-reverse",
-    alignItems: "center",
+    alignItems: "flex-start",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
@@ -453,6 +465,14 @@ const styles = StyleSheet.create({
     height: 44,
     alignItems: "center",
     justifyContent: "center",
+  },
+  storeStatus: {
+
+
+  },  
+  storeStatusText: {
+    fontSize: themeStyle.FONT_SIZE_XS,
+
   },
 });
 
