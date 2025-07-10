@@ -81,12 +81,12 @@ axiosInstance.interceptors.response.use(
         isSignOut: false,
       });
     }
-    // if (error?.message?.includes("401")) {
-    //   DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
-    //     show: true,
-    //     isSignOut: true,
-    //   });
-    // }
+    if (error?.message?.includes("401")) {
+      DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
+        show: true,
+        isSignOut: true,
+      });
+    }
     // if (error?.message?.includes("402")) {
     //   DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
     //     show: true,
