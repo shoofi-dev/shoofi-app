@@ -201,6 +201,8 @@ class CartStore {
   isDifferentStore = async () => {
     const cartStoreDBName = await this.getCartStoreDBName();
     const storeDBName = await AsyncStorage.getItem("@storage_storeDB");
+    console.log("cartStoreDBName", cartStoreDBName);
+    console.log("storeDBName", storeDBName);
     return cartStoreDBName && storeDBName && cartStoreDBName !== storeDBName;
   };
 
@@ -337,7 +339,6 @@ class CartStore {
   };
 
   getCartData = async (order: any) => {
-    console.log("storeDataStore.storeData", storeDataStore.storeData);
     let finalOrder: TOrder = {
       payment_method: order.paymentMthod,
       receipt_method: order.shippingMethod,
@@ -375,8 +376,9 @@ class CartStore {
     return cartData;
   };
 
-  resetCart = () => {
+  resetCart = async () => {
     this.cartItems = [];
+    await this.setCartStoreDBName("");
     this.updateLocalStorage();
   };
 

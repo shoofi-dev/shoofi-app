@@ -23,7 +23,7 @@ const AddressModal = ({ onClose, onAddressSelect, selectionMode = false }) => {
         </TouchableOpacity>
       </GlassBG> */}
       <View style={styles.closeButton}>
-      <BackButton onClick={onClose} isDisableGoBack={true} />
+      <BackButton onClick={onClose} isDisableGoBack={true}  color={themeStyle.WHITE_COLOR} />
 
       </View>
       <View style={{marginTop: 25, }}>

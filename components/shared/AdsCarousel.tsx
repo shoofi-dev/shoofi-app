@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, Image, ImageBackground, StyleSheet, Dimensions } from 'react-native';
+import { View, Image, ImageBackground, StyleSheet, Dimensions } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { cdnUrl } from '../../consts/shared';
 import CustomFastImage from '../custom-fast-image';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import Text from '../controls/Text';
+import themeStyle from '../../styles/theme.style';
 const { width } = Dimensions.get('window');
 const CARD_HEIGHT = 185;
 const CARD_RADIUS = 16;
@@ -23,7 +24,6 @@ type AdsCarouselProps = {
 
 const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-
   return (
     <View style={styles.carouselContainer}>
       <Carousel
@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.4)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
-    textAlign: 'left',
   },
   subtitle: {
     color: 'white',
@@ -154,7 +153,6 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.3)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
-    textAlign: 'left',
   },
   dotsRow: {
     flexDirection: 'row',
@@ -166,11 +164,11 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#d1d5db',
+    backgroundColor: 'rgba(217, 217, 217, 1)',
     marginHorizontal: 3,
   },
   dotActive: {
-    backgroundColor: '#a78bfa',
+    backgroundColor: themeStyle.SECONDARY_COLOR,
     width: 10,
     height: 10,
   },

@@ -39,7 +39,7 @@ const CartExtras = ({
   };
 
   return (
-    <View style={{ marginTop: 5 }}>
+    <View style={{ marginTop: 5, alignItems: "flex-start" }}>
       {extrasDef.map((extra) => {
         const value = selectedExtras[extra.id];
         if (
@@ -86,16 +86,16 @@ const CartExtras = ({
               <Text style={{ fontSize: fontSize(14), color: "#888" }}>
                 {getName(extra)}
               </Text>
-              <Text style={{ fontSize: fontSize(14), color: "#333" }}>
+              <View style={{   }}>
                 {opts.map((o) => (
                   <View>
                     <Text>
                       {getName(o)}
-                      {o.price ? ` (+₪${o.price})` : ""}
+                      {o.price ? ` (${o.price}+₪)` : ""}
                     </Text>
                   </View>
-                ))}
-              </Text>
+                  ))}
+              </View>
             </View>
           );
         }

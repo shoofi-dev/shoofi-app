@@ -51,9 +51,14 @@ export default function BackButton({ goTo, onClick, color = themeStyle.BLACK_COL
         onPress={() => {
           onBtnClick();
         }}
-        
+          style={{
+            width: 36,
+            height: 36,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
       >
-   <Icon icon="chevron_back" size={20} color={color} />
+   <Icon icon={isDisableGoBack ? "x-close" : "chevron_back"} size={20} color={color} />
             {/* <Text style={{fontSize:20, color:themeStyle.BLACK_COLOR}}>{'>'}</Text> */}
       </TouchableOpacity>
       </GlassBG>

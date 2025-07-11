@@ -1,5 +1,12 @@
 import LottieView from "lottie-react-native";
-import { View, Image, StyleSheet, DeviceEventEmitter, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  View,
+  Image,
+  StyleSheet,
+  DeviceEventEmitter,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { ToggleButton } from "react-native-paper";
 import Text from "../../controls/Text";
 import { useTranslation } from "react-i18next";
@@ -24,6 +31,7 @@ export type TProps = {
   onChange: any;
   shippingMethodValue?: any;
   isDeliverySupport?: boolean;
+  isTakeAwaySupport?: boolean;
   deliveryDistanceText?: string;
   deliveryEtaText?: string;
   pickupEtaText?: string;
@@ -40,27 +48,37 @@ export type TProps = {
   shippingMethod?: any;
 };
 
-export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySupport, deliveryDistanceText, deliveryEtaText, pickupEtaText, takeAwayReadyTime, deliveryTime, distanceKm, driversLoading, shippingMethod }: TProps) => {
-  const { t } = useTranslation(); 
+export const ShippingMethodPick = ({
+  onChange,
+  shippingMethodValue,
+  isDeliverySupport,
+  isTakeAwaySupport,
+  deliveryDistanceText,
+  deliveryEtaText,
+  pickupEtaText,
+  takeAwayReadyTime,
+  deliveryTime,
+  distanceKm,
+  driversLoading,
+  shippingMethod,
+}: TProps) => {
+  const { t } = useTranslation();
   const { ordersStore } = useContext(StoreContext);
 
   const [shippingMethodLocal, setShippingMethodLocal] = useState(
-    shippingMethod || SHIPPING_METHODS.takAway
+    shippingMethod || (isTakeAwaySupport && SHIPPING_METHODS.takAway)
   );
 
   useEffect(() => {
-    setShippingMethodLocal(shippingMethod || SHIPPING_METHODS.takAway);
+    setShippingMethodLocal(shippingMethod || (isTakeAwaySupport && SHIPPING_METHODS.takAway));
   }, [shippingMethod]);
 
   useEffect(() => {
     if (ordersStore.editOrderData) {
       setShippingMethodLocal(ordersStore.editOrderData.order.receipt_method);
       onChange(ordersStore.editOrderData.order.receipt_method);
-
     }
   }, [ordersStore.editOrderData]);
-
-
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
@@ -88,11 +106,11 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
       return;
     }
 
-    let isDeliverySupported = false;
-    if (value === SHIPPING_METHODS.shipping) {
-      isDeliverySupported = isDeliverySupport;
-    }
-    if (!isDeliverySupported) {
+    // let isDeliverySupported = false;
+    // if (value === SHIPPING_METHODS.shipping) {
+    //   isDeliverySupported = isDeliverySupport;
+    // }
+    if (!isDeliverySupport) {
       // toggleDialog({
       //   text: "shipping-not-supported",
       //   icon: "shipping_icon",
@@ -100,6 +118,16 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
       setShippingMethodLocal(SHIPPING_METHODS.takAway);
       onChange(SHIPPING_METHODS.takAway);
 
+      return;
+    }
+
+    // let isTakeAwaySupported = false;
+    // if (value === SHIPPING_METHODS.takAway) {
+    //   isTakeAwaySupported = isTakeAwaySupport;
+    // }
+    if (!isTakeAwaySupport) {
+      setShippingMethodLocal(SHIPPING_METHODS.shipping);
+      onChange(SHIPPING_METHODS.shipping);
       return;
     }
     setShippingMethodLocal(value);
@@ -115,28 +143,36 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
           shippingMethodLocal === SHIPPING_METHODS.shipping
             ? styles.pillOptionSelected
             : styles.pillOptionUnselected,
-            { borderRadius: 50 },
-          ]}
+          { borderRadius: 50 },
+        ]}
         onPress={() => handleDeliverySelect(SHIPPING_METHODS.shipping)}
         activeOpacity={0.8}
       >
         <Text
           style={[
             styles.pillOptionText,
-            shippingMethodLocal === SHIPPING_METHODS.shipping && styles.pillOptionTextSelected,
+            shippingMethodLocal === SHIPPING_METHODS.shipping &&
+              styles.pillOptionTextSelected,
           ]}
         >
           {t("delivery")}
         </Text>
-        { isDeliverySupport && !driversLoading ? <Text style={styles.pillOptionSubtext}>
-          {distanceKm ? distanceKm + " km · " : ""}
-          {deliveryTime?.min} - {deliveryTime?.max} {t('minutes')}
-        </Text>
-        : driversLoading ? <ActivityIndicator size="small" color={themeStyle.GRAY_300} style={{ marginTop: 2 }} />
-        : <Text style={{color: themeStyle.GRAY_60}}>
-          {t('delivery-not-supported')}
-        </Text>
-        }
+        {isDeliverySupport && !driversLoading ? (
+          <Text style={styles.pillOptionSubtext}>
+            {distanceKm ? distanceKm + " km · " : ""}
+            {deliveryTime?.min} - {deliveryTime?.max} {t("minutes")}
+          </Text>
+        ) : driversLoading ? (
+          <ActivityIndicator
+            size="small"
+            color={themeStyle.GRAY_300}
+            style={{ marginTop: 2 }}
+          />
+        ) : (
+          <Text style={{ color: themeStyle.GRAY_60 }}>
+            {t("delivery-not-supported")}
+          </Text>
+        )}
       </TouchableOpacity>
       {/* Pickup Option */}
       <TouchableOpacity
@@ -153,12 +189,15 @@ export const ShippingMethodPick = ({ onChange, shippingMethodValue, isDeliverySu
         <Text
           style={[
             styles.pillOptionText,
-            shippingMethodLocal === SHIPPING_METHODS.takAway && styles.pillOptionTextSelected,
+            shippingMethodLocal === SHIPPING_METHODS.takAway &&
+              styles.pillOptionTextSelected,
           ]}
         >
           {t("take-away")}
         </Text>
-        <Text style={styles.pillOptionSubtext}>{takeAwayReadyTime?.min} - {takeAwayReadyTime?.max} {t('minutes')}</Text>
+        <Text style={styles.pillOptionSubtext}>
+          {takeAwayReadyTime?.min} - {takeAwayReadyTime?.max} {t("minutes")}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -192,10 +231,8 @@ const styles = StyleSheet.create({
   pillOptionText: {
     fontSize: themeStyle.FONT_SIZE_MD,
     textAlign: "center",
-
   },
-  pillOptionTextSelected: {
-  },
+  pillOptionTextSelected: {},
   pillOptionContent: {
     alignItems: "center",
     justifyContent: "center",
@@ -204,6 +241,6 @@ const styles = StyleSheet.create({
     fontSize: themeStyle.FONT_SIZE_XS,
     color: themeStyle.GRAY_60,
     marginTop: -2,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

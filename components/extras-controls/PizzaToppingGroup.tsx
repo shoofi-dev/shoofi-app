@@ -1,10 +1,12 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Extra, PizzaToppingOption, AreaOption } from "./ExtrasSection";
 import { useContext } from "react";
 import { StoreContext } from "../../stores";
 import Icon from "../icon";
 import themeStyle from "../../styles/theme.style";
+import Text from "../../components/controls/Text";
+
 export type PizzaToppingGroupProps = {
   extra: Extra;
   value: Record<string, { areaId: string; isFree: boolean }>; // { [toppingId]: { areaId, isFree } }

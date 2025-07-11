@@ -9,8 +9,18 @@ import {
   Animated,
   Dimensions,
   Platform,
+  Keyboard,
 } from "react-native";
-import React, { useContext, useState, useEffect, useRef, useCallback, useMemo } from "react";
+import Modal from "react-native-modal";
+
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import ProductHeader from "./components/header/header";
 import ProductFooter from "./components/footer/footer";
 
@@ -68,7 +78,7 @@ const gradiantColors =
         "rgba(199, 199, 199, 0.1)",
       ];
 
-const MealScreen = ({ handleClose,product, category, index }) => {
+const MealScreen = ({ handleClose, product, category, index }) => {
   const { t } = useTranslation();
   const scrollRef = useRef(null);
 
@@ -95,6 +105,8 @@ const MealScreen = ({ handleClose,product, category, index }) => {
   const [pendingProduct, setPendingProduct] = useState(null);
   const [isValidForm, setIsValidForm] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
+  const [isNoteModalVisible, setIsNoteModalVisible] = useState(false);
+  const [noteValue, setNoteValue] = useState("");
 
   // Animated image height and opacity
   const IMAGE_MAX_HEIGHT = 180;
@@ -154,6 +166,7 @@ const MealScreen = ({ handleClose,product, category, index }) => {
       }
     }
     setMeal(tmpProduct);
+    setNoteValue(tmpProduct?.others?.note || "");
     return () => {
       setMeal(null);
     };
@@ -180,7 +193,6 @@ const MealScreen = ({ handleClose,product, category, index }) => {
   }, [extrasStore?.selections]);
 
   const handleAddToCart = async () => {
-    console.log("mealxx2", ordersStore.orderType, meal.data.isInStore);
     if (ordersStore.orderType == ORDER_TYPE.now && !meal.data.isInStore) {
       setConfirmActiondDialogText(
         getOutOfStockMessage() || "call-store-to-order"
@@ -190,7 +202,6 @@ const MealScreen = ({ handleClose,product, category, index }) => {
     }
 
     const isDifferentStore = await cartStore.isDifferentStore();
-    console.log("mealxx1", isDifferentStore);
 
     if (isDifferentStore) {
       setPendingProduct({
@@ -228,7 +239,6 @@ const MealScreen = ({ handleClose,product, category, index }) => {
       selectedExtras: { ...extrasStore.selections },
     });
     handleClose();
-
   };
 
   const handleConfirmActionAnswer = (answer: string) => {
@@ -343,7 +353,6 @@ const MealScreen = ({ handleClose,product, category, index }) => {
     <View style={{ backgroundColor: themeStyle.WHITE_COLOR }}>
       <Animated.ScrollView
         ref={scrollRef}
-        
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
@@ -366,8 +375,41 @@ const MealScreen = ({ handleClose,product, category, index }) => {
               </View>
             )}
           </View>
+          <View style={{ marginTop: 20, paddingBottom: 20, paddingHorizontal: 10 }}>
+            <TouchableOpacity
+              style={{
+                alignItems: "center",
+                alignSelf: "center",
+
+                flexDirection: "row",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+              onPress={() => {
+                setNoteValue(meal?.others?.note || "");
+                setIsNoteModalVisible(true);
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", }}>
+                <Icon icon="comment" size={20} style={{ marginRight: 10 }} />
+                <Text>{t("note")}</Text>
+              </View>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Icon icon="chevron" size={20} style={{}} />
+              </View>
+            </TouchableOpacity>
+            <View style={{ marginTop: 10, marginLeft: 30 }}>
+              <Text>{meal.others.note}</Text>
+            </View>
+          </View>
+
           <View
-            style={{ alignItems: "center", alignSelf: "center", marginTop: 20, paddingBottom: 20 }}
+            style={{
+              alignItems: "center",
+              alignSelf: "center",
+              marginTop: 20,
+              paddingBottom: 20,
+            }}
           >
             <Counter
               value={meal.others.qty}
@@ -385,9 +427,8 @@ const MealScreen = ({ handleClose,product, category, index }) => {
       </Animated.ScrollView>
       <View
         style={{
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           padding: 10,
-
         }}
       >
         <ProductFooter
@@ -412,6 +453,56 @@ const MealScreen = ({ handleClose,product, category, index }) => {
         onApprove={handleStoreChangeApprove}
         onCancel={handleStoreChangeCancel}
       />
+      <Modal
+        isVisible={isNoteModalVisible}
+        onBackdropPress={() => setIsNoteModalVisible(false)}
+        style={{ margin: 0, justifyContent: "flex-end" }}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        backdropOpacity={0.5}
+        propagateSwipe={true}
+        avoidKeyboard={true}
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+            padding: 20,
+            width: "100%",
+          }}
+        >
+          <Text style={{ marginBottom: 10 }}>{t("הערות למסעדה")}</Text>
+                      <TextInput
+              value={meal?.others?.note}
+              onChangeText={(text) => {
+                setNoteValue(text);
+                updateOthers(text, "note", "others");
+              }}
+              placeholder={t("רשום הערות כאן")}
+              style={{
+                borderWidth: 1,
+                borderColor: "#eee",
+                borderRadius: 8,
+                padding: 10,
+                minHeight: 60,
+                marginBottom: 20,
+                textAlign: "right",
+                textAlignVertical: "top",
+              }}
+              multiline={false}
+              returnKeyType="done"
+              onSubmitEditing={() => {
+                setIsNoteModalVisible(false);
+                Keyboard.dismiss();
+                console.log("xxxx");
+                setTimeout(() => {
+                  updateOthers(noteValue, "note", "others");
+                }, 0);
+              }}
+            />
+        </View>
+      </Modal>
     </View>
   );
 };

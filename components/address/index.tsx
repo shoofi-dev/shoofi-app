@@ -42,7 +42,7 @@ export const AddressCMP = observer(({
 }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { storeDataStore, addressStore } = useContext(StoreContext);
+  const { storeDataStore, addressStore, shoofiAdminStore } = useContext(StoreContext);
   const {
     availableDrivers,
     loading: driversLoading,
@@ -128,8 +128,10 @@ export const AddressCMP = observer(({
         <ShippingMethodPick
           onChange={onShippingMethodChange}
           shippingMethodValue={""}
-          isDeliverySupport={availableDrivers?.available}
+          isDeliverySupport={availableDrivers?.available && shoofiAdminStore.storeData?.delivery_support}
           takeAwayReadyTime={takeAwayReadyTime}
+          isTakeAwaySupport={shoofiAdminStore.storeData?.takeaway_support && storeDataStore.storeData?.takeaway_support}
+
           deliveryTime={deliveryTime}
           distanceKm={distanceKm}
           driversLoading={driversLoading}

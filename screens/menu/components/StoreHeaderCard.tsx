@@ -1,7 +1,6 @@
 import React, { useCallback, useContext, useState } from "react";
 import {
   View,
-  Text,
   Image,
   TouchableOpacity,
   StyleSheet,
@@ -19,7 +18,7 @@ import { cdnUrl } from "../../../consts/shared";
 import { StoreContext } from "../../../stores";
 import BackButton from "../../../components/back-button";
 import { t } from "i18next";
-
+import Text from "../../../components/controls/Text";
 interface StoreHeaderCardProps {
   store: any;
   onBack?: () => void;
@@ -44,8 +43,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   onlyInfoCard,
 }) => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const {  languageStore } =
-  useContext(StoreContext);
+  const { languageStore } = useContext(StoreContext);
   // Use store fields with fallbacks
   const storeImages =
     store?.cover_sliders?.length > 0
@@ -54,8 +52,12 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   const storeLogo =
     store?.storeLogo ||
     "https://cdn-icons-png.flaticon.com/512/3075/3075977.png";
-  const storeName = languageStore.selectedLang === "ar" ? store?.name_ar : store?.name_he;
-  const storeDescription = languageStore.selectedLang === "ar" ? store?.descriptionAR : store?.descriptionHE;
+  const storeName =
+    languageStore.selectedLang === "ar" ? store?.name_ar : store?.name_he;
+  const storeDescription =
+    languageStore.selectedLang === "ar"
+      ? store?.descriptionAR
+      : store?.descriptionHE;
   const rating = store?.rating || 4.7;
   const deliveryTime = store?.deliveryTime || 20;
   const deliveryPrice = store?.deliveryPrice || 10;
@@ -63,10 +65,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   const closingHour = store?.end || "23:00";
 
   const renderCarouselItem = ({ item }) => (
-    <CustomFastImage
-      style={styles.image}
-      source={{ uri: cdnUrl + item }}
-    />
+    <CustomFastImage style={styles.image} source={{ uri: cdnUrl + item }} />
   );
   const animationStyle: any = useCallback((value: number) => {
     "worklet";
@@ -105,7 +104,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   const renderImageSection = () => (
     <View style={styles.imageContainer}>
       <View style={{ position: "absolute", top: 15, left: 15, zIndex: 1000 }}>
-      <BackButton color={themeStyle.WHITE_COLOR}/>
+        <BackButton color={themeStyle.WHITE_COLOR} />
       </View>
       <Carousel
         loop
@@ -165,8 +164,6 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   // Default: full card
   return (
     <View style={{ position: "relative", height: 260 }}>
-                
-
       {/* Animated carousel */}
       <Animated.View
         style={{
@@ -190,12 +187,11 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
           left: 10,
           right: 10,
           zIndex: 1,
-         
-          alignItems: "center", 
- 
+
+          alignItems: "center",
         }}
       >
-        <View style={[styles.infoCard, { top: 220, zIndex: 2, }]}>
+        <View style={[styles.infoCard, { top: 220, zIndex: 2 }]}>
           {/* 210 (image) - 50 (overlap) */}
           <View style={styles.infoRow}>
             <TouchableOpacity style={styles.arrowBtn}>
@@ -209,31 +205,63 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               style={{ flex: 1, marginHorizontal: 8, alignItems: "flex-start" }}
             >
               <Text style={styles.storeName}>{storeName}</Text>
-              <Text style={styles.subtitle}>
-                {store?.description}
-              </Text>
-  
+              <Text style={styles.subtitle}>{store?.description}</Text>
             </View>
-       
+
             <CustomFastImage
               source={{ uri: cdnUrl + storeLogo }}
               style={styles.logo}
             />
           </View>
-          <View style={{flexDirection: "row", alignItems: "center", marginTop: 10, marginLeft: 20}}>
-          <View style={styles.storeStatus}>
-              <Text style={[styles.storeStatusText, {color: store?.isOpen ? themeStyle.SUCCESS_COLOR : themeStyle.ERROR_COLOR}]}>{store?.isOpen ? t("open") : t("closed")}</Text>
-            </View>
-            <View style={{flexDirection: "row", alignItems: "center", marginTop: 10, marginLeft: 20}}>
-              <Text style={styles.storeStatusText}>{t("working-hours")}</Text>      
-              <Text style={styles.storeStatusText}>
-                {store?.workingHours ? `${store.workingHours.start} - ${store.workingHours.end}` : 'N/A'}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 0,
+              alignSelf: "center",
+            }}
+          >
+            <View style={styles.storeStatus}>
+              <Text
+                style={[
+                  styles.storeStatusText,
+                  {
+                    color: store?.isOpen
+                      ? themeStyle.SUCCESS_COLOR
+                      : themeStyle.ERROR_COLOR,
+                  },
+                ]}
+              >
+                {store?.isOpen ? t("open") : t("closed")}
               </Text>
             </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginLeft: 20,
+              }}
+            >
+              <View style={{ alignItems: "center", marginRight: 5 }}>
+                <Icon icon="clock" size={20}  />
+              </View>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={styles.storeStatusText} type="number">
+                  {store?.workingHours?.end}
+                </Text>
+                <View style={{ width: 10, alignItems: "center" }}>
+                  <Text style={styles.storeStatusText} type="number">
+                    -
+                  </Text>
+                </View>
+
+                <Text style={styles.storeStatusText} type="number">
+                  {store?.workingHours?.start}
+                </Text>
+              </View>
+            </View>
           </View>
-    
         </View>
-        
       </Animated.View>
     </View>
   );
@@ -386,7 +414,6 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: "row-reverse",
-   
   },
   storeName: {
     fontSize: themeStyle.FONT_SIZE_XL,
@@ -466,13 +493,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  storeStatus: {
-
-
-  },  
+  storeStatus: {},
   storeStatusText: {
-    fontSize: themeStyle.FONT_SIZE_XS,
-
+    fontSize: themeStyle.FONT_SIZE_SM,
   },
 });
 

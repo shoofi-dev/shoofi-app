@@ -54,6 +54,7 @@ const ExploreScreen = () => {
 
         // Set default selected general category
         if (generalCategoriesRes?.length && !selectedGeneralCategory) {
+          // We'll set the default after stores are loaded
           setSelectedGeneralCategory(generalCategoriesRes[0]);
         }
 
@@ -71,8 +72,8 @@ const ExploreScreen = () => {
           id: ad._id || ad.id,
           background: ad.image?.uri || "",
           products: [], // No products in the API response
-          title: ad.titleHE || ad.title || "",
-          subtitle: ad.descriptionHE || ad.subtitle || "",
+          title: languageStore.selectedLang === "ar" ? ad.titleAR : ad.titleHE || "",
+          subtitle: languageStore.selectedLang === "ar" ? ad.descriptionAR : ad.descriptionHE|| "",
         }));
         setAds(mappedAds);
       } catch (error) {
@@ -87,11 +88,52 @@ const ExploreScreen = () => {
   const allCategories = shoofiAdminStore.categoryList || [];
   const stores = shoofiAdminStore.storesList || [];
 
-  // Group categories by general category
+  // Helper function to check if a category has stores
+  const hasStoresForCategory = (categoryId) => {
+    return stores.some((storeData) =>
+      storeData.store.categoryIds &&
+      storeData.store.categoryIds.some(
+        (storeCategoryId) =>
+          storeCategoryId.$oid === categoryId || storeCategoryId === categoryId
+      )
+    );
+  };
+
+  // Helper function to check if a general category has any stores
+  const hasStoresForGeneralCategory = (generalCategoryId) => {
+    const categoriesInGeneral = allCategories.filter((cat) =>
+      cat.supportedGeneralCategoryIds?.some(
+        (id) => id.$oid === generalCategoryId || id === generalCategoryId
+      )
+    );
+    
+    return categoriesInGeneral.some((cat) => hasStoresForCategory(cat._id));
+  };
+
+  // Filter general categories that have stores
+  const filteredGeneralCategories = generalCategories.filter((generalCat) =>
+    hasStoresForGeneralCategory(generalCat._id)
+  );
+
+  // Update selected general category to one that has stores after stores are loaded
+  useEffect(() => {
+    if (generalCategories.length > 0 && stores.length > 0 && selectedGeneralCategory) {
+      const hasStores = hasStoresForGeneralCategory(selectedGeneralCategory._id);
+      if (!hasStores) {
+        const firstGeneralWithStores = filteredGeneralCategories[0];
+        if (firstGeneralWithStores) {
+          setSelectedGeneralCategory(firstGeneralWithStores);
+        }
+      }
+    }
+  }, [generalCategories, stores, selectedGeneralCategory]);
+
+  // Group categories by general category and filter out categories without stores
   const categoriesByGeneral = allCategories.reduce((acc, cat) => {
     if (
       cat.supportedGeneralCategoryIds &&
-      cat.supportedGeneralCategoryIds.length > 0
+      cat.supportedGeneralCategoryIds.length > 0 &&
+      hasStoresForCategory(cat._id) // Only include categories that have stores
     ) {
       cat.supportedGeneralCategoryIds.forEach((id) => {
         const generalId = id.$oid || id;
@@ -131,7 +173,7 @@ const ExploreScreen = () => {
           flexDirection: I18nManager.isRTL ? "row" : "row",
         }}
       >
-        {generalCategories?.map((cat) => (
+        {filteredGeneralCategories?.map((cat) => (
           <TouchableOpacity
             key={cat._id}
             style={{

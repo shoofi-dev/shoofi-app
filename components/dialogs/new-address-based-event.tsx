@@ -77,7 +77,7 @@ export default function NewAddressBasedEventDialog() {
                 zIndex: 1000,
               }}
             >
-              <BackButton onClick={hideDialog} isDisableGoBack={true} />
+              <BackButton onClick={hideDialog} isDisableGoBack={true}  color={themeStyle.WHITE_COLOR}/>
             </View>
             <View
               style={{

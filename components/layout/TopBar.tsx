@@ -1,11 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  I18nManager,
-  Text,
-} from "react-native";
+import { View, TouchableOpacity, StyleSheet, I18nManager } from "react-native";
 import themeStyle from "../../styles/theme.style";
 import { observer } from "mobx-react";
 import { StoreContext } from "../../stores";
@@ -13,12 +7,13 @@ import { useNavigation } from "@react-navigation/native";
 import AddressSelector from "../address/AddressSelector";
 import Icon from "../icon";
 import BackButton from "../back-button";
+import Text from "../controls/Text";
 const TopBar = () => {
   const {
     cartStore,
     authStore,
     userDetailsStore,
-    addressStore,
+    languageStore,
     shoofiAdminStore,
   } = useContext(StoreContext);
   const navigation = useNavigation();
@@ -59,32 +54,21 @@ const TopBar = () => {
             flexDirection: "row",
           }}
         >
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={{
-              marginRight: 10,
-              height: 36,
-              width: 36,
-              borderWidth: 1,
-              borderRadius: 18,
-              justifyContent: "center",
-              alignItems: "center",
-              borderColor: "#DCDCDC",
-              backgroundColor: "#F6F8FA",
-            }}
-          >
-            <Text>{">"}</Text>
-          </TouchableOpacity>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              color: "#222",
-              textAlign: "left",
-            }}
-          >
-            {shoofiAdminStore.selectedGeneralCategory.nameHE}
-          </Text>
+          <BackButton />
+          <View style={{ marginLeft: 10 }}>
+            <Text
+              style={{
+                fontSize: themeStyle.FONT_SIZE_LG,
+                fontWeight: "bold",
+                color: "#222",
+                textAlign: "left",
+              }}
+            >
+              {languageStore.selectedLang === "ar"
+                ? shoofiAdminStore.selectedGeneralCategory.nameAR
+                : shoofiAdminStore.selectedGeneralCategory.nameHE}
+            </Text>
+          </View>
         </View>
       ) : navigation?.getCurrentRoute()?.name === "stores-list" &&
         shoofiAdminStore.selectedCategory ? (
@@ -102,10 +86,11 @@ const TopBar = () => {
               style={{
                 fontSize: themeStyle.FONT_SIZE_LG,
                 fontWeight: "bold",
-              
               }}
             >
-              {shoofiAdminStore.selectedCategory.nameHE}
+              {languageStore.selectedLang === "ar"
+                ? shoofiAdminStore.selectedCategory.nameAR
+                : shoofiAdminStore.selectedCategory.nameHE}
             </Text>
           </View>
         </View>

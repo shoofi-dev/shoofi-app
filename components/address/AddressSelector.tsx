@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -10,20 +10,26 @@ import {
 import { observer } from "mobx-react-lite";
 import { useNavigation } from "@react-navigation/native";
 import { StoreContext } from "../../stores";
-import * as Animatable from "react-native-animatable";
 import { DIALOG_EVENTS } from "../../consts/events";
 import Text from "../controls/Text";
 import { useTranslation } from "react-i18next";
 import Icon from "../icon";
 import themeStyle from "../../styles/theme.style";
+import Modal from "react-native-modal";
+import AddressModal from "./AddressModal";
+
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const AddressSelector = observer(({ onAddressSelect }) => {
+interface AddressSelectorProps {
+  onAddressSelect?: (address: any) => void;
+}
+
+const AddressSelector = observer(({ onAddressSelect }: AddressSelectorProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { addressStore, userDetailsStore, shoofiAdminStore, authStore } =
     useContext(StoreContext);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
 
   useEffect(() => {
     if (!I18nManager.isRTL) {
@@ -39,7 +45,8 @@ const AddressSelector = observer(({ onAddressSelect }) => {
 
   const selectedAddress = addressStore.defaultAddress;
 
-  const handleRowPress = () => setDropdownOpen((open) => !open);
+  const handleRowPress = () => setIsAddressModalVisible(true);
+  
   const updateStoresBasedOnSelectedAddress = (address) => {
     if (address?.location?.coordinates) {
       shoofiAdminStore.getStoresListData({
@@ -50,7 +57,6 @@ const AddressSelector = observer(({ onAddressSelect }) => {
   };
 
   const handleSelectAddress = async (address) => {
-    setDropdownOpen(false);
     await addressStore.setDefaultAddress(
       userDetailsStore?.userDetails?.customerId,
       address._id
@@ -77,7 +83,7 @@ const AddressSelector = observer(({ onAddressSelect }) => {
     //   navigation.navigate('login')
     //   return;
     // }
-    setDropdownOpen(false);
+    setIsAddressModalVisible(false);
     DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG);
   };
 
@@ -91,6 +97,7 @@ const AddressSelector = observer(({ onAddressSelect }) => {
       .filter(Boolean)
       .join(", ");
   };
+  
   return (
     <View style={{ zIndex: 100 }}>
       <TouchableOpacity
@@ -98,7 +105,6 @@ const AddressSelector = observer(({ onAddressSelect }) => {
         onPress={handleRowPress}
         activeOpacity={0.8}
       >
-        {/* <Icon name="home" size={22} color="#444" style={styles.icon} /> */}
         <Icon
           icon={!selectedAddress ? "home" : "home"}
           size={16}
@@ -128,52 +134,32 @@ const AddressSelector = observer(({ onAddressSelect }) => {
               <Text style={{ color: themeStyle.TEXT_PRIMARY_COLOR }}>
                 {getAddressText(selectedAddress)}
               </Text>
-              <Icon
-                icon={dropdownOpen ? "chevron_down" : "chevron_down"}
-                size={24}
-              />
+              <View style={{  marginLeft: 10 }}>
+                <Icon
+                  icon="edit"
+                  size={20}
+                />
+         
+              </View>
             </View>
           )}
         </View>
       </TouchableOpacity>
-      {dropdownOpen && (
-        <Animatable.View
-          animation="fadeInDown"
-          duration={250}
-          style={styles.dropdown}
-        >
-          {addressStore.addresses.map((address) => (
-            <TouchableOpacity
-              key={address._id}
-              style={styles.dropdownItem}
-              onPress={() => handleSelectAddress(address)}
-            >
-              <Icon
-                icon={!selectedAddress ? "location" : "location"}
-                size={16}
-                style={{ marginRight: 5 }}
-              />
-              <Text style={styles.dropdownItemText} numberOfLines={1}>
-                {getAddressText(address)}
-              </Text>
-              <Icon
-                icon={selectedAddress?._id === address._id ? "v" : ""}
-                size={20}
-                style={{ marginRight: 5 }}
-              />
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity style={styles.addNewBtn} onPress={handleAddNew}>
-            <Icon
-              icon="plus"
-              size={12}
-              style={{ marginRight: 5 }}
-              color={themeStyle.SUCCESS_COLOR}
-            />
-            <Text style={styles.addNewText}>{t("add_new_address")}</Text>
-          </TouchableOpacity>
-        </Animatable.View>
-      )}
+      
+      <Modal
+        isVisible={isAddressModalVisible}
+        onBackdropPress={() => setIsAddressModalVisible(false)}
+        style={{ justifyContent: 'flex-end', margin: 0, }}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        backdropOpacity={0.5}
+      >
+        <AddressModal 
+          onClose={() => setIsAddressModalVisible(false)}
+          onAddressSelect={handleSelectAddress}
+          selectionMode={true}
+        />
+      </Modal>
     </View>
   );
 });
@@ -206,51 +192,6 @@ const styles = StyleSheet.create({
   arrowIcon: {
     marginRight: 10,
     marginLeft: 0,
-  },
-  dropdown: {
-    position: "absolute",
-    top: "130%",
-    left: 0,
-    right: 0,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-
-    zIndex: 1000,
-    paddingVertical: 0,
-    paddingHorizontal: 0,
-    borderWidth: 0,
-    minWidth: SCREEN_WIDTH - 32,
-  },
-  dropdownItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-    backgroundColor: "#fff",
-  },
-  dropdownItemText: {
-    fontSize: themeStyle.FONT_SIZE_MD,
-    flex: 1,
-    textAlign: "right",
-    marginLeft: 10,
-  },
-  addNewBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 10,
-    backgroundColor: themeStyle.GRAY_10,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-  },
-  addNewText: {
-    color: themeStyle.SUCCESS_COLOR,
-    fontSize: 16,
-    fontWeight: "600",
   },
 });
 

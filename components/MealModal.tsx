@@ -2,6 +2,8 @@ import React, { useMemo } from "react";
 import { View, TouchableOpacity, Text, ScrollView, StyleSheet, Dimensions } from "react-native";
 import GlassBG from "./glass-background";
 import MealScreen from "../screens/meal/index2";
+import BackButton from "./back-button";
+import themeStyle from "../styles/theme.style";
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -13,9 +15,7 @@ const MealModal = ({ product, category, onClose, index=null }) => {
           onPress={onClose}
           activeOpacity={0.7}
         >
-          <View style={styles.closeButtonInner}>
-            <Text style={styles.closeButtonText}>✕</Text>
-          </View>
+          <BackButton isDisableGoBack={true} color={themeStyle.WHITE_COLOR} onClick={onClose}/>
         </TouchableOpacity>
       </GlassBG>
       <ScrollView>

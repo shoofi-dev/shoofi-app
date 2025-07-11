@@ -116,7 +116,7 @@ const CartScreen = ({ route }) => {
     }
   }, [editOrderData]);
 
-  const updateItemsPrice = () => {
+  const updateItemsPrice = async () => {
     // Prevent price update if on checkout screen
     if (navigation.getState && navigation.getState().routes) {
       const routes = navigation.getState().routes;
@@ -126,6 +126,8 @@ const CartScreen = ({ route }) => {
       }
     }
     if (cartStore.cartItems.length === 0 && !editOrderData) {
+      await cartStore.setCartStoreDBName("");
+
       navigation.navigate("homeScreen");
       return;
     }
@@ -135,6 +137,7 @@ const CartScreen = ({ route }) => {
         others: { count: 1, note: "" },
       };
       cartStore.removeProduct(getProductIndexId(bcoinMeal, 0));
+      await cartStore.setCartStoreDBName("");
 
       navigation.navigate("homeScreen");
       return;
@@ -457,7 +460,6 @@ const CartScreen = ({ route }) => {
     return true;
   };
   // STORE IS CLOSE - END
-
   return (
     <View style={{ position: "relative", height: "100%", flex: 1, bottom: 0 }}>
       {/* <LinearGradient
@@ -483,7 +485,7 @@ const CartScreen = ({ route }) => {
               alignSelf: "center",
               paddingBottom: scale(20),
             }}
-          >
+          > 
             {cartStore.cartItems.map((product, index) => {
               const moveBy = (1 - 1 / 1) * index;
               const isLast = index === cartStore.cartItems.length - 1;
@@ -611,10 +613,15 @@ const CartScreen = ({ route }) => {
 
                                 {/* Note */}
                                 {product?.others?.note && (
-                                  <View style={{ marginTop: scale(10) }}>
-                                    <Text style={{ fontSize: fontSize(16) }}>
-                                      {t("note")}: {product.others.note}
-                                    </Text>
+                                  <View style={{ marginTop: scale(10),flexDirection:"row",alignItems:"center",  }}>
+                                    <View>
+                                      <Icon icon="comment" size={themeStyle.FONT_SIZE_MD} color={themeStyle.TEXT_PRIMARY_COLOR} />
+                                    </View>
+                                    <View style={{marginLeft:5}}>
+                                      <Text style={{ fontSize: themeStyle.FONT_SIZE_SM }}>
+                                        {t("note")}: {product.others.note}
+                                      </Text>
+                                    </View>
                                   </View>
                                 )}
 

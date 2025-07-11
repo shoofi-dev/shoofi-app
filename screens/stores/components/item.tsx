@@ -14,7 +14,7 @@ import themeStyle from "../../../styles/theme.style";
 import CustomFastImage from "../../../components/custom-fast-image";
 import { StoreContext } from "../../../stores";
 import { useNavigation } from "@react-navigation/native";
-import { cdnUrl } from "../../../consts/shared";
+import { cdnUrl, SHIPPING_METHODS } from "../../../consts/shared";
 import Icon from "../../../components/icon";
 
 export type TProps = {
@@ -25,12 +25,14 @@ const StoreItem = ({ storeItem }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  let { menuStore, storeDataStore, shoofiAdminStore, languageStore } =
+  let { menuStore, cartStore, shoofiAdminStore, languageStore } =
     useContext(StoreContext);
   const onStoreSelect = async (store: any) => {
     try {
       // setIsLoading(true);
       // Clear the menu cache first to prevent showing old store data
+      await cartStore.setShippingMethod(SHIPPING_METHODS.takAway);
+
       menuStore.clearMenu();
       await shoofiAdminStore.setStoreDBName(store.appName);
       // await menuStore.getMenu();

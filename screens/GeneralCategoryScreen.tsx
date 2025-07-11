@@ -60,15 +60,31 @@ const GeneralCategoryScreen = () => {
 
   if (!generalCategory) return null;
 
-  const categories = shoofiAdminStore.categoryList
-    ? shoofiAdminStore.categoryList.filter((cat) =>
-        cat.supportedGeneralCategoryIds?.some(
-          (id) => id.$oid === generalCategory._id || id === generalCategory._id
-        )
-      )
-    : [];
-
   const stores = shoofiAdminStore.storesList || [];
+
+  const categories = shoofiAdminStore.categoryList
+    ? shoofiAdminStore.categoryList.filter((cat) => {
+        // First filter by supported general category
+        const isSupported = cat.supportedGeneralCategoryIds?.some(
+          (id) => id.$oid === generalCategory._id || id === generalCategory._id
+        );
+        
+        if (!isSupported) return false;
+        
+        // Then check if this category has any stores
+        const storesInThisCategory = stores.filter(
+          (data: any) =>
+            data.store.categoryIds &&
+            data.store.categoryIds.some(
+              (categoryId) =>
+                categoryId.$oid === cat._id ||
+                categoryId === cat._id
+            )
+        );
+        
+        return storesInThisCategory.length > 0;
+      })
+    : [];
   const storesInCategory = selectedCategory
     ? stores.filter(
         (data: any) =>
@@ -90,7 +106,7 @@ const GeneralCategoryScreen = () => {
   }
 
   return (
-    <View style={{  }}>
+    <View style={{ marginTop: 15 }}>
       {/* Horizontal scroller of categories */}
       <View>
         <ScrollView

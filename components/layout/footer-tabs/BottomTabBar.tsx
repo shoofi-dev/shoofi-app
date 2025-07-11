@@ -104,7 +104,7 @@ export default function BottomTabBar({ state, navigation }) {
                   color={isActive ? themeStyle.GRAY_80 : themeStyle.WHITE_COLOR}
                   style={{ marginBottom: 2 }}
                 />
-                <Text
+                {/* <Text
                   style={[
                     styles.label,
                     {
@@ -114,7 +114,7 @@ export default function BottomTabBar({ state, navigation }) {
                   ]}
                 >
                   {t(tab.label)}
-                </Text>
+                </Text> */}
               </TouchableOpacity>
             );
           })}
@@ -134,7 +134,7 @@ export default function BottomTabBar({ state, navigation }) {
                   styles.tab,
                   {
                     backgroundColor: isActive
-                      ? themeStyle.GRAY_10
+                      ? 'rgba(255, 255, 255, 0.44)'
                       : "transparent",
                   },
                 ]}
@@ -145,9 +145,9 @@ export default function BottomTabBar({ state, navigation }) {
                   icon={route.icon}
                   size={28}
                   color={isActive ? themeStyle.GRAY_80 : themeStyle.WHITE_COLOR}
-                  style={{ marginBottom: 2 }}
+                  style={{ marginVertical: 10 }}
                 />
-                <Text
+                {/* <Text
                   style={[
                     styles.label,
                     {
@@ -158,7 +158,7 @@ export default function BottomTabBar({ state, navigation }) {
                   ]}
                 >
                   {t(route.label)}
-                </Text>
+                </Text> */}
               </TouchableOpacity>
             );
           })}

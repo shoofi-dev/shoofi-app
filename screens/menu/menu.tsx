@@ -42,7 +42,7 @@ const MenuScreen = () => {
   const categoryUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const manualSelectionRef = useRef<boolean>(false);
 
-  const { menuStore, storeDataStore, cartStore, languageStore } =
+  const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore } =
     useContext(StoreContext);
 
   const { availableDrivers, loading: driversLoading } = useAvailableDrivers();
@@ -286,7 +286,6 @@ const MenuScreen = () => {
           />
         </View>
       </Animated.ScrollView>
-
       <Animated.View
         style={[
           styles.header,
@@ -298,7 +297,8 @@ const MenuScreen = () => {
           <ShippingMethodPick
             onChange={handleShippingMethodChange}
             shippingMethodValue={cartStore.shippingMethod}
-            isDeliverySupport={availableDrivers?.available}
+            isDeliverySupport={availableDrivers?.available && shoofiAdminStore.storeData?.delivery_support}
+            isTakeAwaySupport={shoofiAdminStore.storeData?.takeaway_support && storeDataStore.storeData?.takeaway_support}
             takeAwayReadyTime={takeAwayReadyTime}
             deliveryTime={deliveryTime}
             distanceKm={availableDrivers?.distanceKm}
