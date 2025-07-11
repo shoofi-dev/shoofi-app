@@ -28,19 +28,119 @@ const CartExtras = ({
   const getToppingIcon = (area: any) => {
     switch (area.id) {
       case "full":
-        return <Icon icon="pizza-full" size={25} color="black" />;
+        return <Icon icon="pizza-full" size={20} color="black" />;
       case "half1":
-        return <Icon icon="pizza-right" size={25} color="black" />;
+        return <Icon icon="pizza-right" size={20} color="black" />;
       case "half2":
-        return <Icon icon="pizza-right" size={25} color="black" />;
+        return <Icon icon="pizza-left" size={20} color="black" />;
       default:
         return null;
     }
   };
 
+  // Collect all pizza-topping extras and group by areaId
+  const pizzaToppingExtras = extrasDef.filter(
+    (extra) => extra.type === "pizza-topping"
+  );
+  const allToppingSelections = [];
+  pizzaToppingExtras.forEach((extra) => {
+    const value = selectedExtras?.[extra.id];
+    if (!value) return;
+    Object.entries(value).forEach(([toppingId, areaData]) => {
+      const topping = extra.options.find((o) => o.id === toppingId);
+      if (!topping) return;
+      const typedAreaData = areaData as { areaId: string; isFree: boolean };
+      allToppingSelections.push({
+        areaId: typedAreaData.areaId,
+        topping,
+        areaData: typedAreaData,
+        extra,
+      });
+    });
+  });
+  // Group by areaId
+  const groupedByArea = allToppingSelections.reduce((acc, curr) => {
+    if (!acc[curr.areaId]) acc[curr.areaId] = [];
+    acc[curr.areaId].push(curr);
+    return acc;
+  }, {} as Record<string, Array<{ topping: any; areaData: { areaId: string; isFree: boolean }; extra: any }>>);
+
+  // Render grouped pizza toppings by areaId
+  const renderPizzaToppingSections = () => {
+    return Object.entries(groupedByArea).map(
+      ([areaId, toppings]: [
+        string,
+        Array<{
+          topping: any;
+          areaData: { areaId: string; isFree: boolean };
+          extra: any;
+        }>
+      ]) => {
+        // Try to get area object from any topping's extra
+        const area = toppings[0]?.extra.options[0]?.areaOptions?.find(
+          (a) => a.id === areaId
+        );
+        return (
+          <View key={areaId} style={{ marginBottom: 5 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 0,
+                flexWrap: "wrap",
+              }}
+            >
+              <View style={{ marginRight: 5, }}>{getToppingIcon(area)}</View>
+
+              {toppings.map(({ topping, areaData }, idx) => (
+                <View
+                  key={topping.id + idx}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: fontSize(14),
+                      color: "#333",
+                    }}
+                  >
+                    {getName(topping)}
+                    {!areaData.isFree &&
+                      (() => {
+                        const areaOption = topping.areaOptions?.find(
+                          (opt) => opt.id === areaData.areaId
+                        );
+                        return areaOption ? ` (+₪${areaOption.price || 0})` : "";
+                      })()}
+                  </Text>
+                  {idx < toppings.length - 1 && (
+                    <Text
+                      style={{
+                        fontSize: fontSize(14),
+                        color: "#333",
+                       
+                      }}
+                    >
+                      ,
+                    </Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          </View>
+        );
+      }
+    );
+  };
+
   return (
     <View style={{ marginTop: 5, alignItems: "flex-start" }}>
       {extrasDef.map((extra) => {
+        // Skip pizza-topping extras as they will be rendered separately
+        if (extra.type === "pizza-topping") return null;
+        
         const value = selectedExtras[extra.id];
         if (
           value === undefined ||
@@ -139,48 +239,14 @@ const CartExtras = ({
             </View>
           );
         }
-        // Pizza Topping (area selection)
-        if (extra.type === "pizza-topping") {
-          const toppingSelections = Object.entries(value || {});
-          if (toppingSelections.length === 0) return null;
-          return (
-            <View key={extra.id} style={{ marginBottom: 2 }}>
-              {/* <Text style={{ fontSize: fontSize(14), color: "#888" }}>
-                {getName(extra)}
-              </Text> */}
-              {toppingSelections.map(([toppingId, areaData]) => {
-                const topping = extra.options.find((o) => o.id === toppingId);
-                if (!topping) return null;
-                const area = topping.areaOptions?.find(
-                  (a) => a.id === areaData.areaId
-                );
-                return (
-                  <View
-                    key={toppingId}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    {getToppingIcon(area)}
-                    <Text style={{ fontSize: fontSize(14), color: "#333" }}>
-                      {getName(topping)}
-                      {area
-                        ? ` (${
-                            area.price && !areaData.isFree
-                              ? `+₪${area.price}`
-                              : ""
-                          })`
-                        : ""}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-          );
-        }
         return null;
       })}
+      
+      {/* Render grouped pizza toppings */}
+      <View style={{ marginTop: 10, }}>
+      {renderPizzaToppingSections()}
+      </View>
+      
       {/* Show extras price if any */}
       {/* {extrasPrice > 0 && (
         <Text
