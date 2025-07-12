@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, StyleSheet, DeviceEventEmitter, KeyboardAvoidingView, Platform, Text } from "react-native";
+import { View, TouchableOpacity, StyleSheet, DeviceEventEmitter, KeyboardAvoidingView, Platform } from "react-native";
 import Modal from "react-native-modal";
 import CreditCard from "../credit-card";
 import { useTranslation } from "react-i18next";
 import { DIALOG_EVENTS } from "../../consts/events";
 import theme from "../../styles/theme.style";
 import ExpiryDate from "../expiry-date";
+import Text from "../controls/Text";
+import BackButton from "../back-button";
+import themeStyle from "../../styles/theme.style";
 
 export default function NewPaymentMethodBasedEventDialog() {
   const { t } = useTranslation();
@@ -50,15 +53,24 @@ export default function NewPaymentMethodBasedEventDialog() {
       >
         <View style={styles.sheet}>
           {/* Header */}
-          <View style={styles.headerRow}>
+          {/* <View style={styles.headerRow}>
             <TouchableOpacity onPress={() => hideDialog("close")} style={styles.closeBtn}>
               <Text style={styles.closeBtnText}>×</Text>
             </TouchableOpacity>
             <Text style={styles.title}>{t("inser-credit-card-details")}</Text>
             <View style={{ width: 32 }} />
-          </View>
+          </View> */}
+          <View style={styles.header}>
+        <View style={{position: 'absolute', left: 0, top: 15}}>
+          <BackButton onClick={() => hideDialog("close")} isDisableGoBack={true} color={themeStyle.WHITE_COLOR}/> 
+        </View>
+        <View style={{ alignSelf: 'center'}}>
+        <Text style={styles.title}>{t("inser-credit-card-details")}</Text>
+        
+        </View>
+      </View>
           {/* Credit Card Form */}
-          <CreditCard onSaveCard={hideDialog} />
+          <CreditCard onSaveCard={() => hideDialog("close")} />
         </View>
       </KeyboardAvoidingView>
       <ExpiryDate />
@@ -89,6 +101,12 @@ const styles = StyleSheet.create({
     padding:15
 
   },
+  header: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    width: '100%',
+  },
   headerRow: {
     flexDirection: "row-reverse",
     alignItems: "center",
@@ -116,6 +134,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#222",
     textAlign: "center",
-    flex: 1,
+
   },
 });

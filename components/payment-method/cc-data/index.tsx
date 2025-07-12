@@ -43,7 +43,7 @@ export const CCDataCMP = ({
   };
 
   return (
-    <View
+    <TouchableOpacity onPress={replaceCreditCard}
       style={{
         width: "100%",
         backgroundColor: "#F6F8FA",
@@ -93,18 +93,19 @@ export const CCDataCMP = ({
         
    
         </View>
-        <TouchableOpacity onPress={replaceCreditCard} style={{marginRight: 15, padding: 10}}>
-          <Text
+        <View  style={{marginRight: 0, padding: 10}}>
+          {/* <Text
             style={{
               fontSize: 16,
               color: themeStyle.TEXT_PRIMARY_COLOR,
             }}
           >
             {'<'}
-          </Text>
-        </TouchableOpacity>
+          </Text> */}
+          <Icon icon="chevron" size={20} color={themeStyle.GRAY_30} />
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({

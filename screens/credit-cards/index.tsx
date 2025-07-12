@@ -22,7 +22,7 @@ import { useResponsive } from '../../hooks/useResponsive';
 import { DIALOG_EVENTS } from '../../consts/events';
 import NewPaymentMethodBasedEventDialog from '../../components/dialogs/new-credit-card-based-event';
 
-const CreditCardsScreen = () => {
+const CreditCardsScreen = ({ onClose, isModal = false }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { creditCardsStore } = useContext(StoreContext);
@@ -42,13 +42,20 @@ const CreditCardsScreen = () => {
   };
 
   const handleAddCard = () => {
+    onClose();
+    setTimeout(() => {
     DeviceEventEmitter.emit(
         DIALOG_EVENTS.OPEN_NEW_CREDIT_CARD_BASED_EVENT_DIALOG
       );    
+    }, 500);
   };
 
   const handleEditCard = (card: CreditCard) => {
-    navigation.navigate('edit-credit-card', { card });
+    if (isModal) {
+      onClose();
+    } else {
+      (navigation as any).navigate('edit-credit-card', { card });
+    }
   };
 
   const handleDeleteCard = (card: CreditCard) => {
@@ -75,15 +82,18 @@ const CreditCardsScreen = () => {
 
   const handleSetDefault = async (card: CreditCard) => {
     try {
+      if(card.isDefault) {
+        return;
+      }
       await creditCardsStore.setDefaultCreditCard(card._id);
-      Alert.alert(t('success'), t('default-credit-card-updated'));
+      loadCreditCards();
     } catch (error) {
       Alert.alert(t('error'), t('failed-to-update-default-card'));
     }
   };
 
   const renderCreditCard = (card: CreditCard) => (
-    <View key={card._id} style={styles.cardContainer}>
+    <TouchableOpacity  onPress={() => handleSetDefault(card)} key={card._id} style={styles.cardContainer}>
       <View style={styles.cardHeader}>
         <View style={styles.cardInfo}>
           <Icon
@@ -91,32 +101,30 @@ const CreditCardsScreen = () => {
             size={40}
             style={styles.cardIcon}
           />
-          <View style={styles.cardDetails}>
             <Text style={styles.cardNumber}>
               **** **** **** {card.last4Digits}
             </Text>
-            <Text style={styles.cardHolder}>
+            {/* <Text style={styles.cardHolder}>
               {card.holderName}
-            </Text>
-            {card.isDefault && (
-              <View style={styles.defaultBadge}>
-                <Text style={styles.defaultText}>{t('default')}</Text>
-              </View>
-            )}
-          </View>
+            </Text> */}
+            {/* {card.isDefault && (
+                <Icon icon="v" size={20} color={themeStyle.SUCCESS_COLOR}  />
+            )} */}
         </View>
         
         <View style={styles.cardActions}>
-          {!card.isDefault && (
+          {/* {!card.isDefault && (
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => handleSetDefault(card)}
             >
               <Icon icon="star" size={20} style={styles.actionIcon} />
             </TouchableOpacity>
-          )}
-          
-          <TouchableOpacity
+          )} */}
+             {card.isDefault && (
+                <Icon icon="v" size={30} color={themeStyle.SUCCESS_COLOR}  />
+            )}
+          {/* <TouchableOpacity
             style={styles.actionButton}
             onPress={() => handleEditCard(card)}
           >
@@ -128,25 +136,27 @@ const CreditCardsScreen = () => {
             onPress={() => handleDeleteCard(card)}
           >
             <Icon icon="trash" size={20} style={[styles.actionIcon, styles.deleteIcon]} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <BackButton />
+        <View style={{position: 'absolute', left: 15, top: 15}}>
+          <BackButton onClick={onClose} isDisableGoBack={true} color={themeStyle.WHITE_COLOR}/>
+        </View>
+        <View style={{ alignSelf: 'center'}}>
         <Text style={styles.title}>{t('credit-cards')}</Text>
-        <View style={{ width: 40 }} />
+        </View>
       </View>
 
       <ScrollView style={styles.content}>
         {creditCardsStore.loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={themeStyle.PRIMARY_COLOR} />
-            <Text style={styles.loadingText}>{t('loading')}</Text>
           </View>
         ) : creditCardsStore.creditCards.length === 0 ? (
           <View style={styles.emptyContainer}>
@@ -157,11 +167,15 @@ const CreditCardsScreen = () => {
         ) : (
           <View style={styles.cardsList}>
             {creditCardsStore.creditCards.map(renderCreditCard)}
+            <TouchableOpacity onPress={handleAddCard} style={styles.addCardContainer}>
+              <Icon icon="plus" size={15} color={themeStyle.SUCCESS_COLOR} style={styles.addCardIcon} />
+              <Text style={styles.addCardText}>{t('add-credit-card')}</Text>
+            </TouchableOpacity>
           </View>
         )}
       </ScrollView>
 
-      <View style={styles.footer}>
+      {/* <View style={styles.footer}>
         <Button
           onClickFn={handleAddCard}
           text={t('add-credit-card')}
@@ -170,7 +184,7 @@ const CreditCardsScreen = () => {
           borderRadious={50}
           textPadding={0}
         />
-      </View>
+      </View> */}
       <NewPaymentMethodBasedEventDialog />
 
     </View>
@@ -183,22 +197,20 @@ const styles = StyleSheet.create({
     backgroundColor: themeStyle.WHITE_COLOR,
   },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: themeStyle.GRAY_600,
+    width: '100%',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     color: themeStyle.TEXT_PRIMARY_COLOR,
+    alignSelf: 'center',
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    marginHorizontal: 20,
   },
   loadingContainer: {
     flex: 1,
@@ -235,16 +247,11 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   cardContainer: {
-    backgroundColor: themeStyle.WHITE_COLOR,
-    borderRadius: 12,
-    padding: 20,
+    backgroundColor: themeStyle.GRAY_10,
+    borderRadius: 4,
+    padding: 5,
     marginBottom: 15,
-    shadowColor: themeStyle.BLACK_COLOR,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    borderWidth: 1,
+
     borderColor: themeStyle.GRAY_600,
   },
   cardHeader: {
@@ -259,13 +266,13 @@ const styles = StyleSheet.create({
   },
   cardIcon: {
     color: themeStyle.GRAY_700,
-    marginRight: 15,
+    marginRight: 10,
   },
   cardDetails: {
     flex: 1,
   },
   cardNumber: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
     color: themeStyle.TEXT_PRIMARY_COLOR,
     marginBottom: 5,
@@ -305,6 +312,25 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopWidth: 1,
     borderTopColor: themeStyle.GRAY_600,
+  },
+  closeButton: {
+    padding: 8,
+  },
+  closeIcon: {
+    color: themeStyle.TEXT_PRIMARY_COLOR,
+  },
+  addCardText: {
+    fontSize: 16,
+    color: themeStyle.SUCCESS_COLOR,
+    marginLeft: 10,
+  },
+  addCardIcon: {
+    marginRight: 10,
+  },
+  addCardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
   },
 });
 

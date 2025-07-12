@@ -50,6 +50,7 @@ const CreditCard = ({ onSaveCard }) => {
     isCVVValid: undefined,
     idIDValid: undefined,
     isEmailValid: undefined,
+    isExpDateValid: undefined,
   });
   const [isExpDateValid, setIsExpDateValid] = useState(undefined);
 
@@ -81,7 +82,6 @@ const CreditCard = ({ onSaveCard }) => {
       setCCType(card?.type);
     }
     setCreditCardNumber(value);
-    setFormStatus({ ...formStatus, isNumberValid: isValid });
   };
   const onCVVChange = (value) => {
     const { isValid } = cardValidator.cvv(value);
@@ -89,7 +89,6 @@ const CreditCard = ({ onSaveCard }) => {
       Keyboard.dismiss();
     }
     setCreditCardCVV(value);
-    setFormStatus({ ...formStatus, isCVVValid: isValid });
   };
   const onCardHolderNameChange = (value) => {
     const isValid: any = isValidID(value);
@@ -97,7 +96,6 @@ const CreditCard = ({ onSaveCard }) => {
       Keyboard.dismiss();
     }
     setCardHolderID(value);
-    setFormStatus({ ...formStatus, idIDValid: isValid });
   };
   // const onEmailChange = (value) => {
   //   if (value) {
@@ -145,12 +143,41 @@ const CreditCard = ({ onSaveCard }) => {
   //   });
   // };
 
+  const validateCreditCardNumber = async () => {
+    const { isValid }: any = cardValidator.number(creditCardNumber);
+    return isValid;
+  }
+
+  const validateCreditCardExpDate = async () => {
+    const { isValid }: any = cardValidator.expirationDate(creditCardExpDate);
+    return isValid;
+  }
+
+  const validateCreditCardCVV = async () => {
+    const { isValid }: any = cardValidator.cvv(creditCardCVV);
+    return isValid;
+  }
+
+  const validateCreditCardHolderID = async () => {
+    const { isValid }: any = isValidID(cardHolderID);
+    return isValid;
+  }
+
   const onSaveCreditCard = async () => {
-    if (!creditCardNumber || !creditCardExpDate || !cardHolderID) {
-      Alert.alert(t('error'), t('please-fill-all-fields'));
+    const isValidCreditCardNumber = await validateCreditCardNumber();
+
+    const isValidCreditCardExpDate = await validateCreditCardExpDate();
+    const isValidCreditCardCVV = await validateCreditCardCVV();
+    const isValidCreditCardHolderID = await validateCreditCardHolderID();
+    console.log('isValidCreditCardNumber', isValidCreditCardNumber);
+    console.log('isValidCreditCardExpDate', isValidCreditCardExpDate);
+    console.log('isValidCreditCardCVV', isValidCreditCardCVV);
+    console.log('isValidCreditCardHolderID', isValidCreditCardHolderID);
+
+    if (!isValidCreditCardNumber || !isValidCreditCardExpDate || !isValidCreditCardCVV || !isValidCreditCardHolderID) {
+      setFormStatus({ ...formStatus, isNumberValid: !!isValidCreditCardNumber, isCVVValid: !!isValidCreditCardCVV, idIDValid: !!isValidCreditCardHolderID, isExpDateValid: !!isValidCreditCardExpDate });
       return;
     }
-
     setIsLoading(true);
     
     try {
@@ -241,7 +268,7 @@ const CreditCard = ({ onSaveCard }) => {
               variant="default"
             />
             <View style={{ marginTop: 2, height: 30 }}>
-              {isExpDateValid === false && (
+              {formStatus.isExpDateValid === false && (
                 <Text
                   style={{
                     color: themeStyle.ERROR_COLOR,
@@ -318,7 +345,7 @@ const CreditCard = ({ onSaveCard }) => {
           <Button
             bgColor={theme.SUCCESS_COLOR}
             onClickFn={onSaveCreditCard}
-            disabled={isFormValid() || isLoading}
+            disabled={isLoading}
             text={t("save-credit-card")}
             fontSize={22}
             textColor={theme.WHITE_COLOR}

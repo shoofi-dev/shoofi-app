@@ -13,6 +13,8 @@ import { StoreContext } from "../../stores";
 import { useNavigation } from "@react-navigation/native";
 import { creditCardsStore } from "../../stores/creditCards";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import Modal from "react-native-modal";
+import CreditCardModal from "../CreditCardModal";
 
 // Navigation type definition
 type RootStackParamList = {
@@ -42,6 +44,7 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
   const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS.cash);
   const [ccData, setCCData] = useState<PaymentCreditCardData | undefined>();
   const [isLoadingCreditCards, setIsLoadingCreditCards] = useState(false);
+  const [isCreditCardModalOpen, setIsCreditCardModalOpen] = useState(false);
 
   const getCCData = async () => {
     setIsLoadingCreditCards(true);
@@ -149,9 +152,15 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
   };
 
   const onReplaceCreditCard = () => {
-    // Navigate to credit cards list screen
+    // Open credit cards modal
     console.log("onReplaceCreditCard")
-    navigation.navigate("credit-cards");
+    setIsCreditCardModalOpen(true);
+  };
+
+  const handleCloseCreditCardModal = () => {
+    setIsCreditCardModalOpen(false);
+    // Refresh credit card data when modal is closed
+    getCCData();
   };
 
   return (
@@ -170,6 +179,17 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
           />
         </View>
       )}
+      
+      <Modal
+        isVisible={isCreditCardModalOpen}
+        onBackdropPress={() => setIsCreditCardModalOpen(false)}
+        style={{ margin: 0, justifyContent: "flex-end" }}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        backdropOpacity={0.5}
+      >
+        <CreditCardModal onClose={handleCloseCreditCardModal} />
+      </Modal>
     </View>
   );
 };
