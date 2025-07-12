@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import Button from "../../components/controls/button/button";
 import themeStyle from "../../styles/theme.style";
 import { useTranslation } from "react-i18next";
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useRef } from "react";
 import { StoreContext } from "../../stores";
 import { AddressCMP } from "../../components/address";
 import ConfirmActiondBasedEventDialog from "../../components/dialogs/confirm-action-based-event";
@@ -51,6 +51,7 @@ const CheckoutScreen = ({ route }) => {
   const [isLoadingOrderSent, setIsLoadingOrderSent] = useState(null);
   const [paymentMthod, setPaymentMthod] = useState(PAYMENT_METHODS.cash);
   const [paymentData, setPaymentData] = useState(null);
+  const isCheckoutInProgress = useRef(false);
 
   const [isShippingMethodAgrred, setIsShippingMethodAgrred] = useState(false);
   const [addressLocation, setAddressLocation] = useState();
@@ -207,6 +208,7 @@ const CheckoutScreen = ({ route }) => {
 
   const postChargeOrderActions = () => {
     onLoadingOrderSent(false);
+    isCheckoutInProgress.current = false;
     cartStore.resetCart();
     if (editOrderData) {
       setTimeout(() => {
@@ -221,7 +223,15 @@ const CheckoutScreen = ({ route }) => {
   };
 
   const handleCheckout = async () => {
+    // Prevent multiple clicks using ref for immediate check
+    if (isCheckoutInProgress.current) {
+      return;
+    }
+    
+    isCheckoutInProgress.current = true;
     setIsLoadingOrderSent(true);
+    
+    try {
       const isCheckoutValidRes = await isCheckoutValid({
         shippingMethod,
         addressLocation,
@@ -232,6 +242,7 @@ const CheckoutScreen = ({ route }) => {
       if (!isCheckoutValidRes) {
         //todo: show error message
         setIsLoadingOrderSent(false);
+        isCheckoutInProgress.current = false;
         return;
       }
 
@@ -274,6 +285,12 @@ const CheckoutScreen = ({ route }) => {
       return;
     }
     onLoadingOrderSent(false);
+    isCheckoutInProgress.current = false;
+  } catch (error) {
+    console.error('Checkout error:', error);
+    setIsLoadingOrderSent(false);
+    isCheckoutInProgress.current = false;
+  }
   };
 
   const onChangeTotalPrice = (toalPriceValue) => {
