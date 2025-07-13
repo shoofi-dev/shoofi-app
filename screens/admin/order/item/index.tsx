@@ -200,9 +200,7 @@ const gerRefundAmount = (order: any) => {
   };
   const renderOrderTotalRaw = (order) => {
     const oOrder = order.order;
-    const orderIdSplit = order.orderId.split("-");
-    const idPart1 = orderIdSplit[0];
-    const idPart2 = orderIdSplit[2];
+
     return (
       <View
         style={{
@@ -281,7 +279,7 @@ const gerRefundAmount = (order: any) => {
                 </View>
                 <View>
                   <Text style={styles.dateRawText}>
-                    {idPart1}-{idPart2}{" "}
+                    {order.orderId}{" "}
                   </Text>
                 </View>
               </View>
