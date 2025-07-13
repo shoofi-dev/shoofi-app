@@ -307,6 +307,9 @@ const CheckoutScreen = ({ route }) => {
         >
           <BackButton />
         </Animatable.View>
+        <Text style={{ fontSize: 12, color: themeStyle.BLACK_COLOR }}>
+            {storeDataStore.storeData?.appName}
+          </Text>
       </View>
       <ScrollView
         style={{ marginHorizontal: 20 }}

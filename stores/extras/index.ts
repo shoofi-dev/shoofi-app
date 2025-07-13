@@ -39,10 +39,10 @@ class ExtrasStore {
         if (extra.type === "single" && !val) return false;
         // if (extra.type === "multi" && (!val || val.length < (extra.min || 1))) return false;
         // if (extra.type === "counter" && (val === undefined || val < (extra.min || 0))) return false;
-        if (extra.type === "pizza-topping") {
-          // At least one topping must be selected
-          if (!val || Object.keys(val).length === 0) return false;
-        }
+        // if (extra.type === "pizza-topping") {
+        //   // At least one topping must be selected
+        //   if (!val || Object.keys(val).length === 0) return false;
+        // }
       }
       if (extra.type === "multi" && extra.max && val && val.length > extra.max) return false;
       if (extra.type === "counter" && extra.max && val > extra.max) return false;

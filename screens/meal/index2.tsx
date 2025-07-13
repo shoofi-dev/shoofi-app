@@ -472,14 +472,13 @@ const MealScreen = ({ handleClose, product, category, index }) => {
             width: "100%",
           }}
         >
-          <Text style={{ marginBottom: 10 }}>{t("הערות למסעדה")}</Text>
+          <Text style={{ marginBottom: 10 }}>{t("note-to-store")}</Text>
                       <TextInput
               value={meal?.others?.note}
               onChangeText={(text) => {
                 setNoteValue(text);
                 updateOthers(text, "note", "others");
               }}
-              placeholder={t("רשום הערות כאן")}
               style={{
                 borderWidth: 1,
                 borderColor: "#eee",

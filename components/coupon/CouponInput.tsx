@@ -17,6 +17,7 @@ interface CouponInputProps {
   onCouponApplied: (couponApp: CouponApplication) => void;
   onCouponRemoved: () => void;
   appliedCoupon?: CouponApplication;
+  deliveryFee?: number;
 }
 
 const CouponInput: React.FC<CouponInputProps> = ({
@@ -25,6 +26,7 @@ const CouponInput: React.FC<CouponInputProps> = ({
   onCouponApplied,
   onCouponRemoved,
   appliedCoupon,
+  deliveryFee,
 }) => {
   const [couponCode, setCouponCode] = useState('');
   const { couponsStore } = useContext(StoreContext);
@@ -39,7 +41,8 @@ const CouponInput: React.FC<CouponInputProps> = ({
       const couponApp = await couponsStore.applyCoupon(
         couponCode.trim(),
         orderAmount,
-        userId
+        userId,
+        deliveryFee
       );
       onCouponApplied(couponApp);
       setCouponCode('');
@@ -64,7 +67,10 @@ const CouponInput: React.FC<CouponInputProps> = ({
           <View style={styles.couponInfo}>
             <Text style={styles.couponCode}>{appliedCoupon.coupon.code}</Text>
             <Text style={styles.discountText}>
-              Discount: ${appliedCoupon.discountAmount.toFixed(2)}
+              {appliedCoupon.coupon.type === 'free_delivery' 
+                ? 'Free Delivery Applied!'
+                : `Discount: $${appliedCoupon.discountAmount.toFixed(2)}`
+              }
             </Text>
           </View>
           <TouchableOpacity

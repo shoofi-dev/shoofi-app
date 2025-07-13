@@ -237,14 +237,14 @@ const App = () => {
                 
               }else{
                 const appNameStorage: any = await shoofiAdminStore.getStoreDBName();
+                const cartStoreDBName = await cartStore.getCartStoreDBName();
+
                 console.log("appNameStorage", appNameStorage)
-                if(appNameStorage){
+                if(cartStoreDBName){
                   // await shoofiAdminStore.setStoreDBName(appNameStorage);
-                  const cartStoreDBName = await cartStore.getCartStoreDBName();
                   console.log("cartStoreDBName", cartStoreDBName)
-                  if(cartStoreDBName){
                     await storeDataStore.getStoreData(cartStoreDBName);
-                  }
+                  
                 // await menuStore.getMenu();
                 // await storeDataStore.getStoreData();
                 }
@@ -258,6 +258,11 @@ const App = () => {
             });
           } else {
             const data = await AsyncStorage.getItem("@storage_terms_accepted");
+            const cartStoreDBName = await cartStore.getCartStoreDBName();
+            console.log("cartStoreDBName", cartStoreDBName)
+            if(cartStoreDBName){
+              await storeDataStore.getStoreData(cartStoreDBName);
+            }
             // userDetailsStore.setIsAcceptedTerms(JSON.parse(data));
             setTimeout(() => {
               setAppIsReady(true);

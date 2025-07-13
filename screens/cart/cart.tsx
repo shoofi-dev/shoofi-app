@@ -10,6 +10,7 @@ import {
   Animated,
   LayoutAnimation,
   Easing,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Animatable from "react-native-animatable";
@@ -85,7 +86,7 @@ const CartScreen = ({ route }) => {
     menuStore,
     extrasStore,
     authStore,
-    shoofiAdminStore
+    shoofiAdminStore,
   } = useContext(StoreContext);
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -100,10 +101,14 @@ const CartScreen = ({ route }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedProductIndex, setSelectedProductIndex] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [isStoreErrorModalVisible, setIsStoreErrorModalVisible] = useState(false);
-  const [isStoreCloseModalVisible, setIsStoreCloseModalVisible] = useState(false);
+  const [isStoreErrorModalVisible, setIsStoreErrorModalVisible] =
+    useState(false);
+  const [isStoreCloseModalVisible, setIsStoreCloseModalVisible] =
+    useState(false);
   const [storeErrorText, setStoreErrorText] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitButtonLoading, setIsSubmitButtonLoading] = useState(false);
+  const [isStoreDataReady, setIsStoreDataReady] = useState(false);
   useEffect(() => {
     if (ordersStore.editOrderData) {
       setEditOrderData(ordersStore.editOrderData);
@@ -155,6 +160,19 @@ const CartScreen = ({ route }) => {
   useEffect(() => {
     updateItemsPrice();
   }, [cartStore.cartItems]);
+  useEffect(() => {
+    const getStoreData = async () => {
+      setIsLoading(true);
+      const cartStoreDBName = await cartStore.getCartStoreDBName();
+      await storeDataStore.getStoreData(cartStoreDBName);
+      setTimeout(() => {
+        setIsStoreDataReady(true);
+        setIsLoading(false);
+
+      }, 500);
+    }
+    getStoreData();
+  }, [])
 
   const getProductIndexId = (product, index) => {
     if (product) {
@@ -192,9 +210,9 @@ const CartScreen = ({ route }) => {
     setSelectedProduct(product);
     setSelectedProductIndex(index);
     let category = null;
-    if (menuStore.categories && typeof menuStore.categories === 'object') {
-      category = Object.values(menuStore.categories).find(cat =>
-        (cat && cat.products?.some((p) => p._id === product._id))
+    if (menuStore.categories && typeof menuStore.categories === "object") {
+      category = Object.values(menuStore.categories).find(
+        (cat) => cat && cat.products?.some((p) => p._id === product._id)
       );
     }
     setSelectedCategory(category);
@@ -294,7 +312,7 @@ const CartScreen = ({ route }) => {
 
   const value = useRef(new Animated.Value(0));
   useEffect(() => {
-    if (cartStore.cartItems?.length > 0) {
+    if (cartStore.cartItems?.length > 0 && isStoreDataReady) {
       Animated.timing(value.current, {
         toValue: cartStore.cartItems.length + 1,
         useNativeDriver: true,
@@ -303,7 +321,7 @@ const CartScreen = ({ route }) => {
         easing: Easing.linear,
       }).start();
     }
-  }, [cartStore.cartItems]);
+  }, [cartStore.cartItems, isStoreDataReady]);
 
   let extrasArray = [];
   const renderFilteredExtras = (filteredExtras, extrasLength, key) => {
@@ -389,17 +407,21 @@ const CartScreen = ({ route }) => {
   };
 
   const handleSubmintButton = async () => {
+    setIsSubmitButtonLoading(true);
     // Check store availability first
+    
     const storeStatus = await isStoreAvailable();
     console.log("storeStatus", storeStatus);
-    
+
     const isCustomErrorMessage = await isErrCustomMessage(storeStatus);
     if (isCustomErrorMessage) {
+      setIsSubmitButtonLoading(false);
       return;
     }
 
     const isStoreOpenRes = await isStoreOpen(storeStatus);
     if (!isStoreOpenRes) {
+      setIsSubmitButtonLoading(false);
       return;
     }
 
@@ -413,6 +435,7 @@ const CartScreen = ({ route }) => {
         navigation.navigate("login");
       }
     }
+    setIsSubmitButtonLoading(false);
   };
 
   const onChangeTotalPrice = (toalPriceValue) => {
@@ -421,8 +444,9 @@ const CartScreen = ({ route }) => {
   };
 
   // Store validation functions
-  const isStoreAvailable = () => {
-    return storeDataStore.getStoreData().then((res) => {
+  const isStoreAvailable = async () => {
+    const cartStoreDBName = await cartStore.getCartStoreDBName();
+    return storeDataStore.getStoreData(cartStoreDBName).then((res) => {
       return {
         ar: res["invalid_message_ar"],
         he: res["invalid_message_he"],
@@ -437,7 +461,7 @@ const CartScreen = ({ route }) => {
     setStoreErrorText(value);
     setIsStoreErrorModalVisible(true);
   };
-  
+
   const isErrCustomMessage = async (storeStatus) => {
     if ((storeStatus.ar || storeStatus.he) && !userDetailsStore.isAdmin()) {
       toggleStoreErrorMsgDialog(storeStatus[getCurrentLang()]);
@@ -451,7 +475,7 @@ const CartScreen = ({ route }) => {
   const toggleStoreIsCloseDialog = () => {
     setIsStoreCloseModalVisible(true);
   };
-  
+
   const isStoreOpen = async (storeStatus) => {
     if (!storeStatus.isOpen && !userDetailsStore.isAdmin()) {
       toggleStoreIsCloseDialog();
@@ -459,20 +483,32 @@ const CartScreen = ({ route }) => {
     }
     return true;
   };
+  console.log("storeDataStore.storeData?.isOrderLaterSupport", storeDataStore.storeData)
+
   // STORE IS CLOSE - END
   return (
     <View style={{ position: "relative", height: "100%", flex: 1, bottom: 0 }}>
+            {isLoading && <View style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
+      <ActivityIndicator size="large" color={themeStyle.PRIMARY_COLOR} />
+    </View>}
+      <View style={{opacity: isLoading ? 0 : 1,height: "100%"}}>
+
+    
       {/* <LinearGradient
         colors={["#c1bab3", "#efebe5", "#d8d1ca", "#dcdcd4", "#ccccc4"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.background]}
       /> */}
+
       <View style={styles.backContainer}>
         <BackButton onClick={onBackClick} />
         <View style={{ marginLeft: 10 }}>
           <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>
             {t("my-order")}
+          </Text>
+          <Text style={{ fontSize: 12, color: themeStyle.BLACK_COLOR }}>
+            {storeDataStore.storeData?.appName}
           </Text>
         </View>
       </View>
@@ -485,13 +521,16 @@ const CartScreen = ({ route }) => {
               alignSelf: "center",
               paddingBottom: scale(20),
             }}
-          > 
+          >
             {cartStore.cartItems.map((product, index) => {
               const moveBy = (1 - 1 / 1) * index;
               const isLast = index === cartStore.cartItems.length - 1;
               return (
                 product && (
-                  <View key={getProductIndexId(product, index)} style={{ position: 'relative' }}>
+                  <View
+                    key={getProductIndexId(product, index)}
+                    style={{ position: "relative" }}
+                  >
                     <View style={{ paddingHorizontal: scale(20) }}>
                       <Animated.View
                         style={{
@@ -613,13 +652,33 @@ const CartScreen = ({ route }) => {
 
                                 {/* Note */}
                                 {product?.others?.note && (
-                                  <View style={{ marginTop: scale(10),flexDirection:"row",alignItems:"center",  }}>
-                                    <View>
-                                      <Icon icon="comment" size={themeStyle.FONT_SIZE_MD} color={themeStyle.TEXT_PRIMARY_COLOR} />
+                                  <View
+                                    style={{
+                                      marginTop: scale(10),
+                                    }}
+                                  >
+                                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                      <Icon
+                                        icon="comment"
+                                        size={themeStyle.FONT_SIZE_MD}
+                                        color={themeStyle.TEXT_PRIMARY_COLOR}
+                                        style={{ marginRight: 5 }}
+                                      />
+                                        <Text
+                                        style={{
+                                          fontSize: themeStyle.FONT_SIZE_SM,
+                                        }}
+                                      >
+                                        {t("note")}:
+                                      </Text>
                                     </View>
-                                    <View style={{marginLeft:5}}>
-                                      <Text style={{ fontSize: themeStyle.FONT_SIZE_SM }}>
-                                        {t("note")}: {product.others.note}
+                                    <View style={{ marginLeft: 5 }}>
+                                      <Text
+                                        style={{
+                                          fontSize: themeStyle.FONT_SIZE_SM,
+                                        }}
+                                      >
+                                        {product.others.note}
                                       </Text>
                                     </View>
                                   </View>
@@ -642,7 +701,8 @@ const CartScreen = ({ route }) => {
                                         color: themeStyle.TEXT_PRIMARY_COLOR,
                                       }}
                                     >
-                                      ₪{product.data.price * product?.others.qty}
+                                      ₪
+                                      {product.data.price * product?.others.qty}
                                     </Text>
                                   </View>
                                   <View
@@ -706,12 +766,12 @@ const CartScreen = ({ route }) => {
                     {!isLast && (
                       <View
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           left: 0,
                           right: 0,
                           bottom: -scale(10),
                           height: 1,
-                          width: '100%',
+                          width: "100%",
                           backgroundColor: themeStyle.GRAY_20,
                         }}
                       />
@@ -763,10 +823,10 @@ const CartScreen = ({ route }) => {
             textColor={themeStyle.SECONDARY_COLOR}
             borderRadious={100}
             extraText={`₪${totalPrice}`}
+            isLoading={isSubmitButtonLoading}
+            disabled={isSubmitButtonLoading}
           />
         </View>
-
-        
       </Animatable.View>
 
       <ConfirmActiondDialog
@@ -775,15 +835,15 @@ const CartScreen = ({ route }) => {
         text={"pick-time-note"}
         positiveText="ok"
       />
-              <StoreErrorMsgModal 
-          visible={isStoreErrorModalVisible}
-          textValue={storeErrorText}
-          onClose={() => setIsStoreErrorModalVisible(false)}
-        />
-        <StoreIsCloseModal 
-          visible={isStoreCloseModalVisible}
-          onClose={() => setIsStoreCloseModalVisible(false)}
-        />
+      <StoreErrorMsgModal
+        visible={isStoreErrorModalVisible}
+        textValue={storeErrorText}
+        onClose={() => setIsStoreErrorModalVisible(false)}
+      />
+      <StoreIsCloseModal
+        visible={isStoreCloseModalVisible}
+        onClose={() => setIsStoreCloseModalVisible(false)}
+      />
 
       <Modal
         isVisible={isModalOpen}
@@ -800,6 +860,7 @@ const CartScreen = ({ route }) => {
           index={selectedProductIndex}
         />
       </Modal>
+    </View>
     </View>
   );
 };

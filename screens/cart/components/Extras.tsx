@@ -112,7 +112,7 @@ const CartExtras = ({
                         const areaOption = topping.areaOptions?.find(
                           (opt) => opt.id === areaData.areaId
                         );
-                        return areaOption ? ` (+₪${areaOption.price || 0})` : "";
+                        return areaOption && areaOption.price ? ` (+₪${areaOption.price || 0})` : null;
                       })()}
                   </Text>
                   {idx < toppings.length - 1 && (

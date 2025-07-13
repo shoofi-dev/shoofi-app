@@ -1,20 +1,50 @@
-import React, { useContext } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useContext, useRef, useEffect } from 'react';
+import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { StoreContext } from '../../stores';
 import { useTranslation } from 'react-i18next';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const GOOGLE_PLACES_API_KEY = 'YOUR_GOOGLE_API_KEY'; // Replace with your key
+interface FormData {
+  street?: string;
+  city?: string;
+  streetNumber?: string;
+  [key: string]: any;
+}
 
-const GooglePlacesSearch = ({ onPlaceSelected }) =>{
-    const { t } = useTranslation();
-    const { shoofiAdminStore, languageStore } = useContext(StoreContext);
-    const GOOGLE_PLACES_API_KEY = shoofiAdminStore.storeData.GOOGLE_API_KEY;
+interface GooglePlacesSearchProps {
+  onPlaceSelected: (data: any, details: any) => void;
+  formData: FormData;
+}
 
-    return (
-        <View style={styles.container}>
+const GooglePlacesSearch = ({ onPlaceSelected, formData }: GooglePlacesSearchProps) => {
+  const { t } = useTranslation();
+  const { shoofiAdminStore, languageStore } = useContext(StoreContext);
+  const GOOGLE_PLACES_API_KEY = shoofiAdminStore.storeData.GOOGLE_API_KEY;
+
+  const placesRef = useRef<any>(null);
+
+  const handleClear = () => {
+    console.log('Custom clear button pressed');
+    if (placesRef.current) {
+      placesRef.current.clear();
+    }
+    onPlaceSelected && onPlaceSelected({ description: '' }, null);
+  };
+
+  if (!GOOGLE_PLACES_API_KEY) {
+    console.warn('Google Places API key is not available');
+  }
+
+  return (
+    <View style={styles.container}>
+      {GOOGLE_PLACES_API_KEY ? (
+        <View style={styles.inputContainer}>
           <GooglePlacesAutocomplete
+            ref={placesRef}
+            placeholder={''}
             onPress={(data, details = null) => {
+              console.log('GooglePlaces onPress:', data?.description);
               onPlaceSelected && onPlaceSelected(data, details);
             }}
             fetchDetails={true}
@@ -27,15 +57,51 @@ const GooglePlacesSearch = ({ onPlaceSelected }) =>{
             styles={{
               textInput: styles.textInput,
             }}
+            textInputProps={{
+              value: formData.street || '',
+              onChangeText: (text) => {
+                console.log('GooglePlaces onChangeText:', text);
+                onPlaceSelected && onPlaceSelected({ description: text }, null);
+              },
+              clearButtonMode: 'never',
+              placeholder: t('enter-street-address'),
+            }}
           />
+          {formData.street && formData.street.length > 0 && (
+            <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
+              <Icon name="close" size={20} color="#666" />
+            </TouchableOpacity>
+          )}
         </View>
-      );
-} 
+      ) : (
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.textInput}
+            value={formData.street || ''}
+            onChangeText={(text) => {
+              console.log('Fallback onChangeText:', text);
+              onPlaceSelected && onPlaceSelected({ description: text }, null);
+            }}
+            placeholder={t('enter-street-address')}
+          />
+          {formData.street && formData.street.length > 0 && (
+            <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
+              <Icon name="close" size={20} color="#666" />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
     zIndex: 10,
+  },
+  inputContainer: {
+    position: 'relative',
   },
   textInput: {
     height: 44,
@@ -46,6 +112,13 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderWidth: 1,
     textAlign: 'right',
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 12,
+    top: 12,
+    zIndex: 1,
+    padding: 2,
   },
 });
 

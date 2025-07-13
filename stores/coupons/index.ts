@@ -14,7 +14,7 @@ class CouponsStore {
   }
 
   // Apply a coupon to an order
-  async applyCoupon(code: string, orderAmount: number, userId: string): Promise<CouponApplication> {
+  async applyCoupon(code: string, orderAmount: number, userId: string, deliveryFee?: number): Promise<CouponApplication> {
     this.loading = true;
     this.error = null;
     
@@ -22,7 +22,8 @@ class CouponsStore {
       const response = await axiosInstance.post('/coupons/apply', {
         code: code.toUpperCase(),
         orderAmount,
-        userId
+        userId,
+        deliveryFee: deliveryFee || 0
       });
 
 
@@ -63,6 +64,64 @@ class CouponsStore {
       return data;
     } catch (error) {
       throw error;
+    }
+  }
+
+  // Get and apply auto-apply coupons for a customer
+  async getAndApplyAutoCoupons(userId: string, orderAmount: number, deliveryFee?: number): Promise<CouponApplication | null> {
+    try {
+      const response = await axiosInstance.get(`/coupons/auto-apply/${userId}?orderAmount=${orderAmount}&deliveryFee=${deliveryFee}`);
+      const autoApplyCoupons: Coupon[] = response;
+
+      if (autoApplyCoupons.length === 0) {
+        return null;
+      }
+
+      // Find the best auto-apply coupon (highest discount value)
+      let bestCoupon: Coupon | null = null;
+      let bestDiscount = 0;
+
+      for (const coupon of autoApplyCoupons) {
+        let discountAmount = 0;
+        
+        switch (coupon.type) {
+          case 'percentage':
+            discountAmount = (orderAmount * coupon.value) / 100;
+            if (coupon.maxDiscount) {
+              discountAmount = Math.min(discountAmount, coupon.maxDiscount);
+            }
+            break;
+          case 'fixed_amount':
+            discountAmount = coupon.value;
+            break;
+          case 'free_delivery':
+            discountAmount = deliveryFee || 0;
+            break;
+        }
+
+        if (discountAmount > bestDiscount) {
+          bestCoupon = coupon;
+          bestDiscount = discountAmount;
+        }
+      }
+
+      if (bestCoupon) {
+        const couponApp: CouponApplication = {
+          coupon: bestCoupon,
+          discountAmount: bestDiscount
+        };
+
+        runInAction(() => {
+          this.appliedCoupon = couponApp;
+        });
+
+        return couponApp;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Failed to get auto-apply coupons:', error);
+      return null;
     }
   }
 

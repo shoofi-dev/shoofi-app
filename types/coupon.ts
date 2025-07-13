@@ -15,6 +15,9 @@ export interface Coupon {
     stores?: string[];
   };
   isActive: boolean;
+  isCustomerSpecific?: boolean;
+  customerId?: string;
+  isAutoApply?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
