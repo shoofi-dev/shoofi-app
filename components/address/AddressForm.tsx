@@ -29,7 +29,7 @@ interface AddressFormProps {
 const AddressForm = observer(({ route,address }: any) => {
   const { t } = useTranslation();
 
-  const { userDetailsStore, addressStore } = useContext(StoreContext);
+  const { userDetailsStore, addressStore, shoofiAdminStore } = useContext(StoreContext);
   const [selectedCity, setSelectedCity] = useState(null);
   const [customerId, setCustomerId] = useState<string | undefined>(undefined);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -136,7 +136,7 @@ const AddressForm = observer(({ route,address }: any) => {
 
       setLoading(true);
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
+        accuracy: Location.Accuracy.Highest,
       });
       const { latitude, longitude } = location.coords;
 
@@ -156,7 +156,7 @@ const AddressForm = observer(({ route,address }: any) => {
       } else {
         // Fallback: Use Google Geocoding API for better results
         try {
-          const googleApiKey = "YOUR_GOOGLE_API_KEY"; // Replace with your actual API key
+          const googleApiKey = shoofiAdminStore.storeData.GOOGLE_API_KEY; // Replace with your actual API key
           const response = await fetch(
             `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${googleApiKey}`
           );
