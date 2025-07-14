@@ -15,8 +15,6 @@ import AllCategoriesList, {
 } from "./components/AllCategoriesList";
 import Icon from "../../components/icon";
 import { useTranslation } from "react-i18next";
-import useWebSocket from "react-use-websocket";
-import { WS_URL } from "../../consts/api";
 import { ActivityIndicator } from "react-native-paper";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
@@ -26,6 +24,7 @@ import { getCurrentLang } from "../../translations/i18n";
 import BackButton from "../../components/back-button";
 import Text from "../../components/controls/Text";
 import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
+import { APP_NAME } from "../../consts/shared";
 const HEADER_HEIGHT = 340;
 const SHIPPING_PICKER_CONTAINER_HEIGHT = 60;
 const STICKY_HEADER_HEIGHT = 90;
@@ -42,20 +41,30 @@ const MenuScreen = () => {
   const categoryUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const manualSelectionRef = useRef<boolean>(false);
 
-  const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore } =
+  const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore, websocket } =
     useContext(StoreContext);
-
+  console.log("storeDataStore", storeDataStore?.storeData?.isOpen)
   const { availableDrivers, loading: driversLoading } = useAvailableDrivers();
+  const { isConnected, connectionStatus, lastMessage } = websocket;
 
-  const { lastJsonMessage } = useWebSocket(WS_URL, { share: true });
+  // Handle menu refresh messages
+       useEffect(() => { 
+        if (lastMessage) {
+          if (lastMessage.type === 'menu_refresh') {
+            // Check if the message is for the current app
+            if (lastMessage.data?.appName === storeDataStore.storeData?.appName) {
+              console.log('Received menu refresh message:', lastMessage );
+              // Refresh the menu
+              menuStore.getMenu();
+            }
+          }
+          
+
+          
+        }
+       },[lastMessage])
 
   const [cartPrice, setCartPrice] = useState(0);
-
-  useEffect(() => {
-    if (lastJsonMessage) {
-      menuStore.getMenu();
-    }
-  }, [lastJsonMessage]);
 
   const [categoryList, setCategoryList] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -283,6 +292,7 @@ const MenuScreen = () => {
           <AllCategoriesList
             ref={allCategoriesListRef}
             categoryList={categoryList}
+             productId={route.params?.productId} // Removed productId prop
           />
         </View>
       </Animated.ScrollView>

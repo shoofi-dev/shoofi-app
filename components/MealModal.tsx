@@ -1,13 +1,22 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useContext, useCallback } from "react";
 import { View, TouchableOpacity, Text, ScrollView, StyleSheet, Dimensions } from "react-native";
 import GlassBG from "./glass-background";
 import MealScreen from "../screens/meal/index2";
 import BackButton from "./back-button";
 import themeStyle from "../styles/theme.style";
+import ProductFooter from "../screens/meal/components/footer/footer";
+import { StoreContext } from "../stores";
 
 const screenHeight = Dimensions.get('window').height;
 
 const MealModal = ({ product, category, onClose, index=null }) => {
+  const [footerProps, setFooterProps] = useState(null);
+  const { cartStore } = useContext(StoreContext);
+
+  const handleFooterProps = useCallback((props) => {
+    setFooterProps(props);
+  }, []);
+
   return (
     <View style={styles.modalContainer}>
       <GlassBG style={styles.closeButton}>
@@ -18,9 +27,20 @@ const MealModal = ({ product, category, onClose, index=null }) => {
           <BackButton isDisableGoBack={true} color={themeStyle.WHITE_COLOR} onClick={onClose}/>
         </TouchableOpacity>
       </GlassBG>
-      <ScrollView>
-        <MealScreen  handleClose={onClose} product={product} category={category} index={index} />
-      </ScrollView>
+      <View style={{  }}>
+        <MealScreen  
+          handleClose={onClose} 
+          product={product} 
+          category={category} 
+          index={index}
+          onFooterProps={handleFooterProps}
+        />
+      </View>
+      {footerProps && (
+        <View style={styles.footerContainer}>
+          <ProductFooter {...footerProps} />
+        </View>
+      )}
     </View>
   );
 };
@@ -61,6 +81,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
+  },
+  footerContainer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0)",
+    padding: 10,
+    paddingHorizontal: 20,
+    
   },
 });
 

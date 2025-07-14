@@ -110,6 +110,9 @@ const ProductItem = ({
   }, [item?.img?.[0]?.uri]);
 
   const handleItemPress = useCallback(() => {
+    if(!isInStore){
+      return;
+    }
     onItemSelect(item);
   }, [onItemSelect, item]);
 

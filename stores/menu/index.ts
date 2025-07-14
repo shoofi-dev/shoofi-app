@@ -398,6 +398,16 @@ class MenuStore {
   createExtra = (extra) => {
     return this.createExtraFromServer(extra);
   };
+
+  // Search products across all stores by query
+  searchMenu = async (query) => {
+    try {
+      const response = await axiosInstance.post("/menu/search", { query });
+      return response;
+    } catch (error) {
+      return { stores: [] };
+    }
+  };
 }
 
 export const menuStore = new MenuStore();

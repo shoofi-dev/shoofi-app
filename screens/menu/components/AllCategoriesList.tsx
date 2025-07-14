@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useState,
   useMemo,
+  useEffect,
 } from "react";
 import {
   StyleSheet,
@@ -33,6 +34,7 @@ const sectionMargin = 24;
 interface AllCategoriesListProps {
   categoryList: any[];
   ListHeaderComponent?: React.ReactElement;
+  productId?: string;
 }
 
 export interface AllCategoriesListRef {
@@ -86,10 +88,7 @@ const CategorySection = ({
   );
 };
 
-const AllCategoriesList = forwardRef<
-  AllCategoriesListRef,
-  AllCategoriesListProps
->(({ categoryList, ListHeaderComponent }, ref) => {
+const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProps>(({ categoryList, ListHeaderComponent, productId }, ref) => {   
   const navigation = useNavigation<any>();
   const { languageStore } = useContext(StoreContext);
   const flatListRef = useRef<FlatList>(null);
@@ -158,6 +157,26 @@ const AllCategoriesList = forwardRef<
     setSelectedCategory(category);
     setIsModalOpen(true);
   }, []);
+
+  useEffect(() => {
+    if (productId && filteredCategoryList) {
+      for (let i = 0; i < filteredCategoryList.length; i++) {
+        const category = filteredCategoryList[i];
+        if (category.products && category.products.length > 0) {
+          for (let j = 0; j < category.products.length; j++) {
+            if (category.products[j]._id === productId) {
+              setTimeout(() => {
+                setSelectedCategory(category);
+                setSelectedProduct(category.products[j]);
+                setIsModalOpen(true);
+              }, 500);
+              return;
+            }
+          }
+        }
+      }
+    }
+  }, [productId, filteredCategoryList]);
 
   const renderCategorySection = useCallback(
     ({ item: category }) => {

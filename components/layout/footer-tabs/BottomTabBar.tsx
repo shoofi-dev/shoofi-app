@@ -19,7 +19,7 @@ const tabs = [
     icon: "main",
   },
   {
-    key: "Orders",
+    key: "Search",
     label: "search",
     icon: "search",
   },
@@ -50,6 +50,8 @@ export default function BottomTabBar({ state, navigation }) {
       } else {
         navigation.navigate("login");
       }
+    } else if (route.key === "Search") {
+      navigation.navigate("Search");
     } else {
       navigation.navigate(route.key);
     }

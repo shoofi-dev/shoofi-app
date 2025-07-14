@@ -71,7 +71,7 @@ const mockOrders = [
 const AtiveOrdersScreen = ({ route }) => {
   const { t } = useTranslation();
 
-  const { ordersStore } = useContext(StoreContext);
+  const { ordersStore, authStore } = useContext(StoreContext);
   const [ordersList, setOrdersList] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,6 +84,8 @@ const AtiveOrdersScreen = ({ route }) => {
   }
 
   useEffect(() => {
+    if(authStore.isLoggedIn()){
+
     setIsLoading(true);
       getOrders();
       setTimeout(() => {
@@ -93,7 +95,8 @@ const AtiveOrdersScreen = ({ route }) => {
         getOrders();
       }, 30 * 1000);
       return () => clearInterval(interval);
-  }, []);
+    }
+  }, [authStore.isLoggedIn]);
 
   const onScrollEnd = ({ nativeEvent }) => {
     const paddingToBottom = 2000;

@@ -196,7 +196,7 @@ export const ShippingMethodPick = ({
           {t("take-away")}
         </Text>
         <Text style={styles.pillOptionSubtext}>
-          {takeAwayReadyTime?.min} - {takeAwayReadyTime?.max} {t("minutes")}
+          {isTakeAwaySupport ? `${takeAwayReadyTime?.min} - ${takeAwayReadyTime?.max} ${t("minutes")}` :  t("takeaway-not-supported")}
         </Text>
       </TouchableOpacity>
     </View>

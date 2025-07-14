@@ -93,7 +93,14 @@ const OrderHeader = ({ order }) => {
           </View>
           <View style={{flexDirection:"row",justifyContent:"space-between", marginTop:40, alignItems:"center"}}>
             <TouchableOpacity style={styles.iconWrapper} onPress={()=>{
-              Linking.openURL(`https://wa.me/${shoofiAdminStore?.storeData?.storePhone}`)
+              const phoneNumber = shoofiAdminStore?.storeData?.waSupportPhone?.replace(/[^0-9]/g, '');
+              if (phoneNumber) {
+                const message = languageStore.selectedLang === "ar" 
+                  ? `في عندي استفسار بالنسبه لطلبيه رقم ${order.orderId}`
+                  : `אני רוצה לברר לגבי הזמנה מספר ${order.orderId}`;
+                const encodedMessage = encodeURIComponent(message);
+                Linking.openURL(`https://wa.me/${phoneNumber}?text=${encodedMessage}`)
+              }
             }}>
               <Icon icon="whatapp" size={24} color={themeStyle.SUCCESS_COLOR} />
             </TouchableOpacity>
@@ -106,7 +113,7 @@ const OrderHeader = ({ order }) => {
       
       {/* Timer Component */}
       <View style={{position:"absolute",right:20,top:70,zIndex:1000, backgroundColor: themeStyle.WHITE_COLOR, borderRadius:50}}>
-      <OrderTimer order={order} mockData={mockTimerData} order={order} />
+      <OrderTimer order={order} mockData={mockTimerData} />
 
       </View>
     </View>

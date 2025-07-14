@@ -42,7 +42,7 @@ const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { ordersStore, cartStore, adminCustomerStore, couponsStore, userDetailsStore } =
+  const { ordersStore, cartStore, adminCustomerStore, couponsStore, userDetailsStore, languageStore } =
     useContext(StoreContext);
   const { selectedDate } = route.params;
 
@@ -237,6 +237,7 @@ const CheckoutScreen = ({ route }) => {
         addressLocation,
         addressLocationText,
         place,
+        paymentMethod: paymentMthod,
       });
 
       if (!isCheckoutValidRes) {
@@ -307,9 +308,9 @@ const CheckoutScreen = ({ route }) => {
         >
           <BackButton />
         </Animatable.View>
-        <Text style={{ fontSize: 12, color: themeStyle.BLACK_COLOR }}>
-            {storeDataStore.storeData?.appName}
-          </Text>
+        <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>
+        {languageStore.selectedLang === "ar" ? storeDataStore.storeData?.name_ar : storeDataStore.storeData?.name_he}
+        </Text>
       </View>
       <ScrollView
         style={{ marginHorizontal: 20 }}
@@ -400,6 +401,7 @@ const CheckoutScreen = ({ route }) => {
       <RecipetNotSupportedBasedEventDialog />
       <NewPaymentMethodBasedEventDialog />
       <StoreErrorMsgDialogEventBased />
+      <StoreIsCloseBasedEventDialog />
       <DeliveryMethodAggreeBasedEventDialog />
       <InvalidAddressdBasedEventDialog />
       <PaymentFailedBasedEventDialog />

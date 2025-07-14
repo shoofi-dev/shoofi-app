@@ -35,7 +35,7 @@ interface UseWebSocketReturn extends WebSocketState {
 }
 
 const useWebSocket = (): UseWebSocketReturn => {
-  const { userDetailsStore, storeDataStore, authStore } = useContext(StoreContext);
+  const { userDetailsStore, storeDataStore, authStore, shoofiAdminStore, cartStore } = useContext(StoreContext);
   const [state, setState] = useState<WebSocketState>({
     isConnected: false,
     isConnecting: false,
@@ -139,7 +139,7 @@ const useWebSocket = (): UseWebSocketReturn => {
         error: 'Connection error'
       }));
     },
-    onMessage: (event: MessageEvent) => {
+    onMessage: async (event: MessageEvent) => {
       try {
         const message: WebSocketMessage = JSON.parse(event.data);
         statsRef.current.totalMessages++;
@@ -150,6 +150,30 @@ const useWebSocket = (): UseWebSocketReturn => {
             ...prev,
             error: null
           }));
+        }
+
+        if (message.type === 'store_refresh') {
+          // Check if the message is for the current app
+          const cartStoreDBName = await cartStore.getCartStoreDBName();
+          if(cartStoreDBName && message.data?.appName !== cartStoreDBName){
+            if (message.data?.appName === cartStoreDBName) {
+              console.log('Received store refresh message:', message );
+              // Refresh the store data
+              storeDataStore.getStoreData();
+            }
+          }
+
+          if (message.data?.appName === storeDataStore.storeData?.appName) {
+            console.log('Received store refresh message:', message );
+            // Refresh the store data
+            storeDataStore.getStoreData();
+          }
+        }
+        if (message.type === 'shoofi_store_updated') {
+          // Check if the message is for the current app
+            // Refresh the store data
+          shoofiAdminStore.getStoreData();
+
         }
       } catch (error) {
         console.error('Failed to parse WebSocket message:', error);

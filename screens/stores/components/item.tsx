@@ -17,17 +17,29 @@ import { useNavigation } from "@react-navigation/native";
 import { cdnUrl, SHIPPING_METHODS } from "../../../consts/shared";
 import Icon from "../../../components/icon";
 
-export type TProps = {
-  storeItem: any;
+const TAG_STYLE = {
+  backgroundColor: themeStyle.PRIMARY_COLOR,
+  borderRadius: 16,
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  marginRight: 8,
+  marginBottom: 8,
+  fontSize: 14,
+  color: themeStyle.GRAY_700,
 };
 
-const StoreItem = ({ storeItem }: TProps) => {
+export type TProps = {
+  storeItem: any; 
+  searchProducts?: any;
+};
+
+const StoreItem = ({ storeItem, searchProducts }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   let { menuStore, cartStore, shoofiAdminStore, languageStore } =
     useContext(StoreContext);
-  const onStoreSelect = async (store: any) => {
+  const onStoreSelect = async (store: any, product?: any) => {
     try {
       // setIsLoading(true);
       // Clear the menu cache first to prevent showing old store data
@@ -37,7 +49,7 @@ const StoreItem = ({ storeItem }: TProps) => {
       await shoofiAdminStore.setStoreDBName(store.appName);
       // await menuStore.getMenu();
       // await storeDataStore.getStoreData();
-      (navigation as any).navigate("menuScreen", { fromStoresList: Date.now() });
+      (navigation as any).navigate("menuScreen", { fromStoresList: Date.now(), productId: product?._id });
     } catch (error) {
       console.error("Error loading store:", error);
       // You could show an error message here
@@ -100,7 +112,7 @@ const StoreItem = ({ storeItem }: TProps) => {
       {/* Card Content */}
       <View style={styles.content}>
         <View style={styles.row}>
-          <Text style={styles.storeName}>{storeName}</Text>
+          <Text style={styles.storeName} numberOfLines={1}>{storeName}</Text>
         </View>
         <View style={styles.infoRow}>
           {/* <View>
@@ -117,8 +129,25 @@ const StoreItem = ({ storeItem }: TProps) => {
         </View>
     
         {storeItem.store.description && <Text style={styles.descText} >
-         {storeItem.store.description}
+         {languageStore.selectedLang === "ar" ? storeItem.store.descriptionAR : storeItem.store.descriptionHE}
         </Text>}
+
+        {searchProducts && searchProducts.length > 0 && (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap',  alignItems: 'center', marginTop: 10,  }}>
+            {searchProducts.map((product) => (
+              <TouchableOpacity
+                key={product._id}
+                onPress={() => onStoreSelect(storeItem.store,product)}
+                style={TAG_STYLE}
+              >
+                <Text style={{ color: '#333', fontSize: 14 }}>
+                  {product.nameAR || product.nameHE}
+                </Text>
+              </TouchableOpacity>
+            ))}
+           
+          </View>
+          )}
       </View>
     </TouchableOpacity>
   );

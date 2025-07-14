@@ -44,6 +44,7 @@ import GeneralCategoryScreen from "../screens/GeneralCategoryScreen";
 import CreditCardsListScreen from "../screens/credit-cards";
 import AddCreditCardScreen from "../components/credit-card/AddCreditCard";
 import ActiveOrdersScreen from "../screens/order/active";
+import SearchScreen from "../screens/SearchScreen";
 // Delivery Driver Screens
 import DeliveryDriverDashboard from "../screens/delivery-driver";
 import DeliveryDriverOrderDetails from "../screens/delivery-driver/order-details";
@@ -150,6 +151,7 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="general-category" component={GeneralCategoryScreen} initialParams={{ generalCategory: null }} />
       <Stack.Screen name="credit-cards" component={CreditCardsListScreen} />
       <Stack.Screen name="add-credit-card" component={AddCreditCardScreen} />
+      <Stack.Screen name="Search" component={SearchScreen} />
       
       {/* Delivery Driver Screens */}
       <Stack.Screen name="delivery-driver-dashboard" component={DeliveryDriverDashboard} />

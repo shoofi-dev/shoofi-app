@@ -33,6 +33,7 @@ const ExploreScreen = () => {
   const [generalCategories, setGeneralCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [ads, setAds] = useState<Ad[]>([]);
+  const [defaultCategory, setDefaultCategory] = useState(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -154,6 +155,12 @@ const ExploreScreen = () => {
       : "";
   };
 
+  useEffect(() => {
+    if (generalCategories.length > 0) {
+      setDefaultCategory(generalCategories[0]);
+    }
+  }, [generalCategories]);
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -241,101 +248,65 @@ const ExploreScreen = () => {
       </ScrollView>
       {/* Ads Carousel */}
       {ads.length > 0 && <AdsCarousel ads={ads} />}
-      {/* Extra: All categories grouped by general category */}
-      {Object.keys(categoriesByGeneral).map((generalId) => (
-        <View key={generalId} style={{ marginBottom: 24 }}>
-          <Text
-            style={{
-              fontSize: themeStyle.FONT_SIZE_LG,
-              fontWeight: "bold",
-              marginHorizontal: 16,
-              marginBottom: 8,
-            }}
-          >
-            {getGeneralCategoryName(generalId)}
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ paddingVertical: 8, paddingHorizontal: 8 }}
-            contentContainerStyle={{
-              flexDirection: I18nManager.isRTL ? "row" : "row",
-            }}
-          >
-            {categoriesByGeneral[generalId].map((cat) => (
-              <TouchableOpacity
-                key={cat.categoryId}
-                style={{
-                  alignItems: "center",
-                  marginHorizontal: 8,
-                  shadowColor: themeStyle.BLACK_COLOR,
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 5,
-                  elevation: 4,
-                  backgroundColor: "#fff",
-                  borderRadius: 20,
-                  borderWidth: 0,
-                }}
-                onPress={() => {
-                  shoofiAdminStore.setSelectedCategory(cat);
-                  navigation.navigate("stores-list", { category: cat });
-                }}
-                activeOpacity={0.8}
-              >
-                <View
-                  style={{
-                    width: normalizeWidth(98),
-                    height: normalizeHeight(98),
-                    borderRadius: 30,
-                    justifyContent: "center",
-                    alignItems: "center",
+      
+      {/* Stores grouped by subcategories */}
+      {defaultCategory && categoriesByGeneral[defaultCategory._id]?.map((category) => {
+        // Get stores for this specific category
+        const storesInCategory = stores.filter((storeData) =>
+          storeData.store.categoryIds &&
+          storeData.store.categoryIds.some(
+            (storeCategoryId) =>
+              storeCategoryId.$oid === category._id || storeCategoryId === category._id
+          )
+        );
 
-                    // borderWidth: selectedGeneralCategory && selectedGeneralCategory._id === cat._id ? 2 : 0,
-                    // borderColor: themeStyle.PRIMARY_COLOR,
+        // Only show category if it has stores
+        if (storesInCategory.length === 0) return null;
+
+        return (
+          <View key={category._id} style={{ marginBottom: 24 }}>
+            <Text
+              style={{
+                fontSize: themeStyle.FONT_SIZE_LG,
+                fontWeight: "bold",
+                marginHorizontal: 16,
+                marginBottom: 12,
+                marginTop: 0,
+              }}
+            >
+              {languageStore.selectedLang === "ar" ? category.nameAR : category.nameHE}
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ paddingHorizontal: 8 }}
+              contentContainerStyle={{
+                paddingRight: 16,
+              }}
+            >
+              {storesInCategory.map((storeData) => (
+                <View
+                  key={storeData.store._id}
+                  style={{
+                    width: normalizeWidth(240),
+                    marginHorizontal: 8,
+                    backgroundColor: "#fff",
+                    borderRadius: 16,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 3,
+                    overflow: "hidden",
                   }}
                 >
-                  {cat.image ? (
-                    <CustomFastImage
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                 
-                      }}
-                      source={{ uri: `${cdnUrl}${cat.image.uri}` }}
-                    />
-                  ) : (
-                    <View
-                      style={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: 15,
-                        backgroundColor: "#fff",
-                      }}
-                    />
-                  )}
+                  <StoreItem storeItem={storeData} />
                 </View>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: themeStyle.FONT_SIZE_SM,
-                      color: "#222",
-                      fontWeight: "500",
-                      marginTop: 6,
-                      textAlign: "center",
-                      maxWidth: 70,
-                    }}
-                  >
-                    {languageStore.selectedLang === "ar"
-                      ? cat.nameAR
-                      : cat.nameHE}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      ))}
+              ))}
+            </ScrollView>
+          </View>
+        );
+      })}
     </ScrollView>
   );
 };

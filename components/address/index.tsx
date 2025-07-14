@@ -121,7 +121,6 @@ export const AddressCMP = observer(({
     max: availableDrivers?.area?.maxETA,
   };
   const distanceKm = availableDrivers?.distanceKm;
-
   return (
     <View style={{}}>
       <View>

@@ -22,7 +22,6 @@ import React, {
   useMemo,
 } from "react";
 import ProductHeader from "./components/header/header";
-import ProductFooter from "./components/footer/footer";
 
 import Text from "../../components/controls/Text";
 import BirthdayImagesList from "../../components/birthday-images-list";
@@ -78,7 +77,7 @@ const gradiantColors =
         "rgba(199, 199, 199, 0.1)",
       ];
 
-const MealScreen = ({ handleClose, product, category, index }) => {
+const MealScreen = ({ handleClose, product, category, index, onFooterProps }) => {
   const { t } = useTranslation();
   const scrollRef = useRef(null);
 
@@ -346,11 +345,25 @@ const MealScreen = ({ handleClose, product, category, index }) => {
     setIsValidForm(validateMealExtras());
   }, [meal?.data?.extras, extrasStore.selections]);
 
+  // Pass footer props to parent component
+  useEffect(() => {
+    if (meal && onFooterProps) {
+      onFooterProps({
+        isEdit,
+        isValidForm,
+        onAddToCart: handleAddToCart,
+        onUpdateCartProduct: onUpdateCartProduct,
+        price: meal.data.price,
+        qty: meal.others.qty,
+      });
+    }
+  }, [meal?.data?.price, meal?.others?.qty, isEdit, isValidForm]);
+
   if (!meal) {
     return null;
   }
   return (
-    <View style={{ backgroundColor: themeStyle.WHITE_COLOR }}>
+    <View style={{ backgroundColor: themeStyle.WHITE_COLOR}}>
       <Animated.ScrollView
         ref={scrollRef}
         onScroll={Animated.event(
@@ -358,10 +371,13 @@ const MealScreen = ({ handleClose, product, category, index }) => {
           { useNativeDriver: false }
         )}
         scrollEventThrottle={16}
+        style={{  }}
       >
         <View
           style={{
             width: "100%",
+            paddingBottom: "25%"
+            
           }}
         >
           <View style={{}}>
@@ -425,21 +441,6 @@ const MealScreen = ({ handleClose, product, category, index }) => {
           </View>
         </View>
       </Animated.ScrollView>
-      <View
-        style={{
-          backgroundColor: "transparent",
-          padding: 10,
-        }}
-      >
-        <ProductFooter
-          isEdit={isEdit}
-          isValidForm={isValidForm}
-          onAddToCart={handleAddToCart}
-          onUpdateCartProduct={onUpdateCartProduct}
-          price={meal.data.price}
-          qty={meal.others.qty}
-        />
-      </View>
 
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}

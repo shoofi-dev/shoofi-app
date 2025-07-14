@@ -503,13 +503,19 @@ const CartScreen = ({ route }) => {
 
       <View style={styles.backContainer}>
         <BackButton onClick={onBackClick} />
-        <View style={{ marginLeft: 10 }}>
+        <View style={{ marginLeft: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "90%" }}>
+          <View>
           <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>
             {t("my-order")}
           </Text>
-          <Text style={{ fontSize: 12, color: themeStyle.BLACK_COLOR }}>
-            {storeDataStore.storeData?.appName}
+          </View>
+          <View style={{marginRight: 10}}>
+          <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>
+            {languageStore.selectedLang === "ar" ? storeDataStore.storeData?.name_ar : storeDataStore.storeData?.name_he}
           </Text>
+          </View>
+  
+      
         </View>
       </View>
       <ScrollView style={{ height: "100%", marginBottom: scale(110) }}>
