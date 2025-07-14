@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import ExtraGroup from "./ExtraGroup";
 import PizzaToppingGroup from "./PizzaToppingGroup";
 import { useContext } from "react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
 import { useTranslation } from "react-i18next";
+import Text from "../../components/controls/Text";
 
 export type AreaOption = {
   id: string; // e.g. "full", "left", "right"
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
     
   },
   freeCountText: {
-    color: "#007AFF",
+    color: themeStyle.GRAY_80,
     fontSize: 14,
     marginTop: 4,
   },

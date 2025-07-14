@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   View,
   ScrollView,
@@ -13,6 +19,7 @@ import themeStyle from "../styles/theme.style";
 import StoreItem from "./stores/components/item";
 import { cdnUrl } from "../consts/shared";
 import CustomFastImage from "../components/custom-fast-image";
+import ImageWithLoading from "../components/image-with-loading";
 import { axiosInstance } from "../utils/http-interceptor";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AdsCarousel, { Ad } from "../components/shared/AdsCarousel";
@@ -21,157 +28,396 @@ import {
   normalizeHeight,
 } from "../helpers/responsive-normalize";
 import Text from "../components/controls/Text";
+import { useParallelFetch } from "../hooks/use-optimized-fetch";
+import SplashScreen from "../components/SplashScreen";
 
 const CATEGORY_BG = "#f5f5f5";
 
+// Type definitions
+interface CategoryItemProps {
+  cat: any;
+  onPress: () => void;
+  languageStore: any;
+}
+
+interface StoreSectionProps {
+  category: any;
+  storesInCategory: any[];
+  languageStore: any;
+}
+
+interface ExploreData {
+  generalCategories: any[];
+  ads: any[];
+  categoriesWithStores: any[];
+}
+
+interface ApiUrls {
+  generalCategories: string;
+  ads: string;
+  categoriesWithStores: string;
+}
+
+// Memoized StoreItem component for better performance
+const MemoizedStoreItem = React.memo(StoreItem);
+
+// Memoized category item component
+const CategoryItem = React.memo<CategoryItemProps>(
+  ({ cat, onPress, languageStore }) => {
+    const categoryName = useMemo(
+      () => (languageStore.selectedLang === "ar" ? cat.nameAR : cat.nameHE),
+      [languageStore.selectedLang, cat.nameAR, cat.nameHE]
+    );
+
+    return (
+      <TouchableOpacity
+        style={{
+          alignItems: "center",
+          marginHorizontal: 8,
+        }}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <View
+          style={{
+            width: normalizeWidth(68),
+            height: normalizeHeight(68),
+            borderRadius: 30,
+            backgroundColor: CATEGORY_BG,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {cat.img && cat.img[0] ? (
+            <ImageWithLoading
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: 20,
+              }}
+              source={{ uri: `${cdnUrl}${cat.img[0].uri}` }}
+              showLoadingIndicator={false}
+            />
+          ) : (
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 15,
+                backgroundColor: "#fff",
+              }}
+            />
+          )}
+        </View>
+        <Text
+          style={{
+            fontSize: themeStyle.FONT_SIZE_SM,
+            color: "#222",
+            fontWeight: "500",
+            marginTop: 6,
+            textAlign: "center",
+            maxWidth: 70,
+          }}
+        >
+          {categoryName}
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+);
+
+const SubCategoryItem = React.memo<CategoryItemProps>(
+  ({ cat, onPress, languageStore }) => {
+    const categoryName = useMemo(
+      () => (languageStore.selectedLang === "ar" ? cat.nameAR : cat.nameHE),
+      [languageStore.selectedLang, cat.nameAR, cat.nameHE]
+    );
+
+    return (
+      <TouchableOpacity
+        style={{
+          alignItems: "center",
+          marginHorizontal: 8,
+        }}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <View
+          style={{
+            width: normalizeWidth(68),
+            height: normalizeHeight(68),
+            borderRadius: 30,
+            backgroundColor: CATEGORY_BG,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {cat?.image?.uri ? (
+            <ImageWithLoading
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: 20,
+              }}
+              source={{ uri: `${cdnUrl}${cat.image?.uri}` }}
+              showLoadingIndicator={false}
+            />
+          ) : (
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 15,
+                backgroundColor: "#fff",
+              }}
+            />
+          )}
+        </View>
+        <Text
+          style={{
+            fontSize: themeStyle.FONT_SIZE_SM,
+            color: "#222",
+            fontWeight: "500",
+            marginTop: 6,
+            textAlign: "center",
+            maxWidth: 70,
+          }}
+        >
+          {categoryName}
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+);
+
+// Memoized store section component
+const StoreSection = React.memo<StoreSectionProps>(
+  ({ category, storesInCategory, languageStore }) => {
+    const categoryName = useMemo(
+      () =>
+        languageStore.selectedLang === "ar" ? category.nameAR : category.nameHE,
+      [languageStore.selectedLang, category.nameAR, category.nameHE]
+    );
+
+    return (
+      <View style={{ marginBottom: 0 }}>
+        <Text
+          style={{
+            fontSize: themeStyle.FONT_SIZE_LG,
+            fontWeight: "bold",
+            marginHorizontal: 16,
+            marginBottom: 12,
+            marginTop: 0,
+          }}
+        >
+          {categoryName}
+        </Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ paddingHorizontal: 8 }}
+          contentContainerStyle={{
+            paddingRight: 16,
+          }}
+        >
+          {storesInCategory.map((storeData) => (
+            <View
+              key={storeData.store._id}
+              style={{
+                width: 240,
+                height: 224,
+                marginHorizontal: 8,
+                backgroundColor: "#fff",
+                borderRadius: 16,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+                overflow: "hidden",
+              }}
+            >
+              <MemoizedStoreItem storeItem={storeData} isExploreScreen={true} />
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    );
+  }
+);
+
 const ExploreScreen = () => {
   const { t } = useTranslation();
-  const { shoofiAdminStore, languageStore } = useContext(StoreContext);
+  const {
+    shoofiAdminStore,
+    languageStore,
+    userDetailsStore,
+    addressStore,
+    websocket,
+  } = useContext(StoreContext);
   const navigation = useNavigation() as any;
-  const [loading, setLoading] = useState(true);
   const [selectedGeneralCategory, setSelectedGeneralCategory] = useState(null);
-  const [generalCategories, setGeneralCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [ads, setAds] = useState<Ad[]>([]);
   const [defaultCategory, setDefaultCategory] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+  const [hideSplash, setHideSplash] = useState(false);
+
+  useEffect(() => {
+    if (websocket?.lastMessage) {
+      console.log("websocket?.lastMessage", websocket?.lastMessage);
+      if (websocket?.lastMessage?.type === "store_refresh") {
+        setHideSplash(true);
+        refetch();
+      }
+    }
+  }, [websocket?.lastMessage]);
+
+  // Get user location for filtering
+  useEffect(() => {
+    console.log("Location effect triggered:", {
+      hasDefaultAddress: !!addressStore.defaultAddress,
+      hasLocation: !!addressStore.defaultAddress?.location,
+      location: addressStore.defaultAddress?.location,
+    });
+
+    if (addressStore.defaultAddress?.location) {
+      setUserLocation(addressStore.defaultAddress.location);
+    } else {
+      setUserLocation(null);
+    }
+  }, [addressStore.defaultAddress?.location]);
+
+  // Build API URLs with location parameter - use stable object
+  const apiUrls = useMemo((): ApiUrls => {
+    console.log("Building API URLs with userLocation:", userLocation);
+
+    const baseUrls: ApiUrls = {
+      generalCategories: "/category/general/all",
+      ads: "/ads/list",
+      categoriesWithStores: userLocation
+        ? `/shoofiAdmin/explore/categories-with-stores?location=${JSON.stringify(
+            userLocation
+          )}`
+        : "/shoofiAdmin/explore/categories-with-stores",
+    };
+
+    console.log("API URLs built:", baseUrls);
+    return baseUrls;
+  }, [userLocation]);
+
+  // Use optimized parallel fetch for better performance - only when location is available
+  const {
+    data: fetchData,
+    loading,
+    error,
+    refetch,
+  } = useParallelFetch<ExploreData>(
+    userLocation
+      ? apiUrls
+      : {
+          generalCategories: "/category/general/all",
+          ads: "/ads/list",
+          categoriesWithStores: "/shoofiAdmin/explore/categories-with-stores",
+        },
+    {
+      ttl: 5 * 60 * 1000, // 5 minutes cache (shorter due to store status changes)
+      enabled: !!userLocation, // Only fetch when userLocation is defined
+      dependencies: [userLocation], // Refetch when location changes
+    }
+  );
+
+  console.log("useParallelFetch called with:", {
+    userLocation,
+    enabled: !!userLocation,
+    apiUrls: userLocation ? apiUrls : "default",
+    loading,
+    hasData: !!fetchData,
+  });
+
+  const generalCategories = (fetchData.generalCategories || []) as any[];
+  const adsData = (fetchData.ads || []) as any[];
+  const categoriesWithStores = (fetchData.categoriesWithStores || []) as any[];
 
   useFocusEffect(
     React.useCallback(() => {
       shoofiAdminStore.setSelectedCategory(null);
       shoofiAdminStore.setSelectedGeneralCategory(null);
-      // Optionally, return a cleanup function if needed
       return () => {};
     }, [])
   );
 
+  // Listen for store status changes and refresh data
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch general categories
-        const generalCategoriesRes: any = await axiosInstance.get(
-          "/category/general/all"
-        );
-        setGeneralCategories(generalCategoriesRes);
-
-        // Set default selected general category
-        if (generalCategoriesRes?.length && !selectedGeneralCategory) {
-          // We'll set the default after stores are loaded
-          setSelectedGeneralCategory(generalCategoriesRes[0]);
-        }
-
-        if (!shoofiAdminStore.categoryList) {
-          await shoofiAdminStore.getCategoryListData();
-        }
-        if (!shoofiAdminStore.storesList) {
-          // CHECK HERE IF USER HAS ADDRESS SELECTED
-          //await shoofiAdminStore.getStoresListData({});
-        }
-        // Fetch ads
-        const adsRes: any = await axiosInstance.get("/ads/list");
-        // Map API response to Ad type for AdsCarousel
-        const mappedAds: Ad[] = (adsRes || []).map((ad) => ({
-          id: ad._id || ad.id,
-          background: ad.image?.uri || "",
-          products: [], // No products in the API response
-          title: languageStore.selectedLang === "ar" ? ad.titleAR : ad.titleHE || "",
-          subtitle: languageStore.selectedLang === "ar" ? ad.descriptionAR : ad.descriptionHE|| "",
-        }));
-        setAds(mappedAds);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
+    const handleStoreStatusChange = () => {
+      console.log("Store status changed, refreshing explore data...");
+      refetch();
     };
-    fetchData();
-  }, [shoofiAdminStore]);
 
-  const allCategories = shoofiAdminStore.categoryList || [];
-  const stores = shoofiAdminStore.storesList || [];
+    // You can add WebSocket listener here for real-time updates
+    // For now, we'll refresh on focus
+    return () => {
+      // Cleanup WebSocket listeners if needed
+    };
+  }, [refetch]);
 
-  // Helper function to check if a category has stores
-  const hasStoresForCategory = (categoryId) => {
-    return stores.some((storeData) =>
-      storeData.store.categoryIds &&
-      storeData.store.categoryIds.some(
-        (storeCategoryId) =>
-          storeCategoryId.$oid === categoryId || storeCategoryId === categoryId
-      )
-    );
-  };
-
-  // Helper function to check if a general category has any stores
-  const hasStoresForGeneralCategory = (generalCategoryId) => {
-    const categoriesInGeneral = allCategories.filter((cat) =>
-      cat.supportedGeneralCategoryIds?.some(
-        (id) => id.$oid === generalCategoryId || id === generalCategoryId
-      )
-    );
-    
-    return categoriesInGeneral.some((cat) => hasStoresForCategory(cat._id));
-  };
-
-  // Filter general categories that have stores
-  const filteredGeneralCategories = generalCategories.filter((generalCat) =>
-    hasStoresForGeneralCategory(generalCat._id)
+  // Memoized category press handler
+  const handleCategoryPress = useCallback(
+    (cat) => {
+      shoofiAdminStore.setSelectedGeneralCategory(cat);
+      navigation.navigate("general-category", { generalCategory: cat });
+    },
+    [shoofiAdminStore, navigation]
   );
 
-  // Update selected general category to one that has stores after stores are loaded
-  useEffect(() => {
-    if (generalCategories.length > 0 && stores.length > 0 && selectedGeneralCategory) {
-      const hasStores = hasStoresForGeneralCategory(selectedGeneralCategory._id);
-      if (!hasStores) {
-        const firstGeneralWithStores = filteredGeneralCategories[0];
-        if (firstGeneralWithStores) {
-          setSelectedGeneralCategory(firstGeneralWithStores);
-        }
-      }
-    }
-  }, [generalCategories, stores, selectedGeneralCategory]);
+  const handleSubCategoryPress = useCallback(
+    (cat) => {
+      shoofiAdminStore.setSelectedCategory(cat);
+      navigation.navigate("stores-list", { category: cat });
+    },
+    [shoofiAdminStore, navigation]
+  );
 
-  // Group categories by general category and filter out categories without stores
-  const categoriesByGeneral = allCategories.reduce((acc, cat) => {
-    if (
-      cat.supportedGeneralCategoryIds &&
-      cat.supportedGeneralCategoryIds.length > 0 &&
-      hasStoresForCategory(cat._id) // Only include categories that have stores
-    ) {
-      cat.supportedGeneralCategoryIds.forEach((id) => {
-        const generalId = id.$oid || id;
-        if (!acc[generalId]) acc[generalId] = [];
-        acc[generalId].push(cat);
-      });
-    }
-    return acc;
-  }, {});
+  // Memoized ads mapping
+  const mappedAds = useMemo(
+    () =>
+      adsData.map((ad) => ({
+        id: ad._id || ad.id,
+        background: ad.image?.uri || "",
+        products: [],
+        title:
+          languageStore.selectedLang === "ar" ? ad.titleAR : ad.titleHE || "",
+        subtitle:
+          languageStore.selectedLang === "ar"
+            ? ad.descriptionAR
+            : ad.descriptionHE || "",
+      })),
+    [adsData, languageStore.selectedLang]
+  );
 
-  // Helper to get general category name by id
-  const getGeneralCategoryName = (id) => {
-    const general = generalCategories.find((g) => g._id === id);
-    return general
-      ? languageStore.selectedLang === "ar"
-        ? general.nameAR
-        : general.nameHE
-      : "";
-  };
-
+  // Set default category
   useEffect(() => {
     if (generalCategories.length > 0) {
       setDefaultCategory(generalCategories[0]);
     }
   }, [generalCategories]);
 
-  if (loading) {
+  if (loading && !hideSplash) {
+    return <SplashScreen />;
+  }
+
+  if (error) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color={themeStyle.PRIMARY_COLOR} />
+        <Text style={{ color: themeStyle.ERROR_COLOR }}>
+          {t("error_loading_data")}
+        </Text>
       </View>
     );
   }
 
   return (
     <ScrollView style={{ backgroundColor: "#fff", marginTop: 10 }}>
-      {/* General Categories Horizontal Scroller (original design) */}
+      {/* General Categories Horizontal Scroller */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -180,133 +426,59 @@ const ExploreScreen = () => {
           flexDirection: I18nManager.isRTL ? "row" : "row",
         }}
       >
-        {filteredGeneralCategories?.map((cat) => (
-          <TouchableOpacity
+        {generalCategories?.map((cat) => (
+          <CategoryItem
             key={cat._id}
-            style={{
-              alignItems: "center",
-              marginHorizontal: 8,
-              // opacity:
-              //   selectedGeneralCategory &&
-              //   selectedGeneralCategory._id === cat._id
-              //     ? 1
-              //     : 0.5,
-            }}
-            onPress={() => {
-              shoofiAdminStore.setSelectedGeneralCategory(cat);
-              navigation.navigate("general-category", { generalCategory: cat });
-            }}
-            activeOpacity={0.8}
-          >
-            <View
-              style={{
-                width: normalizeWidth(68),
-                height: normalizeHeight(68),
-                borderRadius: 30,
-                backgroundColor: CATEGORY_BG,
-                justifyContent: "center",
-                alignItems: "center",
-
-                // borderWidth: selectedGeneralCategory && selectedGeneralCategory._id === cat._id ? 2 : 0,
-                // borderColor: themeStyle.PRIMARY_COLOR,
-              }}
-            >
-              {cat.img && cat.img[0] ? (
-                <CustomFastImage
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    borderRadius: 20,
-                  }}
-                  source={{ uri: `${cdnUrl}${cat.img[0].uri}` }}
-                />
-              ) : (
-                <View
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 15,
-                    backgroundColor: "#fff",
-                  }}
-                />
-              )}
-            </View>
-            <Text
-              style={{
-                fontSize: themeStyle.FONT_SIZE_SM,
-                color: "#222",
-                fontWeight: "500",
-                marginTop: 6,
-                textAlign: "center",
-                maxWidth: 70,
-              }}
-            >
-              {languageStore.selectedLang === "ar" ? cat.nameAR : cat.nameHE}
-            </Text>
-          </TouchableOpacity>
+            cat={cat}
+            onPress={() => handleCategoryPress(cat)}
+            languageStore={languageStore}
+          />
         ))}
       </ScrollView>
+
       {/* Ads Carousel */}
-      {ads.length > 0 && <AdsCarousel ads={ads} />}
-      
-      {/* Stores grouped by subcategories */}
-      {defaultCategory && categoriesByGeneral[defaultCategory._id]?.map((category) => {
-        // Get stores for this specific category
-        const storesInCategory = stores.filter((storeData) =>
-          storeData.store.categoryIds &&
-          storeData.store.categoryIds.some(
-            (storeCategoryId) =>
-              storeCategoryId.$oid === category._id || storeCategoryId === category._id
-          )
-        );
+      {mappedAds.length > 0 && <AdsCarousel ads={mappedAds} />}
 
-        // Only show category if it has stores
-        if (storesInCategory.length === 0) return null;
+      {defaultCategory && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{
+            paddingVertical: 0,
+            paddingHorizontal: 8,
+            marginTop: 20,
+          }}
+          contentContainerStyle={{
+            flexDirection: I18nManager.isRTL ? "row" : "row",
+          }}
+        >
+          {categoriesWithStores?.map((categoryData) => (
+            <SubCategoryItem
+              key={categoryData.category._id}
+              cat={categoryData.category}
+              onPress={() => handleSubCategoryPress(categoryData.category)}
+              languageStore={languageStore}
+            />
+          ))}
+        </ScrollView>
+      )}
 
-        return (
-          <View key={category._id} style={{ marginBottom: 24 }}>
-            <Text
-              style={{
-                fontSize: themeStyle.FONT_SIZE_LG,
-                fontWeight: "bold",
-                marginHorizontal: 16,
-                marginBottom: 12,
-                marginTop: 0,
-              }}
-            >
-              {languageStore.selectedLang === "ar" ? category.nameAR : category.nameHE}
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{ paddingHorizontal: 8 }}
-              contentContainerStyle={{
-                paddingRight: 16,
-              }}
-            >
-              {storesInCategory.map((storeData) => (
-                <View
-                  key={storeData.store._id}
-                  style={{
-                    width: normalizeWidth(240),
-                    marginHorizontal: 8,
-                    backgroundColor: "#fff",
-                    borderRadius: 16,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 4,
-                    elevation: 3,
-                    overflow: "hidden",
-                  }}
-                >
-                  <StoreItem storeItem={storeData} />
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        );
-      })}
+      {/* Stores grouped by subcategories - now using server-side filtered data */}
+      {defaultCategory &&
+        categoriesWithStores?.map((categoryData) => {
+          // Only show category if it has stores
+          if (!categoryData.stores || categoryData.stores.length === 0)
+            return null;
+
+          return (
+            <StoreSection
+              key={categoryData.category._id}
+              category={categoryData.category}
+              storesInCategory={categoryData.stores}
+              languageStore={languageStore}
+            />
+          );
+        })}
     </ScrollView>
   );
 };

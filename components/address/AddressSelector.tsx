@@ -106,9 +106,10 @@ const AddressSelector = observer(({ onAddressSelect }: AddressSelectorProps) => 
         activeOpacity={0.8}
       >
         <Icon
-          icon={!selectedAddress ? "home" : "home"}
-          size={16}
+          icon={!selectedAddress ? "location-3" : "location-3"}
+          size={20}
           style={{ marginRight: 5 }}
+          color={themeStyle.GRAY_80}
         />
 
         <View>
@@ -131,7 +132,7 @@ const AddressSelector = observer(({ onAddressSelect }: AddressSelectorProps) => 
                 width: "100%",
               }}
             >
-              <Text style={{ color: themeStyle.TEXT_PRIMARY_COLOR }}>
+              <Text style={{ color: themeStyle.TEXT_PRIMARY_COLOR, fontSize: 16 }}>
                 {getAddressText(selectedAddress)}
               </Text>
               <View style={{  marginLeft: 10 }}>

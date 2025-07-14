@@ -205,8 +205,21 @@ const AppContainer = () => {
       }
     }
   }
+  const getCurrentRouteName = (routeState) => {
+    if (!routeState) return null;
+    
+    const currentRoute = routeState.routes?.[routeState.index];
+    if (!currentRoute) return null;
+    
+    // If the current route has nested state (like a tab navigator), recurse
+    if (currentRoute.state) {
+      return getCurrentRouteName(currentRoute.state);
+    }
+    
+    return currentRoute.name;
+  };
 
-  const currentRouteName = routeState?.routes?.[routeState.index]?.name;
+  const currentRouteName = getCurrentRouteName(routeState);
 
   return (
     <SafeAreaProvider>

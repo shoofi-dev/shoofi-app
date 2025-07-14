@@ -20,6 +20,10 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
   const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, shoofiAdminStore, couponsStore } =
     useContext(StoreContext);
   const { chargeCC } = _useCheckoutChargeCC();
+  
+  // Prevent multiple rapid order submissions
+  const isSubmittingRef = useRef(false);
+  const lastSubmissionTimeRef = useRef(0);
 
   const updateOrderAdmin = async (order: any, editOrderData, paymentMthod) => {
     if (editOrderData) {
@@ -47,8 +51,26 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     locationText,
     paymentData,
   }: TPropsCheckoutSubmit) => {
+    // Prevent multiple rapid submissions
+    const now = Date.now();
+    const minInterval = 3000; // 3 seconds minimum between submissions
+    
+    if (isSubmittingRef.current) {
+      console.log('Order submission already in progress, ignoring duplicate request');
+      return false;
+    }
+    
+    if (now - lastSubmissionTimeRef.current < minInterval) {
+      console.log('Order submission too soon after last attempt, ignoring duplicate request');
+      return false;
+    }
+    
+    isSubmittingRef.current = true;
+    lastSubmissionTimeRef.current = now;
     onLoadingOrderSent(true);
-    console.log("location2xxx", address?.location);
+    
+    try {
+      console.log("location2xxx", address?.location);
     const order: any = {
       paymentMthod,
       shippingMethod,
@@ -113,6 +135,29 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
 
     // Submit order (payment will be processed server-side for credit card)
     const res: any = await cartStore.submitOrder(order);
+    
+    // Handle server response
+    if (res?.response?.data) {
+      const responseData = res.response.data;
+      
+      // Handle specific error codes for order duplication prevention
+      if (responseData.code === "ORDER_IN_PROGRESS") {
+        DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
+          show: true,
+          text: responseData.err || "Order creation in progress. Please wait a moment and try again."
+        });
+        return false;
+      }
+      
+      if (responseData.code === "DUPLICATE_ORDER") {
+        DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
+          show: true,
+          text: responseData.err || "Duplicate order detected. Please check your recent orders."
+        });
+        return false;
+      }
+    }
+    
     if (res?.has_err) {
       DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
         show: true,
@@ -134,6 +179,14 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     }
     
     return true;
+  } catch (error) {
+    console.error('Error during order submission:', error);
+    return false;
+  } finally {
+    // Reset submission state
+    isSubmittingRef.current = false;
+    onLoadingOrderSent(false);
+  }
   };
 
   return {

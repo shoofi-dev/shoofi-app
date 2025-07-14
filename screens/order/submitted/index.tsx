@@ -36,7 +36,7 @@ const OrderSubmittedScreen = ({ route, onClose, isModal = false }) => {
       const timer = setTimeout(() => {
         onClose();
         navigation.navigate("MainTabs", { screen: "active-orders" });
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [isModal, onClose, navigation]);

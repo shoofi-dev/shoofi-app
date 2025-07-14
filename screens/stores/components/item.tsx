@@ -6,7 +6,7 @@ import {
   I18nManager,
   ActivityIndicator,
 } from "react-native";
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo, useCallback } from "react";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
 import Text from "../../../components/controls/Text";
@@ -31,51 +31,62 @@ const TAG_STYLE = {
 export type TProps = {
   storeItem: any; 
   searchProducts?: any;
+
+  isExploreScreen?: boolean;
 };
 
-const StoreItem = ({ storeItem, searchProducts }: TProps) => {
+const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   let { menuStore, cartStore, shoofiAdminStore, languageStore } =
     useContext(StoreContext);
-  const onStoreSelect = async (store: any, product?: any) => {
-    try {
-      // setIsLoading(true);
-      // Clear the menu cache first to prevent showing old store data
-      await cartStore.setShippingMethod(SHIPPING_METHODS.takAway);
 
+  // Memoized store selection handler
+  const onStoreSelect = useCallback(async (store: any, product?: any) => {
+    try {
+      await cartStore.setShippingMethod(SHIPPING_METHODS.takAway);
       menuStore.clearMenu();
       await shoofiAdminStore.setStoreDBName(store.appName);
-      // await menuStore.getMenu();
-      // await storeDataStore.getStoreData();
       (navigation as any).navigate("menuScreen", { fromStoresList: Date.now(), productId: product?._id });
     } catch (error) {
       console.error("Error loading store:", error);
-      // You could show an error message here
     }
-  };
-  // Placeholder values for demo
-  const isNew = storeItem.store.isNew || false;
-  const rating = storeItem.store.rating || 4.1;
-  const distance = storeItem.store.distance || 1.6;
-  const deliveryTime = storeItem.store.deliveryTime || 27;
-  const location = storeItem.store.location || "כפר קאסם";
-  const deliveryPrice = storeItem.deliveryPrice || 10;
-  const isOpen = storeItem.store.isOpen !== false; // true by default
-  const logoUri = storeItem.store.storeLogo?.uri;
-  const imageUri =
+  }, [cartStore, menuStore, shoofiAdminStore, navigation]);
+
+  // Memoized computed values
+  const isNew = useMemo(() => storeItem.store.isNew || false, [storeItem.store.isNew]);
+  const rating = useMemo(() => storeItem.store.rating || 4.1, [storeItem.store.rating]);
+  const distance = useMemo(() => storeItem.store.distance || 1.6, [storeItem.store.distance]);
+  const deliveryTime = useMemo(() => storeItem.store.deliveryTime || 27, [storeItem.store.deliveryTime]);
+  const location = useMemo(() => storeItem.store.location || "כפר קאסם", [storeItem.store.location]);
+  const deliveryPrice = useMemo(() => storeItem.deliveryPrice || 10, [storeItem.deliveryPrice]);
+  const isOpen = useMemo(() => storeItem.store.isOpen !== false, [storeItem.store.isOpen]);
+  const logoUri = useMemo(() => storeItem.store.storeLogo?.uri, [storeItem.store.storeLogo?.uri]);
+  
+  const imageUri = useMemo(() => 
     (storeItem.store?.cover_sliders &&
       storeItem.store.cover_sliders.length > 0 &&
       storeItem.store?.cover_sliders[0]?.uri) ||
-    logoUri;
-  const storeName = languageStore.selectedLang === "ar" ? storeItem.store.name_ar : storeItem.store.name_he;
-  if (
-    storeItem.store.cover_sliders &&
-    storeItem.store.cover_sliders.length > 0
-  ) {
-  }
-  
+    logoUri,
+    [storeItem.store?.cover_sliders, logoUri]
+  );
+
+  const storeName = useMemo(() => 
+    languageStore.selectedLang === "ar" ? storeItem.store.name_ar : storeItem.store.name_he,
+    [languageStore.selectedLang, storeItem.store.name_ar, storeItem.store.name_he]
+  );
+
+  const storeDescription = useMemo(() => 
+    languageStore.selectedLang === "ar" ? storeItem.store.descriptionAR : storeItem.store.descriptionHE,
+    [languageStore.selectedLang, storeItem.store.descriptionAR, storeItem.store.descriptionHE]
+  );
+
+  // Memoized product selection handler
+  const handleProductSelect = useCallback((product) => {
+    onStoreSelect(storeItem.store, product);
+  }, [onStoreSelect, storeItem.store]);
+
   return (
     <TouchableOpacity
       onPress={() => onStoreSelect(storeItem.store)}
@@ -84,52 +95,52 @@ const StoreItem = ({ storeItem, searchProducts }: TProps) => {
       disabled={isLoading}
     >
       {/* Store Image */}
-      <View style={styles.imageWrapper}>
+      <View style={{    width: "100%",
+    height: isExploreScreen ? 136 : 216, 
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: "hidden",
+    position: "relative",
+    backgroundColor: "#eee",}}>
         <CustomFastImage
           style={styles.image}
           source={{ uri: `${cdnUrl}${storeItem?.store?.cover_sliders?.[0]?.uri}` }}
           resizeMode="cover"
         />
-
-        
-        {/* Loading overlay */}
-        {/* {isLoading && (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color={themeStyle.PRIMARY_COLOR} />
-            <Text style={styles.loadingText}>{t("loading")}</Text>
-          </View>
-        )} */}
       </View>
       {logoUri && (
-        <View style={styles.logoOverlay}>
+        <View style={[styles.logoOverlay, isExploreScreen ? {top: 105} : {}]}>
           <CustomFastImage
-            style={styles.logo}
+            style={[styles.logo, isExploreScreen ? {width: 40, height: 40} : {}]}  
             source={{ uri: `${cdnUrl}${logoUri}` }}
-            resizeMode="contain"
+            isLogo={true}
           />
         </View>
       )}
+      {!isOpen && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50}}>
+        <Text style={[styles.storeStatusText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("store-closed")}</Text>
+      </View>}
       {/* Card Content */}
       <View style={styles.content}>
         <View style={styles.row}>
-          <Text style={styles.storeName} numberOfLines={1}>{storeName}</Text>
+          <Text style={[styles.storeName, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_SM} : {}]} numberOfLines={1}>{storeName}</Text>
         </View>
-        <View style={styles.infoRow}>
-          {/* <View>
-            <Text style={styles.infoText}>{rating} <Icon icon="star" size={16}  color={themeStyle.GRAY_70}  /></Text>
-          </View> */}
-          <View>
+        {/* <View style={styles.infoRow}>
+          <View >
             <Text style={styles.infoText}>{distance} {t("km")}</Text>
           </View>
-          <View style={{marginRight: 5, marginLeft: 5}}>
+          <View style={{marginHorizontal: 5,}}>
+            <Text>-</Text>
+          </View>
+          <View style={{}}>
             <Text style={[styles.openStatus, {color: isOpen ? themeStyle.SUCCESS_COLOR : themeStyle.ERROR_COLOR}]}>
               {isOpen ? t("open") : t("closed")}
             </Text>
           </View>
-        </View>
+        </View> */}
     
         {storeItem.store.description && <Text style={styles.descText} >
-         {languageStore.selectedLang === "ar" ? storeItem.store.descriptionAR : storeItem.store.descriptionHE}
+         {storeDescription}
         </Text>}
 
         {searchProducts && searchProducts.length > 0 && (
@@ -137,7 +148,7 @@ const StoreItem = ({ storeItem, searchProducts }: TProps) => {
             {searchProducts.map((product) => (
               <TouchableOpacity
                 key={product._id}
-                onPress={() => onStoreSelect(storeItem.store,product)}
+                onPress={() => handleProductSelect(product)}
                 style={TAG_STYLE}
               >
                 <Text style={{ color: '#333', fontSize: 14 }}>
@@ -170,13 +181,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   imageWrapper: {
-    width: "100%",
-    height: 216,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    overflow: "hidden",
-    position: "relative",
-    backgroundColor: "#eee",
+
   },
   image: {
     width: "100%",
@@ -198,10 +203,10 @@ const styles = StyleSheet.create({
     borderColor: themeStyle.GRAY_30,
   },
   logo: {
-    width: 64,
+    width: 64,  
     height: 64,
     borderRadius: 8,
-    resizeMode: "cover",
+ 
   },
   favoriteIcon: {
     position: "absolute",
@@ -282,6 +287,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   storeStatusText: {
-    fontSize: themeStyle.FONT_SIZE_XS,
+    fontSize: themeStyle.FONT_SIZE_SM,
+    color: themeStyle.GRAY_80,
   },
 });

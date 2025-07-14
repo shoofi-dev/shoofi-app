@@ -55,11 +55,10 @@ const SearchScreen = observer(() => {
           onPress={() => navigation.goBack()}
           accessibilityLabel={t("go_back") || "Go back"}
         >
-          <Icon icon="chevron" size={24} style={{ color: "#888" }} />
+          <Icon icon="chevron_back" size={24} style={{ color: "#888" }} />
         </TouchableOpacity>
         <TextInput
           style={[styles.input, isRTL ? { paddingLeft: 36 } : { paddingRight: 36 }]}
-          placeholder={t("search")}
           value={query}
           onChangeText={onChangeText}
           autoFocus

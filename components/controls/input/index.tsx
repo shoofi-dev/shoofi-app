@@ -62,20 +62,19 @@ export default function InputText({
           editable={isEditable}
           onChange={handleOnChange}
           placeholder={placeHolder}
-          placeholderTextColor={color || "#3B3B3B"}
+          placeholderTextColor={color || themeStyle.GRAY_40}
           selectionColor={"black"}
           keyboardType={keyboardType}
           onFocus={onFocus}
           onBlur={onBlur}
           style={{
-            textAlign: isFlex ? "right": "center",
             borderWidth: 1,
             borderColor: isError
               ? themeStyle.ERROR_COLOR
-              :  '#DCDCDC',
+              :  themeStyle.GRAY_30,
             // borderRadius: 30,
             fontSize: fontSize || 20,
-            color: color || '#3B3B3B',
+            color: isEditable ? themeStyle.GRAY_40 : color || themeStyle.GRAY_80,
             fontFamily: `${getCurrentLang()}-SemiBold`,
             width:isFlex ? "60%":"100%",
             marginLeft:0,
@@ -101,13 +100,12 @@ export default function InputText({
     keyboardType={keyboardType}
     onFocus={onFocus}
     onBlur={onBlur}
-    textAlign="center"
     style={{
       backgroundColor: 'transparent',
       fontSize: 20,
       fontFamily: `${getCurrentLang()}-SemiBold`,
 
-      textAlign: 'center',
+      textAlign: 'right',
       color: color || themeStyle.TEXT_PRIMARY_COLOR,
       borderWidth:1,
       borderColor:isError ? themeStyle.ERROR_COLOR : themeStyle.GRAY_30,

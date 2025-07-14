@@ -33,7 +33,7 @@ const RadioGroup = ({ options, value, onChange }: RadioGroupProps) => {
                   flex: 1,
                 }}
               >
-                <View style={{ alignItems: "center" }}>
+                <View style={{  }}>
                   <Text style={styles.optionLabel}>
                     {languageStore.selectedLang === "ar"
                       ? opt.nameAR

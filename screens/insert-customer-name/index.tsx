@@ -16,7 +16,7 @@ import * as Haptics from "expo-haptics";
 import { APP_NAME } from "../../consts/shared";
 import BackButton from "../../components/back-button";
 
-const InsertCustomerNameScreen = ({route}) => {
+const InsertCustomerNameScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { name } = route.params;
@@ -36,7 +36,6 @@ const InsertCustomerNameScreen = ({route}) => {
   const isValidName = () => {
     return customerName?.length >= 2;
   };
-
 
   const onClose = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -58,7 +57,10 @@ const InsertCustomerNameScreen = ({route}) => {
           `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.UPDATE_CUSTOMER_NAME_API}`,
           body,
           {
-            headers: { "Content-Type": "application/json", "app-name": APP_NAME }
+            headers: {
+              "Content-Type": "application/json",
+              "app-name": APP_NAME,
+            },
           }
         )
         .then(function (response) {
@@ -66,7 +68,10 @@ const InsertCustomerNameScreen = ({route}) => {
           userDetailsStore.getUserDetails().then((res) => {
             setIsLoading(false);
             if (userDetailsStore.isAdmin()) {
-              adminCustomerStore.setCustomer({...adminCustomerStore.userDetails,fullName: response?.customer?.fullName });
+              adminCustomerStore.setCustomer({
+                ...adminCustomerStore.userDetails,
+                fullName: response?.customer?.fullName,
+              });
               navigation.navigate("menuScreen");
             } else {
               if (
@@ -88,9 +93,10 @@ const InsertCustomerNameScreen = ({route}) => {
 
   return (
     <View style={styles.container}>
-      <BackButton/>
+      <View style={{ padding: 16, flexDirection: "row", alignItems: "center" }}>
+        <BackButton />
+      </View>
       <View style={styles.inputsContainer}>
-
         <Text style={{ marginTop: 50, fontSize: themeStyle.FONT_SIZE_MD }}>
           {t("insert-customer-name")}
         </Text>
@@ -102,24 +108,48 @@ const InsertCustomerNameScreen = ({route}) => {
             alignItems: "flex-start",
           }}
         >
-          <InputText onChange={onChange} label={t("name")} value={customerName} />
+          <InputText
+            onChange={onChange}
+            label={t("name")}
+            value={customerName}
+          />
           {!isValid && (
             <Text style={{ color: themeStyle.ERROR_COLOR, paddingLeft: 15 }}>
               {t("invalid-name")}
             </Text>
           )}
         </View>
+      </View>
 
-        <View style={{ width: "100%", paddingHorizontal: 50, marginTop: 25 }}>
-          <Button
-            text={t("approve")}
-            fontSize={20}
-            onClickFn={updateCutsomerName}
-            isLoading={isLoading}
-            disabled={isLoading}
-          />
-        </View>
-        { name && <View style={{ width: "100%", paddingHorizontal: 50, marginTop: 25 }}>
+      <View
+        style={{
+          width: "100%",
+          paddingHorizontal: 10,
+          position: "absolute",
+          bottom: "10%",
+          left: 0,
+          right: 0,
+        }}
+      >
+        <Button
+          text={t("approve")}
+          fontSize={20}
+          onClickFn={updateCutsomerName}
+          isLoading={isLoading}
+          disabled={isLoading}
+        />
+      </View>
+      {name && (
+        <View
+          style={{
+            width: "100%",
+            paddingHorizontal: 10,
+            position: "absolute",
+            bottom: "10%",
+            left: 0,
+            right: 0,
+          }}
+        >
           <Button
             bgColor={themeStyle.WHITE_COLOR}
             text="اغلاق"
@@ -127,8 +157,8 @@ const InsertCustomerNameScreen = ({route}) => {
             onClickFn={onClose}
             textColor={themeStyle.TEXT_PRIMARY_COLOR}
           />
-        </View>}
-      </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -143,7 +173,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     width: "90%",
     height: "40%",
-    alignSelf:"center"
+    alignSelf: "center",
   },
   footerTabs: {
     backgroundColor: "blue",

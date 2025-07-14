@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   KeyboardAvoidingView,
+  Linking,
 } from "react-native";
 import InputText from "../../components/controls/input";
 import Button from "../../components/controls/button/button";
@@ -27,32 +28,61 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ROLES } from "../../consts/shared";
 import { ScrollView } from "react-native-gesture-handler";
 import ConfirmActiondDialog from "../../components/dialogs/confirm-action";
+import BackButton from "../../components/back-button";
+import DashedLine from "react-native-dashed-line";
+import Icon from "../../components/icon";
 
 const ContactUs = () => {
   const { t } = useTranslation();
+  const { shoofiAdminStore } = useContext(StoreContext);
   return (
     <View style={styles.container}>
-
-        <LinearGradient
-          colors={[
-            "rgba(207, 207, 207, 0.4)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(246,246,247, 0.8)",
-            "rgba(207, 207, 207, 0.4)",
-          ]}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.background]}
+      <View style={{ padding: 16, flexDirection: "row", alignItems: "center" }}>
+        <BackButton />
+        <View style={{ marginLeft: 10 }}>
+          <Text style={{ fontSize: themeStyle.FONT_SIZE_LG }}>
+            {t("contact-us")}
+          </Text>
+        </View>
+      </View>
+      <View style={{ marginTop: 10, }}>
+        <DashedLine
+          dashThickness={1}
+          dashGap={0}
+          dashColor={themeStyle.GRAY_20}
+          style={{  width: "100%" }}
         />
-
-        <View style={{ marginTop: 90, alignItems: "center" }}>
+        <TouchableOpacity onPress={() => Linking.openURL(`https://wa.me/${shoofiAdminStore?.storeData?.shoofiSupportPhone}`)} style={{padding: 16, flexDirection: "row", alignItems: "center"}}>
+          <Icon icon="whatapp" size={24} color={themeStyle.SUCCESS_COLOR} style={{marginRight: 10}} />
+          <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, marginLeft: 10 }}>{t("whatsapp")}: {shoofiAdminStore?.storeData?.shoofiSupportPhone}</Text>
+        </TouchableOpacity>
+        <DashedLine
+          dashThickness={1}
+          dashGap={0}
+          dashColor={themeStyle.GRAY_20}
+          style={{  width: "100%" }}
+        />
+        <View style={{padding: 16, flexDirection: "row", alignItems: "center"}}>
+          <Icon icon="whatapp" size={24} color={themeStyle.SUCCESS_COLOR} style={{marginRight: 10}} />
+          <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, marginLeft: 10 }}>{t("whatsapp")}: {shoofiAdminStore?.storeData?.shoofiSupportPhone}</Text>
+        </View>
+        <DashedLine
+          dashThickness={1}
+          dashGap={0}
+          dashColor={themeStyle.GRAY_20}
+          style={{  width: "100%" }}
+        />
+        <View style={{padding: 16,}}>
           <View>
-            <Text style={{ fontSize: 28 }}>{t("contact-us")}</Text>
+          <Text style={{ fontSize: themeStyle.FONT_SIZE_SM, color: themeStyle.GRAY_60 }}>{t("shoofi-company-number")}</Text>
+
+          </View>
+          <View>
+          <Text style={{ fontSize: themeStyle.FONT_SIZE_SM, color: themeStyle.GRAY_60 }}>{t("shoofi-address")}</Text>
+
           </View>
         </View>
+      </View>
     </View>
   );
 };
@@ -60,7 +90,6 @@ export default observer(ContactUs);
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
     width: "100%",
     height: "100%",
   },

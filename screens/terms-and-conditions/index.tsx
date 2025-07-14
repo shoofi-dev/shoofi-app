@@ -15,10 +15,11 @@ import { temrsText } from "./texts";
 import { ScrollView } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import { WebView } from "react-native-webview";
+import BackButton from "../../components/back-button";
 
 export default function TermsAndConditionsScreen() {
   const { t } = useTranslation();
-
+  const { userDetailsStore } = useContext(StoreContext);
   const pdfUrl = 'https://shoofi-spaces.fra1.cdn.digitaloceanspaces.com/terms-and-conditions/terms-and-conditions.pdf';
 
   const viewerUrl =
@@ -37,11 +38,19 @@ export default function TermsAndConditionsScreen() {
   const acceptTerms = async () => {
     await AsyncStorage.setItem("@storage_terms_accepted", JSON.stringify(true));
     userDetailsStore.setIsAcceptedTerms(true);
-    navigation.navigate("language", {isFromTerms: true});
+    navigation.goBack();
   };
 
   return (
     <View>
+            <View style={{ padding: 16, flexDirection: "row", alignItems: "center" }}>
+        <BackButton />
+        <View style={{ marginLeft: 10 }}>
+          <Text style={{ fontSize: themeStyle.FONT_SIZE_LG }}>
+            {t("terms-and-conditions")}
+          </Text>
+        </View>
+      </View>
       <View style={{ height: "100%" }}>
       <LinearGradient
           colors={[
@@ -66,41 +75,36 @@ export default function TermsAndConditionsScreen() {
         allowsBackForwardNavigationGestures
       />
     </View>
-        {/* <View
+        <View
           style={{
-            width: "100%",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
             paddingHorizontal: 15,
             marginTop: 10,
             padding: 10,
-            flexDirection: "row",
-            justifyContent: "space-between",
+         
           }}
         >
-          <View style={{ width: 160 }}>
+          <View style={{ }}>
             <Button onClickFn={acceptTerms} text={t("מאשר")} fontSize={20} />
           </View>
-          <View style={{ width: 160 }}>
-            <Button
-              onClickFn={showDialog}
-              text={t("לא מאשר")}
-              bgColor={themeStyle.WHITE_COLOR}
-              textColor={themeStyle.TEXT_PRIMARY_COLOR}
-              fontSize={20}
-            />
-          </View>
-        </View> */}
+
+        </View>
       </View>
-      <TremsDialog handleAnswer={acceptTerms} isOpen={visible} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: "100%",
+
   },
   webview: {
-    flex: 1,
+    height: "100%",
+    paddingBottom: 100,
   },
   button: {
     backgroundColor: theme.PRIMARY_COLOR,

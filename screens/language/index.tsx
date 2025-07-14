@@ -17,16 +17,16 @@ const LanguageScreen = ({ route }) => {
 
   const onChangeLanguage = (lng) => {
     languageStore.changeLang(lng);
-    if(isFromTerms){
+    if (isFromTerms) {
       navigation.navigate("homeScreen");
-    }else{
+    } else {
       navigation.goBack();
     }
   };
 
   return (
     <View style={styles.container}>
-             {/* <LinearGradient
+      {/* <LinearGradient
           colors={[
             "rgba(207, 207, 207, 0.6)",
             "rgba(232, 232, 230, 0.5)",
@@ -43,7 +43,7 @@ const LanguageScreen = ({ route }) => {
           <Text
             style={{
               ...styles.textLang,
-              color:themeStyle.SECONDARY_COLOR
+              color: themeStyle.SECONDARY_COLOR,
             }}
           >
             أختر اللغة
@@ -52,8 +52,7 @@ const LanguageScreen = ({ route }) => {
             style={{
               ...styles.textLang,
               fontFamily: "he-SemiBold",
-              color:themeStyle.SECONDARY_COLOR
-
+              color: themeStyle.SECONDARY_COLOR,
             }}
           >
             בחר שפה
@@ -61,24 +60,24 @@ const LanguageScreen = ({ route }) => {
         </View>
         <View
           style={{
-            flexDirection: "row",
             height: "50%",
-            justifyContent: "space-around",
-            width: "100%",
-            marginTop:30
+            width: "80%",
+            marginTop: 30,
           }}
         >
           <TouchableOpacity
             style={{
               backgroundColor:
-              getCurrentLang() === "ar" && themeStyle.PRIMARY_COLOR,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal:20,
-            borderRadius:20,
-            borderWidth:getCurrentLang() !== "ar" ? 1 : 0,
-            borderColor:themeStyle.PRIMARY_COLOR
-
+                getCurrentLang() === "ar" && themeStyle.PRIMARY_COLOR,
+              alignItems: "center",
+              justifyContent: "center",
+              paddingHorizontal: 20,
+              borderRadius: 30,
+              borderWidth: getCurrentLang() === "ar" ? 0 : 2,
+              borderColor: themeStyle.GRAY_80,
+              marginBottom: 40,
+              marginTop: 40,
+              paddingVertical: 10,
             }}
             onPress={() => {
               onChangeLanguage("ar");
@@ -90,31 +89,45 @@ const LanguageScreen = ({ route }) => {
             end={{ x: 0, y: 1 }}
             style={[styles.background,{borderRadius:20}]}
           /> }  */}
-            <Text style={{  fontSize: 29,
-             color: getCurrentLang() === "ar" ? themeStyle.WHITE_COLOR : themeStyle.PRIMARY_COLOR,
-            }}>
+            <Text
+              style={{
+                fontSize: themeStyle.FONT_SIZE_4XL,
+                color:
+                  getCurrentLang() === "ar"
+                    ? themeStyle.SECONDARY_COLOR
+                    : themeStyle.SECONDARY_COLOR,
+              }}
+            >
               العربية
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
               backgroundColor:
-                getCurrentLang() === "he" && themeStyle.SECONDARY_COLOR,
+                getCurrentLang() === "he" && themeStyle.PRIMARY_COLOR,
               alignItems: "center",
               justifyContent: "center",
-              paddingHorizontal:20,
-              borderRadius:20,
-              borderWidth:getCurrentLang() !== "he" ? 1 : 0,
-              borderColor:themeStyle.SECONDARY_COLOR
+              paddingHorizontal: 20,
+              borderRadius: 30,
+              borderWidth:  getCurrentLang() === "ar" ? 2 : 0,
+              borderColor: themeStyle.GRAY_80,
+              paddingVertical: 10,
             }}
             onPress={() => {
               onChangeLanguage("he");
             }}
           >
-        
-            <Text style={{ fontFamily: "he-SemiBold", fontSize: 29,             color: getCurrentLang() === "he" ? themeStyle.WHITE_COLOR : themeStyle.SECONDARY_COLOR,
- }}>
-            עברית
+            <Text
+              style={{
+                fontFamily: "he-SemiBold",
+                fontSize: 29,
+                color:
+                  getCurrentLang() === "he"
+                    ? themeStyle.SECONDARY_COLOR
+                    : themeStyle.SECONDARY_COLOR,
+              }}
+            >
+              עברית
             </Text>
           </TouchableOpacity>
         </View>
@@ -128,8 +141,8 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    justifyContent:'center',
-    alignSelf:'center',
+    justifyContent: "center",
+    alignSelf: "center",
   },
   textLang: {
     //   fontFamily: props.fontFamily + "Bold",

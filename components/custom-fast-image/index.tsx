@@ -58,7 +58,7 @@ function getDimensionsFromStyle(style) {
   return { width, height };
 }
 
-function getImgixUrl(uri, style) {
+function getImgixUrl(uri, style, isLogo=false) {
   // Only rewrite if not already an imgix url
   if (!uri) return uri;
   if (uri.startsWith('https://shoofi.imgix.net/')) return uri;
@@ -69,10 +69,13 @@ function getImgixUrl(uri, style) {
   let url = `https://shoofi.imgix.net/${cleanUri}`;
   const { width, height } = getDimensionsFromStyle(style);
   const params = [];
-  if (width) params.push(`w=${Math.round(width)}`);
-  if (height) params.push(`h=${Math.round(height)}`);
+  if (width && !isLogo) params.push(`w=${Math.round(width)}`);
+  if (height && !isLogo) params.push(`h=${Math.round(height)}`);
   if (params.length) url += `?${params.join('&')}`;
-  return url + `?w=600&h=300&auto=format&fit=max`;
+  // Optimize for faster loading - reduce quality for faster download
+  const w = isLogo ? 300: 800; // Reduced from 500/1280 to 300/800
+  const h = isLogo ? 300 : 450; // Reduced from 500/720 to 300/450
+  return url + `?w=${w}&h=${h}&auto=format&fit=max&q=75`; // Added q=75 for faster loading
 }
 
 const CustomFastImage = (props) => {
@@ -81,7 +84,11 @@ const CustomFastImage = (props) => {
     cacheKey,
     style,
     resizeMode,
-    description
+    description,
+    isLogo=false,
+    onLoadStart,
+    onLoadEnd,
+    onError
   } = props;
   const isMounted = useRef(true);
   const [imgUri, setUri] = useState("");
@@ -106,7 +113,7 @@ const CustomFastImage = (props) => {
         return;
       }
       // Use imgix for all images
-      const imgixUrl = getImgixUrl(uri, style);
+      const imgixUrl = getImgixUrl(uri, style, isLogo);
       setUri(imgixUrl);
     }
     loadImg();
@@ -133,8 +140,15 @@ const CustomFastImage = (props) => {
           source={{ uri: imgUri }}
           style={[style, { zIndex: 2 }]}
           resizeMode={resizeMode}
-          onLoad={() => setLoaded(true)}
-          onError={() => setLoaded(true)}
+          onLoadStart={onLoadStart}
+          onLoad={() => {
+            setLoaded(true);
+            onLoadEnd?.();
+          }}
+          onError={() => {
+            setLoaded(true);
+            onError?.();
+          }}
           accessibilityLabel={description}
         />
       ) : null}

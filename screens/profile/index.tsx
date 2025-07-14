@@ -14,7 +14,7 @@ import Constants from "expo-constants";
 const ProfileScreen = () => {
   const { t } = useTranslation();
   const version = Constants.nativeAppVersion;
-  const { userDetailsStore, authStore, addressStore } =
+  const { userDetailsStore, authStore, addressStore, shoofiAdminStore } =
     useContext(StoreContext);
   const navigation = useNavigation();
 
@@ -26,32 +26,32 @@ const ProfileScreen = () => {
   // Profile option groups
   const profileGroups = [
     [
-      // {
-      //   key: "details",
-      //   label: t("פרטים כלליים"),
-      //   icon: "profile-1",
-      //   color: themeStyle.TEXT_PRIMARY_COLOR,
-      // },
+      {
+        key: "details",
+        label: t("general-details"),
+        icon: "profile-green",
+        color: themeStyle.SUCCESS_COLOR,
+      },
       // {
       //   key: "address",
-      //   label: t("כתובת"),
+      //   label: t("address-list"),
       //   icon: "location",
-      //   color: themeStyle.TEXT_PRIMARY_COLOR,
+      //   color: themeStyle.SUCCESS_COLOR,
       // },
       {
         key: "language",
-        label: t("שפה"),
-        icon: "language",
-        color: themeStyle.TEXT_PRIMARY_COLOR,
+        label: t("change-language"),
+        icon: "language-green",
+        color: themeStyle.SUCCESS_COLOR,
       },
     ],
-     [
-      {
-        key: "orders",
-        label: t("עגלה קניות"),
-        icon: "orders-icon",
-        color: themeStyle.TEXT_PRIMARY_COLOR,
-      },
+   //  [
+      // {
+      //   key: "orders",
+      //   label: t("orders-history"),
+      //   icon: "orders-icon",
+      //   color: themeStyle.SUCCESS_COLOR,
+      // },
     //   {
     //     key: "favorites",
     //     label: t("מועדפים"),
@@ -84,12 +84,21 @@ const ProfileScreen = () => {
     //     icon: "star",
     //     color: themeStyle.TEXT_PRIMARY_COLOR,
     //   },
-     ],
+    // ],
+     [
+      {
+        key: "contact-us",
+        label: t("contact-us"),
+        icon: "whatapp",
+        color: themeStyle.SUCCESS_COLOR,
+      },
+    
+    ],
     [
       {
         key: "logout",
-        label: t("התנתק"),
-        icon: "logout-icon",
+        label: t("signout"), 
+        icon: "logout-red",
         color: themeStyle.ERROR_COLOR,
       },
       {
@@ -105,6 +114,7 @@ const ProfileScreen = () => {
     switch (key) {
       case "details":
         // Go to details
+        navigation.navigate("user-information");
         break;
       case "address":
         // Go to address
@@ -127,8 +137,9 @@ const ProfileScreen = () => {
       case "faq":
         // Go to FAQ
         break;
-      case "user-reviews":
-        // Go to user reviews
+      case "contact-us":
+      navigation.navigate("contact-us");
+      // Linking.openURL(`https://wa.me/${shoofiAdminStore?.storeData?.waSupportPhone}`)
         break;
       case "logout":
         authStore.logOut();
@@ -144,8 +155,8 @@ const ProfileScreen = () => {
   };
 console.log(userAddress);
   return (
-    <View style={{ flex: 1, backgroundColor: "#F7F8FA" }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
+    <View style={{ height: "100%" , backgroundColor: themeStyle.WHITE_COLOR,  }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Top user info section */}
         <View style={styles.topSection}>
           <View style={styles.avatarCircle}>
@@ -176,10 +187,7 @@ console.log(userAddress);
                       style={[
                         styles.iconCircle,
                         {
-                          backgroundColor:
-                            item.color === themeStyle.ERROR_COLOR
-                              ? "#fff0f0"
-                              : "#f3f7e7",
+                          backgroundColor:themeStyle.WHITE_COLOR,
                         },
                       ]}
                     >
@@ -191,7 +199,7 @@ console.log(userAddress);
                     </View>
                   </View>
                   <Icon
-                    icon={I18nManager.isRTL ? "chevron-left" : "chevron-right"}
+                    icon="chevron"
                     size={22}
                     style={{ color: "#BDBDBD" }}
                   />
@@ -201,8 +209,21 @@ console.log(userAddress);
           ))}
         </View>
         {/* App version and terms */}
-        <View style={styles.bottomSection}>
+        {/* <View style={styles.bottomSection}>
           <Text style={styles.versionText}>גרסה {version}</Text>
+        </View> */}
+        <View style={{flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 16, alignItems: "center", alignSelf: "center"}}>
+          <TouchableOpacity onPress={() => navigation.navigate("terms-and-conditions")}>
+            <Text style={styles.versionText}>{t("terms-of-use")}</Text>
+            <View style={{borderBottomColor: themeStyle.SUCCESS_COLOR, borderBottomWidth: 1, paddingBottom: 2}}>
+            </View>
+          </TouchableOpacity>
+          {/* <TouchableOpacity onPress={() => navigation.navigate("privacy-policy")}>
+            <Text style={styles.versionText}>{t("privacy-policy")}</Text>
+            <View style={{borderBottomColor: themeStyle.SUCCESS_COLOR, borderBottomWidth: 1, paddingBottom: 2}}>
+            </View>
+          </TouchableOpacity> */}
+
         </View>
       </ScrollView>
     </View>
@@ -221,7 +242,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: themeStyle.TEXT_PRIMARY_COLOR,
+    backgroundColor: themeStyle.SECONDARY_COLOR,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
@@ -235,20 +256,16 @@ const styles = StyleSheet.create({
   },
   userAddress: {
     fontSize: 15,
-    color: "#888",
+    color: themeStyle.GRAY_80,
     textAlign: "center",
     marginBottom: 8,
   },
   cardGroup: {
-    backgroundColor: "#fff",
+    backgroundColor: themeStyle.GRAY_10,
     borderRadius: 18,
     marginBottom: 18,
     paddingVertical: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    elevation: 2,
+ 
   },
   optionRow: {
     flexDirection: "row",
@@ -286,8 +303,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   versionText: {
-    color: "#BDBDBD",
-    fontSize: 14,
+    color: themeStyle.SUCCESS_COLOR,
+    fontSize: themeStyle.FONT_SIZE_SM,
+
   },
 });
 

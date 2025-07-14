@@ -211,6 +211,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
             <CustomFastImage
               source={{ uri: cdnUrl + storeLogo }}
               style={styles.logo}
+              isLogo={true}
             />
           </View>
           <View

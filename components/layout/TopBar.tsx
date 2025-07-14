@@ -24,6 +24,10 @@ const TopBar = () => {
       (navigation as any).navigate("cart");
     }
   };
+  const handleSearchPress = () => {
+    console.log("handleSearchPress");
+    (navigation as any).navigate("Search");
+  };
   useEffect(() => {}, [
     shoofiAdminStore.selectedCategory,
     shoofiAdminStore.selectedGeneralCategory,
@@ -33,6 +37,17 @@ const TopBar = () => {
     <View
       style={[styles.container, { flexDirection: "row-reverse", zIndex: 1000 }]}
     >
+      <View style={{flexDirection: "row", alignItems: "center"}}>
+
+      <TouchableOpacity onPress={handleSearchPress} style={styles.searchIconContainer}>
+        <Icon icon="search" size={28} />
+        {cartCount > 0 && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{cartCount}</Text>
+          </View>
+        )}
+      </TouchableOpacity>
+
       {/* Cart Icon with Badge (always at start) */}
       <TouchableOpacity onPress={handleCartPress} style={styles.iconContainer}>
         <Icon icon="cart" size={28} />
@@ -42,6 +57,10 @@ const TopBar = () => {
           </View>
         )}
       </TouchableOpacity>
+
+
+      </View>
+
 
       {/* Address Selector or Category Name */}
       {navigation?.getCurrentRoute()?.name === "general-category" &&
@@ -119,6 +138,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 15,
+  },
+  searchIconContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 15,
+    zIndex: 1000,
   },
   badge: {
     position: "absolute",

@@ -52,7 +52,7 @@ const VerifyCodeScreen = ({ route }) => {
   const { t } = useTranslation();
   const { authStore, cartStore, userDetailsStore } = useContext(StoreContext);
   const { phoneNumber } = route.params;
-
+  console.log("phoneNumber", phoneNumber);
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState(true);
@@ -199,7 +199,9 @@ const VerifyCodeScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <BackButton />
+      <View style={{ padding: 16, flexDirection: "row", alignItems: "center" }}>
+        <BackButton />
+      </View>
       <View style={{ width: "100%" }}>
         <View style={styles.inputsContainer}>
           <Text
@@ -225,8 +227,8 @@ const VerifyCodeScreen = ({ route }) => {
           <View>
             <Text
               style={{
-                fontSize: themeStyle.FONT_SIZE_MD,
-                color: themeStyle.TEXT_PRIMARY_COLOR,
+                fontSize: themeStyle.FONT_SIZE_SM,
+                color: themeStyle.GRAY_40,
                 marginTop: 15,
               }}
             >
@@ -263,7 +265,7 @@ const VerifyCodeScreen = ({ route }) => {
               <Text
                 style={{
                   fontSize: themeStyle.FONT_SIZE_MD,
-                  color: themeStyle.TEXT_PRIMARY_COLOR,
+                  color: themeStyle.GRAY_60,
                   // fontFamily: `${getCurrentLang()}-SemiBold`,
                 }}
               >
@@ -276,12 +278,10 @@ const VerifyCodeScreen = ({ route }) => {
             <TouchableOpacity disabled={timer > 0} onPress={resendMeTheCode}>
               <Text
                 style={{
-                  fontSize: 17,
+                  fontSize: themeStyle.FONT_SIZE_MD,
                   // fontFamily: `${getCurrentLang()}-SemiBold`,
                   // color:
                   //   timer > 0 ? themeStyle.GRAY_300 : themeStyle.SUCCESS_COLOR,
-                  padding: 5,
-                  opacity: 0.8,
                   color: themeStyle.SUCCESS_COLOR,
                 }}
               >
@@ -290,7 +290,21 @@ const VerifyCodeScreen = ({ route }) => {
             </TouchableOpacity>
           </View>
 
-          <View style={{ width: "100%", paddingHorizontal: 50, marginTop: 25 }}>
+ 
+        </View>
+        
+      </View>
+      {/* </ImageBackground> */}
+      <View
+            style={{
+              width: "100%",
+              paddingHorizontal: 10,
+              position: "absolute",
+              bottom: "10%",
+              left: 0,
+              right: 0,
+            }}
+          >
             <Button
               text={t("approve")}
               fontSize={20}
@@ -299,9 +313,6 @@ const VerifyCodeScreen = ({ route }) => {
               disabled={isLoading}
             />
           </View>
-        </View>
-      </View>
-      {/* </ImageBackground> */}
     </View>
   );
 };
@@ -316,7 +327,6 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     paddingVertical: 20,
-    marginTop: 20,
   },
   footerTabs: {
     backgroundColor: "blue",

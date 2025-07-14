@@ -113,19 +113,11 @@ const LoginScreen = () => {
             await AsyncStorage.setItem("@storage_user_b", JSON.stringify(true));
             return;
           }
-          if (userDetailsStore.isAdmin()) {
-            adminCustomerStore.setCustomer(response);
-            if (response.isExist) {
-              setIsOpenConfirmActiondDialog(true);
-            } else {
-              navigation.navigate("insert-customer-name");
-            }
-          } else {
+          console.log("response", response);
             authStore.setVerifyCodeToken(response.phone);
             navigation.navigate("verify-code", {
-              convertedValue: response.phone,
+              phoneNumber: response.phone,
             });
-          }
         })
         .catch(function (error) {
           console.log(error);
@@ -162,15 +154,15 @@ const LoginScreen = () => {
       <TouchableOpacity
         onPress={handleLogoPress}
         style={{
-          marginTop: "30%",
-          width: 173,
-          height: 38,
+          marginTop: 20,
+          width: 167,
+          height: 220,
           alignSelf: "center",
         }}
       >
         <Image
-          style={{ alignSelf: "center", width: "100%" }}
-          source={require("../../assets/shoofi-purple.png")}
+          style={{ alignSelf: "center" }}
+          source={require("../../assets/shoofi/login-image.png")}
         />
       </TouchableOpacity>
       <TouchableWithoutFeedback
@@ -183,7 +175,7 @@ const LoginScreen = () => {
           width: "100%",
         }}
       >
-        <View style={{ width: "100%", height: "50%", marginTop: 76 }}>
+        <View style={{ width: "90%", height: "50%", marginTop: 40, alignSelf: "center" }}>
           <KeyboardAvoidingView
             keyboardVerticalOffset={100}
             behavior="position"

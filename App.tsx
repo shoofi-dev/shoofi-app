@@ -20,6 +20,7 @@ import RootNavigator from "./navigation";
 import NetInfo from "@react-native-community/netinfo";
 import "moment-timezone";
 import ErrorBoundary from "react-native-error-boundary";
+import { useImagePreloader, getCriticalImages } from "./hooks/use-image-preloader";
 const appLoaderAnimation = require("./assets/lottie/loader-animation.json");
 
 moment.tz.setDefault("Asia/Jerusalem");
@@ -146,10 +147,21 @@ const App = () => {
   //   requestLocationPermission();
   // }, []);
 
+  // Image preloader hook
+  const {
+    isPreloading,
+    preloadProgress,
+    preloadResults,
+    isComplete: imagesComplete,
+    preloadImages,
+    reset: resetImagePreloader
+  } = useImagePreloader();
+
   const [assetsIsReady, setAssetsIsReady] = useState(false);
   const [appIsReady, setAppIsReady] = useState(false);
   const [isExtraLoadFinished, setIsExtraLoadFinished] = useState(false);
   const [isFontReady, setIsFontReady] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Use the notifications hook
   const notifications = useNotifications();
@@ -204,6 +216,7 @@ const App = () => {
 
       Promise.all([fetchShoofiStoreData, fetchCategoryList, fetchTranslations]).then(
         async (responses) => {
+          setDataLoaded(true);
  
           setTimeout(async () => {
             const isShouldUpdateVersion =
@@ -249,12 +262,9 @@ const App = () => {
                 // await storeDataStore.getStoreData();
                 }
               }
-              setTimeout(() => {
-                setAppIsReady(true);
-              }, 0);
-              setTimeout(() => {
-                setIsExtraLoadFinished(true);
-              }, 400);
+              
+              // Start preloading critical images
+              await preloadCriticalImages();
             });
           } else {
             const data = await AsyncStorage.getItem("@storage_terms_accepted");
@@ -263,13 +273,9 @@ const App = () => {
             if(cartStoreDBName){
               await storeDataStore.getStoreData(cartStoreDBName);
             }
-            // userDetailsStore.setIsAcceptedTerms(JSON.parse(data));
-            setTimeout(() => {
-              setAppIsReady(true);
-            }, 0);
-            setTimeout(() => {
-              setIsExtraLoadFinished(true);
-            }, 400);
+            
+            // Start preloading critical images
+            await preloadCriticalImages();
           }
         }
       );
@@ -282,6 +288,88 @@ const App = () => {
       setAssetsIsReady(true);
     }
   }
+
+  // Function to preload critical images
+  const preloadCriticalImages = async () => {
+    try {
+      // TEMPORARY: Skip image preloading to fix stuck loading issue
+      console.log('TEMPORARY: Skipping image preloading to prevent stuck loading');
+      setTimeout(() => {
+        setAppIsReady(true);
+      }, 0);
+      setTimeout(() => {
+        setIsExtraLoadFinished(true);
+      }, 200);
+      return;
+
+      // Check if we should skip image preloading for faster startup
+      const skipImagePreloading = await AsyncStorage.getItem('@skip_image_preloading');
+      
+      if (skipImagePreloading === 'true') {
+        console.log('Skipping image preloading for faster startup');
+        // Set app as ready immediately
+        setTimeout(() => {
+          setAppIsReady(true);
+        }, 0);
+        setTimeout(() => {
+          setIsExtraLoadFinished(true);
+        }, 200);
+        return;
+      }
+
+      const storeData = storeDataStore.storeData;
+      const categories = shoofiAdminStore.categoryList || [];
+      const ads = []; // You can fetch ads here if needed
+      
+      const criticalImages = getCriticalImages(storeData, categories, ads);
+      console.log(`Starting to preload ${criticalImages.length} critical images...`);
+      
+      // If no critical images, skip preloading
+      if (criticalImages.length === 0) {
+        console.log('No critical images to preload');
+        setTimeout(() => {
+          setAppIsReady(true);
+        }, 0);
+        setTimeout(() => {
+          setIsExtraLoadFinished(true);
+        }, 200);
+        return;
+      }
+      
+      // Add a timeout to prevent getting stuck
+      const preloadTimeout = setTimeout(() => {
+        console.warn('Image preloading timeout - proceeding without preloaded images');
+        setAppIsReady(true);
+        setTimeout(() => {
+          setIsExtraLoadFinished(true);
+        }, 200);
+      }, 10000); // 10 second timeout
+      
+      await preloadImages(criticalImages);
+      
+      // Clear the timeout since preloading completed
+      clearTimeout(preloadTimeout);
+      
+      // Set app as ready after images are loaded
+      setTimeout(() => {
+        setAppIsReady(true);
+      }, 0);
+      setTimeout(() => {
+        setIsExtraLoadFinished(true);
+      }, 200);
+    } catch (error) {
+      console.warn('Error preloading images:', error);
+      
+      // Set app as ready even if image preloading fails
+      setTimeout(() => {
+        setAppIsReady(true);
+      }, 0);
+      setTimeout(() => {
+        setIsExtraLoadFinished(true);
+      }, 200);
+    }
+  };
+
   useEffect(() => {
     //setTranslations([]);
     const unsubscribe = NetInfo.addEventListener((state) => {
@@ -309,6 +397,21 @@ const App = () => {
       initApp();
     }
   }, []);
+
+  // Fallback timeout to ensure app starts even if something goes wrong
+  useEffect(() => {
+    const fallbackTimeout = setTimeout(() => {
+      if (!appIsReady) {
+        console.warn('Fallback timeout triggered - forcing app to start');
+        setAppIsReady(true);
+        setTimeout(() => {
+          setIsExtraLoadFinished(true);
+        }, 200);
+      }
+    }, 15000); // 15 second fallback
+
+    return () => clearTimeout(fallbackTimeout);
+  }, [appIsReady]);
 
   useEffect(() => {
     const ExpDatePicjkerChange = DeviceEventEmitter.addListener(
@@ -352,13 +455,16 @@ const App = () => {
     return order?.total;
   };
 
+  // Show splash screen until everything is ready
+  const shouldShowSplash = !appIsReady;
+
   const loadingPage = () => {
     const version = Constants.nativeAppVersion;
     return (
       <View
         style={{
-          height: appIsReady ? 0 : "100%",
-          display: appIsReady ? "none" : "flex",
+          height: shouldShowSplash ? "100%" : 0,
+          display: shouldShowSplash ? "flex" : "none",
         }}
       >
         <ImageBackground
@@ -384,6 +490,51 @@ const App = () => {
               loop={true}
             />
           </View>
+
+          {/* Image loading progress indicator */}
+          {isPreloading && (
+            <View
+              style={{
+                position: "absolute",
+                alignSelf: "center",
+                top: "85%",
+                zIndex: 10,
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+                borderRadius: 20,
+                minWidth: 200,
+              }}
+            >
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontSize: 14,
+                  color: themeStyle.BROWN_700,
+                  marginBottom: 5,
+                }}
+              >
+                Loading images... {Math.round(preloadProgress)}%
+              </Text>
+              <View
+                style={{
+                  height: 4,
+                  backgroundColor: "#e0e0e0",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                }}
+              >
+                <View
+                  style={{
+                    height: "100%",
+                    backgroundColor: themeStyle.PRIMARY_COLOR,
+                    width: `${preloadProgress}%`,
+                    borderRadius: 2,
+                  }}
+                />
+              </View>
+            </View>
+          )}
 
           <View
             style={{
@@ -469,7 +620,7 @@ const App = () => {
     );
   };
 
-  if (!appIsReady) {
+  if (shouldShowSplash) {
     return loadingPage();
   }
 

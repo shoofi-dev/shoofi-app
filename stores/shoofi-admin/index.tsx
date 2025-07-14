@@ -19,10 +19,10 @@ class ShoofiAdminStore {
   repeatNotificationInterval = null;
   selectedCategory = null;
   selectedGeneralCategory = null;
+  exploreData = null;
 
   constructor() {
     makeAutoObservable(this);
-
   }
 
   getStoresListDataFromServer = async (location) => {
@@ -38,7 +38,6 @@ class ShoofiAdminStore {
         }
       )
       .then(function (response) {
-
         const res = response;
         return res;
       }).catch((error) => {
@@ -54,7 +53,6 @@ class ShoofiAdminStore {
       return res;
     })
   };
-
 
   getCategoryListDataFromServer = async () => {
     const body = { date: moment().format()}
@@ -85,11 +83,57 @@ class ShoofiAdminStore {
     })
   };
 
+  // New method for server-side filtered explore data
+  getExploreDataFromServer = async (location = null) => {
+    try {
+      const params = location ? { location: JSON.stringify(location) } : {};
+      const response = await axiosInstance.get(
+        `${SHOOFI_ADMIN_API.CONTROLLER}/explore/categories-with-stores`,
+        { params }
+      );
+      return response;
+    } catch (error) {
+      console.error('Error fetching explore data:', error);
+      throw error;
+    }
+  };
 
- 
+  getExploreData = (location = null) => {
+    return this.getExploreDataFromServer(location).then((res: any) => {
+      runInAction(() => {
+        this.exploreData = res;
+      });
+      return res;
+    });
+  };
+
+  // Method to clear explore cache (useful when store status changes)
+  clearExploreCache = async () => {
+    try {
+      await axiosInstance.post(`${SHOOFI_ADMIN_API.CONTROLLER}/explore/clear-cache`);
+      runInAction(() => {
+        this.exploreData = null;
+      });
+    } catch (error) {
+      console.error('Error clearing explore cache:', error);
+    }
+  };
+
+  // Method to get explore cache stats
+  getExploreCacheStats = async () => {
+    try {
+      const response = await axiosInstance.get(`${SHOOFI_ADMIN_API.CONTROLLER}/explore/cache-stats`);
+      return response;
+    } catch (error) {
+      console.error('Error getting explore cache stats:', error);
+      throw error;
+    }
+  };
+
   setStoreDBName = async (storeDBName) => {
     await AsyncStorage.setItem("@storage_storeDB", storeDBName);
   };
+  
   getStoreDBName = async () => {
     const storeDBName = await AsyncStorage.getItem("@storage_storeDB")
     return storeDBName;
@@ -170,6 +214,7 @@ class ShoofiAdminStore {
   setSelectedCategory(category) {
       this.selectedCategory = category;
   }
+  
   setSelectedGeneralCategory(generalCategory) {
     this.selectedGeneralCategory = generalCategory;
   }

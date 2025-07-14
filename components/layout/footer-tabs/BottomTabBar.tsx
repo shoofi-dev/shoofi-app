@@ -21,7 +21,7 @@ const tabs = [
   {
     key: "Search",
     label: "search",
-    icon: "search",
+    icon: "search_full",
   },
   {
     key: "Profile",

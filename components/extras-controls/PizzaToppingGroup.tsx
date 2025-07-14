@@ -110,7 +110,13 @@ const PizzaToppingGroup = ({
             </View>
 
             <View style={styles.areaSelector}>
-              {topping.areaOptions?.map((area: AreaOption) => (
+              {topping.areaOptions
+                ?.sort((a, b) => {
+                  // Sort by area.id: half2 (left) -> full -> half1 (right)
+                  const order = { half2: 2, full: 1, half1: 0 };
+                  return (order[a.id as keyof typeof order] || 0) - (order[b.id as keyof typeof order] || 0);
+                })
+                .map((area: AreaOption) => (
                 <TouchableOpacity
                   key={area.id}
                   style={[styles.areaButton]}

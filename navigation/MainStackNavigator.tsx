@@ -50,6 +50,7 @@ import DeliveryDriverDashboard from "../screens/delivery-driver";
 import DeliveryDriverOrderDetails from "../screens/delivery-driver/order-details";
 import DeliveryDriverProfile from "../screens/delivery-driver/profile";
 import DeliveryDriverNotifications from "../screens/delivery-driver/notifications";
+import UserInformation from "../screens/user-information";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -117,6 +118,7 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="language" component={LanguageScreen} initialParams={{ isFromTerms: null }}/>
       <Stack.Screen name="about-us" component={AboutUsScreen} />
       <Stack.Screen name="contact-us" component={ContactUs} />
+      <Stack.Screen name="user-information" component={UserInformation} />
       <Stack.Screen name="order-history" component={OrderHistoryScreen} />
       <Stack.Screen name="upload-images" component={uploadImages} />
       <Stack.Screen name="edit-translations" component={EditTranslationsScreen} />

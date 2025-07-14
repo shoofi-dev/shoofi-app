@@ -77,7 +77,13 @@ const gradiantColors =
         "rgba(199, 199, 199, 0.1)",
       ];
 
-const MealScreen = ({ handleClose, product, category, index, onFooterProps }) => {
+const MealScreen = ({
+  handleClose,
+  product,
+  category,
+  index,
+  onFooterProps,
+}) => {
   const { t } = useTranslation();
   const scrollRef = useRef(null);
 
@@ -363,7 +369,7 @@ const MealScreen = ({ handleClose, product, category, index, onFooterProps }) =>
     return null;
   }
   return (
-    <View style={{ backgroundColor: themeStyle.WHITE_COLOR}}>
+    <View style={{ backgroundColor: themeStyle.WHITE_COLOR }}>
       <Animated.ScrollView
         ref={scrollRef}
         onScroll={Animated.event(
@@ -371,13 +377,12 @@ const MealScreen = ({ handleClose, product, category, index, onFooterProps }) =>
           { useNativeDriver: false }
         )}
         scrollEventThrottle={16}
-        style={{  }}
+        style={{}}
       >
         <View
           style={{
             width: "100%",
-            paddingBottom: "25%"
-            
+            paddingBottom: "25%",
           }}
         >
           <View style={{}}>
@@ -391,7 +396,9 @@ const MealScreen = ({ handleClose, product, category, index, onFooterProps }) =>
               </View>
             )}
           </View>
-          <View style={{ marginTop: 20, paddingBottom: 20, paddingHorizontal: 10 }}>
+          <View
+            style={{ marginTop: 20, paddingBottom: 20, paddingHorizontal: 10 }}
+          >
             <TouchableOpacity
               style={{
                 alignItems: "center",
@@ -406,7 +413,7 @@ const MealScreen = ({ handleClose, product, category, index, onFooterProps }) =>
                 setIsNoteModalVisible(true);
               }}
             >
-              <View style={{ flexDirection: "row", alignItems: "center", }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Icon icon="comment" size={20} style={{ marginRight: 10 }} />
                 <Text>{t("note")}</Text>
               </View>
@@ -457,7 +464,7 @@ const MealScreen = ({ handleClose, product, category, index, onFooterProps }) =>
       <Modal
         isVisible={isNoteModalVisible}
         onBackdropPress={() => setIsNoteModalVisible(false)}
-        style={{ margin: 0, justifyContent: "flex-end" }}
+        style={{ margin: 0, justifyContent: "flex-end", }}
         animationIn="slideInUp"
         animationOut="slideOutDown"
         backdropOpacity={0.5}
@@ -471,36 +478,36 @@ const MealScreen = ({ handleClose, product, category, index, onFooterProps }) =>
             borderTopRightRadius: 10,
             padding: 20,
             width: "100%",
+            paddingBottom:40,
           }}
         >
-          <Text style={{ marginBottom: 10 }}>{t("note-to-store")}</Text>
-                      <TextInput
-              value={meal?.others?.note}
-              onChangeText={(text) => {
-                setNoteValue(text);
-                updateOthers(text, "note", "others");
-              }}
-              style={{
-                borderWidth: 1,
-                borderColor: "#eee",
-                borderRadius: 8,
-                padding: 10,
-                minHeight: 60,
-                marginBottom: 20,
-                textAlign: "right",
-                textAlignVertical: "top",
-              }}
-              multiline={false}
-              returnKeyType="done"
-              onSubmitEditing={() => {
-                setIsNoteModalVisible(false);
-                Keyboard.dismiss();
-                console.log("xxxx");
-                setTimeout(() => {
-                  updateOthers(noteValue, "note", "others");
-                }, 0);
-              }}
-            />
+          <TextInput
+            placeholder={t("insert-note")}
+            value={meal?.others?.note}
+            onChangeText={(text) => {
+              setNoteValue(text);
+              updateOthers(text, "note", "others");
+            }}
+            style={{
+              borderWidth: 1,
+              borderColor: "#eee",
+              borderRadius: 8,
+              padding: 10,
+              minHeight: 80,
+              marginBottom: 20,
+              textAlign: "right",
+              textAlignVertical: "top",
+            }}
+            multiline={false}
+            returnKeyType="done"
+            onSubmitEditing={() => {
+              setIsNoteModalVisible(false);
+              Keyboard.dismiss();
+              setTimeout(() => {
+                updateOthers(noteValue, "note", "others");
+              }, 0);
+            }}
+          />
         </View>
       </Modal>
     </View>

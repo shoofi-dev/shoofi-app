@@ -35,7 +35,14 @@ export const hideHHeaderScreens = [
   "AddressList",
   "credit-cards",
   "delivery-driver-dashboard",
-  "insert-customer-name"
+  "insert-customer-name",
+  "user-information",
+  "contact-us",
+  "language",
+  "about-us",
+  "delete-account",
+  "logout",
+  "Profile"
 ];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];

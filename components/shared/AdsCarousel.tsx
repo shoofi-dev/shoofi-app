@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Image, ImageBackground, StyleSheet, Dimensions } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { cdnUrl } from '../../consts/shared';
@@ -22,69 +22,97 @@ type AdsCarouselProps = {
   ads: Ad[];
 };
 
-const AdsCarousel: React.FC<AdsCarouselProps> = ({ ads }) => {
+// Memoized ad item component
+const AdItem = React.memo(({ item }: { item: Ad }) => {
+  const backgroundUrl = useMemo(() => cdnUrl + item.background, [item.background]);
+  
+  return (
+    <ImageBackground
+      source={{ uri: backgroundUrl }}
+      style={styles.card}
+      imageStyle={{ borderRadius: CARD_RADIUS }}
+      resizeMode="cover"
+    >
+      {/* Floating product images */}
+      <View style={styles.productsRow}>
+        {item.products.map((img, idx) => (
+          <CustomFastImage
+            key={img + idx}
+            source={{ uri: cdnUrl + img }}
+            style={styles.productImg}
+            resizeMode="cover"
+            cacheKey={img.split(/[\\/]/).pop()}
+          />
+        ))}
+      </View>
+      {/* Text overlay with gradient */}
+      <LinearGradient
+        colors={["#00000000", "#232323"]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={styles.gradientOverlay}
+      >
+        <View style={styles.textOverlay}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.subtitle}>{item.subtitle}</Text>
+        </View>
+      </LinearGradient>
+    </ImageBackground>
+  );
+});
+
+// Memoized pagination dots component
+const PaginationDots = React.memo(({ ads, activeIndex }: { ads: Ad[]; activeIndex: number }) => (
+  <View style={styles.dotsRow}>
+    {ads.map((_, idx) => (
+      <View
+        key={idx}
+        style={[
+          styles.dot,
+          activeIndex === idx && styles.dotActive,
+        ]}
+      />
+    ))}
+  </View>
+));
+
+const AdsCarousel: React.FC<AdsCarouselProps> = React.memo(({ ads }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Memoized carousel width
+  const carouselWidth = useMemo(() => width - 32, []);
+
+  // Memoized render item function
+  const renderItem = useMemo(() => ({ item }: { item: Ad }) => (
+    <AdItem item={item} />
+  ), []);
+
+  // Memoized onSnapToItem handler
+  const handleSnapToItem = useMemo(() => (index: number) => {
+    setActiveIndex(index);
+  }, []);
+
+  if (!ads || ads.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.carouselContainer}>
       <Carousel
-        width={width - 32}
+        width={carouselWidth}
         height={CARD_HEIGHT}
         data={ads}
         autoPlay={true}
         scrollAnimationDuration={1000}
         autoPlayInterval={3000}
-
-        onSnapToItem={setActiveIndex}
+        onSnapToItem={handleSnapToItem}
         style={{ borderRadius: CARD_RADIUS }}
-        renderItem={({ item }) => (
-          <ImageBackground
-            source={{ uri: cdnUrl + item.background }}
-            style={styles.card}
-            imageStyle={{ borderRadius: CARD_RADIUS }}
-            resizeMode="cover"
-          >
-            {/* Floating product images */}
-            <View style={styles.productsRow}>
-              {item.products.map((img, idx) => (
-                <CustomFastImage
-                  key={img + idx}
-                  source={{ uri: cdnUrl + img }}
-                  style={styles.productImg}
-                  resizeMode="cover"
-                  cacheKey={img.split(/[\\/]/).pop()}
-                />
-              ))}
-            </View>
-            {/* Text overlay with gradient */}
-            <LinearGradient
-              colors={["#00000000", "#232323"]}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.gradientOverlay}
-            >
-              <View style={styles.textOverlay}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.subtitle}>{item.subtitle}</Text>
-              </View>
-            </LinearGradient>
-          </ImageBackground>
-        )}
+        renderItem={renderItem}
       />
-      {/* Pagination dots */}
-      <View style={styles.dotsRow}>
-        {ads.map((_, idx) => (
-          <View
-            key={idx}
-            style={[
-              styles.dot,
-              activeIndex === idx && styles.dotActive,
-            ]}
-          />
-        ))}
-      </View>
+      <PaginationDots ads={ads} activeIndex={activeIndex} />
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   carouselContainer: {
