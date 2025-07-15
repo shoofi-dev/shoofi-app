@@ -20,7 +20,6 @@ export default function BackButton({ goTo, onClick, color = themeStyle.BLACK_COL
   const { isTablet, scale, fontSize } = useResponsive();
 
   const onBtnClick = () => {
-    console.log("onBtnClick");
     onClick && onClick();
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     if (isDisableGoBack) {

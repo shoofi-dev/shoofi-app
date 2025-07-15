@@ -87,7 +87,6 @@ export default function TotalPriceCMP({
           if (autoCoupon) {
             setAppliedCoupon(autoCoupon);
             setDiscount(autoCoupon.discountAmount);
-            console.log("Auto-applied coupon:", autoCoupon);
             // Notify parent component about the applied coupon
             onCouponApplied?.(autoCoupon);
           }
@@ -159,15 +158,12 @@ export default function TotalPriceCMP({
         appliedCoupon={appliedCoupon}
         deliveryFee={deliveryPrice}
         onCouponApplied={(couponApp) => {
-          console.log("couponApp", couponApp);
           setAppliedCoupon(couponApp);
           setDiscount(couponApp.discountAmount);
-          console.log("Coupon applied:", couponApp);
           // Notify parent component about the applied coupon
           onCouponApplied?.(couponApp);
         }}
         onCouponRemoved={() => {
-          console.log("Coupon removed");
           setAppliedCoupon(null);
           setDiscount(0);
           // Notify parent component that coupon was removed

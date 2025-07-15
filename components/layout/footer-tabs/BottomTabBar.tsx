@@ -84,7 +84,6 @@ const BottomTabBar = observer(({ state, navigation }) => {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-    console.log("XXXXXXXXAASSXXX", token)
     if(token){
       setIsLoading(true);
       getOrders();

@@ -51,11 +51,7 @@ export const canceledStatuses = ["4", "5"];
 const NewOrdersListScreen = ({ route }) => {
   // const from_date = today.startOf('week');
   // const to_date = today.endOf('week');
-  // console.log({
-  //   from_date: from_date.toString(),
-  //   today: moment().toString(),
-  //   to_date: to_date.toString(),
-  // });
+
   // var currentDate = moment();
 
   // var weekStart = currentDate.clone().startOf('month');
@@ -66,7 +62,6 @@ const NewOrdersListScreen = ({ route }) => {
   // for (var i = 0; i <= 20; i++) {
   //   days.push(moment(weekStart).add(i, 'days').format("MMMM Do,dddd"));
   // }
-  // console.log(days)
   const { t } = useTranslation();
   const navigation = useNavigation();
 

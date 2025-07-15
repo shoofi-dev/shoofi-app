@@ -78,7 +78,6 @@ export const PaymentMethodMethodPick = ({
         break;
     }
     const isSupported = await isStoreSupportAction(selectedPM);
-    console.log("isSupported", isSupported);
     if (!isSupported) {
       toggleDialog({
         text: "creditcard-not-supported",

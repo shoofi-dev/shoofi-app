@@ -135,11 +135,9 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
           (cat) => cat._id === categoryId
         );
         if (categoryIndex !== -1) {
-          console.log("categoryIndex", categoryIndex);
 
           // Calculate the offset for this category
           const offset = getCategoryOffset(categoryIndex);
-          console.log("scrollToOffset", offset);
 
           flatListRef.current?.scrollToOffset({
             offset: offset,

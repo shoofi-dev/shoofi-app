@@ -18,6 +18,10 @@
 		CDAB941BC66142DBB93E9D55 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA480E1E16614F69A57EEDE4 /* noop-file.swift */; };
 		CE8E87B61FA14096B3107870 /* deliverysound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 738FACC672E740EF849DDC51 /* deliverysound.wav */; };
 		785E75321210493287E2B13F /* customer.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1DFE657A3D4D42E8B9814F9C /* customer.wav */; };
+		17283CCB856C4DAF8D14554C /* store.wav in Resources */ = {isa = PBXBuildFile; fileRef = FB9E8E2D380943ACB40EB236 /* store.wav */; };
+		B3155BF37251461F8A5E64F4 /* storelate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 36C1CB4DA59F4E8FA2B88937 /* storelate.wav */; };
+		C2491AA867B141898F4BEB5B /* driver.wav in Resources */ = {isa = PBXBuildFile; fileRef = 5465701367F34203ABADE310 /* driver.wav */; };
+		B5325D71D8994FF49DEDB6AF /* driverlate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 575E963FF3DC47CDBA90AB57 /* driverlate.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +43,10 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-app/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		1DFE657A3D4D42E8B9814F9C /* customer.wav */ = {isa = PBXFileReference; name = "customer.wav"; path = "app/customer.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FB9E8E2D380943ACB40EB236 /* store.wav */ = {isa = PBXFileReference; name = "store.wav"; path = "app/store.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		36C1CB4DA59F4E8FA2B88937 /* storelate.wav */ = {isa = PBXFileReference; name = "storelate.wav"; path = "app/storelate.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5465701367F34203ABADE310 /* driver.wav */ = {isa = PBXFileReference; name = "driver.wav"; path = "app/driver.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		575E963FF3DC47CDBA90AB57 /* driverlate.wav */ = {isa = PBXFileReference; name = "driverlate.wav"; path = "app/driverlate.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +76,10 @@
 				439E19D9B1A646D08FAC4B4F /* buffalosound.wav */,
 				738FACC672E740EF849DDC51 /* deliverysound.wav */,
 				1DFE657A3D4D42E8B9814F9C /* customer.wav */,
+				FB9E8E2D380943ACB40EB236 /* store.wav */,
+				36C1CB4DA59F4E8FA2B88937 /* storelate.wav */,
+				5465701367F34203ABADE310 /* driver.wav */,
+				575E963FF3DC47CDBA90AB57 /* driverlate.wav */,
 			);
 			name = app;
 			sourceTree = "<group>";
@@ -212,6 +224,10 @@
 				A58D3060ECA949638B12EF2C /* buffalosound.wav in Resources */,
 				CE8E87B61FA14096B3107870 /* deliverysound.wav in Resources */,
 				785E75321210493287E2B13F /* customer.wav in Resources */,
+				17283CCB856C4DAF8D14554C /* store.wav in Resources */,
+				B3155BF37251461F8A5E64F4 /* storelate.wav in Resources */,
+				C2491AA867B141898F4BEB5B /* driver.wav in Resources */,
+				B5325D71D8994FF49DEDB6AF /* driverlate.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

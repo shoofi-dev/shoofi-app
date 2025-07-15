@@ -208,8 +208,7 @@ Authorization: Bearer token
 // Connect with authentication
 const ws = new WebSocket(`ws://localhost:1111?customerId=${userId}&appName=${appName}&token=${jwtToken}`);
 
-// Listen for connection events
-ws.onopen = () => console.log('Connected');
+
 ws.onmessage = (event) => {
   const message = JSON.parse(event.data);
   if (message.type === 'notification') {
@@ -314,7 +313,6 @@ websocketService.sendToAppAdmins('shoofi-app', {
 ### WebSocket Statistics
 ```javascript
 const stats = websocketService.getStats();
-console.log(stats);
 // {
 //   totalConnections: 150,
 //   totalRooms: 5,

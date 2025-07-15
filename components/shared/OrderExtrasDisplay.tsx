@@ -3,8 +3,6 @@ import { View } from "react-native";
 import Text from "../controls/Text";
 
 const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
-  console.log("extrasDef", extrasDef);
-  console.log("selectedExtras", selectedExtras);
   if (!extrasDef || !selectedExtras || extrasDef.length === 0) return null;
   return (
     <View style={{ marginTop: 5 }}>

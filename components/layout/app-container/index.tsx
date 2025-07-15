@@ -116,12 +116,10 @@ const AppContainer = () => {
   // const test = async (productImgUrlx)=>{
   //   if(productImgUrlx){
   //     const img = await findImageInCache(`${FileSystem.cacheDirectory}${productImgUrlx.split(/[\\/]/).pop()}`)
-  //     console.log("findImageInCache",img)
   //     setProductMealUrlFast(img.img.uri)
   //   }
   // }
   //   useEffect(()=>{
-  //     console.log("PWPWPWWP",productImgUrl)
   //     test(productImgUrl)
   //   },[productImgUrl])
 

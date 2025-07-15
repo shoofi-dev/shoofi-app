@@ -18,7 +18,6 @@ class CalanderStore {
         return response;
       })
       .catch((error) => {
-        console.log(error);
       });
   };
 
@@ -36,7 +35,6 @@ class CalanderStore {
         return response;
       })
       .catch((error) => {
-        console.log(error);
       });
   };
   
@@ -59,7 +57,6 @@ class CalanderStore {
         return response;
       })
       .catch((error) => {
-        console.log(error);
       });
   };
   
@@ -82,7 +79,6 @@ class CalanderStore {
         return response;
       })
       .catch((error) => {
-        console.log(error);
       });
   };
   
@@ -100,7 +96,6 @@ class CalanderStore {
         return response;
       })
       .catch((error) => {
-        console.log(error);
       });
   };
   

@@ -188,7 +188,6 @@ const OrdersListScreen = ({ route }) => {
   const updateActiveEditNote = (order, index) => {
     // if (itemRefs[getProductIndexId(order, index)].current) {
     //   itemRefs[getProductIndexId(order, index)].current.measure((x, y, width, height, pageX, pageY) => {
-    //     console.log('Item height:', height);
     //   });
     // }
     setActiveEditNote(order?.orderId);
@@ -231,7 +230,6 @@ const OrdersListScreen = ({ route }) => {
   const getOrders = (pageNum) => {
     if (authStore.isLoggedIn() && selectedDay?.date) {
       setIsloading(true);
-      console.log("selectedDay?.date?.format()", selectedDay?.date?.format());
       let statusList = [selectedStatus];
       switch (selectedStatus) {
         case "2":

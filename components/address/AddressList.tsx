@@ -53,7 +53,6 @@ const AddressList = observer(
       try {
         await addressStore.fetchAddresses(customerId);
       } catch (error) {
-        console.log("error", error);
         Alert.alert("Error", "Failed to load addresses");
       }
     };

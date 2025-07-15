@@ -159,7 +159,6 @@ class MenuStore {
         },
       })
       .then(function (response) {
-        console.log("response", response);
         return response?.data;
       });
   };

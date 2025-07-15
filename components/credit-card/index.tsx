@@ -71,7 +71,6 @@ const CreditCard = ({ onSaveCard }) => {
   };
 
   const showPicker = () => {
-    console.log("showPicker");
     DeviceEventEmitter.emit(`SHOW_EXP_DATE_PICKER`, { show: true });
   };
 
@@ -169,11 +168,6 @@ const CreditCard = ({ onSaveCard }) => {
     const isValidCreditCardExpDate = await validateCreditCardExpDate();
     const isValidCreditCardCVV = await validateCreditCardCVV();
     const isValidCreditCardHolderID = await validateCreditCardHolderID();
-    console.log('isValidCreditCardNumber', isValidCreditCardNumber);
-    console.log('isValidCreditCardExpDate', isValidCreditCardExpDate);
-    console.log('isValidCreditCardCVV', isValidCreditCardCVV);
-    console.log('isValidCreditCardHolderID', isValidCreditCardHolderID);
-
     if (!isValidCreditCardNumber || !isValidCreditCardExpDate || !isValidCreditCardCVV || !isValidCreditCardHolderID) {
       setFormStatus({ ...formStatus, isNumberValid: !!isValidCreditCardNumber, isCVVValid: !!isValidCreditCardCVV, idIDValid: !!isValidCreditCardHolderID, isExpDateValid: !!isValidCreditCardExpDate });
       return;

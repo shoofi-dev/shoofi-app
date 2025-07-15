@@ -64,10 +64,6 @@ const OrderDayItem = ({ data }: TProps) => {
   }, []);
 
   useEffect(() => {
-    // console.log("yy", data?.items)
-    // if ((data?.items).length == 0) {
-    //   return;
-    // }
     if (!data?.selectedDate) {
       return;
     }
@@ -84,14 +80,6 @@ const OrderDayItem = ({ data }: TProps) => {
         initDayOrders(res);
       }
     });
-    // console.log("disabledHoursList",(data?.items).length)
-
-    //   if ((data?.items).length == 0) {
-    //     setDayhours(deafultDayHours)
-
-    // }else{
-    //   initDayOrders([]);
-    // }
   };
 
   const updateDisabledHours = (disabledHoursList: any) => {};

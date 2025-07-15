@@ -52,7 +52,6 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
       // Fetch credit cards from database
       await creditCardsStore.fetchCreditCards();
       const defaultCard = creditCardsStore.defaultCreditCard;
-      console.log("defaultCard1", defaultCard)
       if (defaultCard) {
         setCCData({
           ccToken: defaultCard.ccToken,
@@ -60,7 +59,6 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
           ccType: defaultCard.ccType,
           holderName: defaultCard.holderName || '',
         });
-        console.log("defaultCard2", defaultCard)
         // Pass payment data to parent component
         if (onPaymentDataChange) {
           onPaymentDataChange({
@@ -153,7 +151,6 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
 
   const onReplaceCreditCard = () => {
     // Open credit cards modal
-    console.log("onReplaceCreditCard")
     setIsCreditCardModalOpen(true);
   };
 

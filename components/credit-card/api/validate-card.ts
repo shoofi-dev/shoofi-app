@@ -42,7 +42,6 @@ const validateCard = ({ cardNumber, expDate }: TValidateCardProps) => {
       body,
     )
     .then(function (res: any) {
-      console.log("validateCard",validateCard)
       const ccDetails: TCCDetails = {
         last4Digits: cardNumber.substr(cardNumber.length - 4),
         ccToken: res.data.Token

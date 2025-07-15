@@ -113,14 +113,12 @@ const LoginScreen = () => {
             await AsyncStorage.setItem("@storage_user_b", JSON.stringify(true));
             return;
           }
-          console.log("response", response);
             authStore.setVerifyCodeToken(response.phone);
             navigation.navigate("verify-code", {
               phoneNumber: response.phone,
             });
         })
         .catch(function (error) {
-          console.log(error);
           DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
             show: true,
             isSignOut: false,

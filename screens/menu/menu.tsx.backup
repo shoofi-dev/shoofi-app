@@ -81,13 +81,11 @@ const MenuScreen = () => {
           }
         }
         
-        console.log("Scrolling main ScrollView to offset:", offset);
         scrollViewRef.current?.getNode().scrollTo({ 
           y: SCROLLABLE_PART_HEIGHT + offset, 
           animated: true 
         });
       }
-      console.log("handleCategorySelect", cat);
 
       // Removed duplicate scroll logic
 
@@ -104,7 +102,6 @@ const MenuScreen = () => {
     categoryUpdateTimeoutRef.current = setTimeout(() => {
       const category = categoryList.find(cat => cat._id === categoryId);
       if ( selectedCategory?._id !== categoryId) {
-        console.log("Setting selected category to:", categoryId);
         setSelectedCategory(category);
       }
     }, 50);

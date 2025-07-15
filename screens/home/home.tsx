@@ -220,12 +220,6 @@ const HomeScreen = ({ navigation }) => {
         var currentTime = moment().utc(true).valueOf();
         var endTime2 = moment(endTime, "hh:mm").utc(true).valueOf();
         const isAfterEndTime = currentTime > endTime2;
-        console.log("endTime", endTime);
-        console.log("currentTime1", currentTime);
-        console.log("endTime21", endTime2);
-        console.log("currentTime", moment(currentTime, "hh:mm"));
-        console.log("endTime2", moment(endTime2, "hh:mm"));
-
         if (isAfterEndTime) {
           setStoreIsCloseDialogText(t("store-is-close-after-end-time"));
           setShowStoreIsCloseDialog(true);

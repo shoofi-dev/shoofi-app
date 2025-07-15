@@ -25,7 +25,6 @@ const TopBar = () => {
     }
   };
   const handleSearchPress = () => {
-    console.log("handleSearchPress");
     (navigation as any).navigate("Search");
   };
   useEffect(() => {}, [

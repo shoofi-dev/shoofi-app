@@ -25,7 +25,6 @@ const GooglePlacesSearch = ({ onPlaceSelected, formData }: GooglePlacesSearchPro
   const placesRef = useRef<any>(null);
 
   const handleClear = () => {
-    console.log('Custom clear button pressed');
     if (placesRef.current) {
       placesRef.current.clear();
     }
@@ -44,7 +43,6 @@ const GooglePlacesSearch = ({ onPlaceSelected, formData }: GooglePlacesSearchPro
             ref={placesRef}
             placeholder={''}
             onPress={(data, details = null) => {
-              console.log('GooglePlaces onPress:', data?.description);
               onPlaceSelected && onPlaceSelected(data, details);
             }}
             fetchDetails={true}
@@ -60,7 +58,6 @@ const GooglePlacesSearch = ({ onPlaceSelected, formData }: GooglePlacesSearchPro
             textInputProps={{
               value: formData.street || '',
               onChangeText: (text) => {
-                console.log('GooglePlaces onChangeText:', text);
                 onPlaceSelected && onPlaceSelected({ description: text }, null);
               },
               clearButtonMode: 'never',
@@ -79,7 +76,6 @@ const GooglePlacesSearch = ({ onPlaceSelected, formData }: GooglePlacesSearchPro
             style={styles.textInput}
             value={formData.street || ''}
             onChangeText={(text) => {
-              console.log('Fallback onChangeText:', text);
               onPlaceSelected && onPlaceSelected({ description: text }, null);
             }}
             placeholder={t('enter-street-address')}

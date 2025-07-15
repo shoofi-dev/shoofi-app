@@ -130,18 +130,10 @@ const CategoryItemsList = ({ productsList, category }) => {
       nativeEvent.layoutMeasurement.height + nativeEvent.contentOffset.y >=
       nativeEvent.contentSize.height - paddingToBottom;
     if (isReachedBottom) {
-      console.log(
-        "yy111",
-        nativeEvent.layoutMeasurement.height + nativeEvent.contentOffset.y
-      );
 
       setIsLoadingProducts(true);
       setPageNumber(pageNumber + 1);
       setTimeout(() => {
-        console.log(
-          "yy",
-          nativeEvent.layoutMeasurement.height + nativeEvent.contentOffset.y
-        );
         scrollRef.current?.scrollTo({
           y:
             nativeEvent.layoutMeasurement.height +

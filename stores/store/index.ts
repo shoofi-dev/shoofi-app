@@ -31,7 +31,6 @@ class StoreDataStore {
         const res = response.data;
         return res;
       }).catch((error) => {
-        console.log(error);
       })
   };
 
@@ -55,7 +54,6 @@ class StoreDataStore {
         const res = response;
         return res;
       }).catch((error) => {
-        console.log(error);
       })
   };
 
@@ -76,7 +74,6 @@ class StoreDataStore {
         const res = response.data;
         return res;
       }).catch((error) => {
-        console.log(error);
       })
   };
 

@@ -61,7 +61,6 @@ const OrderDayItem = ({
   const progressValue = useSharedValue<number>(0);
   const [userDate, setUserDate] = useState();
   useEffect(()=>{
-    console.log("userDate444", userDateValue)
     setUserDate(userDateValue)
     if(dayHours && userDateValue){
       initDefaultActiveHour(dayHours)
@@ -199,7 +198,6 @@ const OrderDayItem = ({
 
       if (userDate) {
         if (currentHourMinute == currentUserHourMinute) {
-          console.log("UUUUU")
           setActiveSlide(currentUserHourMinute);
         }
       } else {

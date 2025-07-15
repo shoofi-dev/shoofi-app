@@ -231,7 +231,6 @@ const progress = ((i + 1) / images.length) * 100;
 Enable debug logging in `useImagePreloader.ts`:
 
 ```typescript
-console.log(`Image preloading complete: ${successCount}/${images.length} images loaded successfully`);
 ```
 
 ## Future Enhancements
@@ -264,11 +263,9 @@ console.log(`Image preloading complete: ${successCount}/${images.length} images 
 
 ```typescript
 // Check preload results
-console.log('Preload results:', preloadResults);
 
 // Check critical images
 const criticalImages = getCriticalImages(storeData, categories, ads);
-console.log('Critical images:', criticalImages);
 
 // Reset preloader if needed
 resetImagePreloader();

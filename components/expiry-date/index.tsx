@@ -27,7 +27,6 @@ const ExpiryDate = () => {
   }, []);
 
   const showPicker = useCallback((value) => {
-    console.log("showPicker", value.show);
     setShow(value.show);
   }, []);
 

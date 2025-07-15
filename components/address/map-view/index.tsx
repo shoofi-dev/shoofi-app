@@ -9,7 +9,6 @@ export type TProps = {
 };
 
 export const MapViewAddress = ({ region, location }: TProps) => {
-  console.log("location", location);
   return (
     <View
       pointerEvents="none"

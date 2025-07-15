@@ -254,7 +254,6 @@ class DeliveryDriverStore {
     this.profileLoading = true;
     try {
       const profileData = await this.getProfileFromServer(driverId);
-      console.log("profileData", profileData);
       runInAction(() => {
         this.profile = profileData;
         if (profileData?.currentLocation) {

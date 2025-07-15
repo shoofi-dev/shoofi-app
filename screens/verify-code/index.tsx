@@ -52,7 +52,6 @@ const VerifyCodeScreen = ({ route }) => {
   const { t } = useTranslation();
   const { authStore, cartStore, userDetailsStore } = useContext(StoreContext);
   const { phoneNumber } = route.params;
-  console.log("phoneNumber", phoneNumber);
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState(true);
@@ -161,10 +160,7 @@ const VerifyCodeScreen = ({ route }) => {
           await AsyncStorage.removeItem("@storage_verifyCode");
           if (response.data.fullName) {
             //DeviceEventEmitter.emit(`PREPARE_APP`);
-            console.log(
-              "XXXXXXXXXXA4",
-              authStore.verifyCodeToken.startsWith("11")
-            );
+  
             userDetailsStore
               .getUserDetails({
                 isDriver: authStore.verifyCodeToken.startsWith("11"),
@@ -182,7 +178,6 @@ const VerifyCodeScreen = ({ route }) => {
           }
         })
         .catch(function (error) {
-          console.log(error);
         });
     } else {
       setIsValid(false);

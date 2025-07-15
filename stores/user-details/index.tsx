@@ -25,7 +25,6 @@ class UserDetailsStore {
   }
 
   getUserDetailsFromServer = (params?: {isDriver?: boolean}) => {
-    console.log("XXXXXXXXXXA2", params)
     return axiosInstance
       .get(
         `${CUSTOMER_API.CONTROLLER}/${CUSTOMER_API.GET_USER_DETAILS}`,
@@ -71,7 +70,6 @@ class UserDetailsStore {
     if(this.userDetails?.isDriver && role){
       isHavePermission = this.userDetails?.roles.indexOf(role) > -1;
     }
-    console.log("this.userDetails?.isDriver", this.userDetails?.isDriver);
     return this.userDetails?.isDriver && isHavePermission;
   }
 

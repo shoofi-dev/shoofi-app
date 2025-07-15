@@ -26,7 +26,6 @@ class TranslationsStore {
         return response;
       })
       .catch((error) => {
-        console.log(error);
       });
   };
 
@@ -50,7 +49,6 @@ class TranslationsStore {
         return response;
       })
       .catch((error) => {
-        console.log(error);
       });
   };
 
@@ -74,7 +72,6 @@ class TranslationsStore {
         return response;
       })
       .catch((error) => {
-        console.log(error);
       });
   };
 
@@ -98,7 +95,6 @@ class TranslationsStore {
         return response;
       })
       .catch((error) => {
-        console.log(error);
       });
   };
 

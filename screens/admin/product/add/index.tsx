@@ -293,7 +293,6 @@ const AddProductScreen = ({ route }) => {
           ? { ...processedProduct, img: image }
           : processedProduct;
         setSelectedProduct(updatedData as TProduct);
-        console.log("updatedData", updatedData)
         
         menuStore
           .addOrUpdateProduct(updatedData, isEditMode, !!image)

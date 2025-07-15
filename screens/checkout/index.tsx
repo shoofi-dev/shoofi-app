@@ -88,7 +88,6 @@ const CheckoutScreen = ({ route }) => {
 
   // useEffect(() => {
   //   if (editOrderData) {
-  //     console.log("editOrderData",editOrderData.order.receipt_method)
   //     setShippingMethod(editOrderData.order.receipt_method);
   //     setPaymentMthod(editOrderData.order.payment_method);
   //     ordersStore.setOrderType(editOrderData.orderType);
@@ -265,9 +264,7 @@ const CheckoutScreen = ({ route }) => {
           couponsStore.appliedCoupon.discountAmount
         );
         
-        console.log('Coupon redeemed successfully');
       } catch (error) {
-        console.error('Failed to redeem coupon:', error);
         // Continue with checkout even if coupon redemption fails
       }
     }

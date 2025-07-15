@@ -61,7 +61,6 @@ export const PlacePickCmp = ({ onChnage, selectedPlace }: TProps) => {
   };
 
   const handleConfirmActionAnswer = (data) => {
-    console.log("handleConfirmActionAnswer", data);
     // setIsOpenConfirmActiondDialog(false);
   };
 

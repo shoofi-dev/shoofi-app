@@ -153,7 +153,6 @@ const ProfileScreen = () => {
         break;
     }
   };
-console.log(userAddress);
   return (
     <View style={{ height: "100%" , backgroundColor: themeStyle.WHITE_COLOR,  }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>

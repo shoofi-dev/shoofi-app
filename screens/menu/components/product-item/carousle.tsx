@@ -51,16 +51,8 @@ const ProductCarousleItem = ({
   };
 
   const getPriceBySize = (product) => {
-    // if (product.extras.size.value == "large") {
-    //   console.log("product.extras.size.options", product.extras.size.value);
-    //   console.log("product.extras.size.options", product.nameAR);
-    // }
 
     return product.extras.size.options[product.extras.size.value].price;
-    const size = product.extras.size.options?.filter(
-      (size) => size.title === product.extras.size.value
-    )[0];
-    return size.price;
   };
 
   const onAddToCart = (prodcut) => {

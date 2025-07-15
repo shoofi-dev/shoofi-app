@@ -241,21 +241,15 @@ const App = () => {
             ]).then(async (res: any) => {
               const store = res[0];
               if(store?.appName){
-                console.log("storexxx", store)
                 const storeData = shoofiAdminStore.getStoreById(store.appName);
                 await shoofiAdminStore.setStoreDBName(storeData?.appName || store?.appName);
                 await menuStore.getMenu();
                 await storeDataStore.getStoreData();
-                console.log("storeId", store.appName)
-                
               }else{
                 const appNameStorage: any = await shoofiAdminStore.getStoreDBName();
                 const cartStoreDBName = await cartStore.getCartStoreDBName();
-
-                console.log("appNameStorage", appNameStorage)
                 if(cartStoreDBName){
                   // await shoofiAdminStore.setStoreDBName(appNameStorage);
-                  console.log("cartStoreDBName", cartStoreDBName)
                     await storeDataStore.getStoreData(cartStoreDBName);
                   
                 // await menuStore.getMenu();
@@ -269,7 +263,6 @@ const App = () => {
           } else {
             const data = await AsyncStorage.getItem("@storage_terms_accepted");
             const cartStoreDBName = await cartStore.getCartStoreDBName();
-            console.log("cartStoreDBName", cartStoreDBName)
             if(cartStoreDBName){
               await storeDataStore.getStoreData(cartStoreDBName);
             }
@@ -293,7 +286,6 @@ const App = () => {
   const preloadCriticalImages = async () => {
     try {
       // TEMPORARY: Skip image preloading to fix stuck loading issue
-      console.log('TEMPORARY: Skipping image preloading to prevent stuck loading');
       setTimeout(() => {
         setAppIsReady(true);
       }, 0);
@@ -306,7 +298,6 @@ const App = () => {
       const skipImagePreloading = await AsyncStorage.getItem('@skip_image_preloading');
       
       if (skipImagePreloading === 'true') {
-        console.log('Skipping image preloading for faster startup');
         // Set app as ready immediately
         setTimeout(() => {
           setAppIsReady(true);
@@ -322,11 +313,9 @@ const App = () => {
       const ads = []; // You can fetch ads here if needed
       
       const criticalImages = getCriticalImages(storeData, categories, ads);
-      console.log(`Starting to preload ${criticalImages.length} critical images...`);
       
       // If no critical images, skip preloading
       if (criticalImages.length === 0) {
-        console.log('No critical images to preload');
         setTimeout(() => {
           setAppIsReady(true);
         }, 0);

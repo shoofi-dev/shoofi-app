@@ -41,7 +41,6 @@ class ShoofiAdminStore {
         const res = response;
         return res;
       }).catch((error) => {
-        console.log(error);
       })
   };
 
@@ -70,7 +69,6 @@ class ShoofiAdminStore {
         const res = response;
         return res;
       }).catch((error) => {
-        console.log(error);
       })
   };
 
@@ -170,7 +168,6 @@ class ShoofiAdminStore {
       })
       return res[0];
     }).catch((error) => {
-      console.log(error);
     })
   };
 
@@ -184,7 +181,6 @@ class ShoofiAdminStore {
         const res = response;
         return res;
       }).catch((error) => {
-        console.log(error);
       })
   };
 

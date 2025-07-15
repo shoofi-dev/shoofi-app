@@ -44,11 +44,6 @@ const CalanderContainer = ({ data }: TProps) => {
     }
   };
 
-  useEffect(() => {
-    // console.log("WQOOO")
-    // setIsloading(true);
-    // getOrders(selectedDate);
-  }, [selectedDate]);
 
   const initOrderItemsByDate = (odersList) => {
     if (odersList?.length > 0) {
@@ -125,16 +120,12 @@ const CalanderContainer = ({ data }: TProps) => {
         //   }}
         // Callback that gets called when items for a certain month should be loaded (month became visible)
         loadItemsForMonth={(month) => {
-          console.log("trigger items loading");
         }}
         // Callback that fires when the calendar is opened or closed
         onCalendarToggled={(calendarOpened) => {
-          console.log(calendarOpened);
         }}
         // Callback that gets called on day press
         onDayPress={(day) => {
-          console.log("day.dateString", day.dateString);
-          console.log("P{PP");
           setIsloading(true);
           calanderStore.getDisabledHoursByDate(day.dateString).then((res) => {
             setSelectedDate(day.dateString);
@@ -142,12 +133,9 @@ const CalanderContainer = ({ data }: TProps) => {
             getOrders(day.dateString);
           });
 
-          console.log("dautostrig", day.dateString);
-          console.log("day pressed", day);
         }}
         // Callback that gets called when day changes while scrolling agenda list
         onDayChange={(day) => {
-          console.log("day changed");
         }}
         // Initially selected day
         selected={selectedDate}
@@ -223,7 +211,7 @@ const CalanderContainer = ({ data }: TProps) => {
         // If disabledByDefault={true} dates flagged as not disabled will be enabled. Default = false
         disabledByDefault={false}
         // If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make sure to also set the refreshing prop correctly
-        onRefresh={() => console.log("refreshing...")}
+        onRefresh={() => {}}
         // Set this true while waiting for new data from a refresh
         refreshing={true}
         // Add a custom RefreshControl component, used to provide pull-to-refresh functionality for the ScrollView

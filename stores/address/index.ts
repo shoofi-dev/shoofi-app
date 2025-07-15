@@ -129,8 +129,6 @@ class AddressStore {
     this.error = null;
     try {
         let localAddresses = await getLocalAddresses();
-        console.log("localAddresses", localAddresses);
-        console.log("addressId", addressId);
         const foundAddress = localAddresses.find(addr => addr._id === addressId);
         if (foundAddress) {
           localAddresses = localAddresses.filter(addr => addr._id !== addressId);
@@ -148,7 +146,6 @@ class AddressStore {
       await this.fetchAddresses(customerId);
       return response;
     } catch (error) {
-      console.log("error", error);
       runInAction(() => {
         this.error = "Failed to delete address";
         this.loading = false;
@@ -163,8 +160,6 @@ class AddressStore {
     try {
       if (!customerId) {
         let localAddresses = await getLocalAddresses();
-        console.log("localAddresses", localAddresses);
-        console.log("addressId", addressId);
         localAddresses = localAddresses.map(addr => ({
           ...addr,
           isDefault: addr._id === addressId,

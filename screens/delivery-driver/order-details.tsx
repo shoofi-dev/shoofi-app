@@ -73,7 +73,6 @@ const OrderDetailsScreen = observer(() => {
       // Check if there's only one notification and navigate to dashboard
       // Since notifications are not stored in the store, we'll navigate based on the action
       // This will be handled by the notifications screen when the user interacts with notifications
-      console.log('Order status updated, navigation will be handled by notifications screen');
       
       Alert.alert('Success', 'Order status updated successfully');
     } catch (error) {

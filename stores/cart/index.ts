@@ -222,8 +222,6 @@ class CartStore {
   isDifferentStore = async () => {
     const cartStoreDBName = await this.getCartStoreDBName();
     const storeDBName = await AsyncStorage.getItem("@storage_storeDB");
-    console.log("cartStoreDBName", cartStoreDBName);
-    console.log("storeDBName", storeDBName);
     return cartStoreDBName && storeDBName && cartStoreDBName !== storeDBName;
   };
 
@@ -371,7 +369,6 @@ class CartStore {
     };
     const version = Constants.nativeAppVersion;
     const hashKey = await this.getHashKey(finalOrder);
-    console.log("order.shippingPrice", order.shippingPrice);
     const cartData: TCart = {
       order: finalOrder,
       total: order.totalPrice,
@@ -552,7 +549,6 @@ class CartStore {
         return response.data;
       })
       .catch(function (error) {
-        console.log(error);
       });
   };
 
@@ -567,7 +563,6 @@ class CartStore {
         return response;
       })
       .catch(function (error) {
-        console.log(error);
       });
   };
 

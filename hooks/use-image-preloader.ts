@@ -94,10 +94,8 @@ export const useImagePreloader = () => {
       
       // Log results
       const successCount = results.filter(r => r.success).length;
-      console.log(`Image preloading complete: ${successCount}/${images.length} images loaded successfully`);
       
     } catch (error) {
-      console.error('Error during image preloading:', error);
       setIsPreloading(false);
       setIsComplete(true);
     }
@@ -114,9 +112,7 @@ export const useImagePreloader = () => {
   const toggleImagePreloading = useCallback(async (enabled: boolean) => {
     try {
       await AsyncStorage.setItem('@skip_image_preloading', (!enabled).toString());
-      console.log(`Image preloading ${enabled ? 'enabled' : 'disabled'}`);
     } catch (error) {
-      console.error('Error toggling image preloading setting:', error);
     }
   }, []);
 

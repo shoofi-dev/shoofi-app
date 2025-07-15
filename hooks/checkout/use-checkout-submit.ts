@@ -56,12 +56,10 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     const minInterval = 3000; // 3 seconds minimum between submissions
     
     if (isSubmittingRef.current) {
-      console.log('Order submission already in progress, ignoring duplicate request');
       return false;
     }
     
     if (now - lastSubmissionTimeRef.current < minInterval) {
-      console.log('Order submission too soon after last attempt, ignoring duplicate request');
       return false;
     }
     
@@ -70,7 +68,6 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     onLoadingOrderSent(true);
     
     try {
-      console.log("location2xxx", address?.location);
     const order: any = {
       paymentMthod,
       shippingMethod,

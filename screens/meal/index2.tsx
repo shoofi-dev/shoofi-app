@@ -279,7 +279,6 @@ const MealScreen = ({
   };
 
   const updateOthers = (value, key, type) => {
-    console.log("updateOthers", value, key, type);
     setMeal({ ...meal, [type]: { ...meal[type], [key]: value } });
   };
 

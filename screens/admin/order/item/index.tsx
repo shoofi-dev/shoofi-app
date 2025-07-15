@@ -29,11 +29,7 @@ export const canceledStatuses = ["4", "5"];
 const OrderItem = ({ order }: {order: any}) => {
 // const from_date = today.startOf('week');
 // const to_date = today.endOf('week');
-// console.log({
-//   from_date: from_date.toString(),
-//   today: moment().toString(),
-//   to_date: to_date.toString(),
-// });
+
 // var currentDate = moment();
 
 // var weekStart = currentDate.clone().startOf('month');
@@ -44,7 +40,6 @@ const OrderItem = ({ order }: {order: any}) => {
 // for (var i = 0; i <= 20; i++) {
 //   days.push(moment(weekStart).add(i, 'days').format("MMMM Do,dddd"));
 // }
-// console.log(days)
   const { t } = useTranslation();
   const { menuStore, ordersStore, authStore, storeDataStore,languageStore } = useContext(
     StoreContext
@@ -117,7 +112,6 @@ const OrderItem = ({ order }: {order: any}) => {
 
 const updateOrderStatus = (order) => {
   ordersStore.updateOrderStatus(order)
-  // console.log(order.customerDetails.recipet)
   //testPrint(order);
 }
 

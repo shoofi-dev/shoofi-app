@@ -57,7 +57,6 @@ const AddressForm = observer(({ route,address }: any) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("addressEEEEE", address);
     if (address) {
       setFormData(address);
     }
@@ -91,9 +90,6 @@ const AddressForm = observer(({ route,address }: any) => {
   };
 
   const handlePlaceSelected = (data: any, details: any) => {
-    console.log("data", data);
-    console.log("details", details);
-
     if (details) {
       // Handle Google Places selection with details
       const addressComponents = details.address_components || [];
@@ -186,7 +182,6 @@ const AddressForm = observer(({ route,address }: any) => {
             }
           }
         } catch (googleError) {
-          console.log("Google Geocoding failed:", googleError);
           // If Google API fails, use whatever Expo provided
           streetAddress = expoAddress?.street || "";
           cityAddress = expoAddress?.city || "";
@@ -203,13 +198,6 @@ const AddressForm = observer(({ route,address }: any) => {
           coordinates: [longitude, latitude],
         },
       }));
-
-      // Log the results for debugging
-      console.log("Expo Address:", expoAddress);
-      console.log("Final Street:", streetAddress);
-      console.log("Final City:", cityAddress);
-      console.log("FormData updated with current location");
-
     } catch (error) {
       console.error("Location error:", error);
       setError("location", "Failed to get current location");
@@ -239,14 +227,11 @@ const AddressForm = observer(({ route,address }: any) => {
       addressStore.getLocationSupported(location).then(async (res: any) => {
         if (res.available) {
           if (address) {
-            console.log("updateAddress", address);
             await addressStore.updateAddress(customerId, address._id, formData);
             DeviceEventEmitter.emit(
               `${DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG}_HIDE`
             );
           } else {
-            console.log("addAddress", formData);
-
             await addressStore.addAddress(customerId, formData);
             DeviceEventEmitter.emit(
               `${DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG}_HIDE`
@@ -257,7 +242,6 @@ const AddressForm = observer(({ route,address }: any) => {
         }
       });
     } catch (error) {
-      console.log("error", error);
       setError("general", t("failed-to-save-address"));
     } finally {
       setLoading(false);

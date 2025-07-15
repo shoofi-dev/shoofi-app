@@ -13,9 +13,7 @@ export default i18n;
 
 export const setTranslations = (translations: any) => {
   return new Promise(async (resolve)=>{
-    //console.log("XXXX")
 
-    //console.log("setTranslations", translations)
     const arLang = {};
     const heLang = {};
     // translations.forEach(element => {

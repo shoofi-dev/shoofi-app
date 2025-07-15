@@ -188,7 +188,6 @@ class OrdersStore {
   };
 
   updateOrderStatus = async (order: any, shouldSendSms = true) => {
-    console.log("order.status",order.status)
     switch (order.status) {
       case ORDER_STATUS.IN_PROGRESS:
         if (order.order.receipt_method == SHIPPING_METHODS.shipping) {

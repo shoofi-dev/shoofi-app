@@ -60,7 +60,6 @@ const useNotifications = (): UseNotificationsReturn => {
   // Handle WebSocket connection status changes
   useEffect(() => {
     if (isConnected) {
-      console.log('WebSocket connected for notifications');
       setError(null);
 
     } else if (connectionStatus === 'error') {
@@ -302,10 +301,8 @@ const useNotifications = (): UseNotificationsReturn => {
             }
           )
           // You might want to send this token to your server
-          console.log('Push notification token:', token);
         }
       } catch (error) {
-        console.error('Failed to register for push notifications:', error);
       }
     };
     if(authStore.isLoggedIn() && userDetailsStore.userDetails?.customerId){
@@ -320,11 +317,9 @@ const useNotifications = (): UseNotificationsReturn => {
 
     // Set up notification listeners
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      console.log('Notification received:', notification);
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('Notification response:', response);
       // Handle notification tap
       const notificationData = response.notification.request.content.data;
       // Navigate to appropriate screen based on notification data

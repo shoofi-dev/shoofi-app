@@ -33,9 +33,6 @@ class ExtrasStore {
       
       const val = this.selections[extra.id];
       if (extra.required || true) {
-        console.log("extra.id",extra.id)
-        console.log("this.selections", this.selections);
-        console.log("val", val);
         if (extra.type === "single" && !val) return false;
         // if (extra.type === "multi" && (!val || val.length < (extra.min || 1))) return false;
         // if (extra.type === "counter" && (val === undefined || val < (extra.min || 0))) return false;

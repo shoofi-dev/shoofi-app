@@ -40,11 +40,9 @@ import EscPosPrinter, {
         .newline(3)
         .cut();
   
-      console.log("Success:", status);
       return status;
   
     } catch (e) {
-      console.log("Error:", e);
     }
   };
   

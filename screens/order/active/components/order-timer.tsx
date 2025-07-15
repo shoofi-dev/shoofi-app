@@ -85,9 +85,6 @@ async function getTotalAndRemainingMinutes(
                 0,
                 Math.ceil((deliveryTime.getTime() - nowDate.getTime()) / 60000)
               );
-              console.log("totalMinutes",deliveryTime)
-              console.log("created",new Date(order.created))
-              console.log("delivery.expectedDeliveryAt",delivery.expectedDeliveryAt)
               return {
                 status: "preparing",
                 totalMinutes,
@@ -107,7 +104,6 @@ async function getTotalAndRemainingMinutes(
             0,
             Math.ceil((orderDate - now) / 60000)
           );
-          console.log("totalMinutes2",totalMinutes)
 
           return {
             status: "preparing",
@@ -146,7 +142,6 @@ async function getTotalAndRemainingMinutes(
               0,
               Math.ceil((deliveryTime.getTime() - nowDate.getTime()) / 60000)
             );
-            console.log("elivery.status", delivery.status);
             let status = "";
               switch (delivery.status) {
                 case DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT:
@@ -321,7 +316,6 @@ const OrderTimer: React.FC<OrderTimerProps> = ({ mockData, order }) => {
     const delivery = await ordersStore.getDeliveryByBookId(
       timerData?.order?.orderId
     );
-    console.log("deliveryxxx", delivery.status);
     if (delivery?.status == DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT) {
       setShowCartIcon(false);
       updateTimerData();
@@ -350,7 +344,6 @@ const OrderTimer: React.FC<OrderTimerProps> = ({ mockData, order }) => {
       )
     );
     const filledSegments = Math.round(progress * SEGMENTS);
-    console.log("remaining", remaining);
     // For Hebrew/RTL: time first, then "דק'"
     const timeValue = remaining?.toString().padStart(2, "0") || "00";
     const timeUnit = t("דק"); // e.g. דק'

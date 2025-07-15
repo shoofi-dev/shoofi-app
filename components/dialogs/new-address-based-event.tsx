@@ -35,7 +35,6 @@ export default function NewAddressBasedEventDialog() {
   const openDialog = () => setVisible(true);
 
   const hideDialog = () => {
-    console.log("hideDialog");
     setVisible(false);
   };
 

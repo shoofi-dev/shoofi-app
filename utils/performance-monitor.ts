@@ -179,8 +179,6 @@ export function logPerformanceReport(): void {
 
   const report = performanceMonitor.getReport();
   console.group('🚀 Performance Report');
-  console.log('Summary:', report.summary);
-  console.log('Metrics:', report.metrics);
   console.groupEnd();
 }
 

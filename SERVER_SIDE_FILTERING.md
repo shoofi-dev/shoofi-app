@@ -211,7 +211,6 @@ function handleStoreUpdate(message) {
 // Listen for store status changes
 useEffect(() => {
   const handleStoreStatusChange = () => {
-    console.log('Store status changed, refreshing explore data...');
     refetch();
   };
 

@@ -287,7 +287,6 @@ const _useCheckoutValidate = () => {
   }: TProps) => {
     // 1. Validate store availability
     const storeStatus = await isStoreAvailable();
-    console.log("storeStatus", storeStatus);
     
     const isCustomErrorMessage = await isErrCustomMessage(storeStatus);
     if (isCustomErrorMessage) {

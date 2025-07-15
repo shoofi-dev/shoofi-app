@@ -43,7 +43,6 @@ const MenuScreen = () => {
 
   const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore, websocket } =
     useContext(StoreContext);
-  console.log("storeDataStore", storeDataStore?.storeData?.isOpen)
   const { availableDrivers, loading: driversLoading } = useAvailableDrivers();
   const { isConnected, connectionStatus, lastMessage } = websocket;
 
@@ -53,7 +52,6 @@ const MenuScreen = () => {
           if (lastMessage.type === 'menu_refresh') {
             // Check if the message is for the current app
             if (lastMessage.data?.appName === storeDataStore.storeData?.appName) {
-              console.log('Received menu refresh message:', lastMessage );
               // Refresh the menu
               menuStore.getMenu();
             }
@@ -94,7 +92,6 @@ const MenuScreen = () => {
         // Check if we're coming from stores-list via route params
         const isFromStoresList = route.params?.fromStoresList;
         
-        console.log("isFromStoresList", !!isFromStoresList, "route params:", route.params);
         
         if (isFromStoresList) {
           // Clear store data first to prevent showing old data
@@ -128,10 +125,6 @@ const MenuScreen = () => {
 
   const handleCategorySelect = useCallback(
     (cat) => {
-      console.log("=== Category Select Debug ===");
-      console.log("Selected category ID:", cat._id);
-      console.log("Selected category name:", cat.nameHE || cat.nameAR);
-      
       if (selectedCategory?._id !== cat._id) {
         // Set flag to prevent scroll handler from overriding
         manualSelectionRef.current = true;
@@ -140,7 +133,6 @@ const MenuScreen = () => {
         
         // Find the category index in the list
         const categoryIndex = categoryList.findIndex(c => c._id === cat._id);
-        console.log("Category index:", categoryIndex);
         
         if (categoryIndex !== -1) {
           // Calculate approximate position based on category index
@@ -154,7 +146,6 @@ const MenuScreen = () => {
           }
           
           const finalOffset = SCROLLABLE_PART_HEIGHT + offset + 15 - STICKY_HEADER_HEIGHT;
-          console.log("Scrolling to offset:", finalOffset);
           
           scrollViewRef.current?.scrollTo({
             y: finalOffset,
@@ -180,7 +171,6 @@ const MenuScreen = () => {
       categoryUpdateTimeoutRef.current = setTimeout(() => {
         const category = categoryList.find((cat) => cat._id === categoryId);
         if (selectedCategory?._id !== categoryId) {
-          console.log("Setting selected category to:", categoryId);
           setSelectedCategory(category);
         }
       }, 50);

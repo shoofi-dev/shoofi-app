@@ -108,7 +108,6 @@ const useWebSocket = (): UseWebSocketReturn => {
     // Prevent duplicate messages by ensuring single connection
     share: false,
     onOpen: () => {
-      console.log('WebSocket connected successfully');
       statsRef.current.lastConnectionTime = Date.now();
       reconnectAttemptsRef.current = 0;
       setState(prev => ({
@@ -122,7 +121,6 @@ const useWebSocket = (): UseWebSocketReturn => {
       }));
     },
     onClose: (event: CloseEvent) => {
-      console.log('WebSocket closed:', event.code, event.reason);
       setState(prev => ({
         ...prev,
         isConnected: false,
@@ -157,14 +155,12 @@ const useWebSocket = (): UseWebSocketReturn => {
           const cartStoreDBName = await cartStore.getCartStoreDBName();
           if(cartStoreDBName && message.data?.appName !== cartStoreDBName){
             if (message.data?.appName === cartStoreDBName) {
-              console.log('Received store refresh message:', message );
               // Refresh the store data
               storeDataStore.getStoreData();
             }
           }
 
           if (message.data?.appName === storeDataStore.storeData?.appName) {
-            console.log('Received store refresh message:', message );
             // Refresh the store data
             storeDataStore.getStoreData();
           }
@@ -203,7 +199,6 @@ const useWebSocket = (): UseWebSocketReturn => {
 
   // Update state based on readyState
   useEffect(() => {
-    console.log('WebSocket readyState changed:', readyState);
     switch (readyState) {
       case ReadyState.CONNECTING:
         setState(prev => ({

@@ -276,7 +276,6 @@ const ExploreScreen = () => {
   const [hideSplash, setHideSplash] = useState(false);
   useEffect(() => {
     if (websocket?.lastMessage) {
-      console.log("websocket?.lastMessage", websocket?.lastMessage);
       if (websocket?.lastMessage?.type === "store_refresh") {
         setHideSplash(true);
         refetch();
@@ -286,12 +285,6 @@ const ExploreScreen = () => {
 
   // Get user location for filtering
   useEffect(() => {
-    console.log("Location effect triggered:", {
-      hasDefaultAddress: !!addressStore.defaultAddress,
-      hasLocation: !!addressStore.defaultAddress?.location,
-      location: addressStore.defaultAddress?.location,
-    });
-
     if (addressStore.defaultAddress?.location) {
       setUserLocation(addressStore.defaultAddress.location);
     } else {
@@ -301,7 +294,6 @@ const ExploreScreen = () => {
 
   // Build API URLs with location parameter - use stable object
   const apiUrls = useMemo((): ApiUrls => {
-    console.log("Building API URLs with userLocation:", userLocation);
 
     const baseUrls: ApiUrls = {
       generalCategories: "/category/general/all",
@@ -313,7 +305,6 @@ const ExploreScreen = () => {
         : "/shoofiAdmin/explore/categories-with-stores",
     };
 
-    console.log("API URLs built:", baseUrls);
     return baseUrls;
   }, [userLocation]);
 
@@ -362,7 +353,6 @@ const ExploreScreen = () => {
   // Listen for store status changes and refresh data
   useEffect(() => {
     const handleStoreStatusChange = () => {
-      console.log("Store status changed, refreshing explore data...");
       refetch();
     };
 

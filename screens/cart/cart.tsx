@@ -411,7 +411,6 @@ const CartScreen = ({ route }) => {
     // Check store availability first
     
     const storeStatus = await isStoreAvailable();
-    console.log("storeStatus", storeStatus);
 
     const isCustomErrorMessage = await isErrCustomMessage(storeStatus);
     if (isCustomErrorMessage) {
@@ -439,7 +438,6 @@ const CartScreen = ({ route }) => {
   };
 
   const onChangeTotalPrice = (toalPriceValue) => {
-    console.log("toalPriceValue", toalPriceValue);
     setTotalPrice(toalPriceValue);
   };
 
@@ -483,7 +481,6 @@ const CartScreen = ({ route }) => {
     }
     return true;
   };
-  console.log("storeDataStore.storeData?.isOrderLaterSupport", storeDataStore.storeData)
 
   // STORE IS CLOSE - END
   return (

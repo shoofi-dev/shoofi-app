@@ -136,7 +136,6 @@ import { useIsFocused } from "@react-navigation/native";
     useEffect(() => {
       if (shoofiAdminStore.storesList) {
         const tmpList = shoofiAdminStore.storesList?.filter((store)=> store.categoryId === categoryId);
-        console.log("categoryId",tmpList)
 
         setStoresList(tmpList);
       }
