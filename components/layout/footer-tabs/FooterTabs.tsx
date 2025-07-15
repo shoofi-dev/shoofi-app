@@ -344,7 +344,7 @@ const FooterTabs = () => {
     if (authStore.isLoggedIn()) {
      // getUserDetails();
     }
-  }, [authStore.userToken]);
+  }, [userDetailsStore.userDetails?.customerId]);
 
   return (
     <Tab.Navigator

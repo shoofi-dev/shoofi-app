@@ -356,7 +356,7 @@ const MenuScreen = () => {
         {cartCount > 0 && (
           <Button
             text={t("show-order")}
-            icon="orders"
+            icon="orders-new1"
             iconSize={themeStyle.FONT_SIZE_XL}
             fontSize={themeStyle.FONT_SIZE_XL}
             iconColor={themeStyle.SECONDARY_COLOR}

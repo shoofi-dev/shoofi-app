@@ -66,7 +66,7 @@ export default function BottomTabBar({ state, navigation }) {
     });
   };
   useEffect(() => {
-    if(authStore.isLoggedIn() && !userDetailsStore.isAdmin()){
+    if(authStore.isLoggedIn()){
     setIsLoading(true);
     getOrders();
     setTimeout(() => {
@@ -77,7 +77,7 @@ export default function BottomTabBar({ state, navigation }) {
       }, 30 * 1000);
       return () => clearInterval(interval);
     }
-  }, []);
+  }, [userDetailsStore.userDetails?.customerId]);
 
   return (
     <View style={[styles.wrapperContainer, {width: ordersList.length > 0 ?  "95%" : "100%"}]}>
