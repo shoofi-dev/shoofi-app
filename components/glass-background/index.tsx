@@ -40,7 +40,7 @@ const GlassBG: React.FC<GGlassBGProps> = ({
         style={[
           StyleSheet.absoluteFill,
           {
-            backgroundColor: 'rgba(0, 0, 0, 0.20)', // lower opacity for better glass effect
+            backgroundColor: 'rgba(0, 0, 0, 0.30)', // lower opacity for better glass effect
             // backgroundColor: 'rgba(43, 41, 41, 0.18)', // lower opacity for better glass effect
             borderWidth: 1,
             borderColor: 'rgba(162, 162, 162, 0.18)',

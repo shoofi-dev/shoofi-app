@@ -41,7 +41,7 @@ const StoreChangeConfirmationDialog: React.FC<StoreChangeConfirmationDialogProps
               <Button
                 text={t('cancel')}
                 onClickFn={onCancel}
-                bgColor={themeStyle.WARNING_COLOR}
+                bgColor={themeStyle.GRAY_40}
               />
             </View>
             <View style={styles.buttonSeparator} /> 
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     paddingHorizontal: 15,
     marginTop: 100,
+    paddingBottom: 20,
     
   },
   container: {

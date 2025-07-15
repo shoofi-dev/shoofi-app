@@ -144,7 +144,6 @@ export function useParallelFetch<T extends Record<string, any>>(
   const { ttl = 5 * 60 * 1000, enabled = true, dependencies = [] } = options;
 
   const fetchAll = useCallback(async () => {
-    console.log('fetchAll called with requests:', requests);
     setLoading(true);
     setError(null);
 
@@ -153,21 +152,17 @@ export function useParallelFetch<T extends Record<string, any>>(
       const cacheKeys = Object.keys(requests);
       const cacheKey = cacheKeys.join('|');
       
-      console.log('Cache key:', cacheKey);
       
       // Check if all data is cached
       const cachedEntry = cache.get(cacheKey);
       if (cachedEntry && Date.now() - cachedEntry.timestamp < cachedEntry.ttl) {
-        console.log('Using cached data for:', cacheKey);
         setData(cachedEntry.data);
         setLoading(false);
         return;
       }
 
-      console.log('Making API calls for:', cacheKey);
       // Fetch all requests in parallel
       const promises = Object.entries(requests).map(async ([key, url]) => {
-        console.log(`Fetching ${key}:`, url);
         const response = await axiosInstance.get(url);
         return [key, response.data || response] as [keyof T, any];
       });
@@ -182,7 +177,6 @@ export function useParallelFetch<T extends Record<string, any>>(
         ttl,
       });
 
-      console.log('API calls completed, data cached');
       setData(resultData);
     } catch (err: any) {
       setError(err);
@@ -200,12 +194,6 @@ export function useParallelFetch<T extends Record<string, any>>(
   }, [requests, fetchAll]);
 
   useEffect(() => {
-    console.log('useParallelFetch useEffect triggered:', {
-      enabled,
-      dependencies,
-      requests
-    });
-    
     if (enabled) {
       fetchAll();
     }

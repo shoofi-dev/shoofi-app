@@ -54,8 +54,6 @@ export default function TotalPriceCMP({
   }, [cartStore.cartItems]);
 
   useEffect(() => {
-    console.log("shippingMethod", shippingMethod);
-    console.log("areaDeliveryPrice", areaDeliveryPrice);
     const deliveryPriceTmp =
       shippingMethod === SHIPPING_METHODS.shipping
         ? areaDeliveryPrice || 0
@@ -86,7 +84,6 @@ export default function TotalPriceCMP({
             totalPrice,
             deliveryPrice
           );
-          console.log("autoCoupon", autoCoupon);
           if (autoCoupon) {
             setAppliedCoupon(autoCoupon);
             setDiscount(autoCoupon.discountAmount);
@@ -113,10 +110,7 @@ export default function TotalPriceCMP({
     const effectiveDeliveryPrice =
       appliedCoupon?.coupon.type === "free_delivery" ? 0 : deliveryPrice;
     const totalPriceTmp = itemsPrice + deliveryPrice - discount;
-    console.log("totalPriceTmp", totalPriceTmp);
-    console.log("itemsPrice", itemsPrice);
-    console.log("effectiveDeliveryPrice", effectiveDeliveryPrice);
-    console.log("discount", discount);
+
     setTotalPrice(totalPriceTmp);
     onChangeTotalPrice(totalPriceTmp);
   };

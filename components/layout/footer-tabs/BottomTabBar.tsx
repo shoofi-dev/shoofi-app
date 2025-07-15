@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -6,11 +6,13 @@ import {
   StyleSheet,
   I18nManager,
 } from "react-native";
+import { observer } from "mobx-react-lite";
 import { StoreContext } from "../../../stores";
 import GlassBG from "../../glass-background";
 import themeStyle from "../../../styles/theme.style";
 import Icon from "../../icon";
 import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const tabs = [
   {
@@ -38,11 +40,12 @@ const tabs2 = [
   },
 ];
 
-export default function BottomTabBar({ state, navigation }) {
+const BottomTabBar = observer(({ state, navigation }) => {
   const { t } = useTranslation();
   const { authStore, ordersStore, userDetailsStore } = useContext(StoreContext);
   const [ordersList, setOrdersList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const intervalRef = useRef(null);
   const handleTabPress = (route) => {
     if (route.key === "Profile") {
       if (authStore.isLoggedIn()) {
@@ -59,25 +62,51 @@ export default function BottomTabBar({ state, navigation }) {
   const handleActiveOrdersPress = () => {
     navigation.navigate("active-orders");
   };
-  const getOrders = () => {
+  const getOrders = async () => {
+    const token = await AsyncStorage.getItem("@storage_userToken");
+    if(token){
     ordersStore.getCustomerActiveOrders().then((res) => {
       setOrdersList(res || []);
       setIsLoading(false);
     });
+  }else{
+    setOrdersList([]);
+  }
   };
   useEffect(() => {
-    if(authStore.isLoggedIn()){
-    setIsLoading(true);
-    getOrders();
-    setTimeout(() => {
+    const getToken = async () => {
+      const token = await AsyncStorage.getItem("@storage_userToken");
+      return token;
+    }
+    const token = getToken();
+    // Clear any existing interval first
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    console.log("XXXXXXXXAASSXXX", token)
+    if(token){
+      setIsLoading(true);
       getOrders();
-    }, 15 * 1000);
-    const interval = setInterval(() => {
+      setTimeout(() => {
+        getOrders();
+      }, 15 * 1000);
+      intervalRef.current = setInterval(() => {
         getOrders();
       }, 30 * 1000);
-      return () => clearInterval(interval);
+    } else {
+      // Clear orders when user logs out
+      setOrdersList([]);
     }
-  }, [userDetailsStore.userDetails?.customerId]);
+
+    // Cleanup function
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [userDetailsStore.userDetails?.customerId, authStore.userToken]);
 
   return (
     <View style={[styles.wrapperContainer, {width: ordersList.length > 0 ?  "95%" : "100%"}]}>
@@ -168,7 +197,7 @@ export default function BottomTabBar({ state, navigation }) {
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   wrapperContainer: {
@@ -216,3 +245,5 @@ const styles = StyleSheet.create({
   },
   label: {},
 });
+
+export default BottomTabBar;

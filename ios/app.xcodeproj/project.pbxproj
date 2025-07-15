@@ -17,6 +17,7 @@
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		CDAB941BC66142DBB93E9D55 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA480E1E16614F69A57EEDE4 /* noop-file.swift */; };
 		CE8E87B61FA14096B3107870 /* deliverysound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 738FACC672E740EF849DDC51 /* deliverysound.wav */; };
+		785E75321210493287E2B13F /* customer.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1DFE657A3D4D42E8B9814F9C /* customer.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-app/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		1DFE657A3D4D42E8B9814F9C /* customer.wav */ = {isa = PBXFileReference; name = "customer.wav"; path = "app/customer.wav"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +67,7 @@
 				AA480E1E16614F69A57EEDE4 /* noop-file.swift */,
 				439E19D9B1A646D08FAC4B4F /* buffalosound.wav */,
 				738FACC672E740EF849DDC51 /* deliverysound.wav */,
+				1DFE657A3D4D42E8B9814F9C /* customer.wav */,
 			);
 			name = app;
 			sourceTree = "<group>";
@@ -208,6 +211,7 @@
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				A58D3060ECA949638B12EF2C /* buffalosound.wav in Resources */,
 				CE8E87B61FA14096B3107870 /* deliverysound.wav in Resources */,
+				785E75321210493287E2B13F /* customer.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

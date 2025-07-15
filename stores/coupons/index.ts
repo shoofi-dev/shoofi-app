@@ -6,6 +6,7 @@ class CouponsStore {
   selections = {};
   availableCoupons: Coupon[] = [];
   appliedCoupon: CouponApplication | null = null;
+  isFreeDelivery = false;
   loading = false;
   error: string | null = null;
 
@@ -68,7 +69,7 @@ class CouponsStore {
   }
 
   // Get and apply auto-apply coupons for a customer
-  async getAndApplyAutoCoupons(userId: string, orderAmount: number, deliveryFee?: number): Promise<CouponApplication | null> {
+  async getAndApplyAutoCoupons(userId?: string, orderAmount?: number, deliveryFee?: number): Promise<CouponApplication | null> {
     try {
       const response = await axiosInstance.get(`/coupons/auto-apply/${userId}?orderAmount=${orderAmount}&deliveryFee=${deliveryFee}`);
       const autoApplyCoupons: Coupon[] = response;
@@ -113,6 +114,7 @@ class CouponsStore {
 
         runInAction(() => {
           this.appliedCoupon = couponApp;
+          this.isFreeDelivery = couponApp.coupon.type === "free_delivery";
         });
 
         return couponApp;

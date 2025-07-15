@@ -32,14 +32,15 @@ export type TProps = {
   storeItem: any; 
   searchProducts?: any;
 
-  isExploreScreen?: boolean;
+  isExploreScreen?: boolean;  
+  coupon?: any;
 };
 
 const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  let { menuStore, cartStore, shoofiAdminStore, languageStore } =
+  let { menuStore, cartStore, shoofiAdminStore, languageStore, couponsStore } =
     useContext(StoreContext);
 
   // Memoized store selection handler
@@ -63,7 +64,7 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   const deliveryPrice = useMemo(() => storeItem.deliveryPrice || 10, [storeItem.deliveryPrice]);
   const isOpen = useMemo(() => storeItem.store.isOpen !== false, [storeItem.store.isOpen]);
   const logoUri = useMemo(() => storeItem.store.storeLogo?.uri, [storeItem.store.storeLogo?.uri]);
-  
+  const isDeliveryFree = useMemo(() => isOpen && couponsStore?.isFreeDelivery, [couponsStore?.isFreeDelivery]);
   const imageUri = useMemo(() => 
     (storeItem.store?.cover_sliders &&
       storeItem.store.cover_sliders.length > 0 &&
@@ -119,6 +120,10 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
       )}
       {!isOpen && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50}}>
         <Text style={[styles.storeStatusText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("store-closed")}</Text>
+      </View>}
+      {isDeliveryFree && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.SECONDARY_COLOR, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50, flexDirection:"row",alignItems:"center", justifyContent:"center"}}>
+        <Icon icon="delivery-free" size={16} color={themeStyle.GRAY_700} style={{marginRight: 5}} />
+        <Text style={[styles.freeDeliveryText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("free_delivery")}</Text>
       </View>}
       {/* Card Content */}
       <View style={styles.content}>
@@ -289,5 +294,9 @@ const styles = StyleSheet.create({
   storeStatusText: {
     fontSize: themeStyle.FONT_SIZE_SM,
     color: themeStyle.GRAY_80,
+  },
+  freeDeliveryText: {
+    fontSize: themeStyle.FONT_SIZE_SM,
+    color: themeStyle.PRIMARY_COLOR,
   },
 });

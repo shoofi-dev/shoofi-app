@@ -41,11 +41,7 @@ const TopBar = () => {
 
       <TouchableOpacity onPress={handleSearchPress} style={styles.searchIconContainer}>
         <Icon icon="search" size={28} />
-        {cartCount > 0 && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{cartCount}</Text>
-          </View>
-        )}
+ 
       </TouchableOpacity>
 
       {/* Cart Icon with Badge (always at start) */}

@@ -138,18 +138,29 @@ const SubCategoryItem = React.memo<CategoryItemProps>(
         style={{
           alignItems: "center",
           marginHorizontal: 8,
+          shadowColor: themeStyle.BLACK_COLOR,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 5,
+          backgroundColor: "#fff",
+          borderRadius: 20,
+          borderWidth: 0,
+          height: normalizeHeight(150)
+          
         }}
         onPress={onPress}
         activeOpacity={0.8}
+        
       >
         <View
           style={{
-            width: normalizeWidth(68),
-            height: normalizeHeight(68),
-            borderRadius: 30,
-            backgroundColor: CATEGORY_BG,
+            width: normalizeWidth(98),
+            height: normalizeHeight(98),
             justifyContent: "center",
             alignItems: "center",
+            overflow: "hidden",
+            borderTopEndRadius: 10,
+            borderTopStartRadius: 10,
           }}
         >
           {cat?.image?.uri ? (
@@ -157,7 +168,7 @@ const SubCategoryItem = React.memo<CategoryItemProps>(
               style={{
                 width: "100%",
                 height: "100%",
-                borderRadius: 20,
+            
               }}
               source={{ uri: `${cdnUrl}${cat.image?.uri}` }}
               showLoadingIndicator={false}
@@ -173,18 +184,20 @@ const SubCategoryItem = React.memo<CategoryItemProps>(
             />
           )}
         </View>
+        <View style={{ flex:1, justifyContent:"center", alignItems:"center"}}>
         <Text
           style={{
             fontSize: themeStyle.FONT_SIZE_SM,
             color: "#222",
             fontWeight: "500",
-            marginTop: 6,
             textAlign: "center",
             maxWidth: 70,
           }}
         >
           {categoryName}
         </Text>
+        </View>
+     
       </TouchableOpacity>
     );
   }
@@ -251,9 +264,9 @@ const ExploreScreen = () => {
   const {
     shoofiAdminStore,
     languageStore,
-    userDetailsStore,
     addressStore,
     websocket,
+    couponsStore,
   } = useContext(StoreContext);
   const navigation = useNavigation() as any;
   const [selectedGeneralCategory, setSelectedGeneralCategory] = useState(null);
@@ -261,7 +274,6 @@ const ExploreScreen = () => {
   const [defaultCategory, setDefaultCategory] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [hideSplash, setHideSplash] = useState(false);
-
   useEffect(() => {
     if (websocket?.lastMessage) {
       console.log("websocket?.lastMessage", websocket?.lastMessage);
@@ -326,13 +338,14 @@ const ExploreScreen = () => {
     }
   );
 
-  console.log("useParallelFetch called with:", {
-    userLocation,
-    enabled: !!userLocation,
-    apiUrls: userLocation ? apiUrls : "default",
-    loading,
-    hasData: !!fetchData,
-  });
+
+  useEffect(() => {
+    const getAutoCoupon = async () => {
+      await couponsStore?.getAndApplyAutoCoupons(null,null,25);
+    }
+    getAutoCoupon();
+  }, []);
+
 
   const generalCategories = (fetchData.generalCategories || []) as any[];
   const adsData = (fetchData.ads || []) as any[];
@@ -447,6 +460,7 @@ const ExploreScreen = () => {
             paddingVertical: 0,
             paddingHorizontal: 8,
             marginTop: 20,
+            paddingBottom: 30,
           }}
           contentContainerStyle={{
             flexDirection: I18nManager.isRTL ? "row" : "row",
