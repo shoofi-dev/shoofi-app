@@ -627,7 +627,7 @@ const CartScreen = ({ route }) => {
                                   <Text
                                     style={{
                                       fontSize: themeStyle.FONT_SIZE_MD,
-                                      textAlign: "right",
+                                      textAlign: "left",
                                     }}
                                   >
                                     {languageStore.selectedLang === "ar"

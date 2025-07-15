@@ -185,6 +185,7 @@ const LoginScreen = () => {
                   fontSize: themeStyle.FONT_SIZE_SM,
                   fontWeight: "bold",
                   color: themeStyle.GRAY_80,
+                  textAlign: "left",
                 }}
               >
                 {userDetailsStore.isAdmin()

@@ -420,7 +420,7 @@ const MealScreen = ({
                 <Icon icon="chevron" size={20} style={{}} />
               </View>
             </TouchableOpacity>
-            <View style={{ marginTop: 10, marginLeft: 30 }}>
+            <View style={{ marginTop: 10, marginLeft: 30, alignItems: "flex-start" }}>
               <Text>{meal.others.note}</Text>
             </View>
           </View>

@@ -159,7 +159,7 @@ export const ShippingMethodPick = ({
         </Text>
         {isDeliverySupport && !driversLoading ? (
           <Text style={styles.pillOptionSubtext}>
-            {distanceKm ? distanceKm + " km · " : ""}
+            {/* {distanceKm ? distanceKm + " km · " : ""} */}
             {deliveryTime?.min} - {deliveryTime?.max} {t("minutes")}
           </Text>
         ) : driversLoading ? (

@@ -140,12 +140,13 @@ const SubCategoryItem = React.memo<CategoryItemProps>(
           marginHorizontal: 8,
           shadowColor: themeStyle.BLACK_COLOR,
           shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
+          shadowOpacity: 0.9,
           shadowRadius: 5,
+          elevation: 5,
           backgroundColor: "#fff",
           borderRadius: 20,
           borderWidth: 0,
-          height: normalizeHeight(150)
+          height: normalizeHeight(150),
           
         }}
         onPress={onPress}
@@ -161,6 +162,7 @@ const SubCategoryItem = React.memo<CategoryItemProps>(
             overflow: "hidden",
             borderTopEndRadius: 10,
             borderTopStartRadius: 10,
+            
           }}
         >
           {cat?.image?.uri ? (
@@ -213,7 +215,7 @@ const StoreSection = React.memo<StoreSectionProps>(
     );
 
     return (
-      <View style={{ marginBottom: 0 }}>
+      <View style={{ marginBottom: 0, alignItems: "flex-start" }}>
         <Text
           style={{
             fontSize: themeStyle.FONT_SIZE_LG,
@@ -221,6 +223,7 @@ const StoreSection = React.memo<StoreSectionProps>(
             marginHorizontal: 16,
             marginBottom: 12,
             marginTop: 0,
+            textAlign: "left",
           }}
         >
           {categoryName}
@@ -228,9 +231,8 @@ const StoreSection = React.memo<StoreSectionProps>(
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={{ paddingHorizontal: 8 }}
           contentContainerStyle={{
-            paddingRight: 16,
+ 
           }}
         >
           {storesInCategory.map((storeData) => (
@@ -242,12 +244,6 @@ const StoreSection = React.memo<StoreSectionProps>(
                 marginHorizontal: 8,
                 backgroundColor: "#fff",
                 borderRadius: 16,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-                overflow: "hidden",
               }}
             >
               <MemoizedStoreItem storeItem={storeData} isExploreScreen={true} />
@@ -454,6 +450,7 @@ const ExploreScreen = () => {
           }}
           contentContainerStyle={{
             flexDirection: I18nManager.isRTL ? "row" : "row",
+            paddingBottom: 10,
           }}
         >
           {categoriesWithStores?.map((categoryData) => (

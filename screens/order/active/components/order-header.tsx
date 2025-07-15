@@ -37,7 +37,7 @@ const OrderHeader = ({ order }) => {
           // marginTop: 25,
         }}
       >
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", }}>
           <View>
             <Text style={styles.dateRawText}>{t("order-number")}:</Text>
             <Text style={styles.dateRawText}>{order?.appName}</Text>
@@ -66,7 +66,7 @@ const OrderHeader = ({ order }) => {
           {/* {renderOrderDateRaw(order)} */}
         </View>
         <View style={{ marginHorizontal: 15, marginBottom: 10, marginTop: 10 }}>
-          <View>
+          <View style={{flexDirection:"row"}}>
             <Text style={styles.storeName}>
               {languageStore.selectedLang === "ar"
                 ? order?.storeData?.name_ar
@@ -88,7 +88,7 @@ const OrderHeader = ({ order }) => {
               </Text>
             </View>
           </View>
-          <View style={{ marginTop: 10 }}>
+          <View style={{ marginTop: 10, flexDirection:"row" }}>
             <Text style={styles.priceText}>₪{order.orderPrice}</Text>
           </View>
           <View style={{flexDirection:"row",justifyContent:"space-between", marginTop:40, alignItems:"center"}}>

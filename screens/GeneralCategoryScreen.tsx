@@ -126,7 +126,7 @@ const GeneralCategoryScreen = () => {
               style={{
                 alignItems: "center",
                 marginHorizontal: 8,
-
+                paddingBottom: 3,
                 height: 155, // Fixed height for all cards
               }}
               onPress={() => setSelectedCategory(cat)}

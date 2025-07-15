@@ -97,7 +97,7 @@ const InsertCustomerNameScreen = ({ route }) => {
         <BackButton />
       </View>
       <View style={styles.inputsContainer}>
-        <Text style={{ marginTop: 50, fontSize: themeStyle.FONT_SIZE_MD }}>
+        <Text style={{ marginTop: 50, fontSize: themeStyle.FONT_SIZE_MD, textAlign: "left" }}>
           {t("insert-customer-name")}
         </Text>
 

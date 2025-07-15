@@ -186,9 +186,10 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   rowTextContainer: {
-    flex: 1,
+    height: "100%",
     marginHorizontal: 12,
     justifyContent: "center",
+    alignItems: "flex-start",
   },
   rowProductName: {
     fontSize: themeStyle.FONT_SIZE_MD,

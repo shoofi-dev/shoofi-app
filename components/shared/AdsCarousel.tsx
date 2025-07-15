@@ -25,7 +25,7 @@ type AdsCarouselProps = {
 // Memoized ad item component
 const AdItem = React.memo(({ item }: { item: Ad }) => {
   const backgroundUrl = useMemo(() => cdnUrl + item.background, [item.background]);
-  
+  console.log("cdnUrl",backgroundUrl)
   return (
     <ImageBackground
       source={{ uri: backgroundUrl }}
@@ -41,7 +41,6 @@ const AdItem = React.memo(({ item }: { item: Ad }) => {
             source={{ uri: cdnUrl + img }}
             style={styles.productImg}
             resizeMode="cover"
-            cacheKey={img.split(/[\\/]/).pop()}
           />
         ))}
       </View>
@@ -174,6 +173,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.4)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
+    textAlign: "left",
   },
   subtitle: {
     color: 'white',
@@ -181,6 +181,8 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.3)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
+    textAlign: "left",
+
   },
   dotsRow: {
     flexDirection: 'row',

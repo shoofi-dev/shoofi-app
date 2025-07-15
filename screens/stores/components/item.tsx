@@ -63,8 +63,10 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   const location = useMemo(() => storeItem.store.location || "כפר קאסם", [storeItem.store.location]);
   const deliveryPrice = useMemo(() => storeItem.deliveryPrice || 10, [storeItem.deliveryPrice]);
   const isOpen = useMemo(() => storeItem.store.isOpen !== false, [storeItem.store.isOpen]);
+  const isBusy = useMemo(() => storeItem.store.isBusy && isOpen || false, [storeItem.store.isBusy, isOpen]);
+
   const logoUri = useMemo(() => storeItem.store.storeLogo?.uri, [storeItem.store.storeLogo?.uri]);
-  const isDeliveryFree = useMemo(() => isOpen && couponsStore?.isFreeDelivery, [couponsStore?.isFreeDelivery]);
+  const isDeliveryFree = useMemo(() => isOpen && couponsStore?.isFreeDelivery && !isBusy, [couponsStore?.isFreeDelivery, isOpen, isBusy]);
   const imageUri = useMemo(() => 
     (storeItem.store?.cover_sliders &&
       storeItem.store.cover_sliders.length > 0 &&
@@ -72,7 +74,6 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
     logoUri,
     [storeItem.store?.cover_sliders, logoUri]
   );
-
   const storeName = useMemo(() => 
     languageStore.selectedLang === "ar" ? storeItem.store.name_ar : storeItem.store.name_he,
     [languageStore.selectedLang, storeItem.store.name_ar, storeItem.store.name_he]
@@ -82,7 +83,6 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
     languageStore.selectedLang === "ar" ? storeItem.store.descriptionAR : storeItem.store.descriptionHE,
     [languageStore.selectedLang, storeItem.store.descriptionAR, storeItem.store.descriptionHE]
   );
-
   // Memoized product selection handler
   const handleProductSelect = useCallback((product) => {
     onStoreSelect(storeItem.store, product);
@@ -118,7 +118,10 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
           />
         </View>
       )}
-      {!isOpen && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50}}>
+      {isBusy && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50}}>
+        <Text style={[styles.storeStatusText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("store-busy")}</Text>
+      </View>}
+      {!isOpen && !isBusy && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50}}>
         <Text style={[styles.storeStatusText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("store-closed")}</Text>
       </View>}
       {isDeliveryFree && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.SECONDARY_COLOR, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50, flexDirection:"row",alignItems:"center", justifyContent:"center"}}>
@@ -184,6 +187,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
     width: "95%",
     alignSelf: "center",
+    borderWidth: 0,
   },
   imageWrapper: {
 

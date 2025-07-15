@@ -240,6 +240,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#eee",
     paddingVertical: 12,
     paddingHorizontal: 20,
+    width: "100%",
   },
   lastRow: {
     borderBottomWidth: 0,
@@ -248,16 +249,15 @@ const styles = StyleSheet.create({
     color: themeStyle.GRAY_60,
     fontSize: themeStyle.FONT_SIZE_SM,
     minWidth: 70,
-    textAlign: "left",
   },
   label: {
     fontSize: themeStyle.FONT_SIZE_MD,
-    textAlign: "right",
+    textAlign: "left",
     flex: 1,
   },
   labelFree: {
     fontSize: themeStyle.FONT_SIZE_MD,
-    textAlign: "right",
+    textAlign: "left",
     flex: 1,
     color: themeStyle.SUCCESS_COLOR,
   },
@@ -266,16 +266,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: themeStyle.FONT_SIZE_SM,
     minWidth: 70,
-    textAlign: "left",
   },
   labelTotal: {
     fontWeight: "bold",
     fontSize: themeStyle.FONT_SIZE_MD,
-    textAlign: "right",
+    textAlign: "left",
     flex: 1,
   },
   freeText: {
     color: themeStyle.SUCCESS_COLOR,
-    fontWeight: "bold",
+    fontSize: themeStyle.FONT_SIZE_SM,
+    minWidth: 70,
   },
 });

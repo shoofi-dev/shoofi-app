@@ -97,7 +97,7 @@ const UserInformation = () => {
             width: "100%",
           }}
         >
-          <View style={{marginBottom: 10}}>
+          <View style={{marginBottom: 10, flexDirection:"row"}}>
             <Text style={{ fontSize: themeStyle.FONT_SIZE_MD }}>{t("name")}</Text>
           </View>
           <InputText isFlex={true} onChange={onChange} label={t("name")} value={customerName} />
@@ -113,7 +113,7 @@ const UserInformation = () => {
             marginTop: 20,
           }}
         >
-          <View style={{marginBottom: 10}}>
+          <View style={{marginBottom: 10, flexDirection:"row"}}>
             <Text style={{ fontSize: themeStyle.FONT_SIZE_MD }}>{t("phone")}</Text>
           </View>
           <InputText isFlex={true} color={themeStyle.GRAY_40} onChange={onChange} label={t("phone")} value={customerPhone} isEditable={false} />

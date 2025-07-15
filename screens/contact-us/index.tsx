@@ -63,7 +63,7 @@ const ContactUs = () => {
           style={{  width: "100%" }}
         />
         <View style={{padding: 16, flexDirection: "row", alignItems: "center"}}>
-          <Icon icon="whatapp" size={24} color={themeStyle.SUCCESS_COLOR} style={{marginRight: 10}} />
+          <Icon icon="send" size={24} color={themeStyle.SUCCESS_COLOR} style={{marginRight: 10}} />
           <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, marginLeft: 10 }}>{t("whatsapp")}: {shoofiAdminStore?.storeData?.shoofiSupportPhone}</Text>
         </View>
         <DashedLine
@@ -73,11 +73,11 @@ const ContactUs = () => {
           style={{  width: "100%" }}
         />
         <View style={{padding: 16,}}>
-          <View>
+          <View style={{flexDirection:"row"}}>
           <Text style={{ fontSize: themeStyle.FONT_SIZE_SM, color: themeStyle.GRAY_60 }}>{t("shoofi-company-number")}</Text>
 
           </View>
-          <View>
+          <View style={{flexDirection:"row"}}>
           <Text style={{ fontSize: themeStyle.FONT_SIZE_SM, color: themeStyle.GRAY_60 }}>{t("shoofi-address")}</Text>
 
           </View>
