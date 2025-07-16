@@ -113,7 +113,7 @@ const CheckoutScreen = ({ route }) => {
         (availableDrivers?.area?.price || 0) : 0;
 
       // Get discount from applied coupon
-      const discount = couponsStore.appliedCoupon?.discountAmount || 0;
+      const discount =  shippingMethod === SHIPPING_METHODS.shipping ? couponsStore.appliedCoupon?.discountAmount || 0 : 0;
 
       const finalPrice = itemsPrice + deliveryPrice - discount;
       setTotalPrice(finalPrice);
@@ -251,8 +251,13 @@ const CheckoutScreen = ({ route }) => {
     //   return false;
     // }
 
-    // Redeem coupon if applied
-    if (couponsStore.appliedCoupon) {
+    // Remove applied coupon if shipping method is not delivery
+    if (couponsStore.appliedCoupon && shippingMethod !== SHIPPING_METHODS.shipping) {
+      couponsStore.removeCoupon();
+    }
+
+    // Redeem coupon if applied and shipping method is delivery
+    if (couponsStore.appliedCoupon && shippingMethod === SHIPPING_METHODS.shipping) {
       try {
         const userId = adminCustomerStore.userDetails?.customerId || editOrderData?.customerId || userDetailsStore.userDetails?.customerId;
         const orderId = editOrderData?._id || `temp-${Date.now()}`;
@@ -277,6 +282,7 @@ const CheckoutScreen = ({ route }) => {
       address: addressLocation,
       locationText: addressLocationText,
       paymentData: paymentMthod === PAYMENT_METHODS.creditCard ? paymentData : undefined,
+      shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
     });
     if (checkoutSubmitOrderRes) {
       postChargeOrderActions();

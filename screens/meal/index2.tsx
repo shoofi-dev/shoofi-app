@@ -362,7 +362,7 @@ const MealScreen = ({
         qty: meal.others.qty,
       });
     }
-  }, [meal?.data?.price, meal?.others?.qty, isEdit, isValidForm]);
+  }, [meal?.data?.price, meal?.others?.qty, isEdit, isValidForm, meal?.others?.note]);
 
   if (!meal) {
     return null;
@@ -500,11 +500,12 @@ const MealScreen = ({
             multiline={false}
             returnKeyType="done"
             onSubmitEditing={() => {
+              console.log("noteValue", noteValue)
+              // updateOthers(noteValue, "note", "others");
+
               setIsNoteModalVisible(false);
               Keyboard.dismiss();
-              setTimeout(() => {
-                updateOthers(noteValue, "note", "others");
-              }, 0);
+        
             }}
           />
         </View>

@@ -72,7 +72,7 @@ class CouponsStore {
   async getAndApplyAutoCoupons(userId?: string, orderAmount?: number, deliveryFee?: number): Promise<CouponApplication | null> {
     try {
       const response = await axiosInstance.get(`/coupons/auto-apply/${userId}?orderAmount=${orderAmount}&deliveryFee=${deliveryFee}`);
-      const autoApplyCoupons: Coupon[] = response;
+      const autoApplyCoupons: Coupon[] = response.data || response;
 
       if (autoApplyCoupons.length === 0) {
         return null;
@@ -96,7 +96,7 @@ class CouponsStore {
             discountAmount = coupon.value;
             break;
           case 'free_delivery':
-            discountAmount = deliveryFee || 0;
+            discountAmount = coupon.value;
             break;
         }
 

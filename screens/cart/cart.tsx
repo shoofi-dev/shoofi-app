@@ -133,7 +133,7 @@ const CartScreen = ({ route }) => {
     if (cartStore.cartItems.length === 0 && !editOrderData) {
       await cartStore.setCartStoreDBName("");
 
-      navigation.navigate("homeScreen");
+      navigation.goBack();
       return;
     }
     if (cartStore.cartItems.length === 1 && isBcoinInCart()) {
@@ -144,7 +144,7 @@ const CartScreen = ({ route }) => {
       cartStore.removeProduct(getProductIndexId(bcoinMeal, 0));
       await cartStore.setCartStoreDBName("");
 
-      navigation.navigate("homeScreen");
+      navigation.goBack();
       return;
     }
     let tmpOrderPrice = 0;
@@ -528,6 +528,8 @@ const CartScreen = ({ route }) => {
             {cartStore.cartItems.map((product, index) => {
               const moveBy = (1 - 1 / 1) * index;
               const isLast = index === cartStore.cartItems.length - 1;
+              console.log("product?.others",product?.others)
+
               return (
                 product && (
                   <View
@@ -622,12 +624,12 @@ const CartScreen = ({ route }) => {
                                     paddingVertical: scale(8),
                                     marginBottom: scale(1),
                                     marginRight: scale(20),
+                                    flexDirection: "row",
                                   }}
                                 >
                                   <Text
                                     style={{
                                       fontSize: themeStyle.FONT_SIZE_MD,
-                                      textAlign: "left",
                                     }}
                                   >
                                     {languageStore.selectedLang === "ar"

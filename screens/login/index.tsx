@@ -180,18 +180,18 @@ const LoginScreen = () => {
             style={{ flex: 1 }}
           >
             <View style={styles.inputsContainer}>
+              <View style={{flexDirection:"row"}}>
               <Text
                 style={{
                   fontSize: themeStyle.FONT_SIZE_SM,
                   fontWeight: "bold",
                   color: themeStyle.GRAY_80,
-                  textAlign: "left",
                 }}
               >
-                {userDetailsStore.isAdmin()
-                  ? t("insert-phone-number-admin")
-                  : t("insert-phone-number")}
+                  {t("insert-phone-number")}
               </Text>
+              </View>
+          
 
               <View
                 style={{

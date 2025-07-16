@@ -50,6 +50,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     address,
     locationText,
     paymentData,
+    shippingPrice,
   }: TPropsCheckoutSubmit) => {
     // Prevent multiple rapid submissions
     const now = Date.now();
@@ -119,7 +120,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
           ? editOrderData?.order?.locationText ? editOrderData?.order?.locationText : locationText
           : locationText;
       }
-      order.shippingPrice = shoofiAdminStore.storeData.delivery_price;
+      order.shippingPrice = shippingPrice;
     }
     if (!!editOrderData) {
       const updateOrderAdminRes = updateOrderAdmin(

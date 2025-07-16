@@ -86,7 +86,10 @@ export default function TotalPriceCMP({
           );
           if (autoCoupon) {
             setAppliedCoupon(autoCoupon);
-            setDiscount(autoCoupon.discountAmount);
+            console.log("autoCoupon", autoCoupon);
+            if(shippingMethod === SHIPPING_METHODS.shipping && autoCoupon?.coupon.type === "free_delivery"){
+              setDiscount(autoCoupon.discountAmount);
+            }
             // Notify parent component about the applied coupon
             onCouponApplied?.(autoCoupon);
           }
@@ -134,18 +137,15 @@ export default function TotalPriceCMP({
 
   // Handle delivery price display with coupon logic
   if (deliveryPrice !== null) {
-    const isDeliveryFree = appliedCoupon?.coupon.type === "free_delivery";
-    const displayDeliveryPrice = isDeliveryFree ? 0 : deliveryPrice;
 
     rows.push({
       label: t("delivery"),
-      value: displayDeliveryPrice,
-      isFree: isDeliveryFree,
+      value: deliveryPrice,
     });
   }
 
-  if (discount && appliedCoupon?.coupon.type !== "free_delivery") {
-    rows.push({ label: t("discount"), value: discount });
+  if (discount && deliveryPrice !== null) {
+    rows.push({ label: t("discount"), value: -discount });
   }
 
   const renderCouponInput = () => {
@@ -159,7 +159,9 @@ export default function TotalPriceCMP({
         deliveryFee={deliveryPrice}
         onCouponApplied={(couponApp) => {
           setAppliedCoupon(couponApp);
-          setDiscount(couponApp.discountAmount);
+          if(shippingMethod === SHIPPING_METHODS.shipping && couponApp?.coupon.type === "free_delivery"){
+            setDiscount(couponApp.discountAmount);
+          }
           // Notify parent component about the applied coupon
           onCouponApplied?.(couponApp);
         }}
@@ -248,34 +250,31 @@ const styles = StyleSheet.create({
   price: {
     color: themeStyle.GRAY_60,
     fontSize: themeStyle.FONT_SIZE_SM,
-    minWidth: 70,
   },
   label: {
     fontSize: themeStyle.FONT_SIZE_MD,
     textAlign: "left",
-    flex: 1,
   },
   labelFree: {
     fontSize: themeStyle.FONT_SIZE_MD,
     textAlign: "left",
-    flex: 1,
     color: themeStyle.SUCCESS_COLOR,
   },
   priceTotal: {
     color: themeStyle.GRAY_60,
     fontWeight: "bold",
     fontSize: themeStyle.FONT_SIZE_SM,
-    minWidth: 70,
   },
   labelTotal: {
     fontWeight: "bold",
     fontSize: themeStyle.FONT_SIZE_MD,
     textAlign: "left",
-    flex: 1,
   },
   freeText: {
     color: themeStyle.SUCCESS_COLOR,
     fontSize: themeStyle.FONT_SIZE_SM,
     minWidth: 70,
+    textAlign: "left",
+
   },
 });

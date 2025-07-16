@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   I18nManager,
+  Platform,
 } from "react-native";
 import { observer } from "mobx-react";
 import { StoreContext } from "../stores";
@@ -140,7 +141,7 @@ const SubCategoryItem = React.memo<CategoryItemProps>(
           marginHorizontal: 8,
           shadowColor: themeStyle.BLACK_COLOR,
           shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.9,
+          shadowOpacity: Platform.OS === "ios" ? 0.1 : 0.9, 
           shadowRadius: 5,
           elevation: 5,
           backgroundColor: "#fff",

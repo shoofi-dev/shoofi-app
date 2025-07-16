@@ -5,7 +5,7 @@ import Text from "../../../../components/controls/Text";
 import { useTranslation } from "react-i18next";
 import { getCurrentLang } from "../../../../translations/i18n";
 import moment from "moment";
-import { cdnUrl } from "../../../../consts/shared";
+import { cdnUrl, SHIPPING_METHODS } from "../../../../consts/shared";
 import CustomFastImage from "../../../../components/custom-fast-image";
 import { StoreContext } from "../../../../stores";
 import { useContext } from "react";
@@ -26,6 +26,48 @@ const OrderHeader = ({ order }) => {
     isActive: true,
   };
 
+  const getOrderPrice = () => {
+    if (oOrder.receipt_method === SHIPPING_METHODS.shipping) {
+      return (
+        <View style={{ marginTop: 10, flexDirection: "row" }}>
+          <Text style={styles.subTitleInfo}>{t("order-price")}: </Text>
+          <Text style={styles.priceText}>₪{order.orderPrice}</Text>
+        </View>
+      );
+    }
+    return (
+      <View style={{ marginTop: 10, flexDirection: "row" }}>
+        <Text style={styles.subTitleInfo}>{t("order-price")}: </Text>
+        <Text style={styles.priceText}>₪{order.total}</Text>
+      </View>
+    );
+  };
+
+  const getShippingPrice = () => {
+    if (oOrder.receipt_method === SHIPPING_METHODS.shipping) {
+      const shippingPrice = order.appliedCoupon?.discountAmount > 0 ? order.shippingPrice - order.appliedCoupon?.discountAmount : order.shippingPrice;
+      return (
+        <View style={{ marginTop: 10, flexDirection: "row" }}>
+        <Text style={styles.subTitleInfo}>{t("delivery-price")}: </Text>
+        <Text style={styles.priceText}>₪{shippingPrice}</Text>
+      </View>
+      );
+    }
+    return null;
+  };
+
+  const getPriceSection = () => {
+    if (oOrder.receipt_method === SHIPPING_METHODS.shipping) {
+      return (
+        <View>
+          {getOrderPrice()}
+          {getShippingPrice()}
+        </View>
+      );
+    }
+    return getOrderPrice();
+  };
+
   const renderOrderDateRaw = (order) => {
     return (
       <View
@@ -37,15 +79,13 @@ const OrderHeader = ({ order }) => {
           // marginTop: 25,
         }}
       >
-        <View style={{ flexDirection: "row", }}>
+        <View style={{ flexDirection: "row" }}>
           <View>
             <Text style={styles.dateRawText}>{t("order-number")}:</Text>
             <Text style={styles.dateRawText}>{order?.appName}</Text>
           </View>
           <View>
-            <Text style={styles.dateRawText}>
-              {order.orderId}{" "}
-            </Text>
+            <Text style={styles.dateRawText}>{order.orderId} </Text>
           </View>
         </View>
       </View>
@@ -66,7 +106,7 @@ const OrderHeader = ({ order }) => {
           {/* {renderOrderDateRaw(order)} */}
         </View>
         <View style={{ marginHorizontal: 15, marginBottom: 10, marginTop: 10 }}>
-          <View style={{flexDirection:"row"}}>
+          <View style={{ flexDirection: "row" }}>
             <Text style={styles.storeName}>
               {languageStore.selectedLang === "ar"
                 ? order?.storeData?.name_ar
@@ -82,26 +122,38 @@ const OrderHeader = ({ order }) => {
             <Text style={{ marginHorizontal: 2 }}>.</Text>
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.subTitleInfo}>{t("order-number")}: </Text>
-              <Text style={styles.subTitleInfo}>
-                {" "}
-                {order.orderId}
-              </Text>
+              <Text style={styles.subTitleInfo}> {order.orderId}</Text>
             </View>
           </View>
-          <View style={{ marginTop: 10, flexDirection:"row" }}>
-            <Text style={styles.priceText}>₪{order.orderPrice}</Text>
-          </View>
-          <View style={{flexDirection:"row",justifyContent:"space-between", marginTop:40, alignItems:"center"}}>
-            <TouchableOpacity style={styles.iconWrapper} onPress={()=>{
-              const phoneNumber = shoofiAdminStore?.storeData?.waSupportPhone?.replace(/[^0-9]/g, '');
-              if (phoneNumber) {
-                const message = languageStore.selectedLang === "ar" 
-                  ? `في عندي استفسار بالنسبه لطلبيه رقم ${order.orderId}`
-                  : `אני רוצה לברר לגבי הזמנה מספר ${order.orderId}`;
-                const encodedMessage = encodeURIComponent(message);
-                Linking.openURL(`https://wa.me/${phoneNumber}?text=${encodedMessage}`)
-              }
-            }}>
+       {getPriceSection()}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 40,
+              alignItems: "center",
+            }}
+          >
+            <TouchableOpacity
+              style={styles.iconWrapper}
+              onPress={() => {
+                const phoneNumber =
+                  shoofiAdminStore?.storeData?.waSupportPhone?.replace(
+                    /[^0-9]/g,
+                    ""
+                  );
+                if (phoneNumber) {
+                  const message =
+                    languageStore.selectedLang === "ar"
+                      ? `في عندي استفسار بالنسبه لطلبيه رقم ${order.orderId}`
+                      : `אני רוצה לברר לגבי הזמנה מספר ${order.orderId}`;
+                  const encodedMessage = encodeURIComponent(message);
+                  Linking.openURL(
+                    `https://wa.me/${phoneNumber}?text=${encodedMessage}`
+                  );
+                }
+              }}
+            >
               <Icon icon="whatapp" size={24} color={themeStyle.SUCCESS_COLOR} />
             </TouchableOpacity>
             <View style={styles.receiptMethodWrapper}>
@@ -110,11 +162,19 @@ const OrderHeader = ({ order }) => {
           </View>
         </View>
       </View>
-      
-      {/* Timer Component */}
-      <View style={{position:"absolute",right:20,top:70,zIndex:1000, backgroundColor: themeStyle.WHITE_COLOR, borderRadius:50}}>
-      <OrderTimer order={order} mockData={mockTimerData} />
 
+      {/* Timer Component */}
+      <View
+        style={{
+          position: "absolute",
+          right: 20,
+          top: 70,
+          zIndex: 1000,
+          backgroundColor: themeStyle.WHITE_COLOR,
+          borderRadius: 50,
+        }}
+      >
+        <OrderTimer order={order} mockData={mockTimerData} />
       </View>
     </View>
   );
@@ -173,18 +233,17 @@ const styles = StyleSheet.create({
     color: themeStyle.SUCCESS_COLOR,
   },
   iconWrapper: {
-    padding:10,
+    padding: 10,
     backgroundColor: themeStyle.GRAY_10,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
   },
   receiptMethodWrapper: {
-
     backgroundColor: themeStyle.GRAY_10,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-    padding:10
+    padding: 10,
   },
 });

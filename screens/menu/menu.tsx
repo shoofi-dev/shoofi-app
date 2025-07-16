@@ -45,7 +45,7 @@ const MenuScreen = () => {
     useContext(StoreContext);
   const { availableDrivers, loading: driversLoading } = useAvailableDrivers();
   const { isConnected, connectionStatus, lastMessage } = websocket;
-
+  const [isThisStoreInCart, setIsThisStoreInCart] = useState(false);
   // Handle menu refresh messages
        useEffect(() => { 
         if (lastMessage) {
@@ -257,6 +257,19 @@ const MenuScreen = () => {
   const handleShippingMethodChange = async (value) => {
     await cartStore.setShippingMethod(value);
   };
+  useEffect(() => {
+    const getStoreData = async () => {
+      const cartStoreDBName = await cartStore.getCartStoreDBName();
+      const storerDBName = storeDataStore.storeData?.appName;
+      console.log("cartStoreDBName", cartStoreDBName)
+      console.log("storerDBName", storerDBName)
+      console.log("ISSSS", cartStoreDBName === storerDBName)
+      setIsThisStoreInCart(cartStoreDBName === storerDBName)
+    }
+    getStoreData();
+  }, [cartStore.cartItems, storeDataStore.storeData]);
+
+  
 
   if (!storeDataStore.storeData ||!categoryList || !selectedCategory) {
     return (
@@ -343,7 +356,7 @@ const MenuScreen = () => {
       </View> */}
 
       <View style={styles.cartContainer}>
-        {cartCount > 0 && (
+        {cartCount > 0 && isThisStoreInCart && (
           <Button
             text={t("show-order")}
             icon="orders-new1"
