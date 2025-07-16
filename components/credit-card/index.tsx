@@ -90,7 +90,8 @@ const CreditCard = ({ onSaveCard }) => {
     setCreditCardCVV(value);
   };
   const onCardHolderNameChange = (value) => {
-    const isValid: any = isValidID(value);
+    const isValid: any = isValidID(Number(value));
+    
     if (isValid) {
       Keyboard.dismiss();
     }
@@ -158,7 +159,9 @@ const CreditCard = ({ onSaveCard }) => {
   }
 
   const validateCreditCardHolderID = async () => {
-    const { isValid }: any = isValidID(cardHolderID);
+    console.log("cardHolderID", cardHolderID);
+    const  isValid : any = isValidID(Number(cardHolderID));
+    console.log("isValid", isValid);
     return isValid;
   }
 
@@ -200,7 +203,7 @@ const CreditCard = ({ onSaveCard }) => {
           isDefault: isDefault,
         });
 
-        Alert.alert(t('success'), t('credit-card-added-successfully'));
+        // Alert.alert(t('success'), t('credit-card-added-successfully'));
         
         if (onSaveCard) {
           onSaveCard(ccData);
@@ -254,7 +257,7 @@ const CreditCard = ({ onSaveCard }) => {
               label={t("expiry-date")}
               onChange={() => {}}
               value={creditCardExpDate}
-              isEditable={Platform.OS === "android" ? true : false}
+              isEditable={Platform.OS === "android" ? true : true}
               onClick={() => {
                 Keyboard.dismiss();
                 showPicker();

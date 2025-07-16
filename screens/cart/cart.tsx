@@ -528,7 +528,6 @@ const CartScreen = ({ route }) => {
             {cartStore.cartItems.map((product, index) => {
               const moveBy = (1 - 1 / 1) * index;
               const isLast = index === cartStore.cartItems.length - 1;
-              console.log("product?.others",product?.others)
 
               return (
                 product && (

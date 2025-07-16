@@ -52,7 +52,7 @@ const ContactUs = () => {
           dashColor={themeStyle.GRAY_20}
           style={{  width: "100%" }}
         />
-        <TouchableOpacity onPress={() => Linking.openURL(`https://wa.me/${shoofiAdminStore?.storeData?.shoofiSupportPhone}`)} style={{padding: 16, flexDirection: "row", alignItems: "center"}}>
+        <TouchableOpacity onPress={() => Linking.openURL(`https://wa.me/${shoofiAdminStore?.storeData?.waSupportPhone}`)} style={{padding: 16, flexDirection: "row", alignItems: "center"}}>
           <Icon icon="whatapp" size={24} color={themeStyle.SUCCESS_COLOR} style={{marginRight: 10}} />
           <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, marginLeft: 10 }}>{t("whatsapp")}: {shoofiAdminStore?.storeData?.shoofiSupportPhone}</Text>
         </TouchableOpacity>

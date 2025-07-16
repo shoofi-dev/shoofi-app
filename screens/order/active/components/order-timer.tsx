@@ -72,21 +72,37 @@ async function getTotalAndRemainingMinutes(
               const created = new Date(order.created).getTime();
               const nowDate = new Date();
               let deliveryTime = new Date(delivery.expectedDeliveryAt);
-              // If delivery time is before now, assume it's for the next day
-              if (deliveryTime.getTime() < nowDate.getTime()) {
-                deliveryTime.setDate(deliveryTime.getDate() + 1);
-              }
-
+              // If delivery time is before now, return 5 minutes instead of moving to next day
               const totalMinutes = Math.max(
                 1,
                 Math.round((deliveryTime.getTime() - created) / 60000)
               );
-              const remainingMinutes = Math.max(
-                0,
-                Math.ceil((deliveryTime.getTime() - nowDate.getTime()) / 60000)
-              );
+              const remainingMinutes = deliveryTime.getTime() < nowDate.getTime()
+                ? 5
+                : Math.max(
+                    0,
+                    Math.ceil((deliveryTime.getTime() - nowDate.getTime()) / 60000)
+                  );
+              console.log("deliveryTime", deliveryTime)
+              console.log("nowDate",  nowDate)
+              console.log("remainingMinutes",  remainingMinutes)
+              let status = "";
+                switch (delivery.status) {
+                  case DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT:
+                    status =
+                      DELIVERY_STATUS_TEXT[
+                        DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT
+                      ];
+                    break;
+                  case DELIVERY_STATUS.DELIVERED:
+                    status = DELIVERY_STATUS_TEXT[DELIVERY_STATUS.DELIVERED];
+                    break;
+                  default:
+                    status = ORDER_STATUS_TEXT[order.status];
+                    break;
+                }
               return {
-                status: "preparing",
+                status,
                 totalMinutes,
                 remainingMinutes,
                 isActive: true,
@@ -129,19 +145,18 @@ async function getTotalAndRemainingMinutes(
             const created = new Date(order.created).getTime();
             const nowDate = new Date();
             let deliveryTime = new Date(delivery.expectedDeliveryAt);
-            // If delivery time is before now, assume it's for the next day
-            if (deliveryTime.getTime() < nowDate.getTime()) {
-              deliveryTime.setDate(deliveryTime.getDate() + 1);
-            }
-
+            // If delivery time is before now, return 5 minutes instead of moving to next day
             const totalMinutes = Math.max(
               1,
               Math.round((deliveryTime.getTime() - created) / 60000)
             );
-            const remainingMinutes = Math.max(
-              0,
-              Math.ceil((deliveryTime.getTime() - nowDate.getTime()) / 60000)
-            );
+            const remainingMinutes = deliveryTime.getTime() < nowDate.getTime()
+              ? 5
+              : Math.max(
+                  0,
+                  Math.ceil((deliveryTime.getTime() - nowDate.getTime()) / 60000)
+                );
+     
             let status = "";
               switch (delivery.status) {
                 case DELIVERY_STATUS.COLLECTED_FROM_RESTAURANT:

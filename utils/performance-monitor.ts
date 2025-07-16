@@ -1,186 +1,138 @@
 interface PerformanceMetric {
-  name: string;
+  type: 'image_load' | 'network_request' | 'render_time';
   startTime: number;
   endTime?: number;
   duration?: number;
   metadata?: Record<string, any>;
 }
 
-interface PerformanceReport {
-  metrics: PerformanceMetric[];
-  summary: {
-    totalMetrics: number;
-    averageDuration: number;
-    slowestMetric: PerformanceMetric | null;
-    fastestMetric: PerformanceMetric | null;
-  };
-}
-
 class PerformanceMonitor {
-  private metrics: Map<string, PerformanceMetric> = new Map();
-  private enabled: boolean = __DEV__; // Only enable in development
+  private metrics: PerformanceMetric[] = [];
+  private isEnabled = __DEV__; // Only enable in development
 
-  startTimer(name: string, metadata?: Record<string, any>): void {
-    if (!this.enabled) return;
+  startTimer(type: PerformanceMetric['type'], metadata?: Record<string, any>): string {
+    if (!this.isEnabled) return '';
 
-    this.metrics.set(name, {
-      name,
+    const id = `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const metric: PerformanceMetric = {
+      type,
       startTime: performance.now(),
-      metadata,
+      metadata
+    };
+
+    this.metrics.push(metric);
+    return id;
+  }
+
+  endTimer(id: string): void {
+    if (!this.isEnabled || !id) return;
+
+    const metric = this.metrics.find(m => 
+      m.type === id.split('_')[0] && m.startTime.toString().includes(id.split('_')[1])
+    );
+
+    if (metric) {
+      metric.endTime = performance.now();
+      metric.duration = metric.endTime - metric.startTime;
+    }
+  }
+
+  logImageLoadTime(uri: string, duration: number, networkType?: string): void {
+    if (!this.isEnabled) return;
+
+    console.log(`🖼️ Image loaded: ${uri}`, {
+      duration: `${duration.toFixed(2)}ms`,
+      networkType,
+      size: this.getImageSizeFromUri(uri)
     });
   }
 
-  endTimer(name: string): number | null {
-    if (!this.enabled) return null;
+  logNetworkPerformance(url: string, duration: number, status: number): void {
+    if (!this.isEnabled) return;
 
-    const metric = this.metrics.get(name);
-    if (!metric) {
-      console.warn(`PerformanceMonitor: No timer found for "${name}"`);
-      return null;
-    }
-
-    metric.endTime = performance.now();
-    metric.duration = metric.endTime - metric.startTime;
-
-    // Log slow operations in development
-    if (metric.duration > 100) {
-      console.warn(`Slow operation detected: ${name} took ${metric.duration.toFixed(2)}ms`, metric.metadata);
-    }
-
-    return metric.duration;
-  }
-
-  measureAsync<T>(name: string, asyncFn: () => Promise<T>, metadata?: Record<string, any>): Promise<T> {
-    if (!this.enabled) return asyncFn();
-
-    this.startTimer(name, metadata);
-    return asyncFn().finally(() => {
-      this.endTimer(name);
+    console.log(`🌐 Network request: ${url}`, {
+      duration: `${duration.toFixed(2)}ms`,
+      status,
+      timestamp: new Date().toISOString()
     });
   }
 
-  measureSync<T>(name: string, syncFn: () => T, metadata?: Record<string, any>): T {
-    if (!this.enabled) return syncFn();
+  getAverageLoadTime(type: PerformanceMetric['type']): number {
+    const relevantMetrics = this.metrics.filter(m => m.type === type && m.duration);
+    if (relevantMetrics.length === 0) return 0;
 
-    this.startTimer(name, metadata);
-    const result = syncFn();
-    this.endTimer(name);
-    return result;
+    const totalDuration = relevantMetrics.reduce((sum, m) => sum + (m.duration || 0), 0);
+    return totalDuration / relevantMetrics.length;
   }
 
-  getReport(): PerformanceReport {
-    const completedMetrics = Array.from(this.metrics.values()).filter(m => m.duration !== undefined);
-    
-    if (completedMetrics.length === 0) {
-      return {
-        metrics: [],
-        summary: {
-          totalMetrics: 0,
-          averageDuration: 0,
-          slowestMetric: null,
-          fastestMetric: null,
-        },
-      };
-    }
-
-    const sortedMetrics = completedMetrics.sort((a, b) => (b.duration || 0) - (a.duration || 0));
-    const totalDuration = completedMetrics.reduce((sum, m) => sum + (m.duration || 0), 0);
+  getMetricsSummary(): Record<string, any> {
+    const imageLoads = this.metrics.filter(m => m.type === 'image_load');
+    const networkRequests = this.metrics.filter(m => m.type === 'network_request');
+    const renderTimes = this.metrics.filter(m => m.type === 'render_time');
 
     return {
-      metrics: completedMetrics,
-      summary: {
-        totalMetrics: completedMetrics.length,
-        averageDuration: totalDuration / completedMetrics.length,
-        slowestMetric: sortedMetrics[0],
-        fastestMetric: sortedMetrics[sortedMetrics.length - 1],
+      totalMetrics: this.metrics.length,
+      imageLoads: {
+        count: imageLoads.length,
+        averageTime: this.getAverageLoadTime('image_load'),
+        slowest: Math.max(...imageLoads.map(m => m.duration || 0)),
+        fastest: Math.min(...imageLoads.map(m => m.duration || 0))
       },
+      networkRequests: {
+        count: networkRequests.length,
+        averageTime: this.getAverageLoadTime('network_request')
+      },
+      renderTimes: {
+        count: renderTimes.length,
+        averageTime: this.getAverageLoadTime('render_time')
+      }
     };
   }
 
-  clear(): void {
-    this.metrics.clear();
+  private getImageSizeFromUri(uri: string): string {
+    // Extract size from imgix URL if available
+    const sizeMatch = uri.match(/w=(\d+)&h=(\d+)/);
+    if (sizeMatch) {
+      return `${sizeMatch[1]}x${sizeMatch[2]}`;
+    }
+    return 'unknown';
+  }
+
+  clearMetrics(): void {
+    this.metrics = [];
   }
 
   enable(): void {
-    this.enabled = true;
+    this.isEnabled = true;
   }
 
   disable(): void {
-    this.enabled = false;
-  }
-
-  isEnabled(): boolean {
-    return this.enabled;
+    this.isEnabled = false;
   }
 }
 
-// Global performance monitor instance
+// Export singleton instance
 export const performanceMonitor = new PerformanceMonitor();
 
-// React hook for measuring component render performance
-export function usePerformanceMonitor(componentName: string) {
-  const startRender = () => {
-    performanceMonitor.startTimer(`${componentName}_render`);
+// Helper functions for common use cases
+export const trackImageLoad = (uri: string, networkType?: string) => {
+  const startTime = performance.now();
+  
+  return {
+    end: () => {
+      const duration = performance.now() - startTime;
+      performanceMonitor.logImageLoadTime(uri, duration, networkType);
+    }
   };
+};
 
-  const endRender = () => {
-    performanceMonitor.endTimer(`${componentName}_render`);
+export const trackNetworkRequest = (url: string) => {
+  const startTime = performance.now();
+  
+  return {
+    end: (status: number) => {
+      const duration = performance.now() - startTime;
+      performanceMonitor.logNetworkPerformance(url, duration, status);
+    }
   };
-
-  return { startRender, endRender };
-}
-
-// Higher-order component for measuring component performance
-export function withPerformanceMonitoring<P extends object>(
-  WrappedComponent: React.ComponentType<P>,
-  componentName?: string
-) {
-  const displayName = componentName || WrappedComponent.displayName || WrappedComponent.name || 'Component';
-
-  const WithPerformanceMonitoring = React.forwardRef<any, P>((props, ref) => {
-    const { startRender, endRender } = usePerformanceMonitor(displayName);
-
-    React.useEffect(() => {
-      startRender();
-      return () => {
-        endRender();
-      };
-    });
-
-    return <WrappedComponent {...props} ref={ref} />;
-  });
-
-  WithPerformanceMonitoring.displayName = `withPerformanceMonitoring(${displayName})`;
-
-  return WithPerformanceMonitoring;
-}
-
-// Utility for measuring API call performance
-export async function measureApiCall<T>(
-  name: string,
-  apiCall: () => Promise<T>,
-  metadata?: Record<string, any>
-): Promise<T> {
-  return performanceMonitor.measureAsync(name, apiCall, metadata);
-}
-
-// Utility for measuring synchronous operations
-export function measureSyncOperation<T>(
-  name: string,
-  operation: () => T,
-  metadata?: Record<string, any>
-): T {
-  return performanceMonitor.measureSync(name, operation, metadata);
-}
-
-// Debug function to log performance report
-export function logPerformanceReport(): void {
-  if (!__DEV__) return;
-
-  const report = performanceMonitor.getReport();
-  console.group('🚀 Performance Report');
-  console.groupEnd();
-}
-
-// Export the monitor instance and utilities
-export default performanceMonitor; 
+}; 

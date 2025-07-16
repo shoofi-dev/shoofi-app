@@ -74,7 +74,7 @@ export default function InputText({
               :  themeStyle.GRAY_30,
             // borderRadius: 30,
             fontSize: fontSize || 20,
-            color: isEditable ? themeStyle.GRAY_40 : color || themeStyle.GRAY_80,
+            color: isEditable ? themeStyle.GRAY_80 : color || themeStyle.GRAY_40,
             fontFamily: `${getCurrentLang()}-SemiBold`,
             width:isFlex ? "60%":"100%",
             marginLeft:0,

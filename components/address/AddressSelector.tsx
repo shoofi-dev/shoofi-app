@@ -99,7 +99,7 @@ const AddressSelector = observer(({ onAddressSelect }: AddressSelectorProps) => 
   };
   
   return (
-    <View style={{ zIndex: 100 }}>
+    <View style={{ zIndex: 100, width: "60%" }}>
       <TouchableOpacity
         style={styles.row}
         onPress={handleRowPress}
@@ -129,10 +129,9 @@ const AddressSelector = observer(({ onAddressSelect }: AddressSelectorProps) => 
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                width: "100%",
               }}
             >
-              <Text style={{ color: themeStyle.TEXT_PRIMARY_COLOR, fontSize: 16 }}>
+              <Text style={{ color: themeStyle.TEXT_PRIMARY_COLOR, fontSize: 14 }} numberOfLines={1}>
                 {getAddressText(selectedAddress)}
               </Text>
               <View style={{  marginLeft: 10 }}>

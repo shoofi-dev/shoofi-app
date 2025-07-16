@@ -33,7 +33,10 @@ const AddressForm = observer(({ route,address }: any) => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [customerId, setCustomerId] = useState<string | undefined>(undefined);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  
+  useEffect(() => {
+    getCurrentLocation()
+  }, [address])
+
   useEffect(() => {
     if (userDetailsStore?.userDetails?.phone) {
       setCustomerId(userDetailsStore?.userDetails?.customerId);
@@ -46,7 +49,7 @@ const AddressForm = observer(({ route,address }: any) => {
     city: "",
     streetNumber: "",
     floorNumber: "",
-    isDefault: false,
+    isDefault: true,
     location: {
       type: "Point",
       coordinates: [0, 0],
@@ -266,7 +269,7 @@ const AddressForm = observer(({ route,address }: any) => {
         </View>
         
         {/* Google Places Autocomplete */}
-        <View style={styles.row}>
+        {/* <View style={styles.row}>
           <TouchableOpacity
             style={styles.locationButton}
             onPress={getCurrentLocation}
@@ -279,7 +282,7 @@ const AddressForm = observer(({ route,address }: any) => {
               </Text>
             </View>
           </TouchableOpacity>
-        </View> 
+        </View>  */}
         
         <View style={[styles.inputGroup,{flex: 1,}]}>
           <Text style={styles.label}>{t("street-address")}</Text>

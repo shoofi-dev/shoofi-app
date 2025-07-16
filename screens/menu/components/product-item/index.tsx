@@ -190,12 +190,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     justifyContent: "center",
     alignItems: "flex-start",
+    flex:1
   },
   rowProductName: {
     fontSize: themeStyle.FONT_SIZE_MD,
     color: themeStyle.GRAY_900,
     marginBottom: 2,
-    textAlign: "right",
+    textAlign: "left",
   },
   rowProductDesc: {
     fontSize: themeStyle.FONT_SIZE_SM,

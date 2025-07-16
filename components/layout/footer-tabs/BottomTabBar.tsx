@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   I18nManager,
+  DeviceEventEmitter,
 } from "react-native";
 import { observer } from "mobx-react-lite";
 import { StoreContext } from "../../../stores";
@@ -63,36 +64,46 @@ const BottomTabBar = observer(({ state, navigation }) => {
     navigation.navigate("active-orders");
   };
   const getOrders = async () => {
+    console.log("getOrders");
     const token = await AsyncStorage.getItem("@storage_userToken");
-    if(token){
-    ordersStore.getCustomerActiveOrders().then((res) => {
-      setOrdersList(res || []);
-      setIsLoading(false);
-    });
-  }else{
-    setOrdersList([]);
-  }
+    if (token) {
+      ordersStore.getCustomerActiveOrders().then((res) => {
+        setOrdersList(res || []);
+        setIsLoading(false);
+      });
+    } else {
+      setOrdersList([]);
+    }
   };
+  useEffect(() => {
+    const ExpDatePicjkerChange = DeviceEventEmitter.addListener(
+      `ORDER_SUBMITTED`,
+      getOrders
+    );
+    return () => {
+      ExpDatePicjkerChange.remove();
+    };
+  }, []);
   useEffect(() => {
     const getToken = async () => {
       const token = await AsyncStorage.getItem("@storage_userToken");
       return token;
-    }
+    };
     const token = getToken();
     // Clear any existing interval first
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-    if(token){
+    if (token) {
       setIsLoading(true);
       getOrders();
-      setTimeout(() => {
-        getOrders();
-      }, 15 * 1000);
-      intervalRef.current = setInterval(() => {
-        getOrders();
-      }, 30 * 1000);
+      // setTimeout(() => {
+      //   getOrders();
+      // }, 15 * 1000);
+      // intervalRef.current = setInterval(() => {
+      //   getOrders();
+      // }, 30 * 1000);
     } else {
       // Clear orders when user logs out
       setOrdersList([]);
@@ -108,7 +119,12 @@ const BottomTabBar = observer(({ state, navigation }) => {
   }, [userDetailsStore.userDetails?.customerId, authStore.userToken]);
 
   return (
-    <View style={[styles.wrapperContainer, {width: ordersList.length > 0 ?  "95%" : "100%"}]}>
+    <View
+      style={[
+        styles.wrapperContainer,
+        { width: ordersList.length > 0 ? "95%" : "100%" },
+      ]}
+    >
       {ordersList.length > 0 && (
         <GlassBG style={styles.activeOrdersContainer} borderRadius={35}>
           {tabs2.map((tab, idx) => {
@@ -150,7 +166,12 @@ const BottomTabBar = observer(({ state, navigation }) => {
           })}
         </GlassBG>
       )}
-      <View style={[styles.wrapper, {width: ordersList.length > 0 ?  "75%" : "85%"}]}>
+      <View
+        style={[
+          styles.wrapper,
+          { width: ordersList.length > 0 ? "75%" : "85%" },
+        ]}
+      >
         <GlassBG style={styles.container} borderRadius={35}>
           {tabs.map((tab, idx) => {
             // For RTL, reverse the order
@@ -164,7 +185,7 @@ const BottomTabBar = observer(({ state, navigation }) => {
                   styles.tab,
                   {
                     backgroundColor: isActive
-                      ? 'rgba(255, 255, 255, 0.44)'
+                      ? "rgba(255, 255, 255, 0.44)"
                       : "transparent",
                   },
                 ]}
@@ -204,7 +225,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 10,
     flexDirection: "row",
-    
+
     justifyContent: "space-around",
     alignSelf: "center",
   },

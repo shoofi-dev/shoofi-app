@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { Alert, Image, View, ActivityIndicator, Animated, Easing, Platform } from "react-native";
 import * as FileSystem from "expo-file-system";
 
@@ -58,24 +58,65 @@ function getDimensionsFromStyle(style) {
   return { width, height };
 }
 
-function getImgixUrl(uri, style, isLogo=false) {
+// Optimized imgix URL generation for mobile networks
+function getImgixUrl(uri, style, isLogo=false, isThumbnail=false) {
   // Only rewrite if not already an imgix url
   if (!uri) return uri;
   if (uri.startsWith('https://shoofi.imgix.net/')) return uri;
+  
   // Remove any leading slashes
   let cleanUri = uri.replace(/^https?:\/\//, '').replace(/^shoofi.imgix.net\//, '');
   // Remove DigitalOcean Spaces domain if present
   cleanUri = cleanUri.replace(/^shoofi-spaces\.fra1\.cdn\.digitaloceanspaces\.com\//, '');
+  
   let url = `https://shoofi.imgix.net/${cleanUri}`;
   const { width, height } = getDimensionsFromStyle(style);
-  const params = [];
-  if (width && !isLogo) params.push(`w=${Math.round(width)}`);
-  if (height && !isLogo) params.push(`h=${Math.round(height)}`);
-  if (params.length) url += `?${params.join('&')}`;
-  // Optimize for faster loading - reduce quality for faster download
-  const w = isLogo ? 300: 800; // Reduced from 500/1280 to 300/800
-  const h = isLogo ? 300 : 450; // Reduced from 500/720 to 300/450
-  return url + `?w=${w}&h=${h}&auto=format&fit=max&q=75`; // Added q=75 for faster loading
+  
+  // Optimize dimensions for mobile networks
+  let optimizedWidth, optimizedHeight;
+  
+  if (isLogo) {
+    // Logos: very small, high quality
+    optimizedWidth = Math.min(300, 150);
+    optimizedHeight = Math.min(300, 150);
+  } else if (isThumbnail) {
+    // Thumbnails: small, medium quality
+    optimizedWidth = Math.min(width || 200, 200);
+    optimizedHeight = Math.min(height || 200, 200);
+  } else {
+    // Regular images: moderate size, optimized quality
+    optimizedWidth = Math.min(width || 600, 600);
+    optimizedHeight = Math.min(height || 400, 400);
+  }
+  
+  // Build optimized query parameters for mobile networks
+  const params = [
+    `w=${Math.round(optimizedWidth)}`,
+    `h=${Math.round(optimizedHeight)}`,
+    'auto=format', // Automatic format selection (WebP for supported browsers)
+    'fit=max', // Maintain aspect ratio
+    'q=60', // Reduced quality for faster loading (was 75)
+    'fm=webp', // Force WebP format for smaller file sizes
+    'dpr=1', // Device pixel ratio - use 1 for mobile optimization
+  ];
+  
+  return `${url}?${params.join('&')}`;
+}
+
+// Generate thumbnail URL for progressive loading
+function getThumbnailUrl(uri, style, isLogo=false) {
+  if (!uri) return uri;
+  if (uri.startsWith('https://shoofi.imgix.net/')) {
+    // If already imgix URL, add thumbnail parameters
+    const separator = uri.includes('?') ? '&' : '?';
+    return `${uri}${separator}w=50&h=50&blur=20&q=30&fm=webp`;
+  }
+  
+  // For non-imgix URLs, create thumbnail version
+  let cleanUri = uri.replace(/^https?:\/\//, '').replace(/^shoofi.imgix.net\//, '');
+  cleanUri = cleanUri.replace(/^shoofi-spaces\.fra1\.cdn\.digitaloceanspaces\.com\//, '');
+  
+  return `https://shoofi.imgix.net/${cleanUri}?w=50&h=50&blur=20&q=30&fm=webp`;
 }
 
 const CustomFastImage = (props) => {
@@ -92,18 +133,19 @@ const CustomFastImage = (props) => {
   } = props;
   const isMounted = useRef(true);
   const [imgUri, setUri] = useState("");
+  const [thumbnailUri, setThumbnailUri] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const [showThumbnail, setShowThumbnail] = useState(true);
 
-  // Helper to get a blurred imgix url
-  function getBlurUrl(url) {
-    if (!url) return url;
-    // If url already has query params, append with &
-    if (url.includes('?')) return url + '&blur=80';
-    return url + '?blur=80';
-  }
+  // Determine if this is a thumbnail based on size
+  const isThumbnail = useMemo(() => {
+    const { width, height } = getDimensionsFromStyle(style);
+    return (width && width <= 100) || (height && height <= 100);
+  }, [style]);
 
   useEffect(() => {
     setLoaded(false);
+    setShowThumbnail(true);
   }, [imgUri]);
 
   useEffect(() => {
@@ -112,47 +154,56 @@ const CustomFastImage = (props) => {
       if (!imgXt || !imgXt.length) {
         return;
       }
-      // Use imgix for all images
-      const imgixUrl = getImgixUrl(uri, style, isLogo);
-      setUri(imgixUrl);
+      
+      // Generate optimized URLs
+      const optimizedUrl = getImgixUrl(uri, style, isLogo, isThumbnail);
+      const thumbUrl = getThumbnailUrl(uri, style, isLogo);
+      
+      setUri(optimizedUrl);
+      setThumbnailUri(thumbUrl);
     }
     loadImg();
     return () => { isMounted.current = false; };
-  }, [uri, style]);
+  }, [uri, style, isLogo, isThumbnail]);
 
-  const blurUrl = imgUri ? getBlurUrl(imgUri) : null;
+  const handleMainImageLoad = () => {
+    setLoaded(true);
+    setShowThumbnail(false);
+    onLoadEnd?.();
+  };
+
+  const handleMainImageError = () => {
+    setLoaded(true);
+    setShowThumbnail(false);
+    onError?.();
+  };
 
   return (
     <View style={{ position: 'relative', ...style }}>
-      {/* Blurred background */}
-      {blurUrl && !loaded && (
+      {/* Blurred thumbnail for progressive loading */}
+      {thumbnailUri && showThumbnail && (
         <Image
-          source={{ uri: blurUrl }}
+          source={{ uri: thumbnailUri }}
           style={[style, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }]}
           resizeMode={resizeMode}
-          blurRadius={Platform.OS === 'android' ? 1 : 0} // iOS ignores blurRadius for remote images
+          blurRadius={Platform.OS === 'ios' ? 8 : 3}
           accessibilityLabel={description}
         />
       )}
-      {/* Main image */}
+      
+      {/* Main optimized image */}
       {imgUri ? (
         <Image
           source={{ uri: imgUri }}
-          style={[style, { zIndex: 2 }]}
+          style={[style, { zIndex: 3 }]}
           resizeMode={resizeMode}
           onLoadStart={onLoadStart}
-          onLoad={() => {
-            setLoaded(true);
-            onLoadEnd?.();
-          }}
-          onError={() => {
-            setLoaded(true);
-            onError?.();
-          }}
+          onLoad={handleMainImageLoad}
+          onError={handleMainImageError}
           accessibilityLabel={description}
         />
       ) : null}
-        </View>
+    </View>
   );
 };
 export default CustomFastImage;

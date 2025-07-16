@@ -100,7 +100,7 @@ export default function TotalPriceCMP({
     };
 
     applyAutoCoupons();
-  }, [totalPrice, appliedCoupon]);
+  }, [totalPrice, appliedCoupon, shippingMethod]);
 
   // Notify parent component when appliedCoupon changes
   useEffect(() => {
@@ -111,6 +111,10 @@ export default function TotalPriceCMP({
     // If free delivery coupon is applied, delivery price should be 0
     const effectiveDeliveryPrice =
       appliedCoupon?.coupon.type === "free_delivery" ? 0 : deliveryPrice;
+      console.log("deliveryPrice", deliveryPrice)
+      console.log("appliedCoupon", appliedCoupon)
+      console.log("itemsPrice", itemsPrice)
+      console.log("discount", discount)
     const totalPriceTmp = itemsPrice + deliveryPrice - discount;
 
     setTotalPrice(totalPriceTmp);

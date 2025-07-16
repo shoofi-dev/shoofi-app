@@ -217,6 +217,9 @@ const CheckoutScreen = ({ route }) => {
       (navigation as any).navigate("admin-orders");
       return;
     }
+    DeviceEventEmitter.emit(
+      `ORDER_SUBMITTED`
+    );
     setSubmittedShippingMethod(shippingMethod);
     setIsOrderSubmittedModalOpen(true);
   };

@@ -15,6 +15,7 @@ export type TPropsCheckoutSubmit = {
   address?: any;
   locationText?: any;
   paymentData?: any;
+  shippingPrice?: any;
 };
 const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
   const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, shoofiAdminStore, couponsStore } =

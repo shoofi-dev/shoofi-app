@@ -4,6 +4,7 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  useRef,
 } from "react";
 import {
   View,
@@ -21,6 +22,7 @@ import StoreItem from "./stores/components/item";
 import { cdnUrl } from "../consts/shared";
 import CustomFastImage from "../components/custom-fast-image";
 import ImageWithLoading from "../components/image-with-loading";
+import OptimizedImage from "../components/optimized-image";
 import { axiosInstance } from "../utils/http-interceptor";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AdsCarousel, { Ad } from "../components/shared/AdsCarousel";
@@ -90,14 +92,14 @@ const CategoryItem = React.memo<CategoryItemProps>(
           }}
         >
           {cat.img && cat.img[0] ? (
-            <ImageWithLoading
+            <OptimizedImage
               style={{
                 width: "100%",
                 height: "100%",
                 borderRadius: 20,
               }}
               source={{ uri: `${cdnUrl}${cat.img[0].uri}` }}
-              showLoadingIndicator={false}
+              isLogo={true}
             />
           ) : (
             <View
@@ -167,14 +169,14 @@ const SubCategoryItem = React.memo<CategoryItemProps>(
           }}
         >
           {cat?.image?.uri ? (
-            <ImageWithLoading
+            <OptimizedImage
               style={{
                 width: "100%",
                 height: "100%",
             
               }}
               source={{ uri: `${cdnUrl}${cat.image?.uri}` }}
-              showLoadingIndicator={false}
+              isThumbnail={true}
             />
           ) : (
             <View
@@ -270,7 +272,9 @@ const ExploreScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [defaultCategory, setDefaultCategory] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [debouncedLocation, setDebouncedLocation] = useState(null);
   const [hideSplash, setHideSplash] = useState(false);
+  const lastFetchedLocation = useRef(null);
   useEffect(() => {
     if (websocket?.lastMessage) {
       if (websocket?.lastMessage?.type === "store_refresh") {
@@ -280,49 +284,49 @@ const ExploreScreen = () => {
     }
   }, [websocket?.lastMessage]);
 
-  // Get user location for filtering
+  // Get user location for filtering with debouncing
   useEffect(() => {
     if (addressStore.defaultAddress?.location) {
       setUserLocation(addressStore.defaultAddress.location);
+      
+      // Debounce location changes to prevent rapid API calls
+      const timeoutId = setTimeout(() => {
+        const newLocation = addressStore.defaultAddress.location;
+        // Only update if location has actually changed
+        if (JSON.stringify(lastFetchedLocation.current) !== JSON.stringify(newLocation)) {
+          setDebouncedLocation(newLocation);
+          lastFetchedLocation.current = newLocation;
+        }
+      }, 300); // 300ms debounce - faster response
+      
+      return () => clearTimeout(timeoutId);
     } else {
       setUserLocation(null);
+      setDebouncedLocation(null);
+      lastFetchedLocation.current = null;
     }
   }, [addressStore.defaultAddress?.location]);
 
-  // Build API URLs with location parameter - use stable object
-  const apiUrls = useMemo((): ApiUrls => {
 
-    const baseUrls: ApiUrls = {
-      generalCategories: "/category/general/all",
-      ads: "/ads/list",
-      categoriesWithStores: userLocation
-        ? `/shoofiAdmin/explore/categories-with-stores?location=${JSON.stringify(
-            userLocation
-          )}`
-        : "/shoofiAdmin/explore/categories-with-stores",
-    };
 
-    return baseUrls;
-  }, [userLocation]);
-
-  // Use optimized parallel fetch for better performance - only when location is available
+  // Use optimized parallel fetch for better performance - always fetch basic data, location-based data when available
   const {
     data: fetchData,
     loading,
     error,
     refetch,
   } = useParallelFetch<ExploreData>(
-    userLocation
-      ? apiUrls
-      : {
-          generalCategories: "/category/general/all",
-          ads: "/ads/list",
-          categoriesWithStores: "/shoofiAdmin/explore/categories-with-stores",
-        },
+    {
+      generalCategories: "/category/general/all",
+      ads: "/ads/list",
+      categoriesWithStores: debouncedLocation
+        ? `/shoofiAdmin/explore/categories-with-stores?location=${JSON.stringify(debouncedLocation)}`
+        : "/shoofiAdmin/explore/categories-with-stores",
+    },
     {
       ttl: 5 * 60 * 1000, // 5 minutes cache (shorter due to store status changes)
-      enabled: !!userLocation, // Only fetch when userLocation is defined
-      dependencies: [userLocation], // Refetch when location changes
+      enabled: true, // Always fetch basic data
+      dependencies: [debouncedLocation], // Refetch location-based data when location changes
     }
   );
 
@@ -338,7 +342,9 @@ const ExploreScreen = () => {
   const generalCategories = (fetchData.generalCategories || []) as any[];
   const adsData = (fetchData.ads || []) as any[];
   const categoriesWithStores = (fetchData.categoriesWithStores || []) as any[];
-
+  
+  // Show loading indicator for location-based updates
+  const isLocationLoading = loading && fetchData.generalCategories && debouncedLocation;
   useFocusEffect(
     React.useCallback(() => {
       shoofiAdminStore.setSelectedCategory(null);
@@ -400,8 +406,9 @@ const ExploreScreen = () => {
       setDefaultCategory(generalCategories[0]);
     }
   }, [generalCategories]);
-
-  if (loading && !hideSplash) {
+  
+  // Show splash only on initial load, not on location-based refetches
+  if (loading && !hideSplash && !fetchData.generalCategories) {
     return <SplashScreen />;
   }
 
@@ -414,9 +421,27 @@ const ExploreScreen = () => {
       </View>
     );
   }
-
   return (
     <ScrollView style={{ backgroundColor: "#fff", marginTop: 10 }}>
+      {/* Location-based loading indicator */}
+      {isLocationLoading && (
+        <View style={{ 
+          paddingHorizontal: 16, 
+          paddingVertical: 8, 
+          backgroundColor: "#f0f8ff",
+          alignItems: "center"
+        }}>
+          <ActivityIndicator size="small" color={themeStyle.PRIMARY_COLOR} />
+          <Text style={{ 
+            fontSize: themeStyle.FONT_SIZE_SM, 
+            color: themeStyle.PRIMARY_COLOR, 
+            marginTop: 4 
+          }}>
+            {t("updating_stores")}
+          </Text>
+        </View>
+      )}
+      
       {/* General Categories Horizontal Scroller */}
       <ScrollView
         horizontal
@@ -466,8 +491,8 @@ const ExploreScreen = () => {
       )}
 
       {/* Stores grouped by subcategories - now using server-side filtered data */}
-      {defaultCategory &&
-        categoriesWithStores?.map((categoryData) => {
+      {defaultCategory && categoriesWithStores?.length > 0 ? (
+        categoriesWithStores.map((categoryData) => {
           // Only show category if it has stores
           if (!categoryData.stores || categoryData.stores.length === 0)
             return null;
@@ -480,7 +505,24 @@ const ExploreScreen = () => {
               languageStore={languageStore}
             />
           );
-        })}
+        })
+      ) : (
+        // Show message when no stores are available
+        <View style={{ 
+          padding: 20, 
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: 200
+        }}>
+          <Text style={{ 
+            fontSize: themeStyle.FONT_SIZE_MD, 
+            color: "#666",
+            textAlign: "center"
+          }}>
+            {debouncedLocation ? t("no_stores_in_area") : t("loading_stores")}
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 };

@@ -24,17 +24,36 @@ type AdsCarouselProps = {
 
 // Memoized ad item component
 const AdItem = React.memo(({ item }: { item: Ad }) => {
+
+
   const backgroundUrl = useMemo(() => cdnUrl + item.background, [item.background]);
-  console.log("cdnUrl",backgroundUrl)
+
+  let cleanUri = backgroundUrl.replace(/^https?:\/\//, '').replace(/^shoofi.imgix.net\//, '');
+  cleanUri = cleanUri.replace(/^shoofi-spaces\.fra1\.cdn\.digitaloceanspaces\.com\//, '');
+  const baseUrl = `https://shoofi.imgix.net/${cleanUri}`;
+
+  // Carousel images: moderate quality, larger size for better visual appeal
+  const mainParams = [
+    'w=800',
+    'h=400',
+    'auto=format',
+    'fit=cover',
+    'q=70',
+    'fm=webp',
+    'dpr=1'
+  ];
+
+
+
   return (
     <ImageBackground
-      source={{ uri: backgroundUrl }}
+      source={{ uri:  `${baseUrl}?${mainParams.join('&')}`, }}
       style={styles.card}
       imageStyle={{ borderRadius: CARD_RADIUS }}
       resizeMode="cover"
     >
       {/* Floating product images */}
-      <View style={styles.productsRow}>
+      {/* <View style={styles.productsRow}>
         {item.products.map((img, idx) => (
           <CustomFastImage
             key={img + idx}
@@ -43,7 +62,7 @@ const AdItem = React.memo(({ item }: { item: Ad }) => {
             resizeMode="cover"
           />
         ))}
-      </View>
+      </View> */}
       {/* Text overlay with gradient */}
       <LinearGradient
         colors={["#00000000", "#232323"]}

@@ -109,7 +109,7 @@ const TopBar = () => {
           </View>
         </View>
       ) : (
-        <View style={{ minWidth: "60%" }}>
+        <View style={{  }}>
           <AddressSelector />
         </View>
       )}

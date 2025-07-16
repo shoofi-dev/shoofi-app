@@ -163,6 +163,7 @@ export default function Button({
                   fontSize: fontSize ? fontSize : themeStyle.FONT_SIZE_MD,
                   textAlign: "center",
             }}>{text}</Text>
+            {isLoading && <ActivityIndicator size="small" color={themeStyle.SECONDARY_COLOR} style={{marginLeft: 10}}  />}
           </View>
           {/* Price on the left */}
           {extraText && (

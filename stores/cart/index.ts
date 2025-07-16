@@ -357,6 +357,10 @@ class CartStore {
     return hash(hashObject);
   };
 
+  getShippingPrice = (order: any) => {
+    return order.shippingPrice - (order.appliedCoupon?.coupon?.type === "free_delivery" ? order.appliedCoupon.discountAmount :  0)
+  }
+
   getCartData = async (order: any) => {
     let finalOrder: TOrder = {
       payment_method: order.paymentMthod,
@@ -382,7 +386,7 @@ class CartStore {
       customerId: order.customerId,
       orderType: order.orderType,
       shippingPrice: order.shippingPrice,
-      orderPrice: order.totalPrice - (order.shippingPrice || 0),
+      orderPrice: order.totalPrice - this.getShippingPrice(order),
       appliedCoupon: order.appliedCoupon,
     };
 
