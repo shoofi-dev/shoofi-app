@@ -76,7 +76,7 @@ export default function NewPaymentMethodDialog({
             >
       
               <View style={{ alignItems: "flex-end" }}>
-                <Text style={{ fontSize: 18 }}>
+                <Text style={{ fontSize: theme.FONT_SIZE_MD }}>
                   {t("inser-credit-card-details")}
                 </Text>
               </View>

@@ -66,6 +66,7 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
             last4Digits: defaultCard.last4Digits,
             ccType: defaultCard.ccType,
             holderName: defaultCard.holderName || '',
+            cvv: defaultCard.cvv,
           });
         }
       } else {

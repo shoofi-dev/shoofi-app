@@ -127,6 +127,7 @@ const AddCreditCard: React.FC<AddCreditCardProps> = ({ onCardAdded, isDefault = 
           ccType: ccData.ccType,
           holderName: userDetailsStore.userDetails?.name || 'Card Holder',
           isDefault: isDefault,
+          cvv: ccData.cvv,
         });
 
         Alert.alert(t('success'), t('credit-card-added-successfully'));

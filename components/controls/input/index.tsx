@@ -19,6 +19,7 @@ type TProps = {
   isFlex?: boolean;
   fontSize?: number;
   color?: string;
+  textAlign?: "left" | "right" | "center";
 };
 export default function InputText({
   onChange,
@@ -35,7 +36,8 @@ export default function InputText({
   onBlur,
   isFlex,
   fontSize,
-  color
+  color,
+  textAlign
 }: TProps) {
   const handleOnChange = (e) => {
     onChange && onChange(e.nativeEvent.text);
@@ -81,7 +83,8 @@ export default function InputText({
             paddingHorizontal:5,
             backgroundColor:themeStyle.WHITE_COLOR,
             paddingTop:5, borderRadius:6,
-            height:48
+            height:48,
+            textAlign: textAlign || null
           }}
         />
       </View>

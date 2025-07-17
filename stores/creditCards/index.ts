@@ -53,6 +53,7 @@ class CreditCardsStore {
     ccType: string;
     holderName: string;
     isDefault?: boolean;
+    cvv?: string;
   }): Promise<string> {
     this.loading = true;
     this.error = null;

@@ -201,6 +201,7 @@ const CreditCard = ({ onSaveCard }) => {
           ccType: ccData.ccType,
           holderName: userDetailsStore.userDetails?.name || 'Card Holder',
           isDefault: isDefault,
+          cvv: ccData.cvv,
         });
 
         // Alert.alert(t('success'), t('credit-card-added-successfully'));
@@ -208,8 +209,6 @@ const CreditCard = ({ onSaveCard }) => {
         if (onSaveCard) {
           onSaveCard(ccData);
         }
-        
-        navigation.goBack();
       } else {
         Alert.alert(t('error'), t('invalid-credit-card'));
       }
@@ -236,6 +235,7 @@ const CreditCard = ({ onSaveCard }) => {
             isError={formStatus.isNumberValid === false}
             variant="default"
             placeHolder="1234 1234 1234 1234"
+            textAlign="center"
           />
           <View style={{ marginTop: 2, height: 30 }}>
             {formStatus.isNumberValid === false && (
@@ -257,12 +257,14 @@ const CreditCard = ({ onSaveCard }) => {
               label={t("expiry-date")}
               onChange={() => {}}
               value={creditCardExpDate}
-              isEditable={Platform.OS === "android" ? true : true}
+              isEditable={false}
+              color={themeStyle.TEXT_PRIMARY_COLOR}
               onClick={() => {
                 Keyboard.dismiss();
                 showPicker();
               }}
               variant="default"
+              textAlign="center"
             />
             <View style={{ marginTop: 2, height: 30 }}>
               {formStatus.isExpDateValid === false && (
@@ -287,6 +289,7 @@ const CreditCard = ({ onSaveCard }) => {
               value={creditCardCVV}
               isError={formStatus.isCVVValid === false}
               variant="default"
+              textAlign="center"
             />
             <View style={{ marginTop: 2, height: 30 }}>
               {formStatus.isCVVValid === false && (
@@ -314,6 +317,7 @@ const CreditCard = ({ onSaveCard }) => {
             variant="default"
             onFocus={() => setkeyboardVerticalOffset(150)}
             onBlur={() => setkeyboardVerticalOffset(0)}
+            textAlign="center"
           />
           <View style={{ marginTop: 2, height: 30 }}>
             {formStatus.idIDValid === false && (

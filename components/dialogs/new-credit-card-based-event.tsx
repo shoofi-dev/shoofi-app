@@ -64,7 +64,7 @@ export default function NewPaymentMethodBasedEventDialog() {
         <View style={{position: 'absolute', left: 0, top: 15}}>
           <BackButton onClick={() => hideDialog("close")} isDisableGoBack={true} color={themeStyle.WHITE_COLOR}/> 
         </View>
-        <View style={{ alignSelf: 'center'}}>
+        <View style={{ alignSelf: 'center', marginTop: 10}}>
         <Text style={styles.title}>{t("inser-credit-card-details")}</Text>
         
         </View>
@@ -130,10 +130,9 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   title: {
-    fontSize: 20,
+    fontSize: themeStyle.FONT_SIZE_LG,
     fontWeight: "bold",
-    color: "#222",
-    textAlign: "center",
+    color: themeStyle.TEXT_PRIMARY_COLOR,
 
   },
 });

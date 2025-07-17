@@ -48,7 +48,9 @@ export const AddressCMP = observer(({
     loading: driversLoading,
     error: driversError,
     customerLocation,
-  } = useAvailableDrivers();
+  } = useAvailableDrivers({
+    isEnabled: !shippingMethod,
+  });
   const [defaultAddress, setDefaultAddress] = useState(null);
   const [place, setPlace] = useState(PLACE.current);
   const [textAddress, setTextAddress] = useState("");
