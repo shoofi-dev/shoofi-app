@@ -45,6 +45,7 @@ import CreditCardsListScreen from "../screens/credit-cards";
 import AddCreditCardScreen from "../components/credit-card/AddCreditCard";
 import ActiveOrdersScreen from "../screens/order/active";
 import SearchScreen from "../screens/SearchScreen";
+import CurrentLocationScreen from '../screens/current-location/index';
 // Delivery Driver Screens
 import DeliveryDriverDashboard from "../screens/delivery-driver";
 import DeliveryDriverOrderDetails from "../screens/delivery-driver/order-details";
@@ -154,6 +155,7 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="credit-cards" component={CreditCardsListScreen} />
       <Stack.Screen name="add-credit-card" component={AddCreditCardScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen name="current-location" component={CurrentLocationScreen} />
       
       {/* Delivery Driver Screens */}
       <Stack.Screen name="delivery-driver-dashboard" component={DeliveryDriverDashboard} />

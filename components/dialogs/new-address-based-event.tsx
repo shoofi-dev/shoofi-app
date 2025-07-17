@@ -21,21 +21,56 @@ import Text from "../controls/Text";
 export default function NewAddressBasedEventDialog() {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
+  const [locationData, setLocationData] = useState(null);
+
+  // Debug: Track visible state changes
+  useEffect(() => {
+    console.log('NewAddressModal: visible state changed to:', visible);
+  }, [visible]);
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
       DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG,
-      openDialog
+      handleLocationSelected
     );
     return () => {
       subscription.remove();
     };
   }, []);
 
-  const openDialog = () => setVisible(true);
+  // // Listen for location selection from current location modal
+  // useEffect(() => {
+  //   const subscription = DeviceEventEmitter.addListener(
+  //     `${DIALOG_EVENTS.OPEN_CURRENT_LOCATION_MODAL}_LOCATION_SELECTED`,
+  //     handleLocationSelected
+  //   );
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
+
+  const handleLocationSelected = (data: any) => {
+    console.log('NewAddressModal: Location data received:', data);
+    setLocationData(data);
+    setVisible(true);
+
+  };
+
+  const openDialog = (data: any) => {
+    console.log('NewAddressModal: openDialog called, setting visible to true');
+    setVisible(true);
+  };
+
+  // Test function to manually open the modal
+  const testOpenDialog = () => {
+    console.log('NewAddressModal: testOpenDialog called');
+    setVisible(true);
+  };
 
   const hideDialog = () => {
+    console.log('NewAddressModal: hideDialog called, setting visible to false');
     setVisible(false);
+    setLocationData(null);
   };
 
   useEffect(() => {
@@ -96,7 +131,10 @@ export default function NewAddressBasedEventDialog() {
             </View>
           </View>
           {/* Credit Card Form */}
-          <AddressForm />
+          <AddressForm locationData={locationData} onClose={hideDialog} />
+          
+          {/* Test button for debugging */}
+
         </View>
       <ExpiryDate />
     </Modal>
@@ -107,6 +145,7 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: "flex-end",
     margin: 0,
+    zIndex: 1000,
   },
   keyboardAvoiding: {
     width: "100%",

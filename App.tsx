@@ -22,7 +22,7 @@ import "moment-timezone";
 import ErrorBoundary from "react-native-error-boundary";
 import { useImagePreloader, getCriticalImages } from "./hooks/use-image-preloader";
 const appLoaderAnimation = require("./assets/lottie/loader-animation.json");
-
+import OrderErrorModalBasedEvent from "./components/dialogs/order-error-modal-based-event";
 moment.tz.setDefault("Asia/Jerusalem");
 
 I18nManager.forceRTL(true);
@@ -62,7 +62,7 @@ import getPizzaCount from "./helpers/get-pizza-count";
 import { useLocation } from "./hooks/useLocation";
 import { addressStore } from "./stores/address";
 import NewAddressBasedEventDialog from "./components/dialogs/new-address-based-event";
-import OrderErrorModalBasedEvent from "./components/dialogs/order-error-modal-based-event";
+import CurrentLocationModal from "./components/dialogs/current-location-modal";
 import { couponsStore } from "./stores/coupons";
 import { creditCardsStore } from "./stores/creditCards";
 import { deliveryDriverStore } from "./stores/delivery-driver";
@@ -665,6 +665,7 @@ const App = () => {
             <RootNavigator />
           </View>
           <NewAddressBasedEventDialog />
+          <CurrentLocationModal />
           <GeneralServerErrorDialog />
           <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />
           <OrderErrorModalBasedEvent />

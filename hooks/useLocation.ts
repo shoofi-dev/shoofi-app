@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
-import { Alert, Platform } from 'react-native';
+import { Alert, Platform, Linking } from 'react-native';
 
 interface LocationState {
   latitude: number | null;
@@ -13,6 +13,12 @@ interface LocationHookResult extends LocationState {
   requestLocationPermission: () => Promise<void>;
   getCurrentLocation: () => Promise<void>;
 }
+
+// Default location (can be set to a common area in your app's region)
+const DEFAULT_LOCATION = {
+  latitude: 32.0853, // Default to a common location
+  longitude: 34.7818,
+};
 
 export const useLocation = (): LocationHookResult => {
   const [state, setState] = useState<LocationState>({
@@ -70,8 +76,11 @@ export const useLocation = (): LocationHookResult => {
     try {
       setState(prev => ({ ...prev, isLoading: true, errorMsg: null }));
 
+      // First try with lower accuracy for faster response
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
+        accuracy: Location.Accuracy.Balanced, // Faster than High accuracy
+        timeInterval: 5000, // 5 second timeout
+        distanceInterval: 10, // Update every 10 meters
       });
 
       setState({
@@ -80,12 +89,35 @@ export const useLocation = (): LocationHookResult => {
         errorMsg: null,
         isLoading: false,
       });
+      console.log('GPS Location obtained:', { 
+        latitude: location.coords.latitude, 
+        longitude: location.coords.longitude 
+      });
     } catch (error) {
-      setState(prev => ({
-        ...prev,
-        errorMsg: 'Failed to get current location',
-        isLoading: false,
-      }));
+      // If high accuracy fails, try with lower accuracy
+      try {
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Low,
+          timeInterval: 3000, // 3 second timeout
+        });
+
+        setState({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          errorMsg: null,
+          isLoading: false,
+        });
+        console.log('Fallback GPS Location obtained:', { 
+          latitude: location.coords.latitude, 
+          longitude: location.coords.longitude 
+        });
+      } catch (fallbackError) {
+        setState(prev => ({
+          ...prev,
+          errorMsg: 'Failed to get current location',
+          isLoading: false,
+        }));
+      }
     }
   };
 

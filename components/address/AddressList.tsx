@@ -89,8 +89,16 @@ const AddressList = observer(
 
     const openNewAddressDialog = () => {
       onClose?.();
+      // setTimeout(() => {
+      // DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG);
+      // }, 400);
+      
+      // DeviceEventEmitter.emit(
+      //   `${DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG}_HIDE`
+      // );
       setTimeout(() => {
-      DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG);
+        // Emit event to open the current location modal
+        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_CURRENT_LOCATION_MODAL);
       }, 400);
     };
 
@@ -300,6 +308,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
+    paddingTop:10
   },
   addNewAddressTextContainer: {
     marginLeft: 10,
