@@ -62,6 +62,7 @@ import getPizzaCount from "./helpers/get-pizza-count";
 import { useLocation } from "./hooks/useLocation";
 import { addressStore } from "./stores/address";
 import NewAddressBasedEventDialog from "./components/dialogs/new-address-based-event";
+import OrderErrorModalBasedEvent from "./components/dialogs/order-error-modal-based-event";
 import { couponsStore } from "./stores/coupons";
 import { creditCardsStore } from "./stores/creditCards";
 import { deliveryDriverStore } from "./stores/delivery-driver";
@@ -666,6 +667,7 @@ const App = () => {
           <NewAddressBasedEventDialog />
           <GeneralServerErrorDialog />
           <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />
+          <OrderErrorModalBasedEvent />
           <UpdateVersion
             isOpen={isOpenUpdateVersionDialog}
             handleAnswer={handleUpdateVersionDialogAnswer}

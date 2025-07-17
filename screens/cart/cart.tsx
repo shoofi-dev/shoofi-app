@@ -48,6 +48,7 @@ import CartExtras from "./components/Extras";
 import TotalPriceCMP from "../../components/total-price";
 import StoreErrorMsgModal from "../../components/dialogs/StoreErrorMsgModal";
 import StoreIsCloseModal from "../../components/dialogs/StoreIsCloseModal";
+import CartItemPlaceholder from "../../components/placeholders/CartItemPlaceholder";
 const barcodeString = "https://onelink.to/zky772";
 
 const hideExtras = ["counter"];
@@ -165,11 +166,8 @@ const CartScreen = ({ route }) => {
       setIsLoading(true);
       const cartStoreDBName = await cartStore.getCartStoreDBName();
       await storeDataStore.getStoreData(cartStoreDBName);
-      setTimeout(() => {
-        setIsStoreDataReady(true);
-        setIsLoading(false);
-
-      }, 500);
+      setIsLoading(false);
+      setIsStoreDataReady(true);
     }
     getStoreData();
   }, [])
@@ -485,10 +483,8 @@ const CartScreen = ({ route }) => {
   // STORE IS CLOSE - END
   return (
     <View style={{ position: "relative", height: "100%", flex: 1, bottom: 0 }}>
-            {isLoading && <View style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
-      <ActivityIndicator size="large" color={themeStyle.PRIMARY_COLOR} />
-    </View>}
-      <View style={{opacity: isLoading ? 0 : 1,height: "100%"}}>
+    
+      <View style={{height: "100%"}}>
 
     
       {/* <LinearGradient
@@ -525,6 +521,13 @@ const CartScreen = ({ route }) => {
               paddingBottom: scale(20),
             }}
           >
+            {isLoading && (
+              <View style={{ flex: 1, justifyContent: "center", alignItems: "center", width: '100%' }}>
+                {[1,2,3].map((i) => (
+                  <CartItemPlaceholder key={i} />
+                ))}
+              </View>
+            )}
             {cartStore.cartItems.map((product, index) => {
               const moveBy = (1 - 1 / 1) * index;
               const isLast = index === cartStore.cartItems.length - 1;
@@ -533,12 +536,11 @@ const CartScreen = ({ route }) => {
                 product && (
                   <View
                     key={getProductIndexId(product, index)}
-                    style={{ position: "relative" }}
+                    style={{ position: "relative", }}
                   >
-                    <View style={{ paddingHorizontal: scale(20) }}>
+                    <View style={{ paddingHorizontal: scale(10) }}>
                       <Animated.View
                         style={{
-                          borderRadius: scale(20),
                           marginTop: index != 0 ? scale(20) : 0,
                           borderColor: themeStyle.GRAY_600,
                           paddingBottom: scale(20),
@@ -588,8 +590,8 @@ const CartScreen = ({ route }) => {
                               {/* Product Image */}
                               <View
                                 style={{
-                                  width: scale(60),
-                                  height: scale(60),
+                                  width: scale(100),
+                                  height: scale(70),
                                   borderRadius: scale(15),
                                   overflow: "hidden",
 

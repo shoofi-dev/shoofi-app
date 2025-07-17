@@ -65,6 +65,7 @@ export default function StoreIsCloseBasedEventDialog() {
 
           </Dialog.Title>
           <Dialog.Content>
+            <View style={{alignItems: "center", marginTop: 30, marginBottom: 30}}>
             <Text
               style={{
                 fontSize: 16,
@@ -74,6 +75,8 @@ export default function StoreIsCloseBasedEventDialog() {
             >
               {t('store_is_closed')}
             </Text>
+            </View>
+ 
           </Dialog.Content>
           <Dialog.Actions>
             <View
@@ -86,7 +89,6 @@ export default function StoreIsCloseBasedEventDialog() {
               <Button
                 onClickFn={() => hideDialog(true)}
                 text={t("ok")}
-                textColor={themeStyle.WHITE_COLOR}
                 fontSize={16}
               />
             </View>

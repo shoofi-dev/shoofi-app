@@ -120,7 +120,7 @@ const VerifyCodeScreen = ({ route }) => {
     }
 
     setTimertInterVal();
-    navigation.navigate("login");
+    (navigation as any).navigate("login");
   };
 
   const isValidNunber = () => {
@@ -168,13 +168,21 @@ const VerifyCodeScreen = ({ route }) => {
               .then((res) => {
                 setIsLoading(false);
                 if (cartStore.getProductsCount() > 0) {
-                  navigation.navigate("cart");
+                  const routes = navigation.getState()?.routes;
+                  const currentRoute = routes[routes.length - 1]?.name;
+                  
+                  console.log("currentRoute", currentRoute);
+                  if (currentRoute === "cart") {
+                    (navigation as any).navigate("checkout-screen");
+                  } else {
+                    (navigation as any).navigate("cart");
+                  }
                 } else {
-                  navigation.navigate("homeScreen");
+                  (navigation as any).navigate("homeScreen");
                 }
               });
           } else {
-            navigation.navigate("insert-customer-name");
+            (navigation as any).navigate("insert-customer-name");
           }
         })
         .catch(function (error) {
@@ -189,7 +197,7 @@ const VerifyCodeScreen = ({ route }) => {
   };
 
   const handleLogoPress = () => {
-    navigation.navigate("homeScreen");
+    (navigation as any).navigate("homeScreen");
   };
 
   return (

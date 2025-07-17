@@ -5,6 +5,8 @@ import { StoreContext } from "../../stores";
 import { PAYMENT_METHODS, SHIPPING_METHODS } from "../../consts/shared";
 import { TOrderSubmitResponse } from "../../stores/cart";
 import _useCheckoutChargeCC from "./use-checkout-charge-cc";
+import { DIALOG_EVENTS } from "../../consts/events";
+import { useTranslation } from "react-i18next";
 
 export type TPropsCheckoutSubmit = {
   paymentMthod: any;
@@ -21,7 +23,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
   const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, shoofiAdminStore, couponsStore } =
     useContext(StoreContext);
   const { chargeCC } = _useCheckoutChargeCC();
-  
+  const { t } = useTranslation();
   // Prevent multiple rapid order submissions
   const isSubmittingRef = useRef(false);
   const lastSubmissionTimeRef = useRef(0);
@@ -141,25 +143,27 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
       
       // Handle specific error codes for order duplication prevention
       if (responseData.code === "ORDER_IN_PROGRESS") {
-        DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
-          show: true,
-          text: responseData.err || "Order creation in progress. Please wait a moment and try again."
+        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+          title: t("order-error-modal-title"),
+          message: responseData.err || t("order-error-modal-message")
         });
         return false;
       }
       
       if (responseData.code === "DUPLICATE_ORDER") {
-        DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
-          show: true,
-          text: responseData.err || "Duplicate order detected. Please check your recent orders."
+        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+          title: t("order-error-modal-title"),
+          message: responseData.err || t("order-error-modal-message")
         });
         return false;
       }
     }
     
     if (res?.has_err) {
-      DeviceEventEmitter.emit(`OPEN_GENERAL_SERVER_ERROR_DIALOG`, {
-        show: true,
+      // Show order error modal for general order creation failures
+      DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+        title: t("order-error-modal-title"),
+        message: t("order-error-modal-message")
       });
       return false;
     }
@@ -170,8 +174,9 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
         return true;
       } else if (res?.paymentStatus === "failed" || res?.paymentStatus === "error") {
         // Handle payment failure
-        DeviceEventEmitter.emit(`OPEN_PAYMENT_ERROR_MESSAGE_DIALOG`, {
-          text: res?.paymentError || 'Payment failed. Please try again.',
+        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+          title: t("order-error-modal-title"),
+          message: res?.paymentError || t("order-error-modal-message")
         });
         return false;
       }
@@ -180,6 +185,11 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     return true;
   } catch (error) {
     console.error('Error during order submission:', error);
+    // Show order error modal for any unexpected errors
+    DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+      title: t("order-error-modal-title"),
+      message: t("order-error-modal-message")
+    });
     return false;
   } finally {
     // Reset submission state
