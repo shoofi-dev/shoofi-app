@@ -37,6 +37,7 @@ import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
 import { getCurrentLang } from "../../translations/i18n";
 import Modal from "react-native-modal";
 import OrderSubmittedScreen from "../order/submitted";
+import OrderProcessingModal from "../../components/dialogs/order-processing-modal";
 
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -204,10 +205,18 @@ const CheckoutScreen = ({ route }) => {
 
   const [isOrderSubmittedModalOpen, setIsOrderSubmittedModalOpen] = useState(false);
   const [submittedShippingMethod, setSubmittedShippingMethod] = useState(null);
+  const [isProcessingModalOpen, setIsProcessingModalOpen] = useState(false);
+
+  // Debug modal states
+  useEffect(() => {
+    console.log('Modal states changed:', { isOrderSubmittedModalOpen, isProcessingModalOpen });
+  }, [isOrderSubmittedModalOpen, isProcessingModalOpen]);
 
   const postChargeOrderActions = () => {
     onLoadingOrderSent(false);
     isCheckoutInProgress.current = false;
+    console.log('Hiding processing modal');
+    setIsProcessingModalOpen(false); // Hide processing modal
     cartStore.resetCart();
     if (editOrderData) {
       setTimeout(() => {
@@ -221,7 +230,11 @@ const CheckoutScreen = ({ route }) => {
       `ORDER_SUBMITTED`
     );
     setSubmittedShippingMethod(shippingMethod);
-    setIsOrderSubmittedModalOpen(true);
+    // Add a small delay to ensure processing modal is hidden before showing order submitted modal
+    setTimeout(() => {
+      console.log('Setting order submitted modal to true');
+      setIsOrderSubmittedModalOpen(true);
+    }, 500); // Increased delay to ensure processing modal is fully hidden
   };
 
   const handleCheckout = async () => {
@@ -232,7 +245,8 @@ const CheckoutScreen = ({ route }) => {
     
     isCheckoutInProgress.current = true;
     setIsLoadingOrderSent(true);
-    
+    setIsProcessingModalOpen(true); // Show processing modal
+
     try {
       const isCheckoutValidRes = await isCheckoutValid({
         shippingMethod,
@@ -246,6 +260,7 @@ const CheckoutScreen = ({ route }) => {
         //todo: show error message
         setIsLoadingOrderSent(false);
         isCheckoutInProgress.current = false;
+        setIsProcessingModalOpen(false); // Hide processing modal
         return;
       }
 
@@ -293,10 +308,12 @@ const CheckoutScreen = ({ route }) => {
     }
     onLoadingOrderSent(false);
     isCheckoutInProgress.current = false;
+    setIsProcessingModalOpen(false); // Hide processing modal
   } catch (error) {
     console.error('Checkout error:', error);
     setIsLoadingOrderSent(false);
     isCheckoutInProgress.current = false;
+    setIsProcessingModalOpen(false); // Hide processing modal
   }
   };
 
@@ -411,13 +428,15 @@ const CheckoutScreen = ({ route }) => {
       <DeliveryMethodAggreeBasedEventDialog />
       <InvalidAddressdBasedEventDialog />
       <PaymentFailedBasedEventDialog />
+      <OrderProcessingModal visible={isProcessingModalOpen} />
       <Modal
         isVisible={isOrderSubmittedModalOpen}
         onBackdropPress={() => setIsOrderSubmittedModalOpen(false)}
-        style={{ margin: 0, justifyContent: "flex-end" }}
+        style={{ margin: 0, justifyContent: "flex-end", zIndex: 1000 }}
         animationIn="slideInUp"
         animationOut="slideOutDown"
         backdropOpacity={0.5}
+        useNativeDriver
       >
         <OrderSubmittedScreen
           route={{ params: { shippingMethod: submittedShippingMethod } }}

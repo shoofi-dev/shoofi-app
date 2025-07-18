@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 15,
+    marginRight: 0,
   },
   searchIconContainer: {
     justifyContent: "center",

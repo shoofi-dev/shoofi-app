@@ -87,6 +87,11 @@ const CreditCardsScreen = ({ onClose, isModal = false }) => {
       }
       await creditCardsStore.setDefaultCreditCard(card._id);
       loadCreditCards();
+
+      setTimeout(() => {
+        onClose();
+      }, 1000);
+      
     } catch (error) {
       Alert.alert(t('error'), t('failed-to-update-default-card'));
     }
@@ -113,30 +118,17 @@ const CreditCardsScreen = ({ onClose, isModal = false }) => {
         </View>
         
         <View style={styles.cardActions}>
-          {/* {!card.isDefault && (
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => handleSetDefault(card)}
-            >
-              <Icon icon="star" size={20} style={styles.actionIcon} />
-            </TouchableOpacity>
-          )} */}
+   
              {card.isDefault && (
                 <Icon icon="v" size={30} color={themeStyle.SUCCESS_COLOR}  />
             )}
-          {/* <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => handleEditCard(card)}
-          >
-            <Icon icon="pencil" size={20} style={styles.actionIcon} />
-          </TouchableOpacity>
           
           <TouchableOpacity
             style={styles.actionButton}
             onPress={() => handleDeleteCard(card)}
           >
             <Icon icon="trash" size={20} style={[styles.actionIcon, styles.deleteIcon]} />
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>
@@ -216,6 +208,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 100,
   },
   loadingText: {
     marginTop: 10,

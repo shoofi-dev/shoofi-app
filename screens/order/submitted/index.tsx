@@ -24,6 +24,7 @@ const OrderSubmittedScreen = ({ route, onClose, isModal = false }) => {
   const navigation = useNavigation();
   const [isAnimateReady, setIsAnimateReady] = useState(false);
 
+
   useEffect(() => {
     // ordersStore.getOrders(userDetailsStore.isAdmin());
     setTimeout(()=>{
@@ -35,8 +36,10 @@ const OrderSubmittedScreen = ({ route, onClose, isModal = false }) => {
     if (isModal && onClose) {
       const timer = setTimeout(() => {
         onClose();
+      }, 2000); // Increased from 3000 to 8000 to give more time
+      setTimeout(() => {
         navigation.navigate("MainTabs", { screen: "active-orders" });
-      }, 3000);
+      }, 1000);
       return () => clearTimeout(timer);
     }
   }, [isModal, onClose, navigation]);

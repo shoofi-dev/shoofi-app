@@ -502,12 +502,12 @@ const CartScreen = ({ route }) => {
         <BackButton onClick={onBackClick} />
         <View style={{ marginLeft: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "90%" }}>
           <View>
-          <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>
+          <Text style={{ fontSize: 20 }}>
             {t("my-order")}
           </Text>
           </View>
           <View style={{marginRight: 10}}>
-          <Text style={{ fontSize: 14, color: themeStyle.BLACK_COLOR }}>
+          <Text style={{ fontSize: 18 }}>
             {languageStore.selectedLang === "ar" ? storeDataStore.storeData?.name_ar : storeDataStore.storeData?.name_he}
           </Text>
           </View>

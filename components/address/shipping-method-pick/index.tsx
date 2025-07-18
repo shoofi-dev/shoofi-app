@@ -70,7 +70,9 @@ export const ShippingMethodPick = ({
   );
 
   useEffect(() => {
-    setShippingMethodLocal(shippingMethod || (isTakeAwaySupport && SHIPPING_METHODS.takAway));
+    setShippingMethodLocal(
+      shippingMethod || (isTakeAwaySupport && SHIPPING_METHODS.takAway)
+    );
   }, [shippingMethod]);
 
   useEffect(() => {
@@ -158,11 +160,13 @@ export const ShippingMethodPick = ({
           {t("delivery")}
         </Text>
         {isDeliverySupport && !driversLoading ? (
-         deliveryTime && <Text style={styles.pillOptionSubtext}>
-            {/* {distanceKm ? distanceKm + " km · " : ""} */}
-            {deliveryTime?.min} - {deliveryTime?.max} {t("minutes")}
-          </Text>
-        
+          deliveryTime?.min &&
+          deliveryTime?.max && (
+            <Text style={styles.pillOptionSubtext}>
+              {/* {distanceKm ? distanceKm + " km · " : ""} */}
+              {deliveryTime?.min} - {deliveryTime?.max} {t("minutes")}
+            </Text>
+          )
         ) : driversLoading ? (
           <ActivityIndicator
             size="small"
@@ -196,9 +200,15 @@ export const ShippingMethodPick = ({
         >
           {t("take-away")}
         </Text>
-        {takeAwayReadyTime && <Text style={styles.pillOptionSubtext}>
-          {isTakeAwaySupport ? `${takeAwayReadyTime?.min} - ${takeAwayReadyTime?.max} ${t("minutes")}` :  t("takeaway-not-supported")}
-        </Text>}
+        {takeAwayReadyTime?.min && takeAwayReadyTime?.max && (
+          <Text style={styles.pillOptionSubtext}>
+            {isTakeAwaySupport
+              ? `${takeAwayReadyTime?.min} - ${takeAwayReadyTime?.max} ${t(
+                  "minutes"
+                )}`
+              : t("takeaway-not-supported")}
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );
