@@ -56,8 +56,13 @@ const CategorySection = ({
   languageStore: any;
   onItemSelect: (item: any, category: any) => void;
 }) => {
+  // Early return with a minimal view instead of null to maintain layout consistency
   if (!category.products || category.products.length === 0) {
-    return null;
+    return (
+      <View style={[styles.categorySection, { height: 1 }]}>
+        {/* Empty view to maintain layout */}
+      </View>
+    );
   }
 
   const categoryName =
@@ -113,9 +118,13 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
       if (category && category.products && category.products.length > 0) {
         const productsHeight = category.products.length * productHeight;
         currentOffset += categoryHeaderHeight + productsHeight + sectionMargin;
+      } else {
+        // Add minimal offset for empty categories to maintain layout consistency
+        currentOffset += 1;
       }
     }
 
+    console.log('Category offsets calculated:', offsets.length, 'categories');
     return offsets;
   }, [filteredCategoryList]);
 
@@ -177,7 +186,8 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
   }, [productId, filteredCategoryList]);
 
   const renderCategorySection = useCallback(
-    ({ item: category }) => {
+    ({ item: category, index }) => {
+      console.log(`Rendering category ${index}: ${category.nameHE || category.nameAR} with ${category.products?.length || 0} products`);
       return (
         <CategorySection
           category={category}
@@ -195,7 +205,8 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
     (data, index) => {
       const category = data[index];
       if (!category || !category.products || category.products.length === 0) {
-        return { length: 0, offset: 0, index };
+        // Return a minimal height instead of 0 to prevent layout issues
+        return { length: 1, offset: categoryOffsets[index] || 0, index };
       }
 
       const productsHeight = category.products.length * productHeight;
@@ -216,13 +227,14 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
         scrollEventThrottle={16}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={5}
-        windowSize={10}
-        initialNumToRender={3}
+        removeClippedSubviews={false} // Changed to false to prevent clipping issues
+        maxToRenderPerBatch={10} // Increased from 5
+        windowSize={15} // Increased from 10
+        initialNumToRender={5} // Increased from 3
         getItemLayout={getItemLayout}
         updateCellsBatchingPeriod={50}
         disableVirtualization={false}
+        onEndReachedThreshold={0.1} // Add this to help with rendering
       />
       <Modal
         isVisible={isModalOpen}

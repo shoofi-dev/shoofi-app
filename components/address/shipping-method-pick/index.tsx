@@ -158,10 +158,11 @@ export const ShippingMethodPick = ({
           {t("delivery")}
         </Text>
         {isDeliverySupport && !driversLoading ? (
-          <Text style={styles.pillOptionSubtext}>
+         deliveryTime && <Text style={styles.pillOptionSubtext}>
             {/* {distanceKm ? distanceKm + " km · " : ""} */}
             {deliveryTime?.min} - {deliveryTime?.max} {t("minutes")}
           </Text>
+        
         ) : driversLoading ? (
           <ActivityIndicator
             size="small"
@@ -195,9 +196,9 @@ export const ShippingMethodPick = ({
         >
           {t("take-away")}
         </Text>
-        <Text style={styles.pillOptionSubtext}>
+        {takeAwayReadyTime && <Text style={styles.pillOptionSubtext}>
           {isTakeAwaySupport ? `${takeAwayReadyTime?.min} - ${takeAwayReadyTime?.max} ${t("minutes")}` :  t("takeaway-not-supported")}
-        </Text>
+        </Text>}
       </TouchableOpacity>
     </View>
   );
