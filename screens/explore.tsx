@@ -322,7 +322,7 @@ const ExploreScreen = () => {
   } = useParallelFetch<ExploreData>(
     {
       generalCategories: "/category/general/all",
-      ads: "/ads/list",
+      ads: "/ads/valid", // Use valid ads endpoint for customers
       categoriesWithStores: debouncedLocation
         ? `/shoofiAdmin/explore/categories-with-stores?location=${JSON.stringify(debouncedLocation)}`
         : "/shoofiAdmin/explore/categories-with-stores",
@@ -400,6 +400,7 @@ const ExploreScreen = () => {
           languageStore.selectedLang === "ar"
             ? ad.descriptionAR
             : ad.descriptionHE || "",
+        appName: ad.appName || undefined, // Include store appName for navigation
       })),
     [adsData, languageStore.selectedLang]
   );

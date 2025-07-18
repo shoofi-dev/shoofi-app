@@ -1,11 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import { View, Image, ImageBackground, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useMemo, useContext, useCallback } from 'react';
+import { View, Image, ImageBackground, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { cdnUrl } from '../../consts/shared';
 import CustomFastImage from '../custom-fast-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import Text from '../controls/Text';
 import themeStyle from '../../styles/theme.style';
+import { StoreContext } from '../../stores';
+import { useNavigation } from '@react-navigation/native';
+import { SHIPPING_METHODS } from '../../consts/shared';
+
 const { width } = Dimensions.get('window');
 const CARD_HEIGHT = 185;
 const CARD_RADIUS = 16;
@@ -16,6 +20,7 @@ export type Ad = {
   products: string[]; // array of product image uris
   title: string;
   subtitle: string;
+  appName?: string; // Store appName for navigation
 };
 
 type AdsCarouselProps = {
@@ -23,9 +28,7 @@ type AdsCarouselProps = {
 };
 
 // Memoized ad item component
-const AdItem = React.memo(({ item }: { item: Ad }) => {
-
-
+const AdItem = React.memo(({ item, onAdPress }: { item: Ad; onAdPress: (ad: Ad) => void }) => {
   const backgroundUrl = useMemo(() => cdnUrl + item.background, [item.background]);
 
   let cleanUri = backgroundUrl.replace(/^https?:\/\//, '').replace(/^shoofi.imgix.net\//, '');
@@ -43,39 +46,44 @@ const AdItem = React.memo(({ item }: { item: Ad }) => {
     'dpr=1'
   ];
 
-
-
   return (
-    <ImageBackground
-      source={{ uri:  `${baseUrl}?${mainParams.join('&')}`, }}
-      style={styles.card}
-      imageStyle={{ borderRadius: CARD_RADIUS }}
-      resizeMode="cover"
+    <TouchableOpacity
+      onPress={() => onAdPress(item)}
+      activeOpacity={0.9}
+      style={styles.cardContainer}
     >
-      {/* Floating product images */}
-      {/* <View style={styles.productsRow}>
-        {item.products.map((img, idx) => (
-          <CustomFastImage
-            key={img + idx}
-            source={{ uri: cdnUrl + img }}
-            style={styles.productImg}
-            resizeMode="cover"
-          />
-        ))}
-      </View> */}
-      {/* Text overlay with gradient */}
-      <LinearGradient
-        colors={["#00000000", "#232323"]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={styles.gradientOverlay}
+      <ImageBackground
+        source={{ uri:  `${baseUrl}?${mainParams.join('&')}`, }}
+        style={styles.card}
+        imageStyle={{ borderRadius: CARD_RADIUS }}
+        resizeMode="cover"
       >
-        <View style={styles.textOverlay}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.subtitle}>{item.subtitle}</Text>
-        </View>
-      </LinearGradient>
-    </ImageBackground>
+        {/* Floating product images */}
+        {/* <View style={styles.productsRow}>
+          {item.products.map((img, idx) => (
+            <CustomFastImage
+              key={img + idx}
+              source={{ uri: cdnUrl + img }}
+              style={styles.productImg}
+              resizeMode="cover"
+            />
+          ))}
+        </View> */}
+        {/* Text overlay with gradient */}
+        <LinearGradient
+          colors={["#00000000", "#232323"]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.gradientOverlay}
+        >
+          <View style={styles.textOverlay}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.subtitle}>{item.subtitle}</Text>
+
+          </View>
+        </LinearGradient>
+      </ImageBackground>
+    </TouchableOpacity>
   );
 });
 
@@ -96,14 +104,42 @@ const PaginationDots = React.memo(({ ads, activeIndex }: { ads: Ad[]; activeInde
 
 const AdsCarousel: React.FC<AdsCarouselProps> = React.memo(({ ads }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const navigation = useNavigation();
+  const { cartStore, menuStore, shoofiAdminStore } = useContext(StoreContext);
 
   // Memoized carousel width
   const carouselWidth = useMemo(() => width - 32, []);
 
+  // Handle ad press - navigate to store if appName is provided
+  const handleAdPress = useCallback(async (ad: Ad) => {
+    if (ad.appName) {
+      try {
+        // Set shipping method to take away
+        await cartStore.setShippingMethod(SHIPPING_METHODS.takAway);
+        
+        // Clear current menu
+        menuStore.clearMenu();
+        
+        // Set the store database name
+        await shoofiAdminStore.setStoreDBName(ad.appName);
+        
+        // Navigate to menu screen
+        (navigation as any).navigate("menuScreen", { 
+          fromStoresList: Date.now(),
+          fromAd: true 
+        });
+      } catch (error) {
+        console.error("Error navigating to store from ad:", error);
+        Alert.alert("שגיאה", "שגיאה בניווט לחנות");
+      }
+    }
+    // If no appName, the ad is just informational and doesn't navigate anywhere
+  }, [cartStore, menuStore, shoofiAdminStore, navigation]);
+
   // Memoized render item function
   const renderItem = useMemo(() => ({ item }: { item: Ad }) => (
-    <AdItem item={item} />
-  ), []);
+    <AdItem item={item} onAdPress={handleAdPress} />
+  ), [handleAdPress]);
 
   // Memoized onSnapToItem handler
   const handleSnapToItem = useMemo(() => (index: number) => {
@@ -138,6 +174,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
     marginBottom: 16,
+  },
+  cardContainer: {
+    width: width - 32,
+    height: CARD_HEIGHT,
+    borderRadius: CARD_RADIUS,
   },
   card: {
     width: width - 32,
@@ -183,6 +224,7 @@ const styles = StyleSheet.create({
   },
   textOverlay: {
     zIndex: 3,
+    alignItems: 'flex-start',
   },
   title: {
     color: 'white',
@@ -201,7 +243,16 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
     textAlign: "left",
-
+  },
+  storeIndicator: {
+    color: '#FFD700',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+    textAlign: "left",
+    marginTop: 2,
   },
   dotsRow: {
     flexDirection: 'row',
