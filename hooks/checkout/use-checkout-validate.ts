@@ -33,7 +33,7 @@ const _useCheckoutValidate = () => {
         ar: res["invalid_message_ar"],
         he: res["invalid_message_he"],
         isOpen: res.alwaysOpen || userDetailsStore.isAdmin() || res.isOpen,
-        isBusy: false,
+        isBusy: res.isBusy,
       };
     });
   };
@@ -50,12 +50,11 @@ const _useCheckoutValidate = () => {
   }, []);
   const handleStoreErrorMsgAnswer = (data) => {};
   const toggleStoreErrorMsgDialog = (value) => {
-    DeviceEventEmitter.emit(
-      DIALOG_EVENTS.OPEN_STORE_ERROR_MSG_BASED_EVENT_DIALOG,
-      {
-        text: value,
-      }
-    );
+
+    DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+      title: t("order-error-modal-title"),
+      message:value
+    });
   };
   const isErrCustomMessage = async (storeStatus) => {
     if ((storeStatus.ar || storeStatus.he)) {
@@ -87,7 +86,11 @@ const _useCheckoutValidate = () => {
   };
   const isStoreOpen = async (storeStatus) => {
     if (!storeStatus.isOpen) {
-      toggleStoreIsCloseDialog();
+      toggleStoreErrorMsgDialog('store-is-closed');
+      return false;
+    }
+    if (storeStatus.isBusy) {
+      toggleStoreErrorMsgDialog('store-is-busy');
       return false;
     }
     return true;

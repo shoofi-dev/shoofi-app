@@ -56,16 +56,20 @@ const LoginScreen = () => {
   const [isValid, setIsValid] = useState(true);
   const onChange = (value) => {
     setIsValid(true);
+
+    setPhoneNumber(value);
     if (value.length === 10) {
       Keyboard.dismiss();
+      setTimeout(() => {
+        authinticate(value);
+      }, 0);
     }
-    setPhoneNumber(value);
   };
 
-  const isValidNunber = () => {
+  const isValidNunber = (value: string) => {
     return (
-      phoneNumber?.match(/\d/g)?.length === 10 ||
-      reg_arNumbers.test(phoneNumber)
+      value?.match(/\d/g)?.length === 10 ||
+      reg_arNumbers.test(value)
     );
   };
   const ifUserBlocked = async () => {
@@ -76,8 +80,8 @@ const LoginScreen = () => {
     }
     return false;
   };
-  const authinticate = async () => {
-    if (isValidNunber()) {
+  const authinticate = async (value: string) => {
+    if (isValidNunber(value)) {
       setIsLoading(true);
       const isBlocked = await ifUserBlocked();
       if (isBlocked) {
@@ -243,7 +247,7 @@ const LoginScreen = () => {
         <Button
           text={t("approve")}
           fontSize={20}
-          onClickFn={authinticate}
+          onClickFn={() => authinticate(phoneNumber)}
           isLoading={isLoading}
           disabled={isLoading}
         />

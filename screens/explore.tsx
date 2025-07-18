@@ -77,18 +77,22 @@ const CategoryItem = React.memo<CategoryItemProps>(
         style={{
           alignItems: "center",
           marginHorizontal: 8,
+          overflow: "hidden",
+
         }}
         onPress={onPress}
         activeOpacity={0.8}
+        
       >
         <View
           style={{
             width: normalizeWidth(68),
             height: normalizeHeight(68),
-            borderRadius: 30,
             backgroundColor: CATEGORY_BG,
             justifyContent: "center",
             alignItems: "center",
+            borderRadius: 20,
+            overflow: "hidden",
           }}
         >
           {cat.img && cat.img[0] ? (
@@ -96,7 +100,7 @@ const CategoryItem = React.memo<CategoryItemProps>(
               style={{
                 width: "100%",
                 height: "100%",
-                borderRadius: 20,
+
               }}
               source={{ uri: `${cdnUrl}${cat.img[0].uri}` }}
               isLogo={true}

@@ -25,7 +25,7 @@ import BackButton from "../../components/back-button";
 import Text from "../../components/controls/Text";
 import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
 import { APP_NAME } from "../../consts/shared";
-const HEADER_HEIGHT = 340;
+const HEADER_HEIGHT = 370;
 const SHIPPING_PICKER_CONTAINER_HEIGHT = 60;
 const STICKY_HEADER_HEIGHT = 90;
 const SCROLLABLE_PART_HEIGHT = HEADER_HEIGHT + SHIPPING_PICKER_CONTAINER_HEIGHT;
@@ -291,7 +291,7 @@ const MenuScreen = () => {
           handleScroll(event);
         }}
       >
-        <View style={{ marginTop: 15 }}>
+        <View style={{ marginTop:15}}>
           <AllCategoriesList
             ref={allCategoriesListRef}
             categoryList={categoryList}
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
     height: SHIPPING_PICKER_CONTAINER_HEIGHT,
     justifyContent: "center",
     paddingHorizontal: 10,
-    marginTop: 80,
+    marginTop: 110,
   },
   stickyHeader: {
     position: "absolute",

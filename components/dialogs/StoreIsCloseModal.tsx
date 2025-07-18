@@ -13,9 +13,10 @@ const screenHeight = Dimensions.get('window').height;
 interface StoreIsCloseModalProps {
   visible: boolean;
   onClose: () => void;
+  text: string;
 }
 
-const StoreIsCloseModal = ({ visible, onClose }: StoreIsCloseModalProps) => {
+const StoreIsCloseModal = ({ visible, onClose, text }: StoreIsCloseModalProps) => {
   const { t } = useTranslation();
 
   return (
@@ -42,7 +43,7 @@ const StoreIsCloseModal = ({ visible, onClose }: StoreIsCloseModalProps) => {
           </View>
           <View style={styles.textContainer}>
             <Text style={styles.messageText}>
-              {t('store_is_closed')}
+              {t(text || "store_is_closed")}
             </Text>
             </View>
           <View style={styles.buttonContainer}>

@@ -84,20 +84,22 @@ const CreditCard = ({ onSaveCard }) => {
   };
   const onCVVChange = (value) => {
     const { isValid } = cardValidator.cvv(value);
+  
+    setCreditCardCVV(value);
     if (isValid) {
       Keyboard.dismiss();
     }
-    setCreditCardCVV(value);
   };
   const onCardHolderNameChange = (value) => {
-    const isValid: any = isValidID(Number(value));
+    const isValid: any = isValidID((value));
     
+    setCardHolderID(value);
+
     if (isValid) {
       Keyboard.dismiss();
     }
-    setCardHolderID(value);
   };
-  // const onEmailChange = (value) => {
+  // const onEmailChange = (value) => {r
   //   if (value) {
   //     const isValid: any = isValidEmail(value);
   //     setFormStatus({ ...formStatus, isEmailValid: isValid });
@@ -159,9 +161,7 @@ const CreditCard = ({ onSaveCard }) => {
   }
 
   const validateCreditCardHolderID = async () => {
-    console.log("cardHolderID", cardHolderID);
-    const  isValid : any = isValidID(Number(cardHolderID));
-    console.log("isValid", isValid);
+    const  isValid : any = isValidID((cardHolderID));
     return isValid;
   }
 

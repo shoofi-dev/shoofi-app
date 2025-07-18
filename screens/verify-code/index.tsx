@@ -50,7 +50,7 @@ const arabicNumbers = [
 
 const VerifyCodeScreen = ({ route }) => {
   const { t } = useTranslation();
-  const { authStore, cartStore, userDetailsStore } = useContext(StoreContext);
+  const { authStore, cartStore, userDetailsStore, shoofiAdminStore } = useContext(StoreContext);
   const { phoneNumber } = route.params;
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -123,7 +123,7 @@ const VerifyCodeScreen = ({ route }) => {
     (navigation as any).navigate("login");
   };
 
-  const isValidNunber = () => {
+  const isValidNunber = (verifyCode: string) => {
     if (verifyCode === "****") {
       return false;
     }
@@ -132,9 +132,9 @@ const VerifyCodeScreen = ({ route }) => {
     );
   };
 
-  const onVerifyCode = () => {
+  const onVerifyCode = (verifyCode: string) => {
     setIsInvalidCodeRes(false);
-    if (isValidNunber()) {
+    if (isValidNunber(verifyCode)) {
       setIsLoading(true);
       let convertedValue: any = verifyCode.toString();
       for (var i = 0; i < convertedValue.length + 1; i++) {
@@ -165,12 +165,13 @@ const VerifyCodeScreen = ({ route }) => {
               .getUserDetails({
                 isDriver: authStore.verifyCodeToken.startsWith("11"),
               })
-              .then((res) => {
+              .then(async (res) => {
                 setIsLoading(false);
                 if (cartStore.getProductsCount() > 0) {
                   const routes = navigation.getState()?.routes;
                   const currentRoute = routes[routes.length - 1]?.name;
-                  
+                  await shoofiAdminStore.getStoreZCrData();
+
                   console.log("currentRoute", currentRoute);
                   if (currentRoute === "cart") {
                     (navigation as any).navigate("checkout-screen");
@@ -194,6 +195,11 @@ const VerifyCodeScreen = ({ route }) => {
 
   const handleCodeChange = (code) => {
     setVerifyCode(code);
+    if (code.length === 4) {
+      setTimeout(() => {
+        onVerifyCode(code);
+      }, 0);
+    }
   };
 
   const handleLogoPress = () => {

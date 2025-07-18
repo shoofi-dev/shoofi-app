@@ -1,6 +1,6 @@
-const isValidID = (idNumber: number) => {
+const isValidID = (idNumber: string) => {
     let id = String(idNumber).trim();
-    if (id.length > 9 || id.length < 9 || isNaN(idNumber)) return false;
+    if (id.length > 9 || id.length < 9 || isNaN(Number(idNumber))) return false;
 
     // Pad string with zeros up to 9 digits
     id = id.length < 9 ? ("00000000" + id).slice(-9) : id;

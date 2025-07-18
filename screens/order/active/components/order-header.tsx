@@ -25,7 +25,9 @@ const OrderHeader = ({ order }) => {
     remainingMinutes: Math.floor(Math.random() * 30) + 10, // Random time between 10-40 minutes
     isActive: true,
   };
-
+  const actionHandler = async (uri) => {
+    Linking.openURL(uri);
+  };
   const getOrderPrice = () => {
     if (oOrder.receipt_method === SHIPPING_METHODS.shipping) {
       return (
@@ -45,12 +47,15 @@ const OrderHeader = ({ order }) => {
 
   const getShippingPrice = () => {
     if (oOrder.receipt_method === SHIPPING_METHODS.shipping) {
-      const shippingPrice = order.appliedCoupon?.discountAmount > 0 ? order.shippingPrice - order.appliedCoupon?.discountAmount : order.shippingPrice;
+      const shippingPrice =
+        order.appliedCoupon?.discountAmount > 0
+          ? order.shippingPrice - order.appliedCoupon?.discountAmount
+          : order.shippingPrice;
       return (
         <View style={{ marginTop: 10, flexDirection: "row" }}>
-        <Text style={styles.subTitleInfo}>{t("delivery-price")}: </Text>
-        <Text style={styles.priceText}>₪{shippingPrice}</Text>
-      </View>
+          <Text style={styles.subTitleInfo}>{t("delivery-price")}: </Text>
+          <Text style={styles.priceText}>₪{shippingPrice}</Text>
+        </View>
       );
     }
     return null;
@@ -125,7 +130,7 @@ const OrderHeader = ({ order }) => {
               <Text style={styles.subTitleInfo}> {order.orderId}</Text>
             </View>
           </View>
-       {getPriceSection()}
+          {getPriceSection()}
           <View
             style={{
               flexDirection: "row",
@@ -156,9 +161,39 @@ const OrderHeader = ({ order }) => {
             >
               <Icon icon="whatapp" size={24} color={themeStyle.SUCCESS_COLOR} />
             </TouchableOpacity>
+
+            { order?.ccPaymentRefData?.url && shoofiAdminStore?.storeData?.isShowInvoice && <View>
+              {/* <Text>{order?.ccPaymentRefData?.url}</Text> */}
+              <TouchableOpacity
+                onPress={() => actionHandler(order?.ccPaymentRefData?.url)}
+              >
+                <View
+                  style={{
+                    alignItems: "center",
+                    backgroundColor: themeStyle.GRAY_10,
+                    padding: 5,
+                    borderRadius: 5,
+                  }}
+                >
+                  <View style={{ alignItems: "center" }}>
+                    <Icon
+                      icon="file-pdf"
+                      size={25}
+                      style={{ color: themeStyle.SECONDARY_COLOR, opacity: 1 }}
+                    />
+                  </View>
+                  <View style={{ alignItems: "center" }}>
+                    <Text style={{ fontSize: 12 }}>{t("invoice")}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>}
             <View style={styles.receiptMethodWrapper}>
               <Text>{t(oOrder.receipt_method?.toLowerCase())}</Text>
             </View>
+          </View>
+          <View style={{flexDirection: "row",alignItems: "center",justifyContent: "center", marginTop: 10, borderTopWidth: 1, borderTopColor: themeStyle.GRAY_20, paddingTop: 10}}>
+            <Text style={{fontSize: 12, color: themeStyle.GRAY_60}}> {moment(order.orderDate).format('HH:mm DD/MM/YY')}</Text>
           </View>
         </View>
       </View>

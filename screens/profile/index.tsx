@@ -101,12 +101,12 @@ const ProfileScreen = () => {
         icon: "logout-red",
         color: themeStyle.ERROR_COLOR,
       },
-      {
-        key: "delete-account",
-        label: t("delete-account"),
-        icon: "trash",
-        color: themeStyle.ERROR_COLOR,
-      },
+      // {
+      //   key: "delete-account",
+      //   label: t("delete-account"),
+      //   icon: "trash",
+      //   color: themeStyle.ERROR_COLOR,
+      // },
     ],
   ];
 
@@ -217,12 +217,14 @@ const ProfileScreen = () => {
             <View style={{borderBottomColor: themeStyle.SUCCESS_COLOR, borderBottomWidth: 1, paddingBottom: 2}}>
             </View>
           </TouchableOpacity>
-          {/* <TouchableOpacity onPress={() => navigation.navigate("privacy-policy")}>
-            <Text style={styles.versionText}>{t("privacy-policy")}</Text>
-            <View style={{borderBottomColor: themeStyle.SUCCESS_COLOR, borderBottomWidth: 1, paddingBottom: 2}}>
-            </View>
-          </TouchableOpacity> */}
+    
 
+        </View>
+        <View style={{flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 16, alignItems: "center", alignSelf: "center"}}>
+                <TouchableOpacity onPress={() => actionHandler("delete-account")}>
+            <Text style={styles.deleteAccountText}>{t("delete-account")}</Text>
+    
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -305,6 +307,10 @@ const styles = StyleSheet.create({
     color: themeStyle.SUCCESS_COLOR,
     fontSize: themeStyle.FONT_SIZE_SM,
 
+  },
+  deleteAccountText: {
+    color: themeStyle.ERROR_COLOR,
+    fontSize: themeStyle.FONT_SIZE_XS,
   },
 });
 

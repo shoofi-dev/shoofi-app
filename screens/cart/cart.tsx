@@ -447,7 +447,7 @@ const CartScreen = ({ route }) => {
         ar: res["invalid_message_ar"],
         he: res["invalid_message_he"],
         isOpen: res.alwaysOpen || userDetailsStore.isAdmin() || res.isOpen,
-        isBusy: false,
+        isBusy: res.isBusy,
       };
     });
   };
@@ -473,8 +473,12 @@ const CartScreen = ({ route }) => {
   };
 
   const isStoreOpen = async (storeStatus) => {
-    if (!storeStatus.isOpen && !userDetailsStore.isAdmin()) {
-      toggleStoreIsCloseDialog();
+    if (!storeStatus.isOpen) {
+        toggleStoreErrorMsgDialog('store-is-closed')
+      return false;
+    }
+    if (storeStatus.isBusy) {
+      toggleStoreErrorMsgDialog('store-is-busy')
       return false;
     }
     return true;
@@ -849,6 +853,7 @@ const CartScreen = ({ route }) => {
       <StoreIsCloseModal
         visible={isStoreCloseModalVisible}
         onClose={() => setIsStoreCloseModalVisible(false)}
+        text={storeDataStore.storeData?.isBusy ? "store_is_busy" : "store_is_closed"}
       />
 
       <Modal

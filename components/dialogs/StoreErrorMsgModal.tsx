@@ -66,15 +66,14 @@ const StoreErrorMsgModal = ({ visible, textValue, onClose }: StoreErrorMsgModalP
 const styles = StyleSheet.create({
   modalContainer: {
     width: '100%',
-    height: screenHeight * 0.4,
+    height: screenHeight * 0.6,
     backgroundColor: '#fff',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingTop: 18,
     paddingBottom: Platform.OS === 'ios' ? 32 : 18,
     paddingHorizontal: 24,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+ 
   },
   dragIndicator: {
     width: 48,
@@ -109,19 +108,20 @@ const styles = StyleSheet.create({
     color: '#444',
   },
   content: {
-    flex: 1,
+    height: '100%',
     width: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 12,
+    marginTop: 20,
+    flex: 1,
   },
   titleContainer: {
-    marginBottom: 10,
-    alignItems: 'center',
+    marginBottom: 30,
+    height: 200,
+    width: 140,
   },
   textContainer: {
-    marginBottom: 18,
-    paddingHorizontal: 8,
+    marginTop: 20,
+
   },
   messageText: {
     fontSize: 17,
@@ -132,7 +132,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 10,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 

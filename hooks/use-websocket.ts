@@ -149,14 +149,14 @@ const useWebSocket = (): UseWebSocketReturn => {
             error: null
           }));
         }
-
-        if (message.type === 'store_refresh') {
+        if (message.type === 'store_refresh' || message.type === 'store_updated') {
           // Check if the message is for the current app
           const cartStoreDBName = await cartStore.getCartStoreDBName();
           if(cartStoreDBName && message.data?.appName !== cartStoreDBName){
             if (message.data?.appName === cartStoreDBName) {
               // Refresh the store data
               storeDataStore.getStoreData();
+              console.log("XXX", message.data?.appName, cartStoreDBName)
             }
           }
 

@@ -83,6 +83,27 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
     };
   }, []);
 
+  const getStoreStatus = () => {
+    console.log("store", store?.isBusy)
+    if (store?.isBusy) {
+      return t("store-is-busy");
+    }
+    if (store?.isOpen) {
+      return t("store-is-open");
+    }
+  
+    return t("store-is-closed");
+  };
+  const getStoreStatusColor = () => {
+    if (store?.isBusy) {
+      return themeStyle.WARNING_COLOR;
+    }
+    if (store?.isOpen) {
+      return themeStyle.SUCCESS_COLOR;
+    }
+    return themeStyle.ERROR_COLOR;
+  };
+
   const renderPagination = () => {
     if (storeImages.length <= 1) return null;
 
@@ -187,11 +208,10 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
           left: 10,
           right: 10,
           zIndex: 1,
-
           alignItems: "center",
         }}
       >
-        <View style={[styles.infoCard, { top: 220, zIndex: 2 }]}>
+        <View style={[styles.infoCard, { top: 220, zIndex: 2, height: 135 }]}>
           {/* 210 (image) - 50 (overlap) */}
           <View style={styles.infoRow}>
             <TouchableOpacity style={styles.arrowBtn}>
@@ -205,7 +225,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               style={{ flex: 1, marginHorizontal: 8, alignItems: "flex-start" }}
             >
               <Text style={styles.storeName}>{storeName}</Text>
-              <Text style={styles.subtitle}>{store?.description}</Text>
+              <Text style={styles.subtitle} numberOfLines={2}>{languageStore.selectedLang === "ar" ? store?.descriptionAR : store?.descriptionHE}</Text>
             </View>
 
             <CustomFastImage
@@ -214,37 +234,38 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               isLogo={true}
             />
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginTop: 0,
-              alignSelf: "center",
-            }}
-          >
-            <View style={styles.storeStatus}>
+          <View style={styles.storeStatus}>
               <Text
                 style={[
                   styles.storeStatusText,
                   {
-                    color: store?.isOpen
-                      ? themeStyle.SUCCESS_COLOR
-                      : themeStyle.ERROR_COLOR,
+                    color: getStoreStatusColor(),
                   },
                 ]}
               >
-                {store?.isOpen ? t("open") : t("closed")}
+                {getStoreStatus()}
               </Text>
             </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              position: "absolute",
+    bottom: 15,
+    left: 10,
+    zIndex: 1000,
+            }}
+          >
+  
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginLeft: 20,
+                marginLeft: 70,
               }}
             >
               <View style={{ alignItems: "center", marginRight: 5 }}>
-                <Icon icon="clock" size={20}  />
+                <Icon icon="clock" size={22} color={getStoreStatusColor()} />
               </View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text style={styles.storeStatusText} type="number">
@@ -422,7 +443,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 12,
     color: "#888",
     marginTop: 2,
     textAlign: "right",
@@ -494,9 +515,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  storeStatus: {},
+  storeStatus: {
+    backgroundColor: themeStyle.GRAY_20,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    zIndex: 1000,
+  },
   storeStatusText: {
     fontSize: themeStyle.FONT_SIZE_SM,
+
   },
 });
 
