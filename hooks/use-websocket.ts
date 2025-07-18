@@ -156,7 +156,6 @@ const useWebSocket = (): UseWebSocketReturn => {
             if (message.data?.appName === cartStoreDBName) {
               // Refresh the store data
               storeDataStore.getStoreData();
-              console.log("XXX", message.data?.appName, cartStoreDBName)
             }
           }
 

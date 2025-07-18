@@ -90,8 +90,8 @@ const LoginScreen = () => {
         }, 5000);
       }
 
-      let convertedValue = phoneNumber;
-      for (var i = 0; i < phoneNumber.length; i++) {
+      let convertedValue = value;
+      for (var i = 0; i < value.length; i++) {
         convertedValue = convertedValue.replace(arabicNumbers[i], i);
       }
 

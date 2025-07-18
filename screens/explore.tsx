@@ -31,7 +31,7 @@ import {
   normalizeHeight,
 } from "../helpers/responsive-normalize";
 import Text from "../components/controls/Text";
-import { useParallelFetch } from "../hooks/use-optimized-fetch";
+import { useParallelFetch, useOptimizedFetch } from "../hooks/use-optimized-fetch";
 import SplashScreen from "../components/SplashScreen";
 
 const CATEGORY_BG = "#f5f5f5";
@@ -280,16 +280,6 @@ const ExploreScreen = () => {
   const [hideSplash, setHideSplash] = useState(false);
   const lastFetchedLocation = useRef(null);
   useEffect(() => {
-    if (websocket?.lastMessage) {
-      if (websocket?.lastMessage?.type === "store_refresh") {
-        setHideSplash(true);
-        refetch();
-      }
-    }
-  }, [websocket?.lastMessage]);
-
-  // Get user location for filtering with debouncing
-  useEffect(() => {
     if (addressStore.defaultAddress?.location) {
       setUserLocation(addressStore.defaultAddress.location);
       
@@ -334,6 +324,15 @@ const ExploreScreen = () => {
     }
   );
 
+  // Separate fetch hook for ads only to enable individual refetch
+  const {
+    data: adsDataFromHook,
+    refetch: refetchAds,
+  } = useOptimizedFetch<any[]>("/ads/valid", {
+    ttl: 5 * 60 * 1000,
+    enabled: true,
+  });
+
 
   useEffect(() => {
     const getAutoCoupon = async () => {
@@ -344,11 +343,24 @@ const ExploreScreen = () => {
 
 
   const generalCategories = (fetchData.generalCategories || []) as any[];
-  const adsData = (fetchData.ads || []) as any[];
+  const adsData = adsDataFromHook || (fetchData.ads || []) as any[];
   const categoriesWithStores = (fetchData.categoriesWithStores || []) as any[];
   
   // Show loading indicator for location-based updates
   const isLocationLoading = loading && fetchData.generalCategories && debouncedLocation;
+
+  // Websocket listeners for real-time updates
+  useEffect(() => {
+    if (websocket?.lastMessage) {
+      if (websocket?.lastMessage?.type === "store_refresh") {
+        // setHideSplash(true);
+        // refetch();
+      }
+      if (websocket?.lastMessage?.type === "ads_updated") {
+        refetchAds();
+      }
+    }
+  }, [websocket?.lastMessage, refetch, refetchAds]);
   useFocusEffect(
     React.useCallback(() => {
       shoofiAdminStore.setSelectedCategory(null);
