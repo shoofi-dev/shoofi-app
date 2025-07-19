@@ -84,7 +84,13 @@ class ShoofiAdminStore {
   // New method for server-side filtered explore data
   getExploreDataFromServer = async (location = null) => {
     try {
-      const params = location ? { location: JSON.stringify(location) } : {};
+      // Don't call the API if location is not provided
+      if (!location) {
+        console.log('Location not provided, skipping explore data fetch');
+        return null;
+      }
+      
+      const params = { location: JSON.stringify(location) };
       const response = await axiosInstance.get(
         `${SHOOFI_ADMIN_API.CONTROLLER}/explore/categories-with-stores`,
         { params }
@@ -102,6 +108,12 @@ class ShoofiAdminStore {
         this.exploreData = res;
       });
       return res;
+    }).catch((error) => {
+      console.error('Error in getExploreData:', error);
+      runInAction(() => {
+        this.exploreData = null;
+      });
+      return null;
     });
   };
 

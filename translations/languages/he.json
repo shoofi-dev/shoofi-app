@@ -1,5 +1,8 @@
 {
   "home": {
     "newOrder": "הזמנה חדשה"
-  }
+  },
+  "please_select_location": "אנא בחר מיקום כדי לראות חנויות זמינות",
+  "no_stores_in_area": "אין חנויות זמינות באזור שלך",
+  "loading_stores": "טוען חנויות..."
 }

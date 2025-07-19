@@ -54,6 +54,9 @@ interface StoreSectionProps {
 interface ExploreData {
   generalCategories: any[];
   ads: any[];
+}
+
+interface LocationData {
   categoriesWithStores: any[];
 }
 
@@ -308,7 +311,16 @@ const ExploreScreen = () => {
 
 
 
-  // Use optimized parallel fetch for better performance - always fetch basic data, location-based data when available
+  // Track if we've already fetched data for the current location
+  const lastFetchedLocationRef = useRef<string | null>(null);
+  
+  // Create a stable location key for comparison
+  const locationKey = useMemo(() => {
+    if (!debouncedLocation) return null;
+    return `${debouncedLocation.lat}_${debouncedLocation.lng}`;
+  }, [debouncedLocation]);
+
+  // Use optimized parallel fetch for better performance - only fetch basic data initially
   const {
     data: fetchData,
     loading,
@@ -318,16 +330,37 @@ const ExploreScreen = () => {
     {
       generalCategories: "/category/general/all",
       ads: "/ads/valid", // Use valid ads endpoint for customers
-      categoriesWithStores: debouncedLocation
-        ? `/shoofiAdmin/explore/categories-with-stores?location=${JSON.stringify(debouncedLocation)}`
-        : "/shoofiAdmin/explore/categories-with-stores",
     },
     {
       ttl: 5 * 60 * 1000, // 5 minutes cache (shorter due to store status changes)
-      enabled: !debouncedLocation, // Always fetch basic data
-      dependencies: [debouncedLocation], // Refetch location-based data when location changes
+      enabled: true, // Always fetch basic data
     }
   );
+
+  // Separate fetch for location-based data to have more control
+  const {
+    data: locationData,
+    loading: locationLoading,
+    error: locationError,
+    refetch: refetchLocation,
+  } = useOptimizedFetch<any[]>(
+    debouncedLocation 
+      ? `/shoofiAdmin/explore/categories-with-stores?location=${JSON.stringify(debouncedLocation)}`
+      : null,
+    {
+      ttl: 5 * 60 * 1000,
+      enabled: !!debouncedLocation,
+    }
+  );
+
+  // Only refetch location data when location actually changes
+  useEffect(() => {
+    if (locationKey && locationKey !== lastFetchedLocationRef.current) {
+      console.log('Location changed, refetching location data');
+      lastFetchedLocationRef.current = locationKey;
+      refetchLocation();
+    }
+  }, [locationKey, refetchLocation]);
 
   // Separate fetch hook for ads only to enable individual refetch
   const {
@@ -349,10 +382,10 @@ const ExploreScreen = () => {
 
   const generalCategories = (fetchData.generalCategories || []) as any[];
   const adsData = adsDataFromHook || (fetchData.ads || []) as any[];
-  const categoriesWithStores = (fetchData.categoriesWithStores || []) as any[];
-  
+  const categoriesWithStores = (locationData || []) as any[];
+  console.log("categoriesWithStores", categoriesWithStores);
   // Show loading indicator for location-based updates
-  const isLocationLoading = loading && fetchData.generalCategories && debouncedLocation;
+  const isLocationLoading = locationLoading && debouncedLocation;
 
   // Websocket listeners for real-time updates
   useEffect(() => {
@@ -384,6 +417,12 @@ const ExploreScreen = () => {
           return;
         }
         
+        // Only refetch if we have location data (categoriesWithStores is being used)
+        if (!debouncedLocation) {
+          console.log('No location available, skipping store refresh refetch');
+          return;
+        }
+        
         console.log('Store refresh received, scheduling refetch');
         processedEvents.current.add(eventId);
         
@@ -395,7 +434,7 @@ const ExploreScreen = () => {
         // Debounce the refetch to prevent rapid successive calls
         refetchTimeoutRef.current = setTimeout(() => {
           setHideSplash(true);
-          refetch();
+          refetchLocation();
           console.log('Explore data refetched due to store refresh');
         }, 500); // 500ms debounce
       }
@@ -404,7 +443,7 @@ const ExploreScreen = () => {
         refetchAds();
       }
     }
-  }, [websocket?.lastMessage, refetch, refetchAds, storeDataStore.storeData?.appName]);
+  }, [websocket?.lastMessage, refetchLocation, refetchAds, storeDataStore.storeData?.appName, debouncedLocation]);
   useFocusEffect(
     React.useCallback(() => {
       shoofiAdminStore.setSelectedCategory(null);
@@ -414,17 +453,8 @@ const ExploreScreen = () => {
   );
 
   // Listen for store status changes and refresh data
-  useEffect(() => {
-    const handleStoreStatusChange = () => {
-      refetch();
-    };
-
-    // You can add WebSocket listener here for real-time updates
-    // For now, we'll refresh on focus
-    return () => {
-      // Cleanup WebSocket listeners if needed
-    };
-  }, [refetch]);
+  // Removed automatic refetch on focus to prevent unnecessary API calls
+  // Data will only be refetched when location changes or on WebSocket events
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -490,7 +520,7 @@ const ExploreScreen = () => {
   }, [generalCategories]);
   
   // Show splash only on initial load, not on location-based refetches
-  if (loading && !hideSplash && !fetchData.generalCategories) {
+  if ((loading && !hideSplash && !fetchData.generalCategories) || !categoriesWithStores?.length) {
     return <SplashScreen />;
   }
 
@@ -547,50 +577,58 @@ const ExploreScreen = () => {
       {/* Ads Carousel */}
       {mappedAds.length > 0 && <AdsCarousel ads={mappedAds} />}
 
-      {defaultCategory && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{
-            paddingVertical: 0,
-            paddingHorizontal: 8,
-            marginTop: 20,
-            paddingBottom: 30,
-          }}
-          contentContainerStyle={{
-            flexDirection: I18nManager.isRTL ? "row" : "row",
-            paddingBottom: 10,
-          }}
-        >
-          {categoriesWithStores?.map((categoryData) => (
-            <SubCategoryItem
-              key={categoryData.category._id}
-              cat={categoryData.category}
-              onPress={() => handleSubCategoryPress(categoryData.category)}
-              languageStore={languageStore}
-            />
-          ))}
-        </ScrollView>
+      {/* Subcategories and Stores - only show when location is available */}
+      {defaultCategory && debouncedLocation && (
+        <>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{
+              paddingVertical: 0,
+              paddingHorizontal: 8,
+              marginTop: 20,
+              paddingBottom: 30,
+            }}
+            contentContainerStyle={{
+              flexDirection: I18nManager.isRTL ? "row" : "row",
+              paddingBottom: 10,
+            }}
+          >
+            {categoriesWithStores?.map((categoryData) => (
+              <SubCategoryItem
+                key={categoryData.category._id}
+                cat={categoryData.category}
+                onPress={() => handleSubCategoryPress(categoryData.category)}
+                languageStore={languageStore}
+              />
+            ))}
+          </ScrollView>
+
+          {/* Stores grouped by subcategories - now using server-side filtered data */}
+          {categoriesWithStores?.length > 0 ? (
+            categoriesWithStores.map((categoryData) => {
+              // Only show category if it has stores
+              if (!categoryData.stores || categoryData.stores.length === 0)
+                return null;
+
+              return (
+                <StoreSection
+                  key={categoryData.category._id}
+                  category={categoryData.category}
+                  storesInCategory={categoryData.stores}
+                  languageStore={languageStore}
+                />
+              );
+            })
+          ) : (
+            // Show message when no stores are available
+        null
+          )}
+        </>
       )}
 
-      {/* Stores grouped by subcategories - now using server-side filtered data */}
-      {defaultCategory && categoriesWithStores?.length > 0 ? (
-        categoriesWithStores.map((categoryData) => {
-          // Only show category if it has stores
-          if (!categoryData.stores || categoryData.stores.length === 0)
-            return null;
-
-          return (
-            <StoreSection
-              key={categoryData.category._id}
-              category={categoryData.category}
-              storesInCategory={categoryData.stores}
-              languageStore={languageStore}
-            />
-          );
-        })
-      ) : (
-        // Show message when no stores are available
+      {/* Show message when location is not available */}
+      {defaultCategory && !debouncedLocation && (
         <View style={{ 
           padding: 20, 
           alignItems: "center",
@@ -602,7 +640,7 @@ const ExploreScreen = () => {
             color: "#666",
             textAlign: "center"
           }}>
-            {debouncedLocation ? t("no_stores_in_area") : t("loading_stores")}
+            {t("please_select_location")}
           </Text>
         </View>
       )}

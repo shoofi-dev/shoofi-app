@@ -104,7 +104,7 @@ const ExploreScreen = () => {
       : "/shoofiAdmin/explore/categories-with-stores"
   }), [userLocation]);
 
-  // Use optimized parallel fetch
+  // Use optimized parallel fetch - only fetch location-based data when location is available
   const { data, loading, error, refetch } = useParallelFetch<ExploreData>(apiUrls, {
     ttl: 5 * 60 * 1000, // 5 minutes cache
     enabled: true,
@@ -301,16 +301,15 @@ const cacheKey = `explore_categories_${location ? `${location.lat}_${location.ln
 ### API Endpoints
 
 ```javascript
-// Main endpoint
-GET /api/shoofiAdmin/explore/categories-with-stores
-
-// With location
+// Main endpoint (location required)
 GET /api/shoofiAdmin/explore/categories-with-stores?location={"lat":32.0853,"lng":34.7818}
 
 // Cache management
 POST /api/shoofiAdmin/explore/clear-cache
 GET /api/shoofiAdmin/explore/cache-stats
 ```
+
+**Note:** The `categories-with-stores` endpoint now requires a location parameter. Requests without location will return a 400 error.
 
 ## 🚨 Considerations
 
@@ -320,9 +319,9 @@ GET /api/shoofiAdmin/explore/cache-stats
 - Manual cache clearing for immediate updates
 
 ### 2. **Location Services**
-- Graceful fallback when location is unavailable
-- Distance calculation only when location is provided
-- Coverage radius validation for accurate filtering
+- Location is required for the explore endpoint
+- Distance calculation and coverage radius validation
+- Proper error handling when location is unavailable
 
 ### 3. **Error Handling**
 - Graceful degradation when server filtering fails
