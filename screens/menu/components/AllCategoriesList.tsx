@@ -10,8 +10,6 @@ import React, {
 import {
   StyleSheet,
   View,
-  Text,
-  FlatList,
   TouchableOpacity,
   Dimensions,
   ScrollView,
@@ -27,6 +25,8 @@ import Modal from "react-native-modal";
 import MealScreen from "../../meal/index2";
 import GlassBG from "../../../components/glass-background";
 import MealModal from "./../../../components/MealModal";
+import Text from "../../../components/controls/Text";
+import { getCurrentLang } from "../../../translations/i18n";
 const categoryHeaderHeight = 40;
 const productHeight = 140;
 const sectionMargin = 24;
@@ -96,7 +96,7 @@ const CategorySection = ({
 const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProps>(({ categoryList, ListHeaderComponent, productId }, ref) => {   
   const navigation = useNavigation<any>();
   const { languageStore } = useContext(StoreContext);
-  const flatListRef = useRef<FlatList>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -109,7 +109,7 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
 
   // Memoize category offsets calculation
   const categoryOffsets = useMemo(() => {
-    const offsets = [];
+    const offsets: number[] = [];
     let currentOffset = 0;
 
     for (let i = 0; i < filteredCategoryList.length; i++) {
@@ -148,8 +148,8 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
           // Calculate the offset for this category
           const offset = getCategoryOffset(categoryIndex);
 
-          flatListRef.current?.scrollToOffset({
-            offset: offset,
+          scrollViewRef.current?.scrollTo({
+            y: offset,
             animated: true,
           });
         }
@@ -186,10 +186,11 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
   }, [productId, filteredCategoryList]);
 
   const renderCategorySection = useCallback(
-    ({ item: category, index }) => {
+    (category: any, index: number) => {
       console.log(`Rendering category ${index}: ${category.nameHE || category.nameAR} with ${category.products?.length || 0} products`);
       return (
         <CategorySection
+          key={category._id}
           category={category}
           languageStore={languageStore}
           onItemSelect={onItemSelect}
@@ -198,44 +199,19 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
     },
     [languageStore, onItemSelect]
   );
-
-  const keyExtractor = useCallback((item) => item._id, []);
-
-  const getItemLayout = useCallback(
-    (data, index) => {
-      const category = data[index];
-      if (!category || !category.products || category.products.length === 0) {
-        // Return a minimal height instead of 0 to prevent layout issues
-        return { length: 1, offset: categoryOffsets[index] || 0, index };
-      }
-
-      const productsHeight = category.products.length * productHeight;
-      const length = categoryHeaderHeight + productsHeight + sectionMargin;
-
-      return { length, offset: categoryOffsets[index] || 0, index };
-    },
-    [categoryOffsets]
-  );
   return (
     <View style={styles.container}>
-      <FlatList
-        ref={flatListRef}
-        data={filteredCategoryList}
-        keyExtractor={keyExtractor}
-        renderItem={renderCategorySection}
-        ListHeaderComponent={ListHeaderComponent}
+      <ScrollView
+        ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
         scrollEventThrottle={16}
-        removeClippedSubviews={false} // Changed to false to prevent clipping issues
-        maxToRenderPerBatch={10} // Increased from 5
-        windowSize={15} // Increased from 10
-        initialNumToRender={5} // Increased from 3
-        getItemLayout={getItemLayout}
-        updateCellsBatchingPeriod={50}
-        disableVirtualization={false}
-        onEndReachedThreshold={0.1} // Add this to help with rendering
-      />
+      >
+        {ListHeaderComponent}
+        {filteredCategoryList.map((category, index) => 
+          renderCategorySection(category, index)
+        )}
+      </ScrollView>
       <Modal
         isVisible={isModalOpen}
         onBackdropPress={() => setIsModalOpen(false)}
@@ -268,14 +244,17 @@ const styles = StyleSheet.create({
   categoryHeader: {
     paddingHorizontal: 16,
     height: 40,
-    justifyContent: "center",
+    flexDirection: "row",
+
   },
   categoryTitle: {
-    fontSize: themeStyle.FONT_SIZE_XL,
+    fontSize: themeStyle.FONT_SIZE_LG,
     fontWeight: "bold",
     color: themeStyle.GRAY_900,
     textAlign: "left",
     marginBottom: 4,
+    fontFamily: `${getCurrentLang()}-Bold`,
+
   },
   categoryDescription: {
     fontSize: 14,

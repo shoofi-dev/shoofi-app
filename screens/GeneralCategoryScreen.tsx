@@ -17,22 +17,31 @@ import Text from "../components/controls/Text";
 const CATEGORY_BG = "#f5f5f5";
 
 const GeneralCategoryScreen = () => {
-  const { shoofiAdminStore, languageStore } = useContext(StoreContext);
+  const { shoofiAdminStore, languageStore, websocket, addressStore } = useContext(StoreContext);
   const route = useRoute();
   const navigation = useNavigation();
   const { generalCategory } = route.params;
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const storesScrollViewRef = useRef(null);
+  const { lastMessage } = websocket;
+  useEffect(() => { 
+    if (lastMessage) {
+      if (lastMessage.type === 'store_updated' || lastMessage.type === 'store_refresh') {
+        shoofiAdminStore.getStoresListData(addressStore.defaultAddress.location.coordinates);
+      }
+    }
+   },[lastMessage])
+
 
   useEffect(() => {
     if (shoofiAdminStore.categoryList && generalCategory) {
       const cats = shoofiAdminStore.categoryList.filter((cat) =>
         cat.supportedGeneralCategoryIds?.some(
-          (id) => id.$oid === generalCategory._id || id === generalCategory._id
+          (id) => id.$oid === generalCategory._id || id === generalCategory._id 
         )
       );
-      if (cats.length > 0) setSelectedCategory(cats[0]);
+      console.log("cats", cats);
     }
   }, [shoofiAdminStore.categoryList, generalCategory]);
 
@@ -59,10 +68,14 @@ const GeneralCategoryScreen = () => {
   }, [selectedCategory]);
 
   if (!generalCategory) return null;
+  const [stores, setStores] = useState([]);
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    setStores(shoofiAdminStore.storesList || []);
+  }, [shoofiAdminStore.storesList]);
 
-  const stores = shoofiAdminStore.storesList || [];
-
-  const categories = shoofiAdminStore.categoryList
+  useEffect(() => {
+    const categories = shoofiAdminStore.categoryList
     ? shoofiAdminStore.categoryList.filter((cat) => {
         // First filter by supported general category
         const isSupported = cat.supportedGeneralCategoryIds?.some(
@@ -85,6 +98,10 @@ const GeneralCategoryScreen = () => {
         return storesInThisCategory.length > 0;
       })
     : [];
+    setCategories(categories)
+    setSelectedCategory(categories[0])
+  }, [shoofiAdminStore.categoryList, generalCategory, stores]);
+
   const storesInCategory = selectedCategory
     ? stores.filter(
         (data: any) =>

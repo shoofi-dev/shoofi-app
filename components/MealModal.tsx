@@ -19,14 +19,10 @@ const MealModal = ({ product, category, onClose, index=null }) => {
 
   return (
     <View style={styles.modalContainer}>
-      <GlassBG style={styles.closeButton}>
-        <TouchableOpacity 
-          onPress={onClose}
-          activeOpacity={0.7}
-        >
+      <View style={styles.closeButton}>
+  
           <BackButton isDisableGoBack={true} color={themeStyle.WHITE_COLOR} onClick={onClose}/>
-        </TouchableOpacity>
-      </GlassBG>
+      </View>
       <View style={{  }}>
         <MealScreen  
           handleClose={onClose} 
@@ -60,15 +56,9 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+
   },
   closeButtonInner: {
     width: 24,

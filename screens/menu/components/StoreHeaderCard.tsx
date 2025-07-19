@@ -19,6 +19,7 @@ import { StoreContext } from "../../../stores";
 import BackButton from "../../../components/back-button";
 import { t } from "i18next";
 import Text from "../../../components/controls/Text";
+import { getCurrentLang } from "../../../translations/i18n";
 interface StoreHeaderCardProps {
   store: any;
   onBack?: () => void;
@@ -373,6 +374,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: themeStyle.GRAY_900,
     textAlign: "center",
+
   },
   infoRowCentered: {
     flexDirection: "row",
@@ -441,6 +443,8 @@ const styles = StyleSheet.create({
     fontSize: themeStyle.FONT_SIZE_XL,
     fontWeight: "bold",
     textAlign: "right",
+    fontFamily: `${getCurrentLang()}-SemiBold`,
+
   },
   subtitle: {
     fontSize: 12,

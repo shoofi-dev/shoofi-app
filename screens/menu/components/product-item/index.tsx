@@ -126,7 +126,7 @@ const ProductItem = ({
         {/* Text and price on the left */}
         <View style={styles.rowTextContainer}>
           <Text style={styles.rowProductName}>{productName}</Text>
-          <Text style={styles.rowProductDesc} numberOfLines={3}>
+          <Text style={styles.rowProductDesc} numberOfLines={2}>
             {productDescription}
           </Text>
           <Text style={styles.rowPriceText}>₪{price}</Text>
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     fontSize: themeStyle.FONT_SIZE_MD,
     color: themeStyle.GRAY_900,
     marginBottom: 2,
-    textAlign: "left",
+    textAlign: "right",
   },
   rowProductDesc: {
     fontSize: themeStyle.FONT_SIZE_SM,

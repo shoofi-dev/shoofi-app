@@ -413,9 +413,12 @@ const OrderTimer: React.FC<OrderTimerProps> = ({ mockData, order }) => {
               <Text style={styles.timeUnit}> {timeUnit}</Text>
             </Text>
           )}
+
         </View>
+
       </View>
       <Text style={styles.statusText}>{statusText}</Text>
+
     </View>
   );
 };
@@ -458,11 +461,10 @@ const styles = StyleSheet.create({
     fontSize: themeStyle.FONT_SIZE_XL,
   },
   statusText: {
-    bottom: -30,
+    bottom: 0,
     fontSize: themeStyle.FONT_SIZE_SM,
     textAlign: "center",
     fontWeight: "500",
-    position: "absolute",
   },
 });
 

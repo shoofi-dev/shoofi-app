@@ -46,6 +46,9 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   // Memoized store selection handler
   const onStoreSelect = useCallback(async (store: any, product?: any) => {
     try {
+      if(isCoomingSoon) {
+        return;
+      }
       await cartStore.setShippingMethod(SHIPPING_METHODS.takAway);
       menuStore.clearMenu();
       await shoofiAdminStore.setStoreDBName(store.appName);
@@ -62,7 +65,8 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   const deliveryTime = useMemo(() => storeItem.store.deliveryTime || 27, [storeItem.store.deliveryTime]);
   const location = useMemo(() => storeItem.store.location || "כפר קאסם", [storeItem.store.location]);
   const deliveryPrice = useMemo(() => storeItem.deliveryPrice || 10, [storeItem.deliveryPrice]);
-  const isOpen = useMemo(() => storeItem.store.isOpen !== false, [storeItem.store.isOpen]);
+  const isCoomingSoon = useMemo(() => storeItem.store.isCoomingSoon || false, [storeItem.store.isCoomingSoon]);
+  const isOpen = useMemo(() => storeItem.store.isOpen !== false && !isCoomingSoon, [storeItem.store.isOpen, isCoomingSoon]);
   const isBusy = useMemo(() => storeItem.store.isBusy && isOpen || false, [storeItem.store.isBusy, isOpen]);
 
   const logoUri = useMemo(() => storeItem.store.storeLogo?.uri, [storeItem.store.storeLogo?.uri]);
@@ -118,10 +122,13 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
           />
         </View>
       )}
+      {isCoomingSoon && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.SECONDARY_COLOR, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50, flexDirection:"row",alignItems:"center", justifyContent:"center"}}>
+        <Text style={[styles.freeDeliveryText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("coming-soon")}</Text>
+      </View>}
       {isBusy && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50}}>
         <Text style={[styles.storeStatusText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("store-busy")}</Text>
       </View>}
-      {!isOpen && !isBusy && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50}}>
+      {!isOpen && !isBusy && !isCoomingSoon && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50}}>
         <Text style={[styles.storeStatusText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("store-closed")}</Text>
       </View>}
       {isDeliveryFree && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.SECONDARY_COLOR, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 50, flexDirection:"row",alignItems:"center", justifyContent:"center"}}>

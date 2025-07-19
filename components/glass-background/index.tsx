@@ -8,52 +8,99 @@ import {
 } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 
-type GGlassBGProps = {
+type GlassBGProps = {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   blurAmount?: number;
   borderRadius?: number;
+  intensity?: 'light' | 'medium' | 'heavy';
+  tint?: 'white' | 'black' | 'none';
 };
 
-const GlassBG: React.FC<GGlassBGProps> = ({
+const GlassBG: React.FC<GlassBGProps> = ({
   children,
   style,
   blurAmount = 0,
-  borderRadius = 0,
+  borderRadius = 30,
+  intensity = 'medium',
+  tint = 'white',
 }) => {
   const isAndroid = Platform.OS === 'android';
   const isBlurSupported = !isAndroid || Number(Platform.Version) >= 31;
 
+  // Intensity configurations
+  const intensityConfigs = {
+    light: {
+      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+      borderColor: 'rgba(255, 255, 255, 0.12)',
+      shadowOpacity: 0.06,
+      elevation: 4,
+    },
+    medium: {
+      backgroundColor: 'rgba(0, 0, 0, 0.2)',
+      borderColor: 'rgb(141, 141, 141)',
+      shadowOpacity: 0.1,
+      elevation: 8,
+    },
+    heavy: {
+      backgroundColor: 'rgba(255, 255, 255, 0.18)',
+      borderColor: 'rgba(255, 255, 255, 0.25)',
+      shadowOpacity: 0.15,
+      elevation: 12,
+    },
+  };
+
+  // Tint configurations
+  const tintConfigs = {
+    white: {
+      backgroundColor: intensityConfigs[intensity].backgroundColor,
+      borderColor: intensityConfigs[intensity].borderColor,
+    },
+    black: {
+      backgroundColor: 'rgba(0, 0, 0, 0.12)',
+      borderColor: 'rgba(242, 32, 32, 0.08)',
+    },
+    none: {
+      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+      borderColor: 'rgba(255, 255, 255, 0.12)',
+    },
+  };
+
+  const config = tintConfigs[tint];
+
   return (
     <View style={[styles.container, { borderRadius, overflow: 'hidden' }, style]}>
-       {/* {isBlurSupported && (
+      {/* Blur effect layer */}
+      {isBlurSupported && (
         <BlurView
           style={StyleSheet.absoluteFill}
-          blurType="light"
+          blurType={tint === 'black' ? 'dark' : 'light'}
           blurAmount={blurAmount}
-          reducedTransparencyFallbackColor="rgba(0, 0, 0, 0.3)"
+          reducedTransparencyFallbackColor="rgba(255, 255, 255, 0.1)"
         />
-      )} 
-       */}
-      {/* Glassmorphism: semi-transparent white overlay for glass effect */}
+      )}
+
+      {/* Primary glass layer */}
       <View
         style={[
           StyleSheet.absoluteFill,
           {
-            backgroundColor: 'rgba(0, 0, 0, 0.30)', // lower opacity for better glass effect
-            // backgroundColor: 'rgba(43, 41, 41, 0.18)', // lower opacity for better glass effect
+            backgroundColor: config.backgroundColor,
             borderWidth: 1,
-            borderColor: 'rgba(162, 162, 162, 0.18)',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.08,
-            shadowRadius: 16,
-            elevation: 8,
+            borderColor: config.borderColor,
+            borderRadius,
           },
         ]}
       />
 
-      {children}
+      {/* Inner highlight layer for liquid effect */}
+  
+
+      {/* Outer shadow layer for depth */}
+
+
+      {/* Content */}
+        {children}
     </View>
   );
 };
@@ -61,6 +108,30 @@ const GlassBG: React.FC<GGlassBGProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
+    backgroundColor: 'transparent',
+  },
+  innerHighlight: {
+    position: 'absolute',
+    top: 1,
+    left: 1,
+    right: 1,
+    bottom: 1,
+    zIndex: 1,
+  },
+  outerShadow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 24,
+    zIndex: -1,
+  },
+  contentContainer: {
+    zIndex: 2,
+    width: '100%',
   },
 });
 

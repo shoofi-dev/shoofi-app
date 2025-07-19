@@ -33,6 +33,8 @@ import {
 import Text from "../components/controls/Text";
 import { useParallelFetch, useOptimizedFetch } from "../hooks/use-optimized-fetch";
 import SplashScreen from "../components/SplashScreen";
+import { wsDebugger } from "../utils/debug-websocket";
+import WebSocketDebugPanel from "../components/debug/WebSocketDebugPanel";
 
 const CATEGORY_BG = "#f5f5f5";
 
@@ -212,55 +214,53 @@ const SubCategoryItem = React.memo<CategoryItemProps>(
   }
 );
 
-// Memoized store section component
-const StoreSection = React.memo<StoreSectionProps>(
-  ({ category, storesInCategory, languageStore }) => {
-    const categoryName = useMemo(
-      () =>
-        languageStore.selectedLang === "ar" ? category.nameAR : category.nameHE,
-      [languageStore.selectedLang, category.nameAR, category.nameHE]
-    );
+// Store section component - removed memo to ensure language changes are reflected
+const StoreSection = ({ category, storesInCategory, languageStore }: StoreSectionProps) => {
+  const categoryName = useMemo(
+    () =>
+      languageStore.selectedLang === "ar" ? category.nameAR : category.nameHE,
+    [languageStore.selectedLang, category.nameAR, category.nameHE]
+  );
 
-    return (
-      <View style={{ marginBottom: 0, alignItems: "flex-start" }}>
-        <Text
-          style={{
-            fontSize: themeStyle.FONT_SIZE_LG,
-            fontWeight: "bold",
-            marginHorizontal: 16,
-            marginBottom: 12,
-            marginTop: 0,
-            textAlign: "left",
-          }}
-        >
-          {categoryName}
-        </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
+  return (
+    <View style={{ marginBottom: 0, alignItems: "flex-start" }}>
+      <Text
+        style={{
+          fontSize: themeStyle.FONT_SIZE_LG,
+          fontWeight: "bold",
+          marginHorizontal: 16,
+          marginBottom: 12,
+          marginTop: 0,
+          textAlign: "left",
+        }}
+      >
+        {categoryName}
+      </Text>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
  
-          }}
-        >
-          {storesInCategory.map((storeData) => (
-            <View
-              key={storeData.store._id}
-              style={{
-                width: 240,
-                height: 224,
-                marginHorizontal: 8,
-                backgroundColor: "#fff",
-                borderRadius: 16,
-              }}
-            >
-              <MemoizedStoreItem storeItem={storeData} isExploreScreen={true} />
-            </View>
-          ))}
-        </ScrollView>
-      </View>
-    );
-  }
-);
+        }}
+      >
+        {storesInCategory.map((storeData) => (
+          <View
+            key={storeData.store._id}
+            style={{
+              width: 240,
+              height: 224,
+              marginHorizontal: 8,
+              backgroundColor: "#fff",
+              borderRadius: 16,
+            }}
+          >
+            <MemoizedStoreItem storeItem={storeData} isExploreScreen={true} />
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+};
 
 const ExploreScreen = () => {
   const { t } = useTranslation();
@@ -270,6 +270,7 @@ const ExploreScreen = () => {
     addressStore,
     websocket,
     couponsStore,
+    storeDataStore,
   } = useContext(StoreContext);
   const navigation = useNavigation() as any;
   const [selectedGeneralCategory, setSelectedGeneralCategory] = useState(null);
@@ -278,7 +279,11 @@ const ExploreScreen = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [debouncedLocation, setDebouncedLocation] = useState(null);
   const [hideSplash, setHideSplash] = useState(false);
+  const [showDebugPanel, setShowDebugPanel] = useState(__DEV__);
   const lastFetchedLocation = useRef(null);
+  const lastProcessedEvent = useRef(null);
+  const refetchTimeoutRef = useRef(null);
+  const processedEvents = useRef(new Set());
   useEffect(() => {
     if (addressStore.defaultAddress?.location) {
       setUserLocation(addressStore.defaultAddress.location);
@@ -319,7 +324,7 @@ const ExploreScreen = () => {
     },
     {
       ttl: 5 * 60 * 1000, // 5 minutes cache (shorter due to store status changes)
-      enabled: true, // Always fetch basic data
+      enabled: !debouncedLocation, // Always fetch basic data
       dependencies: [debouncedLocation], // Refetch location-based data when location changes
     }
   );
@@ -352,15 +357,54 @@ const ExploreScreen = () => {
   // Websocket listeners for real-time updates
   useEffect(() => {
     if (websocket?.lastMessage) {
+      // Log all WebSocket events for debugging
+      wsDebugger.logEvent(websocket.lastMessage.type, websocket.lastMessage.data, 'explore-screen');
+      
       if (websocket?.lastMessage?.type === "store_refresh") {
-        // setHideSplash(true);
-        // refetch();
+        // Check for infinite loop
+        if (wsDebugger.detectInfiniteLoop('store_refresh')) {
+          console.warn('Potential infinite loop detected for store_refresh events');
+          return;
+        }
+        
+        // Prevent duplicate processing of the same event
+        const eventId = `${websocket.lastMessage.type}_${websocket.lastMessage.data?.appName}_${websocket.lastMessage.data?.timestamp}`;
+        
+        // Check if we've already processed this event recently
+        if (processedEvents.current.has(eventId)) {
+          console.log('Duplicate store refresh event, skipping');
+          return;
+        }
+        
+        // Check if the event is for a different app (if we're in a specific store context)
+        const currentAppName = storeDataStore.storeData?.appName;
+        if (currentAppName && websocket.lastMessage.data?.appName && 
+            websocket.lastMessage.data.appName !== currentAppName) {
+          console.log('Store refresh event for different app, skipping');
+          return;
+        }
+        
+        console.log('Store refresh received, scheduling refetch');
+        processedEvents.current.add(eventId);
+        
+        // Clear any existing timeout
+        if (refetchTimeoutRef.current) {
+          clearTimeout(refetchTimeoutRef.current);
+        }
+        
+        // Debounce the refetch to prevent rapid successive calls
+        refetchTimeoutRef.current = setTimeout(() => {
+          setHideSplash(true);
+          refetch();
+          console.log('Explore data refetched due to store refresh');
+        }, 500); // 500ms debounce
       }
+      
       if (websocket?.lastMessage?.type === "ads_updated") {
         refetchAds();
       }
     }
-  }, [websocket?.lastMessage, refetch, refetchAds]);
+  }, [websocket?.lastMessage, refetch, refetchAds, storeDataStore.storeData?.appName]);
   useFocusEffect(
     React.useCallback(() => {
       shoofiAdminStore.setSelectedCategory(null);
@@ -381,6 +425,27 @@ const ExploreScreen = () => {
       // Cleanup WebSocket listeners if needed
     };
   }, [refetch]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (refetchTimeoutRef.current) {
+        clearTimeout(refetchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Cleanup processed events periodically to prevent memory leaks
+  useEffect(() => {
+    const cleanupInterval = setInterval(() => {
+      if (processedEvents.current.size > 100) {
+        processedEvents.current.clear();
+        console.log('Cleared processed events cache');
+      }
+    }, 60000); // Clean up every minute
+
+    return () => clearInterval(cleanupInterval);
+  }, []);
 
   // Memoized category press handler
   const handleCategoryPress = useCallback(
@@ -439,25 +504,26 @@ const ExploreScreen = () => {
     );
   }
   return (
-    <ScrollView style={{ backgroundColor: "#fff", marginTop: 10 }}>
-      {/* Location-based loading indicator */}
-      {isLocationLoading && (
-        <View style={{ 
-          paddingHorizontal: 16, 
-          paddingVertical: 8, 
-          backgroundColor: "#f0f8ff",
-          alignItems: "center"
-        }}>
-          <ActivityIndicator size="small" color={themeStyle.PRIMARY_COLOR} />
-          <Text style={{ 
-            fontSize: themeStyle.FONT_SIZE_SM, 
-            color: themeStyle.PRIMARY_COLOR, 
-            marginTop: 4 
+    <View style={{ flex: 1 }}>
+      <ScrollView style={{ backgroundColor: "#fff", marginTop: 10 }}>
+        {/* Location-based loading indicator */}
+        {/* {isLocationLoading && (
+          <View style={{ 
+            paddingHorizontal: 16, 
+            paddingVertical: 8, 
+            backgroundColor: "#f0f8ff",
+            alignItems: "center"
           }}>
-            {t("updating_stores")}
-          </Text>
-        </View>
-      )}
+            <ActivityIndicator size="small" color={themeStyle.PRIMARY_COLOR} />
+            <Text style={{ 
+              fontSize: themeStyle.FONT_SIZE_SM, 
+              color: themeStyle.PRIMARY_COLOR, 
+              marginTop: 4 
+            }}>
+              {t("updating_stores")}
+            </Text>
+          </View>
+        )} */}
       
       {/* General Categories Horizontal Scroller */}
       <ScrollView
@@ -540,7 +606,16 @@ const ExploreScreen = () => {
           </Text>
         </View>
       )}
-    </ScrollView>
+      </ScrollView>
+      
+      {/* Debug Panel - Only in development */}
+      {/* {__DEV__ && (
+        <WebSocketDebugPanel
+          isVisible={showDebugPanel}
+          onClose={() => setShowDebugPanel(false)}
+        />
+      )} */}
+    </View>
   );
 };
 

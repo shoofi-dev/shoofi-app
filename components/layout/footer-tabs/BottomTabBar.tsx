@@ -19,17 +19,18 @@ const tabs = [
   {
     key: "homeScreen",
     label: "main",
-    icon: "main",
+    icon: "profile_",
   },
   {
     key: "Search",
     label: "search",
-    icon: "search_full",
+    icon: "search_",
   },
   {
     key: "Profile",
     label: "profile",
-    icon: "profile",
+    icon: "main_",
+    
   },
 ];
 
@@ -37,7 +38,7 @@ const tabs2 = [
   {
     key: "activeOrders",
     label: "active-orders",
-    icon: "orders_active",
+    icon: "orders_",
   },
 ];
 
@@ -145,7 +146,7 @@ const BottomTabBar = observer(({ state, navigation }) => {
                 activeOpacity={0.7}
               >
                 <Icon
-                  icon={tab.icon}
+                  icon={`${tab.icon}${isActive ? "a" : "b"}`}
                   size={28}
                   color={isActive ? themeStyle.GRAY_80 : themeStyle.WHITE_COLOR}
                   style={{ marginBottom: 2 }}
@@ -193,9 +194,9 @@ const BottomTabBar = observer(({ state, navigation }) => {
                 activeOpacity={0.7}
               >
                 <Icon
-                  icon={route.icon}
+                  icon={`${tab.icon}${isActive ? "a" : "b"}`}
                   size={28}
-                  color={isActive ? themeStyle.GRAY_80 : themeStyle.WHITE_COLOR}
+                  color={isActive ? themeStyle.SECONDARY_COLOR : themeStyle.SECONDARY_COLOR}
                   style={{ marginVertical: 10 }}
                 />
                 {/* <Text

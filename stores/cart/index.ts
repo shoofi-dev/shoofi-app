@@ -358,7 +358,7 @@ class CartStore {
   };
 
   getShippingPrice = (order: any) => {
-    return order.shippingPrice - (order.appliedCoupon?.coupon?.type === "free_delivery" ? order.appliedCoupon.discountAmount :  0)
+    return order.shippingPrice > 0 ? order.shippingPrice - (order.appliedCoupon?.coupon?.type === "free_delivery" ? order.appliedCoupon.discountAmount :  0) : 0
   }
 
   getCartData = async (order: any) => {
@@ -420,16 +420,16 @@ class CartStore {
     let formData = new FormData();
     cartData.isAdmin = order?.isAdmin;
     cartData.storeData = {
-      storeName: storeDataStore.storeData?.storeName,
-      storeId: storeDataStore.storeData?.id,
-      storeLogo: storeDataStore.storeData?.storeLogo,
-      location: storeDataStore.storeData?.location,
-      phone: storeDataStore.storeData?.phone,
-      cover_sliders: storeDataStore.storeData?.cover_sliders,
-      name_ar: storeDataStore.storeData?.name_ar,
-      name_he: storeDataStore.storeData?.name_he,
-      maxReady: storeDataStore.storeData?.maxReady,
-      minReady: storeDataStore.storeData?.minReady,
+      storeName: order.storeData?.storeName,
+      storeId: order.storeData?.id,
+      storeLogo: order.storeData?.storeLogo,
+      location: order.storeData?.location,
+      phone: order.storeData?.phone,
+      cover_sliders: order.storeData?.cover_sliders,
+      name_ar: order.storeData?.name_ar,
+      name_he: order.storeData?.name_he,
+      maxReady: order.storeData?.maxReady,
+      minReady: order.storeData?.minReady,
     };
     const body = cartData;
     formData.append("body", JSON.stringify(body));
@@ -446,7 +446,7 @@ class CartStore {
     }
     return axiosInstance
       .post(`${ORDER_API.CONTROLLER}/${ORDER_API.SUBMIT_ORDER_API}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data", appName: order.storeData?.appName },
       })
       .then(function (response: any) {
         // const jsonValue: any = JSON.parse(fromBase64(response.data));

@@ -232,9 +232,8 @@ const CheckoutScreen = ({ route }) => {
     setSubmittedShippingMethod(shippingMethod);
     // Add a small delay to ensure processing modal is hidden before showing order submitted modal
     setTimeout(() => {
-      console.log('Setting order submitted modal to true');
       setIsOrderSubmittedModalOpen(true);
-    }, 500); // Increased delay to ensure processing modal is fully hidden
+    }, 700); // Increased delay to ensure processing modal is fully hidden
   };
 
   const handleCheckout = async () => {
@@ -301,6 +300,7 @@ const CheckoutScreen = ({ route }) => {
       locationText: addressLocationText,
       paymentData: paymentMthod === PAYMENT_METHODS.creditCard ? paymentData : undefined,
       shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
+      storeData: storeDataStore.storeData,
     });
     if (checkoutSubmitOrderRes) {
       postChargeOrderActions();

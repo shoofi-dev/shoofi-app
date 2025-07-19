@@ -18,6 +18,7 @@ export type TPropsCheckoutSubmit = {
   locationText?: any;
   paymentData?: any;
   shippingPrice?: any;
+  storeData?: any;
 };
 const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
   const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, shoofiAdminStore, couponsStore } =
@@ -54,6 +55,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     locationText,
     paymentData,
     shippingPrice,
+    storeData,
   }: TPropsCheckoutSubmit) => {
     // Prevent multiple rapid submissions
     const now = Date.now();
@@ -79,6 +81,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
       products: cartStore.cartItems,
       orderDate,
       orderType: ordersStore.orderType,
+      storeData,
     };
     
     // Add applied coupon information if exists

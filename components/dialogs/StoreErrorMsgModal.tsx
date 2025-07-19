@@ -39,9 +39,9 @@ const StoreErrorMsgModal = ({ visible, textValue, onClose }: StoreErrorMsgModalP
         </TouchableOpacity>
         {/* Content */}
         <View style={styles.content}>
-          <View style={styles.titleContainer}>
+         {visible    && <View style={styles.titleContainer}>
             <ExclamationMarkLottie />
-          </View>
+          </View>}
           <View style={styles.textContainer}>
             <Text style={styles.messageText}>
               {textValue ? t(textValue) : t("store-error")}
@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     marginBottom: 30,
-    height: 200,
-    width: 140,
+    height: 180,
+    width: 120,
   },
   textContainer: {
     marginTop: 20,

@@ -56,9 +56,6 @@ const MenuScreen = () => {
               menuStore.getMenu();
             }
           }
-          
-
-          
         }
        },[lastMessage])
 
