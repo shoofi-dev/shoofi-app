@@ -187,7 +187,6 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
 
   const renderCategorySection = useCallback(
     (category: any, index: number) => {
-      console.log(`Rendering category ${index}: ${category.nameHE || category.nameAR} with ${category.products?.length || 0} products`);
       return (
         <CategorySection
           key={category._id}

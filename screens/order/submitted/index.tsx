@@ -113,7 +113,7 @@ const OrderSubmittedScreen = ({ route, onClose, isModal = false }) => {
             />
             )} */}
             <Text style={{fontSize:themeStyle.FONT_SIZE_MD, }}>
-            {t("order-succefully-sent")}
+            {t("order-succefully-sent-body")}
 
             </Text>
 

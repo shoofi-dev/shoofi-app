@@ -139,7 +139,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
 
     // Submit order (payment will be processed server-side for credit card)
     const res: any = await cartStore.submitOrder(order);
-    
+    console.log("RRRRRRRRRRRRRR", res)
     // Handle server response
     if (res?.response?.data) {
       const responseData = res.response.data;
@@ -163,11 +163,14 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     }
     
     if (res?.has_err) {
+      console.log("XXXXXXXXXX")
       // Show order error modal for general order creation failures
+      setTimeout(() => {
       DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
-        title: t("order-error-modal-title"),
-        message: t("order-error-modal-message")
-      });
+          title: t("order-error-modal-title"),
+          message: t("order-error-modal-message")
+        });
+      }, 500);
       return false;
     }
     
@@ -177,10 +180,13 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
         return true;
       } else if (res?.paymentStatus === "failed" || res?.paymentStatus === "error") {
         // Handle payment failure
+        setTimeout(() => {
+
         DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
           title: t("order-error-modal-title"),
           message: res?.paymentError || t("order-error-modal-message")
         });
+      }, 500);
         return false;
       }
     }
@@ -189,11 +195,13 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
   } catch (error) {
     console.error('Error during order submission:', error);
     // Show order error modal for any unexpected errors
+    setTimeout(() => {
     DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
       title: t("order-error-modal-title"),
       message: t("order-error-modal-message")
     });
-    return false;
+  }, 500);
+      return false;
   } finally {
     // Reset submission state
     isSubmittingRef.current = false;

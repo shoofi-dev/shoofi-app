@@ -9,7 +9,7 @@ import { SHIPPING_METHODS } from "../../consts/shared";
 import { StoreContext } from "../../stores";
 import { useContext, useEffect, useState } from "react";
 import { getCurrentLang } from "../../translations/i18n";
-import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
+
 import CouponInput from "../coupon/CouponInput";
 import { CouponApplication } from "../../types/coupon";
 
@@ -24,7 +24,7 @@ export default function TotalPriceCMP({
   onCouponApplied,
 }: TProps) {
   const { t } = useTranslation();
-  const { cartStore, couponsStore,storeDataStore } = useContext(StoreContext);
+  const { cartStore, couponsStore, storeDataStore, shoofiAdminStore, addressStore } = useContext(StoreContext);
   const [shippingMethod, setShippingMethod] = useState(null);
   const [appliedCoupon, setAppliedCoupon] = useState<CouponApplication | null>(
     null
@@ -36,13 +36,33 @@ export default function TotalPriceCMP({
     });
   }, [cartStore]);
 
+  useEffect(() => {
+    if (shippingMethod !== SHIPPING_METHODS.shipping) return;
+    console.log("XXX2")
+
+    const defaultAddress = addressStore?.defaultAddress;
+    if (
+      defaultAddress &&
+      defaultAddress.location &&
+      defaultAddress.location.coordinates
+    ) {
+      const [lng, lat] = defaultAddress.location.coordinates;
+      const customerLocation = { lat, lng };
+      
+      let storeLocation = undefined;
+      if (storeDataStore.storeData?.location) {
+        const { lat: storeLat, lng: storeLng } = storeDataStore.storeData.location;
+        storeLocation = { lat: storeLat, lng: storeLng };
+      }
+      shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
+    }
+  }, [shippingMethod, addressStore?.defaultAddress, storeDataStore.storeData?.location.lat, storeDataStore.storeData?.location.lng]);
+
   const {
     availableDrivers,
-    loading: driversLoading,
-    error: driversError,
-  } = useAvailableDrivers({
-    isEnabled: shippingMethod === SHIPPING_METHODS.shipping,
-  });
+    availableDriversLoading: driversLoading,
+    availableDriversError: driversError,
+  } = shoofiAdminStore;
   const [itemsPrice, setItemsPrice] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [discount, setDiscount] = useState(0);

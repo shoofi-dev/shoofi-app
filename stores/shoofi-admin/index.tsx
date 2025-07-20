@@ -20,6 +20,10 @@ class ShoofiAdminStore {
   selectedCategory = null;
   selectedGeneralCategory = null;
   exploreData = null;
+  availableDrivers = null;
+  availableDriversLoading = false;
+  availableDriversError = null;
+  customerLocation = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -242,6 +246,41 @@ class ShoofiAdminStore {
       console.error('Error fetching available drivers:', error);
       throw error;
     }
+  };
+
+  fetchAvailableDrivers = async (
+    customerLocation: { lat: number; lng: number },
+    storeLocation?: { lat: number; lng: number }
+  ) => {
+    runInAction(() => {
+      this.availableDriversLoading = true;
+      this.availableDriversError = null;
+      this.customerLocation = customerLocation;
+    });
+
+    try {
+      const response = await this.getAvailableDrivers(customerLocation, storeLocation);
+      runInAction(() => {
+        this.availableDrivers = response;
+        this.availableDriversLoading = false;
+      });
+      return response;
+    } catch (error) {
+      runInAction(() => {
+        this.availableDriversError = error;
+        this.availableDriversLoading = false;
+      });
+      throw error;
+    }
+  };
+
+  clearAvailableDrivers = () => {
+    runInAction(() => {
+      this.availableDrivers = null;
+      this.availableDriversLoading = false;
+      this.availableDriversError = null;
+      this.customerLocation = null;
+    });
   };
 }
 

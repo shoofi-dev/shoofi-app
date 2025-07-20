@@ -33,7 +33,7 @@ import PaymentFailedBasedEventDialog from "../../components/dialogs/payment-fail
 import * as Animatable from "react-native-animatable";
 import { storeDataStore } from "../../stores/store";
 import Text from "../../components/controls/Text";
-import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
+
 import { getCurrentLang } from "../../translations/i18n";
 import Modal from "react-native-modal";
 import OrderSubmittedScreen from "../order/submitted";
@@ -43,7 +43,7 @@ const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const { ordersStore, cartStore, adminCustomerStore, couponsStore, userDetailsStore, languageStore } =
+  const { ordersStore, cartStore, adminCustomerStore, couponsStore, userDetailsStore, languageStore, shoofiAdminStore, addressStore } =
     useContext(StoreContext);
   const { selectedDate } = route.params;
 
@@ -69,17 +69,37 @@ const CheckoutScreen = ({ route }) => {
   }, [cartStore.cartItems]);
   const {
     availableDrivers,
-    loading: driversLoading,
-    error: driversError,
-  } = useAvailableDrivers({
-    isEnabled: shippingMethod === SHIPPING_METHODS.shipping,
-  });
+    availableDriversLoading: driversLoading,
+    availableDriversError: driversError,
+  } = shoofiAdminStore;
 
   useEffect(()=>{
     cartStore.getShippingMethod().then((shippingMethodTmp)=>{
       setShippingMethod(shippingMethodTmp)
     })
   }, [])
+
+  useEffect(() => {
+    if (shippingMethod !== SHIPPING_METHODS.shipping) return;
+   
+    const defaultAddress = addressStore?.defaultAddress;
+    if (
+      defaultAddress &&
+      defaultAddress.location &&
+      defaultAddress.location.coordinates
+    ) {
+      const [lng, lat] = defaultAddress.location.coordinates;
+      const customerLocation = { lat, lng };
+      
+      let storeLocation = undefined;
+      if (storeDataStore.storeData?.location) {
+        const { lat: storeLat, lng: storeLng } = storeDataStore.storeData.location;
+        storeLocation = { lat: storeLat, lng: storeLng };
+      }
+      
+      shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
+    }
+  }, [shippingMethod, addressStore?.defaultAddress, storeDataStore.storeData?.location.lat, storeDataStore.storeData?.location.lng]);
 
   useEffect(() => {
     if (ordersStore.editOrderData) {
@@ -431,7 +451,7 @@ const CheckoutScreen = ({ route }) => {
       <OrderProcessingModal visible={isProcessingModalOpen} />
       <Modal
         isVisible={isOrderSubmittedModalOpen}
-        onBackdropPress={() => setIsOrderSubmittedModalOpen(false)}
+        onBackdropPress={() => {}}
         style={{ margin: 0, justifyContent: "flex-end", zIndex: 1000 }}
         animationIn="slideInUp"
         animationOut="slideOutDown"

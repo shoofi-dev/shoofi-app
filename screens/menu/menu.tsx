@@ -19,7 +19,7 @@ import { ActivityIndicator } from "react-native-paper";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
 import { ShippingMethodPick } from "../../components/address/shipping-method-pick";
-import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
+
 import { getCurrentLang } from "../../translations/i18n";
 import BackButton from "../../components/back-button";
 import Text from "../../components/controls/Text";
@@ -41,9 +41,9 @@ const MenuScreen = () => {
   const categoryUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const manualSelectionRef = useRef<boolean>(false);
 
-  const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore, websocket } =
+  const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore, websocket, addressStore } =
     useContext(StoreContext);
-  const { availableDrivers, loading: driversLoading } = useAvailableDrivers();
+  const { availableDrivers, availableDriversLoading: driversLoading } = shoofiAdminStore;
   const { isConnected, connectionStatus, lastMessage } = websocket;
   const [isThisStoreInCart, setIsThisStoreInCart] = useState(false);
   // Handle menu refresh messages
@@ -58,6 +58,25 @@ const MenuScreen = () => {
           }
         }
        },[lastMessage])
+
+       useEffect(() => {
+         const defaultAddress = addressStore?.defaultAddress;
+         if (
+           defaultAddress &&
+           defaultAddress.location &&
+           defaultAddress.location.coordinates
+         ) {
+           const [lng, lat] = defaultAddress.location.coordinates;
+           const customerLocation = { lat, lng };
+           
+           let storeLocation = undefined;
+           if (storeDataStore.storeData?.location) {
+             const { lat: storeLat, lng: storeLng } = storeDataStore.storeData.location;
+             storeLocation = { lat: storeLat, lng: storeLng };
+           }
+           shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
+         }
+       }, [addressStore?.defaultAddress, storeDataStore.storeData?.location.lat, storeDataStore.storeData?.location.lng]);
 
   const [cartPrice, setCartPrice] = useState(0);
 

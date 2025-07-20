@@ -23,12 +23,12 @@ const OrderErrorModal = ({ visible, title, message, onClose }: OrderErrorModalPr
   return (
     <Modal
       isVisible={visible}
-      onBackdropPress={onClose}
       onBackButtonPress={onClose}
       style={styles.modal}
       animationIn="slideInUp"
       animationOut="slideOutDown"
       backdropOpacity={0.5}
+      onBackdropPress={() => {}} // Prevent closing on backdrop press
     >
       <View style={styles.container}>
       <View style={styles.closeButton}>   

@@ -22,6 +22,7 @@ export default function OrderErrorModalBasedEvent() {
     setTitle(data?.title || "");
     setMessage(data?.message || "");
     setVisible(true);
+    console.log("XXXXXXXXXX2")
   };
 
   const hideDialog = () => {

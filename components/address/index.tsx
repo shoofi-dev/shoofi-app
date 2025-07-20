@@ -13,7 +13,7 @@ import {
   PLACE,
   SHIPPING_METHODS,
 } from "../../consts/shared";
-import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
+
 import { ShippingMethodPick } from "./shipping-method-pick";
 import { MapViewAddress } from "./map-view";
 import * as Animatable from "react-native-animatable";
@@ -45,12 +45,10 @@ export const AddressCMP = observer(({
   const { storeDataStore, addressStore, shoofiAdminStore } = useContext(StoreContext);
   const {
     availableDrivers,
-    loading: driversLoading,
-    error: driversError,
+    availableDriversLoading: driversLoading,
+    availableDriversError: driversError,
     customerLocation,
-  } = useAvailableDrivers({
-    isEnabled: !shippingMethod,
-  });
+  } = shoofiAdminStore;
   const [defaultAddress, setDefaultAddress] = useState(null);
   const [place, setPlace] = useState(PLACE.current);
   const [textAddress, setTextAddress] = useState("");
@@ -71,6 +69,27 @@ export const AddressCMP = observer(({
   useEffect(() => {
     setDefaultAddress(addressStore.defaultAddress);
   }, [addressStore.defaultAddress]);
+
+  useEffect(() => {
+    // if (!storeDataStore.storeData || shippingMethod) return;
+    const defaultAddressTmp = defaultAddress || addressStore.defaultAddress;
+    if (
+      defaultAddressTmp &&
+      defaultAddressTmp.location &&
+      defaultAddressTmp.location.coordinates
+    ) {
+      const [lng, lat] = defaultAddressTmp?.location.coordinates;
+      const customerLocation = { lat, lng };
+      
+      let storeLocation = undefined;
+      if (storeDataStore.storeData?.location) {
+        const { lat: storeLat, lng: storeLng } = storeDataStore.storeData.location;
+        storeLocation = { lat: storeLat, lng: storeLng };
+      }
+      
+       shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
+    }
+  }, [addressStore.defaultAddress, shippingMethod, defaultAddress, storeDataStore.storeData?.location.lat, storeDataStore.storeData?.location.lng]);
 
   const onShippingMethodChange = async (shippingMethodValue: string) => {
     onShippingMethodChangeFN(shippingMethodValue);
@@ -110,6 +129,11 @@ export const AddressCMP = observer(({
 
   const handleConfirmActionAnswer = () => {
     setIsOpenConfirmActiondDialog(false);
+  };
+
+  const handleAddressChange = (addressValue) => {
+    setDefaultAddress(addressValue);
+    onAddressChange(addressValue);
   };
 
   const minTakeAwayReadyTime = storeDataStore.storeData?.minReady;
@@ -194,7 +218,7 @@ export const AddressCMP = observer(({
           onClose={() => setIsAddressModalVisible(false)}
           onAddressSelect={(selectedAddress) => {
             setDefaultAddress(selectedAddress);
-            onAddressChange(selectedAddress);
+            handleAddressChange(selectedAddress);
           }}
           selectionMode={true}
         />

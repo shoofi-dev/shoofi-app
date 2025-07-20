@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
   I18nManager,
   Platform,
+  FlatList,
 } from "react-native";
 import { observer } from "mobx-react";
 import { StoreContext } from "../stores";
@@ -35,7 +36,9 @@ import { useParallelFetch, useOptimizedFetch } from "../hooks/use-optimized-fetc
 import SplashScreen from "../components/SplashScreen";
 import { wsDebugger } from "../utils/debug-websocket";
 import WebSocketDebugPanel from "../components/debug/WebSocketDebugPanel";
-
+import Animated, {
+  FadeIn,
+} from "react-native-reanimated";
 const CATEGORY_BG = "#f5f5f5";
 
 // Type definitions
@@ -217,13 +220,30 @@ const SubCategoryItem = React.memo<CategoryItemProps>(
   }
 );
 
-// Store section component - removed memo to ensure language changes are reflected
-const StoreSection = ({ category, storesInCategory, languageStore }: StoreSectionProps) => {
+// Store section component - memoized for better performance
+const StoreSection = ({ category, storesInCategory, languageStore }) => {
   const categoryName = useMemo(
     () =>
       languageStore.selectedLang === "ar" ? category.nameAR : category.nameHE,
     [languageStore.selectedLang, category.nameAR, category.nameHE]
   );
+
+  const renderStoreItem = useCallback(({ item: storeData }) => (
+    <View
+      style={{
+        width: 240,
+        height: 224,
+        marginHorizontal: 8,
+        backgroundColor: "#fff",
+        borderRadius: 16,
+      }}
+    >
+      <MemoizedStoreItem 
+        storeItem={storeData} 
+        isExploreScreen={true} 
+      />
+    </View>
+  ), []);
 
   return (
     <View style={{ marginBottom: 0, alignItems: "flex-start" }}>
@@ -239,28 +259,23 @@ const StoreSection = ({ category, storesInCategory, languageStore }: StoreSectio
       >
         {categoryName}
       </Text>
-      <ScrollView
+      <FlatList
+        data={storesInCategory}
+        keyExtractor={(item) => item.store._id}
+        renderItem={renderStoreItem}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
- 
-        }}
-      >
-        {storesInCategory.map((storeData) => (
-          <View
-            key={storeData.store._id}
-            style={{
-              width: 240,
-              height: 224,
-              marginHorizontal: 8,
-              backgroundColor: "#fff",
-              borderRadius: 16,
-            }}
-          >
-            <MemoizedStoreItem storeItem={storeData} isExploreScreen={true} />
-          </View>
-        ))}
-      </ScrollView>
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        initialNumToRender={3}
+        getItemLayout={(data, index) => ({
+          length: 256, // 240 + 16 (width + margins)
+          offset: 256 * index,
+          index,
+        })}
+        nestedScrollEnabled={true}
+      />
     </View>
   );
 };
@@ -358,6 +373,7 @@ const ExploreScreen = () => {
     if (locationKey && locationKey !== lastFetchedLocationRef.current) {
       console.log('Location changed, refetching location data');
       lastFetchedLocationRef.current = locationKey;
+      // Clear any existing data before refetching
       refetchLocation();
     }
   }, [locationKey, refetchLocation]);
@@ -382,18 +398,30 @@ const ExploreScreen = () => {
 
   const generalCategories = (fetchData.generalCategories || []) as any[];
   const adsData = adsDataFromHook || (fetchData.ads || []) as any[];
-  const categoriesWithStores = (locationData || []) as any[];
-  console.log("categoriesWithStores", categoriesWithStores);
+  const categoriesWithStores = useMemo(() => {
+    return (locationData || []) as any[];
+  }, [locationData]);
+
+  // Memoize filtered data for better performance
+  const filteredCategoriesWithStores = useMemo(() => {
+    return categoriesWithStores.filter(categoryData => 
+      categoryData.stores && categoryData.stores.length > 0
+    );
+  }, [categoriesWithStores]);
+  
   // Show loading indicator for location-based updates
   const isLocationLoading = locationLoading && debouncedLocation;
 
   // Websocket listeners for real-time updates
   useEffect(() => {
     if (websocket?.lastMessage) {
+
       // Log all WebSocket events for debugging
       wsDebugger.logEvent(websocket.lastMessage.type, websocket.lastMessage.data, 'explore-screen');
       
       if (websocket?.lastMessage?.type === "store_refresh") {
+        console.log("XXXXXX")
+
         // Check for infinite loop
         if (wsDebugger.detectInfiniteLoop('store_refresh')) {
           console.warn('Potential infinite loop detected for store_refresh events');
@@ -437,6 +465,7 @@ const ExploreScreen = () => {
           refetchLocation();
           console.log('Explore data refetched due to store refresh');
         }, 500); // 500ms debounce
+
       }
       
       if (websocket?.lastMessage?.type === "ads_updated") {
@@ -494,6 +523,31 @@ const ExploreScreen = () => {
     [shoofiAdminStore, navigation]
   );
 
+  // Memoized render functions for FlatList
+  const renderGeneralCategory = useCallback(({ item: cat }) => (
+    <CategoryItem
+      cat={cat}
+      onPress={() => handleCategoryPress(cat)}
+      languageStore={languageStore}
+    />
+  ), [handleCategoryPress, languageStore]);
+
+  const renderSubCategory = useCallback(({ item: categoryData }) => (
+    <SubCategoryItem
+      cat={categoryData.category}
+      onPress={() => handleSubCategoryPress(categoryData.category)}
+      languageStore={languageStore}
+    />
+  ), [handleSubCategoryPress, languageStore]);
+
+  const renderStoreSection = useCallback(({ item: categoryData }) => (
+    <StoreSection
+      category={categoryData.category}
+      storesInCategory={categoryData.stores}
+      languageStore={languageStore}
+    />
+  ), [languageStore]);
+
   // Memoized ads mapping
   const mappedAds = useMemo(
     () =>
@@ -519,7 +573,7 @@ const ExploreScreen = () => {
     }
   }, [generalCategories]);
   
-  // Show splash only on initial load, not on location-based refetches
+  // Show splash only on initial load when no data is available
   if ((loading && !hideSplash && !fetchData.generalCategories) || !categoriesWithStores?.length) {
     return <SplashScreen />;
   }
@@ -534,117 +588,107 @@ const ExploreScreen = () => {
     );
   }
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={{ backgroundColor: "#fff", marginTop: 10 }}>
-        {/* Location-based loading indicator */}
-        {/* {isLocationLoading && (
-          <View style={{ 
-            paddingHorizontal: 16, 
-            paddingVertical: 8, 
-            backgroundColor: "#f0f8ff",
-            alignItems: "center"
-          }}>
-            <ActivityIndicator size="small" color={themeStyle.PRIMARY_COLOR} />
-            <Text style={{ 
-              fontSize: themeStyle.FONT_SIZE_SM, 
-              color: themeStyle.PRIMARY_COLOR, 
-              marginTop: 4 
-            }}>
-              {t("updating_stores")}
-            </Text>
-          </View>
-        )} */}
-      
-      {/* General Categories Horizontal Scroller */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ paddingVertical: 16, paddingHorizontal: 8, marginBottom: 10 }}
-        contentContainerStyle={{
-          flexDirection: I18nManager.isRTL ? "row" : "row",
-        }}
-      >
-        {generalCategories?.map((cat) => (
-          <CategoryItem
-            key={cat._id}
-            cat={cat}
-            onPress={() => handleCategoryPress(cat)}
-            languageStore={languageStore}
-          />
-        ))}
-      </ScrollView>
-
-      {/* Ads Carousel */}
-      {mappedAds.length > 0 && <AdsCarousel ads={mappedAds} />}
-
-      {/* Subcategories and Stores - only show when location is available */}
-      {defaultCategory && debouncedLocation && (
-        <>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{
-              paddingVertical: 0,
-              paddingHorizontal: 8,
-              marginTop: 20,
-              paddingBottom: 30,
-            }}
-            contentContainerStyle={{
-              flexDirection: I18nManager.isRTL ? "row" : "row",
-              paddingBottom: 10,
-            }}
-          >
-            {categoriesWithStores?.map((categoryData) => (
-              <SubCategoryItem
-                key={categoryData.category._id}
-                cat={categoryData.category}
-                onPress={() => handleSubCategoryPress(categoryData.category)}
-                languageStore={languageStore}
-              />
-            ))}
-          </ScrollView>
-
-          {/* Stores grouped by subcategories - now using server-side filtered data */}
-          {categoriesWithStores?.length > 0 ? (
-            categoriesWithStores.map((categoryData) => {
-              // Only show category if it has stores
-              if (!categoryData.stores || categoryData.stores.length === 0)
-                return null;
-
+    <Animated.View entering={FadeIn.duration(500)} style={{ flex: 1, backgroundColor: "#fff" }}>
+      <FlatList
+        style={{ marginTop: 10 }}
+        data={[
+          { type: 'general-categories', data: generalCategories },
+          { type: 'ads', data: mappedAds },
+          ...(defaultCategory && debouncedLocation && categoriesWithStores?.length > 0 ? [
+            { type: 'subcategories', data: categoriesWithStores },
+            { type: 'store-sections', data: filteredCategoriesWithStores }
+          ] : [])
+        ]}
+        keyExtractor={(item, index) => `${item.type}-${index}`}
+        renderItem={({ item }) => {
+          switch (item.type) {
+            case 'general-categories':
               return (
-                <StoreSection
-                  key={categoryData.category._id}
-                  category={categoryData.category}
-                  storesInCategory={categoryData.stores}
-                  languageStore={languageStore}
+                <FlatList
+                  data={item.data}
+                  keyExtractor={(cat) => `general-${cat._id}`}
+                  renderItem={renderGeneralCategory}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ paddingVertical: 16, paddingHorizontal: 8, marginBottom: 10 }}
+                  removeClippedSubviews={true}
+                  maxToRenderPerBatch={5}
+                  windowSize={5}
+                  initialNumToRender={5}
+                  getItemLayout={(data, index) => ({
+                    length: 100,
+                    offset: 100 * index,
+                    index,
+                  })}
+                  nestedScrollEnabled={true}
                 />
               );
-            })
-          ) : (
-            // Show message when no stores are available
-        null
-          )}
-        </>
-      )}
-
-      {/* Show message when location is not available */}
-      {defaultCategory && !debouncedLocation && (
-        <View style={{ 
-          padding: 20, 
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 200
-        }}>
-          <Text style={{ 
-            fontSize: themeStyle.FONT_SIZE_MD, 
-            color: "#666",
-            textAlign: "center"
-          }}>
-            {t("please_select_location")}
-          </Text>
-        </View>
-      )}
-      </ScrollView>
+            
+            case 'ads':
+              return item.data.length > 0 ? <AdsCarousel ads={item.data} /> : null;
+            
+            case 'subcategories':
+              return (
+                <FlatList
+                  data={item.data}
+                  keyExtractor={(cat) => `sub-${cat.category._id}`}
+                  renderItem={renderSubCategory}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{
+                    paddingVertical: 0,
+                    paddingHorizontal: 8,
+                    marginTop: 20,
+                    paddingBottom: 30,
+                  }}
+                  contentContainerStyle={{
+                    paddingBottom: 10,
+                  }}
+                  removeClippedSubviews={true}
+                  maxToRenderPerBatch={5}
+                  windowSize={5}
+                  initialNumToRender={5}
+                  getItemLayout={(data, index) => ({
+                    length: 120,
+                    offset: 120 * index,
+                    index,
+                  })}
+                  nestedScrollEnabled={true}
+                />
+              );
+            
+            case 'store-sections':
+              return (
+                <FlatList
+                  data={item.data}
+                  keyExtractor={(section) => `section-${section.category._id}`}
+                  renderItem={renderStoreSection}
+                  showsVerticalScrollIndicator={false}
+                  scrollEnabled={false}
+                  removeClippedSubviews={true}
+                  maxToRenderPerBatch={3}
+                  windowSize={5}
+                  initialNumToRender={2}
+                  getItemLayout={(data, index) => ({
+                    length: 300,
+                    offset: 300 * index,
+                    index,
+                  })}
+                  nestedScrollEnabled={true}
+                />
+              );
+            
+            default:
+              return null;
+          }
+        }}
+        showsVerticalScrollIndicator={false}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={2}
+        windowSize={5}
+        initialNumToRender={2}
+        nestedScrollEnabled={true}
+      />
       
       {/* Debug Panel - Only in development */}
       {/* {__DEV__ && (
@@ -653,7 +697,7 @@ const ExploreScreen = () => {
           onClose={() => setShowDebugPanel(false)}
         />
       )} */}
-    </View>
+    </Animated.View>
   );
 };
 

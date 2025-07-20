@@ -101,7 +101,7 @@ export const MainStackNavigator = () => {
       }}
     >
       <Stack.Screen name="MainTabs" component={MainTabs} />
-      <Stack.Screen name="menuScreen" component={MenuScreen} />
+      <Stack.Screen name="menuScreen" component={MenuScreen}  />
       <Stack.Screen name="terms-and-conditions" component={TermsAndConditionsScreen} />
       <Stack.Screen name="orders-status" component={OrdersStatusScreen} />
       <Stack.Screen name="invoices-list" component={InvoicesScreen} />

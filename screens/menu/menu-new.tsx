@@ -15,7 +15,7 @@ import { ActivityIndicator } from "react-native-paper";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
 import { ShippingMethodPick } from "../../components/address/shipping-method-pick";
-import { useAvailableDrivers } from "../../hooks/useAvailableDrivers";
+
 import { getCurrentLang } from "../../translations/i18n";
 
 const HEADER_HEIGHT = 260;
@@ -28,9 +28,9 @@ const MenuScreen = () => {
   const navigation = useNavigation<any>();
   const scrollViewRef = useRef<Animated.ScrollView>(null);
 
-  const { menuStore, storeDataStore, cartStore } = useContext(StoreContext);
+  const { menuStore, storeDataStore, cartStore, shoofiAdminStore, addressStore } = useContext(StoreContext);
 
-  const { availableDrivers, loading: driversLoading } = useAvailableDrivers();
+  const { availableDrivers, availableDriversLoading: driversLoading } = shoofiAdminStore;
 
   const { lastJsonMessage } = useWebSocket(WS_URL, { share: true });
 
@@ -39,6 +39,25 @@ const MenuScreen = () => {
       menuStore.getMenu();
     }
   }, [lastJsonMessage]);
+
+  useEffect(() => {
+    const defaultAddress = addressStore?.defaultAddress;
+    if (
+      defaultAddress &&
+      defaultAddress.location &&
+      defaultAddress.location.coordinates
+    ) {
+      const [lng, lat] = defaultAddress.location.coordinates;
+      const customerLocation = { lat, lng };
+      
+      let storeLocation = undefined;
+      if (storeDataStore.storeData?.location) {
+        const { lat: storeLat, lng: storeLng } = storeDataStore.storeData.location;
+        storeLocation = { lat: storeLat, lng: storeLng };
+      }
+      shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
+    }
+  }, [addressStore?.defaultAddress, storeDataStore.storeData?.location.lat, storeDataStore.storeData?.location.lng]);
 
   const [categoryList, setCategoryList] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
