@@ -8,7 +8,7 @@ import BackButton from "../back-button";
 
 const screenHeight = Dimensions.get('window').height;
 
-const AddressModal = ({ onClose, onAddressSelect, selectionMode = false }) => {
+const AddressModal = ({ onClose, onAddressSelect, selectionMode = false, customSelectedAddress }) => {
     const { t } = useTranslation(); 
   return (
     <View style={styles.modalContainer}>
@@ -41,6 +41,7 @@ const AddressModal = ({ onClose, onAddressSelect, selectionMode = false }) => {
         selectionMode={selectionMode}
         modalMode={true}
         onClose={onClose}
+        customSelectedAddress={customSelectedAddress}
       />
       </View>
     

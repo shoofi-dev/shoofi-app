@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -7,20 +7,20 @@ import {
   Alert,
   ActivityIndicator,
   DeviceEventEmitter,
-} from 'react-native';
-import { observer } from 'mobx-react';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
-import { StoreContext } from '../../stores';
-import { CreditCard } from '../../stores/creditCards';
-import Text from '../../components/controls/Text';
-import Icon from '../../components/icon';
-import BackButton from '../../components/back-button';
-import Button from '../../components/controls/button/button';
-import themeStyle from '../../styles/theme.style';
-import { useResponsive } from '../../hooks/useResponsive';
-import { DIALOG_EVENTS } from '../../consts/events';
-import NewPaymentMethodBasedEventDialog from '../../components/dialogs/new-credit-card-based-event';
+} from "react-native";
+import { observer } from "mobx-react";
+import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+import { StoreContext } from "../../stores";
+import { CreditCard } from "../../stores/creditCards";
+import Text from "../../components/controls/Text";
+import Icon from "../../components/icon";
+import BackButton from "../../components/back-button";
+import Button from "../../components/controls/button/button";
+import themeStyle from "../../styles/theme.style";
+import { useResponsive } from "../../hooks/useResponsive";
+import { DIALOG_EVENTS } from "../../consts/events";
+import NewPaymentMethodBasedEventDialog from "../../components/dialogs/new-credit-card-based-event";
 
 const CreditCardsScreen = ({ onClose, isModal = false }) => {
   const { t } = useTranslation();
@@ -37,16 +37,16 @@ const CreditCardsScreen = ({ onClose, isModal = false }) => {
     try {
       await creditCardsStore.fetchCreditCards();
     } catch (error) {
-      console.error('Failed to load credit cards:', error);
+      console.error("Failed to load credit cards:", error);
     }
   };
 
   const handleAddCard = () => {
     onClose();
     setTimeout(() => {
-    DeviceEventEmitter.emit(
+      DeviceEventEmitter.emit(
         DIALOG_EVENTS.OPEN_NEW_CREDIT_CARD_BASED_EVENT_DIALOG
-      );    
+      );
     }, 500);
   };
 
@@ -54,35 +54,31 @@ const CreditCardsScreen = ({ onClose, isModal = false }) => {
     if (isModal) {
       onClose();
     } else {
-      (navigation as any).navigate('edit-credit-card', { card });
+      (navigation as any).navigate("edit-credit-card", { card });
     }
   };
 
   const handleDeleteCard = (card: CreditCard) => {
-    Alert.alert(
-      t('delete-credit-card'),
-      t('delete-credit-card-confirmation'),
-      [
-        { text: t('cancel'), style: 'cancel' },
-        {
-          text: t('delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await creditCardsStore.deleteCreditCard(card._id);
-              Alert.alert(t('success'), t('credit-card-deleted'));
-            } catch (error) {
-              Alert.alert(t('error'), t('failed-to-delete-credit-card'));
-            }
-          },
+    Alert.alert(t("delete-credit-card"), t("delete-credit-card-confirmation"), [
+      { text: t("cancel"), style: "cancel" },
+      {
+        text: t("delete"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await creditCardsStore.deleteCreditCard(card._id);
+            Alert.alert(t("success"), t("credit-card-deleted"));
+          } catch (error) {
+            Alert.alert(t("error"), t("failed-to-delete-credit-card"));
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleSetDefault = async (card: CreditCard) => {
     try {
-      if(card.isDefault) {
+      if (card.isDefault) {
         return;
       }
       await creditCardsStore.setDefaultCreditCard(card._id);
@@ -91,43 +87,45 @@ const CreditCardsScreen = ({ onClose, isModal = false }) => {
       setTimeout(() => {
         onClose();
       }, 1000);
-      
     } catch (error) {
-      Alert.alert(t('error'), t('failed-to-update-default-card'));
+      Alert.alert(t("error"), t("failed-to-update-default-card"));
     }
   };
 
   const renderCreditCard = (card: CreditCard) => (
-    <TouchableOpacity  onPress={() => handleSetDefault(card)} key={card._id} style={styles.cardContainer}>
+    <TouchableOpacity
+      onPress={() => handleSetDefault(card)}
+      key={card._id}
+      style={styles.cardContainer}
+    >
       <View style={styles.cardHeader}>
         <View style={styles.cardInfo}>
-          <Icon
-            icon={card.ccType}
-            size={40}
-            style={styles.cardIcon}
-          />
-            <Text style={styles.cardNumber}>
-              **** **** **** {card.last4Digits}
-            </Text>
-            {/* <Text style={styles.cardHolder}>
+          <Icon icon={card.ccType} size={40} style={styles.cardIcon} />
+          <Text style={styles.cardNumber}>
+            **** **** **** {card.last4Digits}
+          </Text>
+          {/* <Text style={styles.cardHolder}>
               {card.holderName}
             </Text> */}
-            {/* {card.isDefault && (
+          {/* {card.isDefault && (
                 <Icon icon="v" size={20} color={themeStyle.SUCCESS_COLOR}  />
             )} */}
         </View>
-        
+
         <View style={styles.cardActions}>
-   
-             {card.isDefault && (
-                <Icon icon="v" size={30} color={themeStyle.SUCCESS_COLOR}  />
-            )}
-          
+          {card.isDefault && (
+            <Icon icon="v" size={30} color={themeStyle.SUCCESS_COLOR} />
+          )}
+
           <TouchableOpacity
             style={styles.actionButton}
             onPress={() => handleDeleteCard(card)}
           >
-            <Icon icon="trash" size={20} style={[styles.actionIcon, styles.deleteIcon]} />
+            <Icon
+              icon="trash"
+              size={20}
+              style={[styles.actionIcon, styles.deleteIcon]}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -137,11 +135,15 @@ const CreditCardsScreen = ({ onClose, isModal = false }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={{position: 'absolute', left: 15, top: 15}}>
-          <BackButton onClick={onClose} isDisableGoBack={true} color={themeStyle.WHITE_COLOR}/>
+        <View style={{ position: "absolute", left: 15, top: 15 }}>
+          <BackButton
+            onClick={onClose}
+            isDisableGoBack={true}
+            color={themeStyle.WHITE_COLOR}
+          />
         </View>
-        <View style={{ alignSelf: 'center'}}>
-        <Text style={styles.title}>{t('credit-cards')}</Text>
+        <View style={{ alignSelf: "center" }}>
+          <Text style={styles.title}>{t("credit-cards")}</Text>
         </View>
       </View>
 
@@ -153,15 +155,40 @@ const CreditCardsScreen = ({ onClose, isModal = false }) => {
         ) : creditCardsStore.creditCards.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Icon icon="credit-card" size={80} style={styles.emptyIcon} />
-            <Text style={styles.emptyTitle}>{t('no-credit-cards')}</Text>
-            <Text style={styles.emptySubtitle}>{t('add-your-first-credit-card')}</Text>
+            <Text style={styles.emptyTitle}>{t("no-credit-cards")}</Text>
+            <Text style={styles.emptySubtitle}>
+              {t("add-your-first-credit-card")}
+            </Text>
+            <View style={styles.cardsList}>
+              {creditCardsStore.creditCards.map(renderCreditCard)}
+              <TouchableOpacity
+                onPress={handleAddCard}
+                style={styles.addCardContainer}
+              >
+                <Icon
+                  icon="plus"
+                  size={15}
+                  color={themeStyle.SUCCESS_COLOR}
+                  style={styles.addCardIcon}
+                />
+                <Text style={styles.addCardText}>{t("add-credit-card")}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ) : (
           <View style={styles.cardsList}>
             {creditCardsStore.creditCards.map(renderCreditCard)}
-            <TouchableOpacity onPress={handleAddCard} style={styles.addCardContainer}>
-              <Icon icon="plus" size={15} color={themeStyle.SUCCESS_COLOR} style={styles.addCardIcon} />
-              <Text style={styles.addCardText}>{t('add-credit-card')}</Text>
+            <TouchableOpacity
+              onPress={handleAddCard}
+              style={styles.addCardContainer}
+            >
+              <Icon
+                icon="plus"
+                size={15}
+                color={themeStyle.SUCCESS_COLOR}
+                style={styles.addCardIcon}
+              />
+              <Text style={styles.addCardText}>{t("add-credit-card")}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -178,7 +205,6 @@ const CreditCardsScreen = ({ onClose, isModal = false }) => {
         />
       </View> */}
       <NewPaymentMethodBasedEventDialog />
-
     </View>
   );
 };
@@ -189,16 +215,16 @@ const styles = StyleSheet.create({
     backgroundColor: themeStyle.WHITE_COLOR,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    width: '100%',
+    width: "100%",
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: themeStyle.TEXT_PRIMARY_COLOR,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   content: {
     flex: 1,
@@ -206,8 +232,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 100,
   },
   loadingText: {
@@ -217,8 +243,8 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 50,
   },
   emptyIcon: {
@@ -227,14 +253,14 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: themeStyle.TEXT_PRIMARY_COLOR,
     marginBottom: 10,
   },
   emptySubtitle: {
     fontSize: 16,
     color: themeStyle.GRAY_600,
-    textAlign: 'center',
+    textAlign: "center",
   },
   cardsList: {
     paddingVertical: 20,
@@ -248,13 +274,13 @@ const styles = StyleSheet.create({
     borderColor: themeStyle.GRAY_600,
   },
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   cardInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   cardIcon: {
@@ -266,7 +292,7 @@ const styles = StyleSheet.create({
   },
   cardNumber: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: themeStyle.TEXT_PRIMARY_COLOR,
     marginBottom: 5,
   },
@@ -280,16 +306,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 12,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   defaultText: {
     fontSize: 12,
     color: themeStyle.WHITE_COLOR,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   cardActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   actionButton: {
     padding: 8,
@@ -321,10 +347,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   addCardContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 5,
   },
 });
 
-export default observer(CreditCardsScreen); 
+export default observer(CreditCardsScreen);

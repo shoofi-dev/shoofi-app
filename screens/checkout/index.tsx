@@ -159,6 +159,7 @@ const CheckoutScreen = ({ route }) => {
   const { checkoutSubmitOrder } = _useCheckoutSubmit(onLoadingOrderSent);
 
   const onShippingMethodChange = (data: any) => {
+    console.log("onShippingMethodChange", data)
     setShippingMethod(data);
   };
 
@@ -181,6 +182,7 @@ const CheckoutScreen = ({ route }) => {
 
   // Handle payment data from credit card component
   const onPaymentDataChange = (data: any) => {
+    console.log("onPaymentDataChange", data)
     setPaymentData(data);
   };
 

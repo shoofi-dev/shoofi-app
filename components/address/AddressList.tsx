@@ -22,6 +22,7 @@ interface AddressListProps {
   selectionMode?: boolean;
   modalMode?: boolean;
   onClose?: () => void;
+  customSelectedAddress?: any;
 }
 
 const AddressList = observer(
@@ -30,6 +31,7 @@ const AddressList = observer(
     selectionMode = false,
     modalMode = false,
     onClose,
+    customSelectedAddress,
   }: AddressListProps) => {
     const { t } = useTranslation();
 
@@ -165,6 +167,19 @@ const AddressList = observer(
       </TouchableOpacity>
     );
 
+    const updateCustomSelectedAddress = (addresses: any) => {
+      if (customSelectedAddress) {
+        return addresses.map((address: any) => {
+          if (address._id === customSelectedAddress._id) {
+            return { ...address, isDefault: true };
+          } else {
+            return { ...address, isDefault: false };
+          }
+        });
+      }
+      return addresses;
+    };
+
     if (addressStore.loading) {
       return (
         <View style={styles.centered}>
@@ -176,7 +191,7 @@ const AddressList = observer(
     return (
       <View style={styles.container}>
         <FlatList
-          data={addressStore.addresses}
+          data={updateCustomSelectedAddress(addressStore.addresses)}
           renderItem={renderAddress}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.list}

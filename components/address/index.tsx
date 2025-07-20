@@ -68,7 +68,8 @@ export const AddressCMP = observer(({
 
   useEffect(() => {
     setDefaultAddress(addressStore.defaultAddress);
-  }, [addressStore.defaultAddress]);
+    console.log("XXX")
+  }, []);
 
   useEffect(() => {
     // if (!storeDataStore.storeData || shippingMethod) return;
@@ -147,6 +148,8 @@ export const AddressCMP = observer(({
     max: availableDrivers?.area?.maxETA,
   };
   const distanceKm = availableDrivers?.distanceKm;
+  console.log("address", defaultAddress)
+
   return (
     <View style={{}}>
       <View>
@@ -205,7 +208,6 @@ export const AddressCMP = observer(({
           </View>
         </View>
       )}
-      
       <Modal
         isVisible={isAddressModalVisible}
         onBackdropPress={() => setIsAddressModalVisible(false)}
@@ -221,6 +223,7 @@ export const AddressCMP = observer(({
             handleAddressChange(selectedAddress);
           }}
           selectionMode={true}
+          customSelectedAddress={defaultAddress}
         />
       </Modal>
     </View>

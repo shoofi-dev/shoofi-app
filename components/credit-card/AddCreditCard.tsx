@@ -136,7 +136,7 @@ const AddCreditCard: React.FC<AddCreditCardProps> = ({ onCardAdded, isDefault = 
           onCardAdded(ccData);
         }
         
-        navigation.goBack();
+        // navigation.goBack();
       } else {
         Alert.alert(t('error'), t('invalid-credit-card'));
       }

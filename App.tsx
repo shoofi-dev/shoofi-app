@@ -54,10 +54,12 @@ import i18n, { setTranslations } from "./translations/i18n";
 
 import { testPrint } from "./helpers/printer/print";
 import { APP_NAME, ROLES, SHIPPING_METHODS, cdnUrl } from "./consts/shared";
+import { DIALOG_EVENTS } from "./consts/events";
 import _useAppCurrentState from "./hooks/use-app-current-state";
 import OrderInvoiceCMP from "./components/order-invoice";
 import { axiosInstance } from "./utils/http-interceptor";
 import getPizzaCount from "./helpers/get-pizza-count";
+import { BASE_URL } from "./consts/api";
 
 import { useLocation } from "./hooks/useLocation";
 import { addressStore } from "./stores/address";
@@ -166,8 +168,6 @@ const App = () => {
 
   // Use the notifications hook
   const notifications = useNotifications();
-  const [isOpenInternetConnectionDialog, setIsOpenInternetConnectionDialog] =
-    useState(false);
   const [isOpenUpdateVersionDialog, setIsOpenUpdateVersionDialog] =
     useState(false);
 
@@ -200,7 +200,7 @@ const App = () => {
   const handleUpdateVersionDialogAnswer = () => {
     // TODO: change to the new app url
     Linking.openURL(
-      "https://sari-apps-lcibm.ondigitalocean.app/api/store/download-app/shoofi-shopping"
+      BASE_URL + "/store/download-app/shoofi-shopping"
     );
   };
 
@@ -363,8 +363,11 @@ const App = () => {
   useEffect(() => {
     //setTranslations([]);
     const unsubscribe = NetInfo.addEventListener((state) => {
-      setIsOpenInternetConnectionDialog(!state.isConnected);
       if (!state.isConnected) {
+        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_INTERNET_CONNECTION_DIALOG, {
+          show: true,
+          isSignOut: false,
+        });
         prepare();
       }
     });
@@ -604,7 +607,7 @@ const App = () => {
             </View>
           </View>
           <GeneralServerErrorDialog />
-          <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />
+          <InterntConnectionDialog />
         </ImageBackground>
       </View>
     );
@@ -667,7 +670,7 @@ const App = () => {
           <NewAddressBasedEventDialog />
           <CurrentLocationModal />
           <GeneralServerErrorDialog />
-          <InterntConnectionDialog isOpen={isOpenInternetConnectionDialog} />
+          <InterntConnectionDialog />
           <OrderErrorModalBasedEvent />
           <UpdateVersion
             isOpen={isOpenUpdateVersionDialog}

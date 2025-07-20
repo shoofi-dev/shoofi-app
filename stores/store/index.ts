@@ -2,7 +2,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { axiosInstance } from "../../utils/http-interceptor";
 import { STORE_API } from "../../consts/api";
 import moment from "moment";
-import { APP_NAME } from "../../consts/shared";
+import { APP_NAME, APP_TYPE } from "../../consts/shared";
 
 class StoreDataStore {
   paymentCredentials = null;
@@ -47,6 +47,7 @@ class StoreDataStore {
     return axiosInstance
       .get(`${STORE_API.IS_UPDATE_VERSION_STORE_API}`, {
         headers: {
+          "app-type": APP_TYPE,
           "app-name": APP_NAME
         }
       })

@@ -203,7 +203,6 @@ const CreditCard = ({ onSaveCard }) => {
           isDefault: isDefault,
           cvv: ccData.cvv,
         });
-
         // Alert.alert(t('success'), t('credit-card-added-successfully'));
         
         if (onSaveCard) {

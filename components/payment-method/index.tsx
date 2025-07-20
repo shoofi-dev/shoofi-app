@@ -50,8 +50,18 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
     setIsLoadingCreditCards(true);
     try {
       // Fetch credit cards from database
-      await creditCardsStore.fetchCreditCards();
-      const defaultCard = creditCardsStore.defaultCreditCard;
+      const creditCardsResponse = await creditCardsStore.fetchCreditCards();
+      console.log("creditCardsResponse", creditCardsResponse)
+      const defaultCard = creditCardsResponse.find(card => card.isDefault) || null;
+      console.log("defaultCard", defaultCard)
+     if(creditCardsResponse.length === 0){
+       console.log("EEEEE")
+         setCCData(null);
+      //   setPaymentMethod(PAYMENT_METHODS.cash);
+        onChange(PAYMENT_METHODS.cash);
+    
+       return;
+       }
       if (defaultCard) {
         setCCData({
           ccToken: defaultCard.ccToken,
@@ -69,6 +79,8 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
             cvv: defaultCard.cvv,
           });
         }
+        onChange(PAYMENT_METHODS.creditCard);
+
       } else {
         setCCData(null);
         if (onPaymentDataChange) {
@@ -135,19 +147,21 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
   }, []);
 
   const handleNewPMAnswer = (data: any) => {
-    if (data.value === "close") {
-      setPaymentMethod(PAYMENT_METHODS.cash);
-      onChange(PAYMENT_METHODS.cash);
-      if (onPaymentDataChange) {
-        onPaymentDataChange(null);
-      }
-      return;
-    }
+    // if (data.value === "close") {
+    //   // setPaymentMethod(PAYMENT_METHODS.cash);
+    //   // onChange(PAYMENT_METHODS.cash);
+    //   // if (onPaymentDataChange) {
+    //   //   onPaymentDataChange(null);
+    //   // }
+    //   return;
+    // }
     
     // If credit card was added successfully, refresh the credit cards list
-    if (data.value === "success") {
-      getCCData();
-    }
+    // if (data.value === "success") {
+    setTimeout(async () => {
+      await getCCData();
+    }, 400);
+    // }
   };
 
   const onReplaceCreditCard = () => {
@@ -158,7 +172,9 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
   const handleCloseCreditCardModal = () => {
     setIsCreditCardModalOpen(false);
     // Refresh credit card data when modal is closed
-    getCCData();
+    setTimeout(async () => {  
+      await getCCData();
+    }, 400);
   };
 
   return (
