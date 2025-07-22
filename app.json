@@ -41,7 +41,7 @@
       "bundleIdentifier": "com.shoofi.shopping"
     },
     "android": {
-      "versionCode": 3,
+      "versionCode": 6,
       "splash": {
         "image": "./assets/splash-screen.png",
         "backgroundColor": "#FFFFFF",

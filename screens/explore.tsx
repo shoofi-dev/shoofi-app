@@ -228,23 +228,6 @@ const StoreSection = ({ category, storesInCategory, languageStore }) => {
     [languageStore.selectedLang, category.nameAR, category.nameHE]
   );
 
-  const renderStoreItem = useCallback(({ item: storeData }) => (
-    <View
-      style={{
-        width: 240,
-        height: 224,
-        marginHorizontal: 8,
-        backgroundColor: "#fff",
-        borderRadius: 16,
-      }}
-    >
-      <MemoizedStoreItem 
-        storeItem={storeData} 
-        isExploreScreen={true} 
-      />
-    </View>
-  ), []);
-
   return (
     <View style={{ marginBottom: 0, alignItems: "flex-start" }}>
       <Text
@@ -259,23 +242,31 @@ const StoreSection = ({ category, storesInCategory, languageStore }) => {
       >
         {categoryName}
       </Text>
-      <FlatList
-        data={storesInCategory}
-        keyExtractor={(item) => item.store._id}
-        renderItem={renderStoreItem}
+      <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={3}
-        windowSize={5}
-        initialNumToRender={3}
-        getItemLayout={(data, index) => ({
-          length: 256, // 240 + 16 (width + margins)
-          offset: 256 * index,
-          index,
-        })}
-        nestedScrollEnabled={true}
-      />
+        style={{ height: 224 }}
+      >
+        <View style={{ flexDirection: 'row' }}>
+          {storesInCategory.map((storeData) => (
+            <View
+              key={storeData.store._id}
+              style={{
+                width: 240,
+                height: 224,
+                marginHorizontal: 8,
+                backgroundColor: "#fff",
+                borderRadius: 16,
+              }}
+            >
+              <MemoizedStoreItem 
+                storeItem={storeData} 
+                isExploreScreen={true} 
+              />
+            </View>
+          ))}
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -604,24 +595,22 @@ const ExploreScreen = () => {
           switch (item.type) {
             case 'general-categories':
               return (
-                <FlatList
-                  data={item.data}
-                  keyExtractor={(cat) => `general-${cat._id}`}
-                  renderItem={renderGeneralCategory}
+                <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   style={{ paddingVertical: 16, paddingHorizontal: 8, marginBottom: 10 }}
-                  removeClippedSubviews={true}
-                  maxToRenderPerBatch={5}
-                  windowSize={5}
-                  initialNumToRender={5}
-                  getItemLayout={(data, index) => ({
-                    length: 100,
-                    offset: 100 * index,
-                    index,
-                  })}
-                  nestedScrollEnabled={true}
-                />
+                >
+                  <View style={{ flexDirection: 'row' }}>
+                    {item.data.map((cat) => (
+                      <CategoryItem
+                        key={cat._id}
+                        cat={cat}
+                        onPress={() => handleCategoryPress(cat)}
+                        languageStore={languageStore}
+                      />
+                    ))}
+                  </View>
+                </ScrollView>
               );
             
             case 'ads':
@@ -629,53 +618,49 @@ const ExploreScreen = () => {
             
             case 'subcategories':
               return (
-                <FlatList
-                  data={item.data}
-                  keyExtractor={(cat) => `sub-${cat.category._id}`}
-                  renderItem={renderSubCategory}
+                <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   style={{
+                    height: 190,
                     paddingVertical: 0,
                     paddingHorizontal: 8,
                     marginTop: 20,
-                    paddingBottom: 30,
                   }}
                   contentContainerStyle={{
-                    paddingBottom: 10,
+                    paddingBottom: 1,
                   }}
-                  removeClippedSubviews={true}
-                  maxToRenderPerBatch={5}
-                  windowSize={5}
-                  initialNumToRender={5}
-                  getItemLayout={(data, index) => ({
-                    length: 120,
-                    offset: 120 * index,
-                    index,
-                  })}
-                  nestedScrollEnabled={true}
-                />
+                >
+                  <View style={{ flexDirection: 'row' }}>
+                    {item.data.map((cat) => (
+                      <SubCategoryItem
+                        key={cat.category._id}
+                        cat={cat.category}
+                        onPress={() => handleSubCategoryPress(cat.category)}
+                        languageStore={languageStore}
+                      />
+                    ))}
+                  </View>
+                </ScrollView>
               );
             
             case 'store-sections':
               return (
-                <FlatList
-                  data={item.data}
-                  keyExtractor={(section) => `section-${section.category._id}`}
-                  renderItem={renderStoreSection}
+                <ScrollView
                   showsVerticalScrollIndicator={false}
-                  scrollEnabled={false}
-                  removeClippedSubviews={true}
-                  maxToRenderPerBatch={3}
-                  windowSize={5}
-                  initialNumToRender={2}
-                  getItemLayout={(data, index) => ({
-                    length: 300,
-                    offset: 300 * index,
-                    index,
-                  })}
-                  nestedScrollEnabled={true}
-                />
+                  style={{}}
+                >
+                  <View>
+                    {item.data.map((section) => (
+                      <StoreSection
+                        key={section.category._id}
+                        category={section.category}
+                        storesInCategory={section.stores}
+                        languageStore={languageStore}
+                      />
+                    ))}
+                  </View>
+                </ScrollView>
               );
             
             default:
@@ -683,11 +668,6 @@ const ExploreScreen = () => {
           }
         }}
         showsVerticalScrollIndicator={false}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={2}
-        windowSize={5}
-        initialNumToRender={2}
-        nestedScrollEnabled={true}
       />
       
       {/* Debug Panel - Only in development */}

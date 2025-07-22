@@ -202,7 +202,6 @@ const styles = StyleSheet.create({
     fontSize: themeStyle.FONT_SIZE_SM,
     color: themeStyle.GRAY_60,
     marginBottom: 4,
-    textAlign: "right",
   },
   rowPriceText: {
     color: "#232323",

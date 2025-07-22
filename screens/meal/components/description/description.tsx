@@ -21,8 +21,8 @@ const ProductDescription = ({ product }: TProps) => {
     >
       {(product.descriptionAR ||
         product.descriptionHE) && (
-          <View style={{ marginTop: 10 }}>
-            <Text style={{ fontSize: themeStyle.FONT_SIZE_SM, textAlign: "right", color: themeStyle.GRAY_60 }}>
+          <View style={{ marginTop: 10, flexDirection: "row", }}>
+            <Text style={{ fontSize: themeStyle.FONT_SIZE_SM,  color: themeStyle.GRAY_60 }}>
               {languageStore.selectedLang === "ar"
                 ? product.descriptionAR
                 : product.descriptionHE}

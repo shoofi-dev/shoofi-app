@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import androidx.annotation.NonNull;
+import android.os.Build;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
@@ -59,6 +60,13 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+  if (Build.VERSION.SDK_INT >= 31) {
+    try {
+      getReactNativeHost().getReactInstanceManager().getDevSupportManager().setDevSupportEnabled(false);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
     // If you opted-in for the New Architecture, we enable the TurboModule system
     ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     SoLoader.init(this, /* native exopackage */ false);

@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView, Dimensions, I18nManager } from "react-native";
+import { View, StyleSheet, ScrollView, Dimensions, I18nManager, Platform } from "react-native";
 import MenuItem from "../menu-item";
 import CategoryItem from "./category-item";
 import { useEffect, useRef, useState } from "react";
@@ -36,9 +36,18 @@ const CategoryList = ({
       let scrollX = x - (screenWidth - width) / 2;
 
       if (I18nManager.isRTL) {
-        const rtlX = contentWidth - x - width;
-        scrollX = rtlX - (screenWidth - width) / 2;
+        if (Platform.OS === "android") {
+          // For Android RTL, use LTR logic
+          scrollX = x - (screenWidth - width) / 2;
+        } else {
+          // iOS and others: mirror
+          const rtlX = contentWidth - x - width;
+          scrollX = rtlX - (screenWidth - width) / 2;
+        }
       }
+
+      // Clamp scrollX to valid range
+      scrollX = Math.max(0, Math.min(scrollX, contentWidth - screenWidth));
 
       if (contentWidth > screenWidth) {
         scrollViewRef.current.scrollTo({ x: scrollX, animated: true });

@@ -190,10 +190,14 @@ const App = () => {
 
 
   useEffect(() => {
-    if (!I18nManager.isRTL) {
-      I18nManager.forceRTL(true);
-      RNRestart.Restart();
-    }
+    AsyncStorage.getItem('rtl_set').then((rtlSet) => {
+      if (!I18nManager.isRTL && !rtlSet) {
+        I18nManager.forceRTL(true);
+        AsyncStorage.setItem('rtl_set', 'true').then(() => {
+          RNRestart.Restart();
+        });
+      }
+    });
   }, []);
 
 

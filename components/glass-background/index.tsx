@@ -71,7 +71,7 @@ const GlassBG: React.FC<GlassBGProps> = ({
   return (
     <View style={[styles.container, { borderRadius, overflow: 'hidden' }, style]}>
       {/* Blur effect layer */}
-      {isBlurSupported && (
+      {!isAndroid && (
         <BlurView
           style={StyleSheet.absoluteFill}
           blurType={tint === 'black' ? 'dark' : 'light'}

@@ -450,7 +450,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#888",
     marginTop: 2,
-    textAlign: "right",
   },
   infoDetailsRow: {
     flexDirection: "row-reverse",
@@ -464,7 +463,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     flexDirection: "row",
     alignItems: "center",
-    textAlign: "right",
   },
   logo: {
     width: 64,
@@ -489,7 +487,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     flexDirection: "row",
     alignItems: "center",
-    textAlign: "right",
   },
   imageWrapper: {
     width: "100%",

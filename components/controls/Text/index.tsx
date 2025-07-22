@@ -5,7 +5,8 @@ import {
   PixelRatio,
   Dimensions,
   TextStyle,
-} from 'react-native';
+  Platform,
+  } from 'react-native';
 import { getCurrentLang } from '../../../translations/i18n';
 import themeStyle from '../../../styles/theme.style';
 
@@ -30,7 +31,7 @@ const Text = ({ children, style = {}, type, numberOfLines = null }: TProps) => {
   const {
     color = themeStyle.TEXT_PRIMARY_COLOR,
     fontFamily = getCurrentLang() === 'ar' ? 'ar-SemiBold' : 'he-SemiBold',
-    textAlign = 'right',
+    textAlign = Platform.OS === 'ios' ? 'right' : 'left',
     fontSize = themeStyle.FONT_SIZE_SM,
     ...rest
   } = flatStyle;

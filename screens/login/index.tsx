@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   DeviceEventEmitter,
   Dimensions,
+  Platform,
 } from "react-native";
 import InputText from "../../components/controls/input";
 import Button from "../../components/controls/button/button";
@@ -180,7 +181,7 @@ const LoginScreen = () => {
         <View style={{ width: "90%", height: "50%", marginTop: 40, alignSelf: "center" }}>
           <KeyboardAvoidingView
             keyboardVerticalOffset={100}
-            behavior="position"
+            behavior={Platform.OS === "ios" ? "position" : "position"}
             style={{ flex: 1 }}
           >
             <View style={styles.inputsContainer}>
@@ -230,29 +231,26 @@ const LoginScreen = () => {
                 )}
               </View>
             </View>
+            {/* Move the Button here so it is inside KeyboardAvoidingView */}
+            <View
+              style={{
+                width: "100%",
+                paddingHorizontal: 10,
+                marginTop: 70,
+                // Remove absolute positioning
+              }}
+            >
+              <Button
+                text={t("approve")}
+                fontSize={20}
+                onClickFn={() => authinticate(phoneNumber)}
+                isLoading={isLoading}
+                disabled={isLoading}
+              />
+            </View>
           </KeyboardAvoidingView>
         </View>
       </TouchableWithoutFeedback>
-      <View
-        style={{
-          width: "100%",
-          paddingHorizontal: 10,
-          marginTop: 70,
-          position: "absolute",
-          bottom: "10%",
-          left: 0,
-          right: 0,
-        }}
-      >
-        <Button
-          text={t("approve")}
-          fontSize={20}
-          onClickFn={() => authinticate(phoneNumber)}
-          isLoading={isLoading}
-          disabled={isLoading}
-        />
-      </View>
-      {/* </ImageBackground> */}
       <ConfirmActiondDialog
         handleAnswer={handleConfirmActionAnswer}
         isOpen={isOpenConfirmActiondDialog}

@@ -123,7 +123,7 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
         </View>
       )}
       {isCoomingSoon && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.SECONDARY_COLOR, paddingHorizontal: 10, paddingVertical: 2, borderRadius: 50, flexDirection:"row",alignItems:"center", justifyContent:"center"}}>
-        <Text style={[styles.freeDeliveryText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("coming-soon")}</Text>
+        <Text style={[styles.isComingSoonText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("coming-soon")}</Text>
       </View>}
       {isBusy && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 2, borderRadius: 50}}>
         <Text style={[styles.storeStatusText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("store-busy")}</Text>
@@ -309,6 +309,11 @@ const styles = StyleSheet.create({
   freeDeliveryText: {
     fontSize: themeStyle.FONT_SIZE_SM,
     color: themeStyle.SECONDARY_COLOR,
+    marginBottom: 2,
+  },
+  isComingSoonText: {
+    fontSize: themeStyle.FONT_SIZE_SM,
+    color: themeStyle.PRIMARY_COLOR,
     marginBottom: 2,
   },
 });

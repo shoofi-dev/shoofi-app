@@ -250,7 +250,6 @@ const styles = StyleSheet.create({
     fontSize: themeStyle.FONT_SIZE_LG,
     fontWeight: "bold",
     color: themeStyle.GRAY_900,
-    textAlign: "left",
     marginBottom: 4,
     fontFamily: `${getCurrentLang()}-Bold`,
 
@@ -258,7 +257,6 @@ const styles = StyleSheet.create({
   categoryDescription: {
     fontSize: 14,
     color: themeStyle.GRAY_600,
-    textAlign: "right",
   },
   productsContainer: {},
   modalContainer: {
