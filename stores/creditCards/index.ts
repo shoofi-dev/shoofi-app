@@ -12,6 +12,8 @@ export interface CreditCard {
   isActive: boolean;
   created: string;
   updated: string;
+  id: string;
+  cvv: string;
 }
 
 class CreditCardsStore {
@@ -54,11 +56,13 @@ class CreditCardsStore {
     holderName: string;
     isDefault?: boolean;
     cvv?: string;
+    id?: string;
   }): Promise<string> {
     this.loading = true;
     this.error = null;
 
     try {
+      console.log("creditCardData", creditCardData);
       const response: any = await axiosInstance.post('/credit-cards', creditCardData);
       
       // Refresh the list

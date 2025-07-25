@@ -28,6 +28,8 @@ interface PaymentCreditCardData {
   last4Digits: string;
   ccType: string;
   holderName: string;
+  id: string;
+  cvv: string;
 }
 
 export type TProps = {
@@ -68,6 +70,8 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
           last4Digits: defaultCard.last4Digits,
           ccType: defaultCard.ccType,
           holderName: defaultCard.holderName || '',
+          id: defaultCard.id,
+          cvv: defaultCard.cvv,
         });
         // Pass payment data to parent component
         if (onPaymentDataChange) {
@@ -77,7 +81,8 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
             ccType: defaultCard.ccType,
             holderName: defaultCard.holderName || '',
             cvv: defaultCard.cvv,
-          });
+            id: defaultCard.id,
+          });   
         }
         onChange(PAYMENT_METHODS.creditCard);
 

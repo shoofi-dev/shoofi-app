@@ -74,9 +74,9 @@ const CheckoutScreen = ({ route }) => {
   } = shoofiAdminStore;
 
   useEffect(()=>{
-    cartStore.getShippingMethod().then((shippingMethodTmp)=>{
-      setShippingMethod(shippingMethodTmp)
-    })
+    // cartStore.getShippingMethod().then((shippingMethodTmp)=>{
+    //   setShippingMethod(shippingMethodTmp)
+    // })
   }, [])
 
   useEffect(() => {
@@ -266,7 +266,6 @@ const CheckoutScreen = ({ route }) => {
     
     isCheckoutInProgress.current = true;
     setIsLoadingOrderSent(true);
-    setIsProcessingModalOpen(true); // Show processing modal
 
     try {
       const isCheckoutValidRes = await isCheckoutValid({
@@ -276,7 +275,6 @@ const CheckoutScreen = ({ route }) => {
         place,
         paymentMethod: paymentMthod,
       });
-
       if (!isCheckoutValidRes) {
         //todo: show error message
         setIsLoadingOrderSent(false);
@@ -284,6 +282,7 @@ const CheckoutScreen = ({ route }) => {
         setIsProcessingModalOpen(false); // Hide processing modal
         return;
       }
+      setIsProcessingModalOpen(true); // Show processing modal
 
     // if (!isShippingMethodAgrredValue) {
     //   isShippingMethodAgrredCheck();

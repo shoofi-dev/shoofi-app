@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native-paper";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
-import { ShippingMethodPick } from "../../components/address/shipping-method-pick";
+import { ShippingMethodPickStatic } from "../../components/address/shipping-method-pick/shipping-method-static";
 
 import { getCurrentLang } from "../../translations/i18n";
 import BackButton from "../../components/back-button";
@@ -323,7 +323,7 @@ const MenuScreen = () => {
       >
         <StoreHeaderCard store={storeDataStore.storeData} />
         <View style={styles.shippingPickerContainer}>
-          <ShippingMethodPick
+          <ShippingMethodPickStatic
             onChange={handleShippingMethodChange}
             shippingMethodValue={cartStore.shippingMethod}
             isDeliverySupport={availableDrivers?.available && shoofiAdminStore.storeData?.delivery_support}

@@ -22,6 +22,7 @@ import Text from "../controls/Text";
 import { useNavigation } from "@react-navigation/native";
 import themeStyle from "../../styles/theme.style";
 import AddressModal from "./AddressModal";
+import { ShippingMethodPickSquare } from "./shipping-method-pick/method-square";
 
 export type TProps = {
   onShippingMethodChangeFN: any;
@@ -68,8 +69,15 @@ export const AddressCMP = observer(({
 
   useEffect(() => {
     setDefaultAddress(addressStore.defaultAddress);
-    console.log("XXX")
-  }, []);
+    if(shippingMethod === SHIPPING_METHODS.shipping){
+      setIsAddressModalVisible(true);
+    }
+  }, [shippingMethod]);
+  useEffect(() => {
+    if(addressStore.defaultAddress){
+      setDefaultAddress(addressStore.defaultAddress);
+    }
+  }, [addressStore.defaultAddress]);
 
   useEffect(() => {
     // if (!storeDataStore.storeData || shippingMethod) return;
@@ -135,6 +143,7 @@ export const AddressCMP = observer(({
   const handleAddressChange = (addressValue) => {
     setDefaultAddress(addressValue);
     onAddressChange(addressValue);
+    setIsAddressModalVisible(false);
   };
 
   const minTakeAwayReadyTime = storeDataStore.storeData?.minReady;
@@ -153,7 +162,19 @@ export const AddressCMP = observer(({
   return (
     <View style={{}}>
       <View>
-        <ShippingMethodPick
+        {/* <ShippingMethodPick
+          onChange={onShippingMethodChange}
+          shippingMethodValue={""}
+          isDeliverySupport={availableDrivers?.available && shoofiAdminStore.storeData?.delivery_support}
+          takeAwayReadyTime={takeAwayReadyTime}
+          isTakeAwaySupport={shoofiAdminStore.storeData?.takeaway_support && storeDataStore.storeData?.takeaway_support}
+
+          deliveryTime={deliveryTime}
+          distanceKm={distanceKm}
+          driversLoading={driversLoading}
+          shippingMethod={shippingMethod}
+        /> */}
+        <ShippingMethodPickSquare
           onChange={onShippingMethodChange}
           shippingMethodValue={""}
           isDeliverySupport={availableDrivers?.available && shoofiAdminStore.storeData?.delivery_support}
@@ -210,20 +231,21 @@ export const AddressCMP = observer(({
       )}
       <Modal
         isVisible={isAddressModalVisible}
-        onBackdropPress={() => setIsAddressModalVisible(false)}
+        onBackdropPress={() => {}}
         style={{ justifyContent: 'flex-end', margin: 0, }}
         animationIn="slideInUp"
         animationOut="slideOutDown"
         backdropOpacity={0.5}
       >
         <AddressModal 
-          onClose={() => setIsAddressModalVisible(false)}
+          onClose={() =>  setIsAddressModalVisible(false)}
           onAddressSelect={(selectedAddress) => {
             setDefaultAddress(selectedAddress);
             handleAddressChange(selectedAddress);
           }}
           selectionMode={true}
           customSelectedAddress={defaultAddress}
+          isHideCloseButton={true}
         />
       </Modal>
     </View>

@@ -8,7 +8,7 @@ import BackButton from "../back-button";
 
 const screenHeight = Dimensions.get('window').height;
 
-const AddressModal = ({ onClose, onAddressSelect, selectionMode = false, customSelectedAddress }) => {
+const AddressModal = ({ onClose, onAddressSelect, selectionMode = false, customSelectedAddress, isHideCloseButton = false }) => {
     const { t } = useTranslation(); 
   return (
     <View style={styles.modalContainer}>
@@ -22,10 +22,12 @@ const AddressModal = ({ onClose, onAddressSelect, selectionMode = false, customS
           </View>
         </TouchableOpacity>
       </GlassBG> */}
-      <View style={styles.closeButton}>
-      <BackButton onClick={onClose} isDisableGoBack={true}  color={themeStyle.WHITE_COLOR} />
+      {!isHideCloseButton && (
+        <View style={styles.closeButton}>
+        <BackButton onClick={onClose} isDisableGoBack={true}  color={themeStyle.WHITE_COLOR} />
 
-      </View>
+        </View>
+      )}
       <View style={{marginTop: 25, }}>
         <View style={{marginBottom: 30, }}>
         <Text style={{fontSize: themeStyle.FONT_SIZE_XL, fontWeight: "bold", color: themeStyle.BLACK_COLOR, textAlign: "center"}}>

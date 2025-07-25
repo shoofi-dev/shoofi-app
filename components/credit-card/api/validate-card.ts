@@ -21,7 +21,7 @@ export type TValidateCardProps = {
 export type TCCDetails = {
   last4Digits: string;
   ccToken: string;
-  id?: number;
+  id?: string;
   ccType?: string;
   email?: string;
   cvv?: string;

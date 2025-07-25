@@ -161,18 +161,17 @@ const _useCheckoutValidate = () => {
   // VALIDATE SHIPPING METHOD - START
   const validateShippingMethod = async (shippingMethod) => {
     if (!shippingMethod) {
-      DeviceEventEmitter.emit(
-        DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
-        {
-          data: {
-            text: "shipping-method-required",
-            icon: "shipping_icon",
-          },
-        }
-      );
+        DeviceEventEmitter.emit(
+          DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+          {
+            data: {
+              text: "shipping-method-required",
+              icon: "shipping_icon",
+            },
+          }
+        );
       return false;
     }
-
     // Check if shipping method is supported by store
     let supportKey = "";
     let errorKey = "";
@@ -312,7 +311,6 @@ const _useCheckoutValidate = () => {
     if (!isValidPaymentMethod) {
       return false;
     }
-
 
     
     return true;
