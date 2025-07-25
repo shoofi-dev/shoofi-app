@@ -257,7 +257,7 @@ const CreditCard = ({ onSaveCard }) => {
               label={t("expiry-date")}
               onChange={() => {}}
               value={creditCardExpDate}
-              isEditable={false}
+              isEditable={Platform.OS === 'ios' ? false : true}
               color={themeStyle.TEXT_PRIMARY_COLOR}
               onClick={() => {
                 Keyboard.dismiss();

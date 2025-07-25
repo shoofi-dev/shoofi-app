@@ -446,7 +446,7 @@ class CartStore {
     }
     return axiosInstance
       .post(`${ORDER_API.CONTROLLER}/${ORDER_API.SUBMIT_ORDER_API}`, formData, {
-        headers: { "Content-Type": "multipart/form-data", appName: order.storeData?.appName },
+        headers: { "Content-Type": "multipart/form-data", "app-name": order.storeData?.appName },
       })
       .then(function (response: any) {
         // const jsonValue: any = JSON.parse(fromBase64(response.data));
