@@ -29,6 +29,7 @@ export type TCCDetails = {
 
 const validateCard = ({ cardNumber, expDate }: TValidateCardProps) => {
   const paymentCredentials = shoofiAdminStore.paymentCredentials;
+  console.log('paymentCredentials', paymentCredentials);
   const body: TPayload = {
     TerminalNumber: paymentCredentials.credentials_terminal_number,
     Password: paymentCredentials.credentials_password,

@@ -1,8 +1,10 @@
+import { cartStore } from "../stores/cart";
 import { shoofiAdminStore } from "../stores/shoofi-admin";
 import { storeDataStore } from "../stores/store";
 
 const isStoreSupportAction = async (key: string) => {
-  const selectedStoreRes = await storeDataStore.getStoreData();
+  const cartStoreData = await cartStore.getCartStoreDBName();
+  const selectedStoreRes = await storeDataStore.getStoreData(cartStoreData);
   const shoofiAdminRes = await shoofiAdminStore.getStoreData();
   switch (key) {
     case "creditcard_support":

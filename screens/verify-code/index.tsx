@@ -167,10 +167,11 @@ const VerifyCodeScreen = ({ route }) => {
               })
               .then(async (res) => {
                 setIsLoading(false);
+                await shoofiAdminStore.getStoreZCrData();
+
                 if (cartStore.getProductsCount() > 0) {
                   const routes = navigation.getState()?.routes;
                   const currentRoute = routes[routes.length - 1]?.name;
-                  await shoofiAdminStore.getStoreZCrData();
 
                   console.log("currentRoute", currentRoute);
                   if (currentRoute === "cart") {

@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     gap: 16,
     justifyContent: "space-around",
+    
   },
   optionBox: {
     backgroundColor: themeStyle.WHITE_COLOR,
@@ -216,6 +217,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
+    width: 140
   },
   optionBoxSelected: {
     borderColor: themeStyle.TEXT_PRIMARY_COLOR,

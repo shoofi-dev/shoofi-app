@@ -56,7 +56,7 @@ export default function TotalPriceCMP({
       }
       shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
     }
-  }, [shippingMethod, addressStore?.defaultAddress, storeDataStore.storeData?.location.lat, storeDataStore.storeData?.location.lng]);
+  }, [shippingMethod, addressStore?.defaultAddress, storeDataStore.storeData?.location?.lat, storeDataStore.storeData?.location?.lng]);
 
   const {
     availableDrivers,
