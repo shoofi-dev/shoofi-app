@@ -5,6 +5,8 @@ import { DeviceEventEmitter } from "react-native";
 import Constants from "expo-constants";
 import { APP_NAME } from "../../consts/shared";
 import { DIALOG_EVENTS } from "../../consts/events";
+import { errorHandlerStore } from "../../stores/error-handler";
+import moment from "moment";
 
 const general_errors_codes = ["-400", "-6", "-7", "-10", "-11", "-401"];
 const TOKEN_NOT_VALID = -12;
@@ -33,6 +35,11 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   function (error) {
+    errorHandlerStore.sendClientError({
+      error: JSON.stringify(error),
+      createdDate: moment().format(),
+      type: "axios-request-error"
+    });
     if (error?.message?.includes("Network Error")) {
       DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_INTERNET_CONNECTION_DIALOG, {
         show: true,
@@ -68,9 +75,12 @@ axiosInstance.interceptors.response.use(
     return response.data;
   },
   function (error) {
-    console.log("error", JSON.stringify(error));
+    errorHandlerStore.sendClientError({
+      error: JSON.stringify(error),
+      createdDate: moment().format(),
+      type: "axios-response-error"
+    });
     if (error?.message?.includes("Network Error")) {
-      console.log("Network Error");
       DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_INTERNET_CONNECTION_DIALOG, {
         show: true,
         isSignOut: false,

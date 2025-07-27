@@ -339,7 +339,7 @@ const CheckoutScreen = ({ route }) => {
   };
 
   const onChangeTotalPrice = (toalPriceValue) => {
-    setTotalPrice(toalPriceValue);
+    //setTotalPrice(toalPriceValue);
   };
 
   return (
@@ -398,6 +398,10 @@ const CheckoutScreen = ({ route }) => {
             shippingMethod={shippingMethod}
           />
         </Animatable.View>
+        <View style={{ marginTop: 20 }}>
+            <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} shippingMethod={shippingMethod} isCheckCoupon={true} />
+        </View>
+  
       </ScrollView>
 
       <Animatable.View

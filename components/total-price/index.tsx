@@ -17,24 +17,28 @@ export type TProps = {
   onChangeTotalPrice: any;
   hideCouponInput?: boolean;
   onCouponApplied?: (coupon: any) => void;
+  shippingMethod: any;
+  isCheckCoupon?: boolean;
 };
 export default function TotalPriceCMP({
   onChangeTotalPrice,
   hideCouponInput = false,
   onCouponApplied,
+  shippingMethod,
+  isCheckCoupon = false
 }: TProps) {
   const { t } = useTranslation();
   const { cartStore, couponsStore, storeDataStore, shoofiAdminStore, addressStore } = useContext(StoreContext);
-  const [shippingMethod, setShippingMethod] = useState(null);
+  // const [shippingMethod, setShippingMethod] = useState(null);
   const [appliedCoupon, setAppliedCoupon] = useState<CouponApplication | null>(
     null
   );
 
-  useEffect(() => {
-    cartStore.getShippingMethod().then((shippingMethodTmp) => {
-      setShippingMethod(shippingMethodTmp);
-    });
-  }, [cartStore]);
+  // useEffect(() => {
+  //   cartStore.getShippingMethod().then((shippingMethodTmp) => {
+  //     setShippingMethod(shippingMethodTmp);
+  //   });
+  // }, [cartStore]);
 
   useEffect(() => {
     if (shippingMethod !== SHIPPING_METHODS.shipping) return;
@@ -96,7 +100,8 @@ export default function TotalPriceCMP({
   // Auto-apply coupons when component loads or when total price changes
   useEffect(() => {
     const applyAutoCoupons = async () => {
-      if (totalPrice > 0 && !appliedCoupon) {
+      setAppliedCoupon(null);
+      if (totalPrice > 0 && isCheckCoupon) {
         try {
           const userId = "current-user-id"; // This should be replaced with actual user ID
           const autoCoupon = await couponsStore?.getAndApplyAutoCoupons(
@@ -109,6 +114,8 @@ export default function TotalPriceCMP({
             console.log("autoCoupon", autoCoupon);
             if(shippingMethod === SHIPPING_METHODS.shipping && autoCoupon?.coupon.type === "free_delivery"){
               setDiscount(autoCoupon.discountAmount);
+            }else{
+              setDiscount(0);
             }
             // Notify parent component about the applied coupon
             onCouponApplied?.(autoCoupon);
@@ -120,7 +127,7 @@ export default function TotalPriceCMP({
     };
 
     applyAutoCoupons();
-  }, [totalPrice, appliedCoupon, shippingMethod]);
+  }, [totalPrice, shippingMethod]);
 
   // Notify parent component when appliedCoupon changes
   useEffect(() => {

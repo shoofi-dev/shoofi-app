@@ -515,8 +515,8 @@ const CartScreen = ({ route }) => {
       
         </View>
       </View>
-      <ScrollView style={{ height: "100%", marginBottom: scale(110) }}>
-        <View style={{ ...styles.container }}>
+      <ScrollView style={{ height: "100%",  }}>
+        <View style={[{paddingBottom: scale(100)},  {...styles.container}]}>
           <View
             style={{
               marginTop: scale(20),
@@ -791,8 +791,8 @@ const CartScreen = ({ route }) => {
               );
             })}
           </View>
-          <View>
-            <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} />
+          <View style={{ height: 0 }}>
+            <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} shippingMethod={SHIPPING_METHODS.takAway} />
           </View>
         </View>
       </ScrollView>
@@ -808,8 +808,7 @@ const CartScreen = ({ route }) => {
           right: 0,
           backgroundColor: "transparent",
           flexDirection: "row",
-          borderTopStartRadius: scale(30),
-          borderTopEndRadius: scale(30),
+      
 
           alignItems: "center",
           height: scale(100),
