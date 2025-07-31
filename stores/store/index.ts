@@ -3,6 +3,7 @@ import { axiosInstance } from "../../utils/http-interceptor";
 import { STORE_API } from "../../consts/api";
 import moment from "moment";
 import { APP_NAME, APP_TYPE } from "../../consts/shared";
+import { Platform } from "react-native";
 
 class StoreDataStore {
   paymentCredentials = null;
@@ -48,7 +49,8 @@ class StoreDataStore {
       .get(`${STORE_API.IS_UPDATE_VERSION_STORE_API}`, {
         headers: {
           "app-type": APP_TYPE,
-          "app-name": APP_NAME
+          "app-name": APP_NAME,
+          "device_os": Platform.OS === "android" ? "Android" : "iOS",
         }
       })
       .then(function (response) {

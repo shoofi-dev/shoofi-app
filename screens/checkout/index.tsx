@@ -99,7 +99,7 @@ const CheckoutScreen = ({ route }) => {
       
       shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
     }
-  }, [shippingMethod, addressStore?.defaultAddress, storeDataStore.storeData?.location?.lat, storeDataStore.storeData?.location?.lng]);
+  }, [shippingMethod, addressStore?.defaultAddress, addressStore.addresses, storeDataStore.storeData?.location?.lat, storeDataStore.storeData?.location?.lng]);
 
   useEffect(() => {
     if (ordersStore.editOrderData) {

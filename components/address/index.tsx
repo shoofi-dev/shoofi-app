@@ -98,7 +98,7 @@ export const AddressCMP = observer(({
       
        shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
     }
-  }, [addressStore.defaultAddress, shippingMethod, defaultAddress, storeDataStore.storeData?.location?.lat, storeDataStore.storeData?.location?.lng]);
+  }, [addressStore.defaultAddress, addressStore.addresses, shippingMethod, defaultAddress, storeDataStore.storeData?.location?.lat, storeDataStore.storeData?.location?.lng]);
 
   const onShippingMethodChange = async (shippingMethodValue: string) => {
     onShippingMethodChangeFN(shippingMethodValue);

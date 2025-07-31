@@ -31,7 +31,7 @@ interface AddressFormProps {
 const AddressForm = observer(({ route, address, locationData, onClose }: any) => {
   const { t } = useTranslation();
 
-  const { userDetailsStore, addressStore, shoofiAdminStore } = useContext(StoreContext);
+  const { userDetailsStore, addressStore, shoofiAdminStore, storeDataStore } = useContext(StoreContext);
   const [selectedCity, setSelectedCity] = useState(null);
   const [customerId, setCustomerId] = useState<string | undefined>(undefined);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -282,7 +282,26 @@ const AddressForm = observer(({ route, address, locationData, onClose }: any) =>
               `${DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG}_HIDE`
             );
           } else {
-            await addressStore.addAddress(customerId, formData);
+            const newAddress = await addressStore.addAddress(customerId, formData);
+            
+            // Immediately trigger delivery price calculation for new addresses
+            if (newAddress && newAddress.location && newAddress.location.coordinates) {
+              const [newLng, newLat] = newAddress.location.coordinates;
+              const customerLocation = { lat: newLat, lng: newLng };
+              
+              let storeLocation = undefined;
+              if (storeDataStore.storeData?.location) {
+                const { lat: storeLat, lng: storeLng } = storeDataStore.storeData.location;
+                storeLocation = { lat: storeLat, lng: storeLng };
+              }
+              
+              console.log('AddressForm: Triggering delivery price calculation for new address:', customerLocation);
+              // Trigger delivery price calculation immediately
+              shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
+            } else {
+              console.log('AddressForm: New address data incomplete:', newAddress);
+            }
+            
             DeviceEventEmitter.emit(
               `${DIALOG_EVENTS.OPEN_NEW_ADDRESS_BASED_EVENT_DIALOG}_HIDE`
             );
