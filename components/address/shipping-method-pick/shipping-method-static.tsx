@@ -65,14 +65,10 @@ export const ShippingMethodPickStatic = ({
   const { t } = useTranslation();
   const { ordersStore } = useContext(StoreContext);
 
-  const [shippingMethodLocal, setShippingMethodLocal] = useState(
-    null
-  );
+  const [shippingMethodLocal, setShippingMethodLocal] = useState(null);
 
   useEffect(() => {
-    setShippingMethodLocal(
-      null
-    );
+    setShippingMethodLocal(null);
   }, [shippingMethod]);
 
   useEffect(() => {
@@ -139,27 +135,9 @@ export const ShippingMethodPickStatic = ({
   return (
     <View style={styles.pillContainer}>
       {/* Delivery Option */}
-      <TouchableOpacity
-        style={[
-          styles.pillOption,
-          shippingMethodLocal === SHIPPING_METHODS.shipping
-            ? styles.pillOptionSelected
-            : styles.pillOptionUnselected,
-          { borderRadius: 50 },
-        ]}
-        onPress={() => handleDeliverySelect(SHIPPING_METHODS.shipping)}
-        activeOpacity={0.8}
-        disabled={true}
-      >
-        <Text
-          style={[
-            styles.pillOptionText,
-            shippingMethodLocal === SHIPPING_METHODS.shipping &&
-              styles.pillOptionTextSelected,
-          ]}
-        >
-          {t("delivery")}
-        </Text>
+      <View style={{ flexDirection: "row", alignItems: "center", }}>
+        <Icon icon="bicycle1" size={16} color={themeStyle.GRAY_60} style={{marginRight:5}} />
+
         {isDeliverySupport && !driversLoading ? (
           deliveryTime?.min &&
           deliveryTime?.max && (
@@ -172,37 +150,19 @@ export const ShippingMethodPickStatic = ({
           <ActivityIndicator
             size="small"
             color={themeStyle.GRAY_300}
-            style={{ marginTop: 2 }}
+            style={{}}
           />
         ) : (
-          <Text style={{ color: themeStyle.GRAY_60 }}>
+          <Text style={styles.pillOptionSubtext}>
             {t("delivery-not-supported")}
           </Text>
         )}
-      </TouchableOpacity>
+      </View>
       {/* Pickup Option */}
-      <TouchableOpacity
-        style={[
-          styles.pillOption,
-          shippingMethodLocal === SHIPPING_METHODS.takAway
-            ? styles.pillOptionSelected
-            : styles.pillOptionUnselected,
-          { borderRadius: 50 },
-        ]}
-        onPress={() => handleDeliverySelect(SHIPPING_METHODS.takAway)}
-        activeOpacity={0.8}
-        disabled={true}
-
+      <View
+        style={{ marginLeft: 10, flexDirection: "row", alignItems: "center" }}
       >
-        <Text
-          style={[
-            styles.pillOptionText,
-            shippingMethodLocal === SHIPPING_METHODS.takAway &&
-              styles.pillOptionTextSelected,
-          ]}
-        >
-          {t("take-away")}
-        </Text>
+        <Icon icon="cart" size={16} color={themeStyle.GRAY_60} style={{marginRight:4}}/>
         {takeAwayReadyTime?.min && takeAwayReadyTime?.max && (
           <Text style={styles.pillOptionSubtext}>
             {isTakeAwaySupport
@@ -212,7 +172,7 @@ export const ShippingMethodPickStatic = ({
               : t("takeaway-not-supported")}
           </Text>
         )}
-      </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -220,14 +180,8 @@ export const ShippingMethodPickStatic = ({
 const styles = StyleSheet.create({
   pillContainer: {
     flexDirection: "row",
-    backgroundColor: themeStyle.GRAY_20,
-    borderRadius: 50,
     overflow: "hidden",
-    width: "100%",
     alignSelf: "center",
-    marginVertical: 8,
-    height: 55,
-    padding: 5,
   },
   pillOption: {
     flex: 1,
@@ -254,7 +208,6 @@ const styles = StyleSheet.create({
   pillOptionSubtext: {
     fontSize: themeStyle.FONT_SIZE_XS,
     color: themeStyle.GRAY_60,
-    marginTop: -2,
     textAlign: "center",
   },
 });

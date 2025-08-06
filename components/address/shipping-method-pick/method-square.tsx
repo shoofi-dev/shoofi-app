@@ -31,6 +31,7 @@ export type TProps = {
   onChange: any;
   shippingMethodValue?: any;
   isDeliverySupport?: boolean;
+  isDeliverySupportByAdmin?: boolean;
   isTakeAwaySupport?: boolean;
   deliveryDistanceText?: string;
   deliveryEtaText?: string;
@@ -53,6 +54,7 @@ export const ShippingMethodPickSquare = ({
   shippingMethodValue,
   isDeliverySupport,
   isTakeAwaySupport,
+  isDeliverySupportByAdmin,
   deliveryDistanceText,
   deliveryEtaText,
   pickupEtaText,
@@ -73,6 +75,15 @@ export const ShippingMethodPickSquare = ({
   useEffect(() => {
     setShippingMethodLocal(shippingMethod ?? shippingMethodValue ?? null);
   }, [shippingMethod, shippingMethodValue]);
+
+  // Unselect shipping method if delivery is not supported and current method is shipping
+  // useEffect(() => {
+  //   console.log("isDeliverySupport",isDeliverySupport)
+  //   if (shippingMethodLocal === SHIPPING_METHODS.shipping && !isDeliverySupport && !driversLoading) {
+  //     setShippingMethodLocal(null);
+  //     onChange(null);
+  //   }
+  // }, [isDeliverySupport, driversLoading, shippingMethodLocal]);
 
   useEffect(() => {
     if (ordersStore.editOrderData) {
@@ -106,7 +117,7 @@ export const ShippingMethodPickSquare = ({
     if (value == null) {
       return;
     }
-    if (value === SHIPPING_METHODS.shipping && !isDeliverySupport) {
+    if (value === SHIPPING_METHODS.shipping && !isDeliverySupportByAdmin) {
       setShippingMethodLocal(null);
       onChange(null);
       return;
@@ -119,7 +130,7 @@ export const ShippingMethodPickSquare = ({
     setShippingMethodLocal(value);
     onChange(value);
   };
-
+  console.log("isDeliverySupportByAdmin",isDeliverySupportByAdmin)
   return (
     <View style={styles.optionsContainer}>
       {/* Delivery Option */}
@@ -127,18 +138,18 @@ export const ShippingMethodPickSquare = ({
         style={[
           styles.optionBox,
           shippingMethodLocal === SHIPPING_METHODS.shipping && styles.optionBoxSelected,
-          !isDeliverySupport && styles.optionBoxDisabled,
+          !isDeliverySupportByAdmin && styles.optionBoxDisabled,
         ]}
         onPress={() => handleDeliverySelect(SHIPPING_METHODS.shipping)}
         activeOpacity={isDeliverySupport ? 0.8 : 1}
-        disabled={!isDeliverySupport}
+        disabled={!isDeliverySupportByAdmin}
       >
         <Icon icon="delivery" size={24} color={themeStyle.TEXT_PRIMARY_COLOR} style={{ marginBottom: 5 }}/>
         <Text
           style={[
             styles.optionText,
             shippingMethodLocal === SHIPPING_METHODS.shipping && styles.optionTextSelected,
-            !isDeliverySupport && styles.optionTextDisabled,
+            !isDeliverySupportByAdmin && styles.optionTextDisabled,
           ]}
         >
           {t("delivery")}
@@ -147,7 +158,7 @@ export const ShippingMethodPickSquare = ({
           deliveryTime?.min &&
           deliveryTime?.max && (
             <Text style={styles.optionSubtext}>
-              {deliveryTime?.min} - {deliveryTime?.max} {t("minutes")}
+              {deliveryTime?.min} - {deliveryTime?.max} {t("minutes")} 
             </Text>
           )
         ) : driversLoading ? (
@@ -220,7 +231,7 @@ const styles = StyleSheet.create({
     width: 140
   },
   optionBoxSelected: {
-    borderColor: themeStyle.TEXT_PRIMARY_COLOR,
+    borderColor: themeStyle.PRIMARY_COLOR,
     backgroundColor: themeStyle.GRAY_10,
   },
   optionBoxDisabled: {

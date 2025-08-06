@@ -41,7 +41,7 @@ const MenuScreen = () => {
   }, [lastJsonMessage]);
 
   useEffect(() => {
-    const defaultAddress = addressStore?.defaultAddress;
+    const defaultAddress = addressStore?.defaultAddress || addressStore?.systemAddress;
     if (
       defaultAddress &&
       defaultAddress.location &&

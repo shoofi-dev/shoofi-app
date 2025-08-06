@@ -6,7 +6,7 @@ import {
   I18nManager,
   ActivityIndicator,
 } from "react-native";
-import { useContext, useState, useMemo, useCallback } from "react";
+import { useContext, useState, useMemo, useCallback, useEffect } from "react";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
 import Text from "../../../components/controls/Text";
@@ -40,8 +40,21 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const [coupon, setCoupon] = useState(null);
   let { menuStore, cartStore, shoofiAdminStore, languageStore, couponsStore } =
     useContext(StoreContext);
+    console.log("couponsStore",couponsStore.activeCoupons);
+
+    useEffect(() => {
+      console.log("couponsStore",couponsStore.activeCoupons);
+      couponsStore.activeCoupons.forEach(coupon => {
+        if(coupon.applicableTo.stores.includes(storeItem.store.appName)) {
+          setCoupon(coupon);
+        }
+      });
+    }, [couponsStore.activeCoupons]);
+
+    console.log("coupon",coupon);
 
   // Memoized store selection handler
   const onStoreSelect = useCallback(async (store: any, product?: any) => {
@@ -70,7 +83,7 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   const isBusy = useMemo(() => storeItem.store.isBusy && isOpen || false, [storeItem.store.isBusy, isOpen]);
 
   const logoUri = useMemo(() => storeItem.store.storeLogo?.uri, [storeItem.store.storeLogo?.uri]);
-  const isDeliveryFree = useMemo(() => isOpen && couponsStore?.isFreeDelivery && !isBusy, [couponsStore?.isFreeDelivery, isOpen, isBusy]);
+  const isCouponAvailable = useMemo(() => isOpen && coupon && !isBusy, [coupon, isOpen, isBusy]);
   const imageUri = useMemo(() => 
     (storeItem.store?.cover_sliders &&
       storeItem.store.cover_sliders.length > 0 &&
@@ -91,6 +104,16 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   const handleProductSelect = useCallback((product) => {
     onStoreSelect(storeItem.store, product);
   }, [onStoreSelect, storeItem.store]);
+
+  const getCouponIcon = useMemo(() => {
+    if(!coupon) {
+      return null;
+    }
+    if(coupon.discountType === "delivery") {
+      return "bicycle1";
+    }
+    return "present1";
+  }, [coupon]);
 
   return (
     <TouchableOpacity
@@ -131,9 +154,9 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
       {!isOpen && !isBusy && !isCoomingSoon && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.GRAY_40, paddingHorizontal: 10, paddingVertical: 2, borderRadius: 50}}>
         <Text style={[styles.storeStatusText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("store-closed")}</Text>
       </View>}
-      {isDeliveryFree && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.PRIMARY_COLOR, paddingHorizontal: 10, paddingVertical: 2, borderRadius: 50, flexDirection:"row",alignItems:"center", justifyContent:"center"}}>
-        <Icon icon="delivery1" size={16} color={themeStyle.SECONDARY_COLOR} style={{marginRight: 5}} />
-        <Text style={[styles.freeDeliveryText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t("free_delivery")}</Text>
+      {isCouponAvailable && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.PRIMARY_COLOR, paddingHorizontal: 10, paddingVertical: 2, borderRadius: 50, flexDirection:"row",alignItems:"center", justifyContent:"center"}}>
+        <Icon icon={getCouponIcon} size={16} color={themeStyle.SECONDARY_COLOR} style={{marginRight: 5}} />
+        <Text style={[styles.freeDeliveryText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{coupon.storeTagName}</Text>
       </View>}
       {/* Card Content */}
       <View style={styles.content}>

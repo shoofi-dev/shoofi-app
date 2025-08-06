@@ -5,6 +5,7 @@ import { axiosInstance } from "../../utils/http-interceptor";
 class CouponsStore {
   selections = {};
   availableCoupons: Coupon[] = [];
+  activeCoupons: Coupon[] = [];
   appliedCoupon: CouponApplication | null = null;
   isFreeDelivery = false;
   loading = false;
@@ -15,7 +16,16 @@ class CouponsStore {
   }
 
   // Apply a coupon to an order
-  async applyCoupon(code: string, orderAmount: number, userId: string, deliveryFee?: number): Promise<CouponApplication> {
+  async applyCoupon(
+    code: string, 
+    orderAmount: number, 
+    userId: string, 
+    deliveryFee?: number,
+    storeId?: string,
+    categoryIds?: string[],
+    productIds?: string[],
+    areaIds?: string[]
+  ): Promise<CouponApplication> {
     this.loading = true;
     this.error = null;
     
@@ -24,7 +34,11 @@ class CouponsStore {
         code: code.toUpperCase(),
         orderAmount,
         userId,
-        deliveryFee: deliveryFee || 0
+        deliveryFee: deliveryFee || 0,
+        storeId,
+        categoryIds,
+        productIds,
+        areaIds
       });
 
 
@@ -69,9 +83,35 @@ class CouponsStore {
   }
 
   // Get and apply auto-apply coupons for a customer
-  async getAndApplyAutoCoupons(userId?: string, orderAmount?: number, deliveryFee?: number): Promise<CouponApplication | null> {
+  async getAndApplyAutoCoupons({
+    userId, 
+    orderAmount, 
+    deliveryFee,
+    storeId,
+    categoryIds,
+    productIds,
+    areaIds
+  }): Promise<CouponApplication | null> {
     try {
-      const response = await axiosInstance.get(`/coupons/auto-apply/${userId}?orderAmount=${orderAmount}&deliveryFee=${deliveryFee}`);
+      let url = `/coupons/auto-apply/${userId}?orderAmount=${orderAmount}&deliveryFee=${deliveryFee}`;
+        console.log("areaIds", areaIds);
+      if (storeId) {
+        url += `&storeId=${storeId}`;
+      }
+      
+      if (categoryIds && categoryIds.length > 0) {
+        url += `&categoryIds=${categoryIds.join(',')}`;
+      }
+      
+      if (productIds && productIds.length > 0) {
+        url += `&productIds=${productIds.join(',')}`;
+      }
+      
+      if (areaIds && areaIds.length > 0) {
+        url += `&areaIds=${areaIds.join(',')}`;
+      }
+      
+      const response = await axiosInstance.get(url);
       const autoApplyCoupons: Coupon[] = response.data || response;
 
       if (autoApplyCoupons.length === 0) {
@@ -128,12 +168,40 @@ class CouponsStore {
   }
 
   // Get available coupons for a user
-  async getAvailableCoupons(): Promise<Coupon[]> {
+  async getAvailableCoupons(
+    storeId?: string,
+    categoryIds?: string[],
+    productIds?: string[],
+    areaIds?: string[]
+  ): Promise<Coupon[]> {
     this.loading = true;
     this.error = null;
 
     try {
-      const response = await axiosInstance.get('/coupons/available');
+      let url = '/coupons/available';
+      const params = new URLSearchParams();
+      
+      if (storeId) {
+        params.append('storeId', storeId);
+      }
+      
+      if (categoryIds && categoryIds.length > 0) {
+        params.append('categoryIds', categoryIds.join(','));
+      }
+      
+      if (productIds && productIds.length > 0) {
+        params.append('productIds', productIds.join(','));
+      }
+      
+      if (areaIds && areaIds.length > 0) {
+        params.append('areaIds', areaIds.join(','));
+      }
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+      
+      const response = await axiosInstance.get(url);
       
       const data: any = response;
       
@@ -160,6 +228,35 @@ class CouponsStore {
       const data: any = response;
       return data;
     } catch (error) {
+      throw error;
+    }
+  }
+
+  // Get all active and valid coupons
+  async getActiveCoupons(page: number = 1, limit: number = 50, storeAppName?: string): Promise<any> {
+    this.loading = true;
+    this.error = null;
+
+    try {
+      let url = `/coupons/active?page=${page}&limit=${limit}`;
+      if (storeAppName) {
+        url += `&storeAppName=${storeAppName}`;
+      }
+      const response = await axiosInstance.get(url);
+      
+      const data: any = response;
+      
+      runInAction(() => {
+        this.activeCoupons = data.coupons;
+        this.loading = false;
+      });
+
+      return data;
+    } catch (error: any) {
+      runInAction(() => {
+        this.error = error.message;
+        this.loading = false;
+      });
       throw error;
     }
   }

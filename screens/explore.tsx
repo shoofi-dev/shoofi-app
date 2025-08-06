@@ -294,12 +294,13 @@ const ExploreScreen = () => {
   const refetchTimeoutRef = useRef(null);
   const processedEvents = useRef(new Set());
   useEffect(() => {
-    if (addressStore.defaultAddress?.location) {
-      setUserLocation(addressStore.defaultAddress.location);
+    if (addressStore.defaultAddress?.location || addressStore.systemAddress?.location) {
+      setUserLocation(addressStore.defaultAddress?.location || addressStore.systemAddress?.location);
       
       // Debounce location changes to prevent rapid API calls
       const timeoutId = setTimeout(() => {
-        const newLocation = addressStore.defaultAddress.location;
+        const newLocation = addressStore.defaultAddress?.location || addressStore.systemAddress?.location;
+        console.log("newLocation", newLocation);
         // Only update if location has actually changed
         if (JSON.stringify(lastFetchedLocation.current) !== JSON.stringify(newLocation)) {
           setDebouncedLocation(newLocation);
@@ -313,7 +314,7 @@ const ExploreScreen = () => {
       setDebouncedLocation(null);
       lastFetchedLocation.current = null;
     }
-  }, [addressStore.defaultAddress?.location]);
+  }, [addressStore.defaultAddress?.location, addressStore.systemAddress]);
 
 
 
@@ -322,6 +323,8 @@ const ExploreScreen = () => {
   
   // Create a stable location key for comparison
   const locationKey = useMemo(() => {
+    console.log("debouncedLocation", debouncedLocation);
+
     if (!debouncedLocation) return null;
     return `${debouncedLocation.lat}_${debouncedLocation.lng}`;
   }, [debouncedLocation]);
@@ -381,7 +384,7 @@ const ExploreScreen = () => {
 
   useEffect(() => {
     const getAutoCoupon = async () => {
-      await couponsStore?.getAndApplyAutoCoupons(null,null,25);
+      await couponsStore?.getActiveCoupons(1,20);
     }
     getAutoCoupon();
   }, []);

@@ -64,7 +64,7 @@ export default function RecipetNotSupportedBasedEventDialog() {
             <Button
               onClickFn={() => hideDialog(true)}
               text={t("ok")}
-              textColor={themeStyle.WHITE_COLOR}
+              textColor={themeStyle.TEXT_PRIMARY_COLOR}
               fontSize={16}
               bgColor={themeStyle.PRIMARY_COLOR}
               borderRadious={10}

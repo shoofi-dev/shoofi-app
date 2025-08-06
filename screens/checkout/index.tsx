@@ -48,9 +48,10 @@ const CheckoutScreen = ({ route }) => {
   const { selectedDate } = route.params;
 
   const { isCheckoutValid } = _useCheckoutValidate();
+  
 
   const [isLoadingOrderSent, setIsLoadingOrderSent] = useState(null);
-  const [paymentMthod, setPaymentMthod] = useState(PAYMENT_METHODS.cash);
+  const [paymentMthod, setPaymentMthod] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
   const isCheckoutInProgress = useRef(false);
 
@@ -59,6 +60,7 @@ const CheckoutScreen = ({ route }) => {
   const [addressLocationText, setAddressLocationText] = useState();
   const [place, setPlace] = useState(PLACE.current);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [itemsPrice, setItemsPrice] = useState(0);  
 
   const [editOrderData, setEditOrderData] = useState(null);
 
@@ -137,6 +139,7 @@ const CheckoutScreen = ({ route }) => {
       const discount =  shippingMethod === SHIPPING_METHODS.shipping ? couponsStore.appliedCoupon?.discountAmount || 0 : 0;
 
       const finalPrice = itemsPrice + deliveryPrice - discount;
+      setItemsPrice(itemsPrice);
       setTotalPrice(finalPrice);
     };
 
@@ -274,6 +277,8 @@ const CheckoutScreen = ({ route }) => {
         addressLocationText,
         place,
         paymentMethod: paymentMthod,
+        isAvailableDrivers: availableDrivers?.available,
+        isDeliverySupport: shoofiAdminStore.storeData?.delivery_support,
       });
       if (!isCheckoutValidRes) {
         //todo: show error message
@@ -315,6 +320,7 @@ const CheckoutScreen = ({ route }) => {
       paymentMthod,
       shippingMethod,
       totalPrice,
+      itemsPrice,
       orderDate: selectedDate,
       editOrderData: ordersStore.editOrderData,
       address: addressLocation,
@@ -357,9 +363,11 @@ const CheckoutScreen = ({ route }) => {
         </Text>
       </View>
       <ScrollView
-        style={{ marginHorizontal: 20 }}
+        style={{ marginHorizontal: 20, }}
         keyboardShouldPersistTaps="handled"
       >
+        <View style={{height: "100%", paddingBottom: 100}}>
+
         {storeDataStore.storeData?.isOrderLaterSupport && (
           <Animatable.View
             animation="fadeInDown"
@@ -398,10 +406,11 @@ const CheckoutScreen = ({ route }) => {
             shippingMethod={shippingMethod}
           />
         </Animatable.View>
-        <View style={{ marginTop: 20 }}>
-            <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} shippingMethod={shippingMethod} isCheckCoupon={true} />
+        <View style={{ marginTop: 10 }}>
+            <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} shippingMethod={shippingMethod} isCheckCoupon={true} appName={storeDataStore.storeData?.appName}  />
         </View>
-  
+        </View>
+
       </ScrollView>
 
       <Animatable.View
@@ -426,9 +435,9 @@ const CheckoutScreen = ({ route }) => {
         <View style={{ width: "90%", alignSelf: "center" }}>
           <Button
             onClickFn={() => handleCheckout()}
-            disabled={isLoadingOrderSent}
+            disabled={isLoadingOrderSent || driversLoading}
             text={t("send-order")}
-            isLoading={isLoadingOrderSent}
+            isLoading={isLoadingOrderSent || driversLoading}
 
             icon="kupa"
             iconSize={themeStyle.FONT_SIZE_LG}

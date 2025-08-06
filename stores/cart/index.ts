@@ -358,7 +358,7 @@ class CartStore {
   };
 
   getShippingPrice = (order: any) => {
-    return order.shippingPrice > 0 ? order.shippingPrice - (order.appliedCoupon?.coupon?.type === "free_delivery" ? order.appliedCoupon.discountAmount :  0) : 0
+    return  order.shippingPrice;
   }
 
   getCartData = async (order: any) => {
@@ -386,7 +386,7 @@ class CartStore {
       customerId: order.customerId,
       orderType: order.orderType,
       shippingPrice: order.shippingPrice,
-      orderPrice: order.totalPrice - this.getShippingPrice(order),
+      orderPrice: order.itemsPrice,
       appliedCoupon: order.appliedCoupon,
     };
 

@@ -4,7 +4,7 @@ import { PAYMENT_METHODS, PLACE, SHIPPING_METHODS } from "../../consts/shared";
 import { useContext, useEffect, useState } from "react";
 import isStoreSupportAction from "../../helpers/is-store-support-action";
 import theme from "../../styles/theme.style";
-import { PaymentMethodMethodPick } from "./payment-method-pick";
+import { PaymentMethodPickSquare } from "./payment-method-pick/payment-method-square";
 import { DIALOG_EVENTS } from "../../consts/events";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TCCDetails } from "../credit-card/api/validate-card";
@@ -43,7 +43,7 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { userDetailsStore } = useContext(StoreContext);
-  const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS.cash);
+  const [paymentMethod, setPaymentMethod] = useState(null);
   const [ccData, setCCData] = useState<PaymentCreditCardData | undefined>();
   const [isLoadingCreditCards, setIsLoadingCreditCards] = useState(false);
   const [isCreditCardModalOpen, setIsCreditCardModalOpen] = useState(false);
@@ -184,7 +184,7 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
 
   return (
     <View style={{}}>
-      <PaymentMethodMethodPick
+      <PaymentMethodPickSquare
         onChange={onPaymentMethodChange}
         paymentMethodValue={paymentMethod}
         isLoadingCreditCards={isLoadingCreditCards}

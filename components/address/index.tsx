@@ -1,9 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import Modal from "react-native-modal";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
@@ -33,136 +29,220 @@ export type TProps = {
   shippingMethod: any;
 };
 
-export const AddressCMP = observer(({
-  onShippingMethodChangeFN,
-  onGeoAddressChange,
-  onTextAddressChange,  
-  onAddressChange,
-  onPlaceChangeFN,
-  shippingMethod,
-}: TProps) => {
-  const { t } = useTranslation();
-  const navigation = useNavigation();
-  const { storeDataStore, addressStore, shoofiAdminStore } = useContext(StoreContext);
-  const {
-    availableDrivers,
-    availableDriversLoading: driversLoading,
-    availableDriversError: driversError,
-    customerLocation,
-  } = shoofiAdminStore;
-  const [defaultAddress, setDefaultAddress] = useState(null);
-  const [place, setPlace] = useState(PLACE.current);
-  const [textAddress, setTextAddress] = useState("");
-  const [location, setLocation] = useState(null);
-  const [region, setRegion] = useState(null);
-  const [address, setAddress] = useState(null);
-  const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
-    useState(false);
+export const AddressCMP = observer(
+  ({
+    onShippingMethodChangeFN,
+    onGeoAddressChange,
+    onTextAddressChange,
+    onAddressChange,
+    onPlaceChangeFN,
+    shippingMethod,
+  }: TProps) => {
+    const { t } = useTranslation();
+    const navigation = useNavigation();
+    const { storeDataStore, addressStore, shoofiAdminStore } =
+      useContext(StoreContext);
+    const {
+      availableDrivers,
+      availableDriversLoading: driversLoading,
+      availableDriversError: driversError,
+      customerLocation,
+    } = shoofiAdminStore;
+    const [defaultAddress, setDefaultAddress] = useState(null);
+    const [place, setPlace] = useState(PLACE.current);
+    const [textAddress, setTextAddress] = useState("");
+    const [location, setLocation] = useState(null);
+    const [region, setRegion] = useState(null);
+    const [address, setAddress] = useState(null);
+    const [isOpenConfirmActiondDialog, setIsOpenConfirmActiondDialog] =
+      useState(false);
 
-  const [recipetSupportText, setRecipetSupportText] = useState({
-    text: "",
-    icon: null,
-  });
-  const [isOpenRecipetNotSupportedDialog, setIOpenRecipetNotSupportedDialog] =
-    useState(false);
-  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
+    const [recipetSupportText, setRecipetSupportText] = useState({
+      text: "",
+      icon: null,
+    });
+    const [isOpenRecipetNotSupportedDialog, setIOpenRecipetNotSupportedDialog] =
+      useState(false);
+    const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
 
-  useEffect(() => {
-    setDefaultAddress(addressStore.defaultAddress);
-    if(shippingMethod === SHIPPING_METHODS.shipping){
-      setIsAddressModalVisible(true);
-    }
-  }, [shippingMethod]);
-  useEffect(() => {
-    if(addressStore.defaultAddress){
+    useEffect(() => {
       setDefaultAddress(addressStore.defaultAddress);
-    }
-  }, [addressStore.defaultAddress]);
-
-  useEffect(() => {
-    // if (!storeDataStore.storeData || shippingMethod) return;
-    const defaultAddressTmp = defaultAddress || addressStore.defaultAddress;
-    if (
-      defaultAddressTmp &&
-      defaultAddressTmp.location &&
-      defaultAddressTmp.location.coordinates
-    ) {
-      const [lng, lat] = defaultAddressTmp?.location.coordinates;
-      const customerLocation = { lat, lng };
-      
-      let storeLocation = undefined;
-      if (storeDataStore.storeData?.location) {
-        const { lat: storeLat, lng: storeLng } = storeDataStore.storeData.location;
-        storeLocation = { lat: storeLat, lng: storeLng };
+      if (shippingMethod === SHIPPING_METHODS.shipping) {
+        setIsAddressModalVisible(true);
       }
-      
-       shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
-    }
-  }, [addressStore.defaultAddress, addressStore.addresses, shippingMethod, defaultAddress, storeDataStore.storeData?.location?.lat, storeDataStore.storeData?.location?.lng]);
+    }, [shippingMethod]);
+    useEffect(() => {
+      if (addressStore.defaultAddress) {
+        setDefaultAddress(addressStore.defaultAddress);
+      }
+    }, [addressStore.defaultAddress]);
 
-  const onShippingMethodChange = async (shippingMethodValue: string) => {
-    onShippingMethodChangeFN(shippingMethodValue);
-  };
+    const initCheckAvailableDrivers = async () => {
+      const defaultAddressTmp = shoofiAdminStore.storeData?.systemAddress;
+      console.log("defaultAddressTmp", defaultAddressTmp);
 
-  const onPlaceChange = (placeValue) => {
-    setPlace(placeValue);
-    onPlaceChangeFN(placeValue);
-  };
+      if (
+        defaultAddressTmp &&
+        defaultAddressTmp.location &&
+        defaultAddressTmp.location.coordinates
+      ) {
+        const [lng, lat] = defaultAddressTmp?.location.coordinates;
+        const customerLocation = { lat, lng };
 
-  const onChangeTextAddress = (addressObj) => {
-    setTextAddress(addressObj ? `${addressObj.name}: ${addressObj.street || ''}${addressObj.streetNumber ? ',' + addressObj.streetNumber : ''}${addressObj.city ? ', ' + addressObj.city : ''}` : '');
-    onTextAddressChange(addressObj);
-  };
+        let storeLocation = undefined;
+        if (storeDataStore.storeData?.location) {
+          const { lat: storeLat, lng: storeLng } =
+            storeDataStore.storeData.location;
+          storeLocation = { lat: storeLat, lng: storeLng };
+        }
 
-  useEffect(() => {
-    if (defaultAddress) {
+        await shoofiAdminStore.fetchAvailableDrivers(
+          customerLocation,
+          storeLocation
+        );
+      }
+    };
+    useEffect(() => {
+      // if (!storeDataStore.storeData || shippingMethod) return;
+      console.log("adddddddxxxx", address);
+      initCheckAvailableDrivers();
+    }, []);
+
+    // useEffect(() => {
+    //   // if (!storeDataStore.storeData || shippingMethod) return;
+
+    // }, [address]);
+
+    // Check if delivery is supported when availableDrivers changes and unselect shipping method if not supported
+    // useEffect(() => {
+    //   if (shippingMethod === SHIPPING_METHODS.shipping) {
+    //     const isDeliverySupported =
+    //       availableDrivers?.available &&
+    //       shoofiAdminStore.storeData?.delivery_support;
+    //     if (!isDeliverySupported && !driversLoading) {
+    //       // Unselect shipping method if delivery is not supported
+    //       onShippingMethodChangeFN(null);
+    //     }
+    //   }
+    // }, [
+    //   availableDrivers?.available,
+    //   shoofiAdminStore.storeData?.delivery_support,
+    //   driversLoading,
+    //   shippingMethod,
+    // ]);
+
+    const onShippingMethodChange = async (shippingMethodValue: string) => {
+      onShippingMethodChangeFN(shippingMethodValue);
+    };
+
+    const onPlaceChange = (placeValue) => {
+      setPlace(placeValue);
+      onPlaceChangeFN(placeValue);
+    };
+
+    const onChangeTextAddress = (addressObj) => {
+      setTextAddress(
+        addressObj
+          ? `${addressObj.name}: ${addressObj.street || ""}${
+              addressObj.streetNumber ? "," + addressObj.streetNumber : ""
+            }${addressObj.city ? ", " + addressObj.city : ""}`
+          : ""
+      );
+      onTextAddressChange(addressObj);
+    };
+
+    useEffect(() => {
+      if (defaultAddress) {
+        setAddress(
+          [
+            defaultAddress.name && `${defaultAddress.name}:`,
+            defaultAddress.street,
+            defaultAddress.streetNumber &&
+              defaultAddress.street &&
+              defaultAddress.streetNumber,
+            defaultAddress.city,
+          ]
+            .filter(Boolean)
+            .join(", ")
+        );
+        onAddressChange(defaultAddress);
+      }
+    }, [defaultAddress]);
+
+    const handleConfirmActionAnswer = () => {
+      setIsOpenConfirmActiondDialog(false);
+    };
+
+    const handleAddressChange = async (addressValue) => {
+      // setDefaultAddress(addressValue);
       setAddress(
         [
-          defaultAddress.name && `${defaultAddress.name}:`,
-          defaultAddress.street,
-          defaultAddress.streetNumber && defaultAddress.street && defaultAddress.streetNumber,
-          defaultAddress.city,
+          addressValue.name && `${addressValue.name}:`,
+          addressValue.street,
+          addressValue.streetNumber &&
+            addressValue.street &&
+            addressValue.streetNumber,
+          addressValue.city,
         ]
           .filter(Boolean)
-          .join(', ')
+          .join(", ")
       );
-      onAddressChange(defaultAddress);
-    }
-  }, [defaultAddress]);
-  
-  const onGEOChange = (locationValue, regionValue) => {
-    setLocation(locationValue);
-    setRegion(regionValue);
-    onGeoAddressChange(locationValue);
-  };
 
-  const handleConfirmActionAnswer = () => {
-    setIsOpenConfirmActiondDialog(false);
-  };
+      const defaultAddressTmp = addressValue;
+      console.log("defaultAddressTmp", defaultAddressTmp);
 
-  const handleAddressChange = (addressValue) => {
-    setDefaultAddress(addressValue);
-    onAddressChange(addressValue);
-    setIsAddressModalVisible(false);
-  };
+      if (
+        defaultAddressTmp &&
+        defaultAddressTmp.location &&
+        defaultAddressTmp.location.coordinates
+      ) {
+        const [lng, lat] = defaultAddressTmp?.location.coordinates;
+        const customerLocation = { lat, lng };
 
-  const minTakeAwayReadyTime = storeDataStore.storeData?.minReady;
-  const maxTakeAwayReadyTime = storeDataStore.storeData?.maxReady;
-  const takeAwayReadyTime = {
-    min: minTakeAwayReadyTime,
-    max: maxTakeAwayReadyTime,
-  };
-  const deliveryTime = {
-    min: availableDrivers?.area?.minETA,
-    max: availableDrivers?.area?.maxETA,
-  };
-  const distanceKm = availableDrivers?.distanceKm;
-  console.log("address", defaultAddress)
+        let storeLocation = undefined;
+        if (storeDataStore.storeData?.location) {
+          const { lat: storeLat, lng: storeLng } =
+            storeDataStore.storeData.location;
+          storeLocation = { lat: storeLat, lng: storeLng };
+        }
 
-  return (
-    <View style={{}}>
-      <View>
-        {/* <ShippingMethodPick
+        await shoofiAdminStore.fetchAvailableDrivers(
+          customerLocation,
+          storeLocation
+        );
+      }
+      onAddressChange(addressValue);
+      setIsAddressModalVisible(false);
+
+      // Check if delivery is supported for the new address and unselect shipping method if not supported
+      // if (shippingMethod === SHIPPING_METHODS.shipping) {
+      //   const isDeliverySupported =
+      //     availableDrivers?.available &&
+      //     shoofiAdminStore.storeData?.delivery_support;
+      //   if (!isDeliverySupported && !driversLoading) {
+      //     // Unselect shipping method if delivery is not supported
+      //     onShippingMethodChangeFN(null);
+      //   }
+      // }
+    };
+
+    const minTakeAwayReadyTime = storeDataStore.storeData?.minReady;
+    const maxTakeAwayReadyTime = storeDataStore.storeData?.maxReady;
+    const takeAwayReadyTime = {
+      min: minTakeAwayReadyTime,
+      max: maxTakeAwayReadyTime,
+    };
+    const deliveryTime = {
+      min: availableDrivers?.area?.minETA,
+      max: availableDrivers?.area?.maxETA,
+    };
+    const distanceKm = availableDrivers?.distanceKm;
+    console.log("address", defaultAddress);
+
+    return (
+      <View style={{}}>
+        <View>
+          {/* <ShippingMethodPick
           onChange={onShippingMethodChange}
           shippingMethodValue={""}
           isDeliverySupport={availableDrivers?.available && shoofiAdminStore.storeData?.delivery_support}
@@ -174,99 +254,129 @@ export const AddressCMP = observer(({
           driversLoading={driversLoading}
           shippingMethod={shippingMethod}
         /> */}
-        <ShippingMethodPickSquare
-          onChange={onShippingMethodChange}
-          shippingMethodValue={""}
-          isDeliverySupport={availableDrivers?.available && shoofiAdminStore.storeData?.delivery_support}
-          takeAwayReadyTime={takeAwayReadyTime}
-          isTakeAwaySupport={shoofiAdminStore.storeData?.takeaway_support && storeDataStore.storeData?.takeaway_support}
+          <ShippingMethodPickSquare
+            onChange={onShippingMethodChange}
+            shippingMethodValue={""}
+            isDeliverySupport={
+              availableDrivers?.available &&
+              shoofiAdminStore.storeData?.delivery_support
+            }
+            isDeliverySupportByAdmin={shoofiAdminStore.storeData?.delivery_support}
+            takeAwayReadyTime={takeAwayReadyTime}
+            isTakeAwaySupport={
+              shoofiAdminStore.storeData?.takeaway_support &&
+              storeDataStore.storeData?.takeaway_support
+            }
+            deliveryTime={deliveryTime}
+            distanceKm={distanceKm}
+            driversLoading={driversLoading}
+            shippingMethod={shippingMethod}
+          />
+        </View>
 
-          deliveryTime={deliveryTime}
-          distanceKm={distanceKm}
-          driversLoading={driversLoading}
-          shippingMethod={shippingMethod}
-        />
-      </View>
-      
-      {shippingMethod === SHIPPING_METHODS.shipping && (
-        <View style={{ alignItems: "center" }}>
-          <Animatable.View
-            animation="fadeInLeft"
-            duration={animationDuration}
-            style={{
-              marginTop: 10,
-              width: "100%",
-              alignItems: "center",
-            }}
-          >
-            {address && (
-              <TouchableOpacity 
-                style={styles.defaultAddressBar} 
+        {shippingMethod === SHIPPING_METHODS.shipping && (
+          <View style={{ alignItems: "center" }}>
+            <Animatable.View
+              animation="fadeInLeft"
+              duration={animationDuration}
+              style={{
+                marginTop: 10,
+                width: "100%",
+                alignItems: "center",
+              }}
+            >
+              {!availableDrivers?.available && (
+                <View style={{ width: "100%", paddingBottom: 2 }}>
+                  <Text style={{ color: themeStyle.ERROR_COLOR }}>
+                    {t("change-address")}
+                  </Text>
+                </View>
+              )}
+              <TouchableOpacity
+                style={[
+                  styles.defaultAddressBar,
+                  {
+                    borderColor: address
+                      ? themeStyle.GRAY_10
+                      : themeStyle.ERROR_COLOR,
+                    borderWidth: address ? 0 : 1,
+                  },
+                ]}
                 onPress={() => setIsAddressModalVisible(true)}
               >
                 <View>
                   <Text style={styles.defaultAddressText}>
-                    {address}
+                    {address || t("address-required")}
                   </Text>
                 </View>
                 <View>
-                  <Icon icon="chevron" size={20} color="#888" style={{ marginLeft: 6, marginRight: 2 }} />
+                  <Icon
+                    icon="chevron"
+                    size={20}
+                    color="#888"
+                    style={{ marginLeft: 6, marginRight: 2 }}
+                  />
                 </View>
               </TouchableOpacity>
-            )}
-          </Animatable.View>
-          
-          <View style={{ width: "100%" }}>
-            <Animatable.View
-              animation="fadeInLeft"
-              duration={animationDuration}
-              style={{ width: "100%" }}
-            >
-              {customerLocation && (
-                <MapViewAddress location={customerLocation} region={region} />
-              )}
             </Animatable.View>
+
+            {address && (
+              <View style={{ width: "100%" }}>
+                <Animatable.View
+                  animation="fadeInLeft"
+                  duration={animationDuration}
+                  style={{ width: "100%" }}
+                >
+                  {customerLocation && (
+                    <MapViewAddress
+                      location={customerLocation}
+                      region={region}
+                    />
+                  )}
+                </Animatable.View>
+              </View>
+            )}
           </View>
-        </View>
-      )}
-      <Modal
-        isVisible={isAddressModalVisible}
-        onBackdropPress={() => {}}
-        style={{ justifyContent: 'flex-end', margin: 0, }}
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-        backdropOpacity={0.5}
-      >
-        <AddressModal 
-          onClose={() =>  setIsAddressModalVisible(false)}
-          onAddressSelect={(selectedAddress) => {
-            setDefaultAddress(selectedAddress);
-            handleAddressChange(selectedAddress);
-          }}
-          selectionMode={true}
-          customSelectedAddress={defaultAddress}
-          isHideCloseButton={true}
-        />
-      </Modal>
-    </View>
-  );
-});
+        )}
+        <Modal
+          isVisible={isAddressModalVisible}
+          onBackdropPress={() => {}}
+          style={{ justifyContent: "flex-end", margin: 0 }}
+          animationIn="slideInUp"
+          animationOut="slideOutDown"
+          backdropOpacity={0.5}
+        >
+          <AddressModal
+            onClose={() => setIsAddressModalVisible(false)}
+            onAddressSelect={(selectedAddress) => {
+              // setDefaultAddress(selectedAddress);
+              handleAddressChange(selectedAddress);
+            }}
+            selectionMode={true}
+            customSelectedAddress={defaultAddress}
+            isHideCloseButton={true}
+          />
+        </Modal>
+      </View>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   defaultAddressBar: {
     backgroundColor: themeStyle.GRAY_10,
     borderRadius: 8,
     marginBottom: 6,
-    width: '100%',
+    width: "100%",
     padding: 10,
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between'
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   defaultAddressText: {
     fontSize: themeStyle.FONT_SIZE_MD,
-    color: '#222',
+    color: "#222",
     flexShrink: 1,
-    textAlign: 'right',
+    textAlign: "right",
   },
 });

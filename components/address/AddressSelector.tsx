@@ -43,8 +43,7 @@ const AddressSelector = observer(({ onAddressSelect }: AddressSelectorProps) => 
     }
   }, [userDetailsStore?.userDetails?.customerId]);
 
-  const selectedAddress = addressStore.defaultAddress;
-
+  const selectedAddress = addressStore.defaultAddress || addressStore.systemAddress;
   const handleRowPress = () => setIsAddressModalVisible(true);
   
   const updateStoresBasedOnSelectedAddress = (address) => {

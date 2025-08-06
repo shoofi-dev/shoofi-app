@@ -29,28 +29,38 @@ const OrderHeader = ({ order }) => {
     Linking.openURL(uri);
   };
   const getOrderPrice = () => {
+    let displayPrice = order.orderPrice;
+    
+    // Apply coupon discount to order price if it's an order_items discount
+    if (order.appliedCoupon?.discountAmount > 0 && order.appliedCoupon.coupon?.discountType === 'order_items') {
+      displayPrice = order.orderPrice - order.appliedCoupon.discountAmount;
+    }
+    
     if (oOrder.receipt_method === SHIPPING_METHODS.shipping) {
       return (
         <View style={{ marginTop: 10, flexDirection: "row" }}>
           <Text style={styles.subTitleInfo}>{t("order-price")}: </Text>
-          <Text style={styles.priceText}>₪{order.orderPrice}</Text>
+          <Text style={styles.priceText}>₪{displayPrice}</Text>
         </View>
       );
     }
     return (
       <View style={{ marginTop: 10, flexDirection: "row" }}>
         <Text style={styles.subTitleInfo}>{t("order-price")}: </Text>
-        <Text style={styles.priceText}>₪{order.total}</Text>
+        <Text style={styles.priceText}>₪{displayPrice}</Text>
       </View>
     );
   };
 
   const getShippingPrice = () => {
     if (oOrder.receipt_method === SHIPPING_METHODS.shipping) {
-      const shippingPrice =
-        order.appliedCoupon?.discountAmount > 0
-          ? order.shippingPrice - order.appliedCoupon?.discountAmount
-          : order.shippingPrice;
+      let shippingPrice = order.shippingPrice;
+      
+      // Apply coupon discount to shipping price if it's a delivery discount
+      if (order.appliedCoupon?.discountAmount > 0 && order.appliedCoupon.coupon?.discountType === 'delivery') {
+        shippingPrice = order.shippingPrice - order.appliedCoupon.discountAmount;
+      }
+      
       return (
         <View style={{ marginTop: 10, flexDirection: "row" }}>
           <Text style={styles.subTitleInfo}>{t("delivery-price")}: </Text>

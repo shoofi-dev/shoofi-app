@@ -19,13 +19,15 @@ export type TProps = {
   onCouponApplied?: (coupon: any) => void;
   shippingMethod: any;
   isCheckCoupon?: boolean;
+  appName?: string;
 };
 export default function TotalPriceCMP({
   onChangeTotalPrice,
   hideCouponInput = false,
   onCouponApplied,
   shippingMethod,
-  isCheckCoupon = false
+  isCheckCoupon = false,
+  appName = null
 }: TProps) {
   const { t } = useTranslation();
   const { cartStore, couponsStore, storeDataStore, shoofiAdminStore, addressStore } = useContext(StoreContext);
@@ -72,7 +74,7 @@ export default function TotalPriceCMP({
   const [discount, setDiscount] = useState(0);
   const [deliveryPrice, setDeliveryPrice] = useState(0);
   const areaDeliveryPrice = availableDrivers?.area?.price;
-
+  const areaId = availableDrivers?.area?._id;
   useEffect(() => {
     getItemsPrice();
   }, [cartStore.cartItems]);
@@ -95,28 +97,38 @@ export default function TotalPriceCMP({
     driversLoading,
     discount,
     deliveryPrice,
+    appliedCoupon,
   ]);
 
   // Auto-apply coupons when component loads or when total price changes
   useEffect(() => {
+    console.log("availableDrivers?.area?.id", areaId);
+    console.log("areaDeliveryPrice", areaDeliveryPrice);
     const applyAutoCoupons = async () => {
       setAppliedCoupon(null);
-      if (totalPrice > 0 && isCheckCoupon) {
+      setDiscount(0);
+      // Calculate a base total price for coupon checking (without existing discount)
+      const baseTotalPrice = itemsPrice;
+      
+      if (baseTotalPrice > 0 && isCheckCoupon) {
         try {
           const userId = "current-user-id"; // This should be replaced with actual user ID
           const autoCoupon = await couponsStore?.getAndApplyAutoCoupons(
-            userId,
-            totalPrice,
-            deliveryPrice
+            {
+              userId,
+              orderAmount: baseTotalPrice,  
+              deliveryFee: deliveryPrice,
+              storeId: appName,
+              areaIds: shippingMethod === SHIPPING_METHODS.shipping ? [areaId] : [],
+              categoryIds: [],
+              productIds: []
+            }
           );
           if (autoCoupon) {
             setAppliedCoupon(autoCoupon);
             console.log("autoCoupon", autoCoupon);
-            if(shippingMethod === SHIPPING_METHODS.shipping && autoCoupon?.coupon.type === "free_delivery"){
-              setDiscount(autoCoupon.discountAmount);
-            }else{
-              setDiscount(0);
-            }
+            // Set discount amount for all coupon types
+            setDiscount(autoCoupon.discountAmount || 0);
             // Notify parent component about the applied coupon
             onCouponApplied?.(autoCoupon);
           }
@@ -127,7 +139,7 @@ export default function TotalPriceCMP({
     };
 
     applyAutoCoupons();
-  }, [totalPrice, shippingMethod]);
+  }, [itemsPrice, deliveryPrice, shippingMethod, isCheckCoupon,areaId]);
 
   // Notify parent component when appliedCoupon changes
   useEffect(() => {
@@ -135,13 +147,17 @@ export default function TotalPriceCMP({
   }, [appliedCoupon, onCouponApplied]);
 
   const getTotalPrice = () => {
-    // If free delivery coupon is applied, delivery price should be 0
-    const effectiveDeliveryPrice =
-      appliedCoupon?.coupon.type === "free_delivery" ? 0 : deliveryPrice;
-      console.log("deliveryPrice", deliveryPrice)
-      console.log("appliedCoupon", appliedCoupon)
-      console.log("itemsPrice", itemsPrice)
-      console.log("discount", discount)
+    // Calculate effective delivery price (0 if free delivery coupon is applied)
+    // const effectiveDeliveryPrice =
+    //   appliedCoupon?.coupon.type === "free_delivery" ? 0 : deliveryPrice;
+    
+    // console.log("deliveryPrice", deliveryPrice);
+    // console.log("effectiveDeliveryPrice", effectiveDeliveryPrice);
+    // console.log("appliedCoupon", appliedCoupon);
+    // console.log("itemsPrice", itemsPrice);
+    // console.log("discount", discount);
+    
+    // Calculate total: items + delivery - discount
     const totalPriceTmp = itemsPrice + deliveryPrice - discount;
 
     setTotalPrice(totalPriceTmp);
@@ -166,17 +182,31 @@ export default function TotalPriceCMP({
 
   const rows: PriceRow[] = [{ label: t("order-price"), value: itemsPrice }];
 
-  // Handle delivery price display with coupon logic
+  // Handle delivery price display
   if (deliveryPrice !== null) {
-
+    // const effectiveDeliveryPrice = appliedCoupon?.coupon.type === "free_delivery" ? 0 : deliveryPrice;
     rows.push({
       label: t("delivery"),
       value: deliveryPrice,
+      // isFree: appliedCoupon?.coupon.type === "free_delivery"
     });
   }
 
-  if (discount && deliveryPrice !== null) {
-    rows.push({ label: t("discount"), value: -discount });
+  // Handle coupon discount display
+  if (appliedCoupon && discount > 0) {
+    let couponLabel = t("discount");
+    
+    // Add coupon type information to the label
+   if (appliedCoupon.coupon.type === "percentage") {
+     couponLabel = `${t(appliedCoupon.coupon.name)}`;
+      } else if (appliedCoupon.coupon.type === "fixed_amount") {
+      couponLabel = `${t(appliedCoupon.coupon.name)}`;
+    }
+    
+    rows.push({ 
+      label: couponLabel, 
+      value: -discount,
+    });
   }
 
   const renderCouponInput = () => {
@@ -190,9 +220,8 @@ export default function TotalPriceCMP({
         deliveryFee={deliveryPrice}
         onCouponApplied={(couponApp) => {
           setAppliedCoupon(couponApp);
-          if(shippingMethod === SHIPPING_METHODS.shipping && couponApp?.coupon.type === "free_delivery"){
-            setDiscount(couponApp.discountAmount);
-          }
+          // Set discount amount for all coupon types
+          setDiscount(couponApp?.discountAmount || 0);
           // Notify parent component about the applied coupon
           onCouponApplied?.(couponApp);
         }}

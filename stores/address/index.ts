@@ -183,9 +183,9 @@ class AddressStore {
   }
 
   get defaultAddress() {
-    if(!this.addresses?.length){
-      return shoofiAdminStore.storeData?.systemAddress;
-    }
+    // if(!this.addresses?.length){
+    //   return this.systemAddress;
+    // }
     const defaultAddress = this.addresses?.find(addr => addr.isDefault);
     if(!defaultAddress){
       return this.addresses[0];
@@ -196,6 +196,10 @@ class AddressStore {
   getLocationSupported = async (location: { lat: number; lng: number }) => {
     const response = await axiosInstance.post('/delivery/location/supported', { location });
     return response;
+  }
+
+  get systemAddress() {
+    return shoofiAdminStore.storeData?.systemAddress;
   }
   
 }

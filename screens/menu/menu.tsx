@@ -19,16 +19,18 @@ import { ActivityIndicator } from "react-native-paper";
 import CategoryList from "./components/category/category-list";
 import StoreHeaderCard from "./components/StoreHeaderCard";
 import { ShippingMethodPickStatic } from "../../components/address/shipping-method-pick/shipping-method-static";
-
+import CouponCarousel from "../../components/shared/CouponCarousel";
 import { getCurrentLang } from "../../translations/i18n";
 import BackButton from "../../components/back-button";
 import Text from "../../components/controls/Text";
 import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
 import { APP_NAME } from "../../consts/shared";
-const HEADER_HEIGHT = 370;
-const SHIPPING_PICKER_CONTAINER_HEIGHT = 60;
+const HEADER_HEIGHT = 290;
+const COUPON_CONTAINER_HEIGHT = 90;
 const STICKY_HEADER_HEIGHT = 90;
-const SCROLLABLE_PART_HEIGHT = HEADER_HEIGHT + SHIPPING_PICKER_CONTAINER_HEIGHT;
+// Calculate dynamic heights based on active coupons
+const getCouponContainerHeight = (activeCoupons) => activeCoupons.length > 0 ? COUPON_CONTAINER_HEIGHT : 0;
+const getScrollablePartHeight = (activeCoupons) => HEADER_HEIGHT + getCouponContainerHeight(activeCoupons);
 const categoryHeaderHeight = 35;
 const productHeight = 140;
 const sectionMargin = 28;
@@ -41,7 +43,7 @@ const MenuScreen = () => {
   const categoryUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const manualSelectionRef = useRef<boolean>(false);
 
-  const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore, websocket, addressStore } =
+  const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore, websocket, addressStore, couponsStore } =
     useContext(StoreContext);
   const { availableDrivers, availableDriversLoading: driversLoading } = shoofiAdminStore;
   const { isConnected, connectionStatus, lastMessage } = websocket;
@@ -60,7 +62,7 @@ const MenuScreen = () => {
        },[lastMessage])
 
        useEffect(() => {
-         const defaultAddress = addressStore?.defaultAddress;
+         const defaultAddress = addressStore?.defaultAddress || addressStore?.systemAddress;
          if (
            defaultAddress &&
            defaultAddress.location &&
@@ -83,6 +85,7 @@ const MenuScreen = () => {
   const [categoryList, setCategoryList] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [cartCount, setCartCount] = useState(0);
+  const [activeCoupons, setActiveCoupons] = useState([]);
 
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
@@ -135,9 +138,28 @@ const MenuScreen = () => {
     await menuStore.getMenu();
     await storeDataStore.getStoreData();
   }
+
+  const fetchActiveCoupons = async () => {
+    try {
+      const storeAppName = storeDataStore.storeData?.appName;
+      const response = await couponsStore.getActiveCoupons(1, 20, storeAppName); // Get first 20 active coupons
+      if (response && response.coupons) {
+        setActiveCoupons(response.coupons);
+      }
+    } catch (error) {
+      console.error('Failed to fetch active coupons:', error);
+    }
+  };
+
   useEffect(() => {
     initMenu();
   }, []);
+
+  useEffect(() => {
+    if (storeDataStore.storeData?.appName) {
+      fetchActiveCoupons();
+    }
+  }, [storeDataStore.storeData?.appName]);
 
   const handleCategorySelect = useCallback(
     (cat) => {
@@ -161,7 +183,7 @@ const MenuScreen = () => {
             }
           }
           
-          const finalOffset = SCROLLABLE_PART_HEIGHT + offset + 15 - STICKY_HEADER_HEIGHT;
+          const finalOffset = getScrollablePartHeight(activeCoupons) + offset + 15 - STICKY_HEADER_HEIGHT;
           
           scrollViewRef.current?.scrollTo({
             y: finalOffset,
@@ -202,7 +224,7 @@ const MenuScreen = () => {
     scrollY.setValue(event.nativeEvent.contentOffset.y);
 
     const scrollOffset = event.nativeEvent.contentOffset.y;
-    const adjustedOffset = scrollOffset - SCROLLABLE_PART_HEIGHT;
+    const adjustedOffset = scrollOffset - getScrollablePartHeight(activeCoupons);
 
     if (adjustedOffset < 0) return;
 
@@ -232,15 +254,15 @@ const MenuScreen = () => {
   };
 
   const headerTranslateY = scrollY.interpolate({
-    inputRange: [0, SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT],
-    outputRange: [0, -(SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT)],
+    inputRange: [0, getScrollablePartHeight(activeCoupons) - STICKY_HEADER_HEIGHT],
+    outputRange: [0, -(getScrollablePartHeight(activeCoupons) - STICKY_HEADER_HEIGHT)],
     extrapolate: Extrapolate.CLAMP,
   });
 
   const stickyCategoryHeaderOpacity = scrollY.interpolate({
     inputRange: [
-      SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT - 1,
-      SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT,
+      getScrollablePartHeight(activeCoupons) - STICKY_HEADER_HEIGHT - 1,
+      getScrollablePartHeight(activeCoupons) - STICKY_HEADER_HEIGHT,
     ],
     outputRange: [0, 1],
     extrapolate: Extrapolate.CLAMP,
@@ -248,8 +270,8 @@ const MenuScreen = () => {
 
   const stickyHeaderZIndex = scrollY.interpolate({
     inputRange: [
-      SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT - 1,
-      SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT,
+      getScrollablePartHeight(activeCoupons) - STICKY_HEADER_HEIGHT - 1,
+      getScrollablePartHeight(activeCoupons) - STICKY_HEADER_HEIGHT,
     ],
     outputRange: [0, 100], // zIndex 0 when opacity 0, 100 when opacity 1
     extrapolate: Extrapolate.CLAMP,
@@ -292,14 +314,14 @@ const MenuScreen = () => {
       <StorePlaceHolder />
     );
   }
-
+console.log("storeDataStore.storeData?.ads", storeDataStore.storeData?.ads)
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <Animated.ScrollView
         ref={scrollViewRef}
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingTop: SCROLLABLE_PART_HEIGHT,
+          paddingTop: getScrollablePartHeight(activeCoupons),
           paddingBottom: 80,
         }}
         scrollEventThrottle={16}
@@ -318,28 +340,24 @@ const MenuScreen = () => {
       <Animated.View
         style={[
           styles.header,
-          { transform: [{ translateY: headerTranslateY }] },
+          { 
+            height: getScrollablePartHeight(activeCoupons),
+            transform: [{ translateY: headerTranslateY }] 
+          },
         ]}
       >
-        <StoreHeaderCard store={storeDataStore.storeData} />
-        <View style={styles.shippingPickerContainer}>
-          <ShippingMethodPickStatic
-            onChange={handleShippingMethodChange}
-            shippingMethodValue={cartStore.shippingMethod}
-            isDeliverySupport={availableDrivers?.available && shoofiAdminStore.storeData?.delivery_support}
-            isTakeAwaySupport={shoofiAdminStore.storeData?.takeaway_support && storeDataStore.storeData?.takeaway_support}
-            takeAwayReadyTime={takeAwayReadyTime}
-            deliveryTime={deliveryTime}
-            distanceKm={availableDrivers?.distanceKm}
-            driversLoading={driversLoading}
-          />
-        </View>
+        <StoreHeaderCard store={storeDataStore.storeData} availableDrivers={availableDrivers} takeAwayReadyTime={takeAwayReadyTime} driversLoading={driversLoading} deliveryTime={deliveryTime}/>
+         <View style={[styles.shippingPickerContainer, { height: getCouponContainerHeight(activeCoupons) }]}>
+         <CouponCarousel coupons={activeCoupons}  />
+
+        </View> 
       </Animated.View>
 
       <Animated.View
         style={[
           styles.stickyHeader,
           {
+            top: getScrollablePartHeight(activeCoupons) - STICKY_HEADER_HEIGHT,
             opacity: stickyCategoryHeaderOpacity,
             transform: [{ translateY: headerTranslateY }],
             zIndex: stickyHeaderZIndex,
@@ -406,18 +424,14 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
     backgroundColor: themeStyle.WHITE_COLOR,
-    height: SCROLLABLE_PART_HEIGHT,
   },
   shippingPickerContainer: {
     backgroundColor: themeStyle.WHITE_COLOR,
-    height: SHIPPING_PICKER_CONTAINER_HEIGHT,
     justifyContent: "center",
-    paddingHorizontal: 10,
     marginTop: 110,
   },
   stickyHeader: {
     position: "absolute",
-    top: SCROLLABLE_PART_HEIGHT - STICKY_HEADER_HEIGHT,
     left: 0,
     right: 0,
     zIndex: 11,

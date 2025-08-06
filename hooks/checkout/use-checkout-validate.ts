@@ -15,6 +15,8 @@ export type TProps = {
   addressLocationText?: boolean;
   place?: any;
   paymentMethod?: any;
+  isAvailableDrivers?: boolean;
+  isDeliverySupport?: boolean;
 };
 
 const _useCheckoutValidate = () => {
@@ -97,19 +99,38 @@ const _useCheckoutValidate = () => {
   };
   // STORE IS CLOSE - END
 
-  const validateAdress = async (addressLocation) => {
-    return new Promise(async (resolve) => {
-      if (addressLocation) {
-        const isValidGeoRes: any = await cartStore.isValidGeo(
-          addressLocation.coords.latitude,
-          addressLocation.coords.longitude
+  const validateAdress =  (addressLocation, shippingMethod, isAvailableDrivers, isDeliverySupport) => {
+    if(shippingMethod === SHIPPING_METHODS.shipping){
+      if(!addressLocation){
+        DeviceEventEmitter.emit(
+          DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+          {
+            data: {
+              text: "address-required-modal",
+              icon: "shipping_icon",
+            },
+          }
         );
-        resolve(isValidGeoRes.data);
-      } else {
-        //setIsOpenLocationIsDisableDialog(true);
-        resolve(false);
+        return false; 
+
       }
-    });
+      if(!isAvailableDrivers){
+        DeviceEventEmitter.emit(
+          DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+          {
+            data: {
+              text: "delivery-not-available-for-this-address",
+              icon: "shipping_icon",
+            },
+          }
+        );
+        return false; 
+
+      }
+      return true;
+
+    }
+    return true;
   };
 
   // VALIDATE SHIPPING ADDRESS - START
@@ -137,7 +158,7 @@ const _useCheckoutValidate = () => {
 
     if (shippingMethod === SHIPPING_METHODS.shipping) {
       if(place === PLACE.current){
-        const isValid = await validateAdress(addressLocation);
+        const isValid = !!addressLocation;
         if (isValid) {
           return true;
         }
@@ -199,7 +220,7 @@ const _useCheckoutValidate = () => {
         );
         return false;
     }
-
+    console.log("XXXXX-3")
     if (supportKey) {
       const isSupported = await isStoreSupportAction(supportKey);
       if (!isSupported) {
@@ -286,10 +307,13 @@ const _useCheckoutValidate = () => {
     addressLocationText,
     place,
     paymentMethod,
+    isAvailableDrivers,
+    isDeliverySupport,  
   }: TProps) => {
     // 1. Validate store availability
     const storeStatus = await isStoreAvailable();
-    
+    console.log("XXXXX-2")
+
     const isCustomErrorMessage = await isErrCustomMessage(storeStatus);
     if (isCustomErrorMessage) {
       return false;
@@ -298,7 +322,7 @@ const _useCheckoutValidate = () => {
     const isStoreOpenRes = await isStoreOpen(storeStatus);
     if (!isStoreOpenRes) {
       return false;
-    }
+    }  
 
     // 2. Validate shipping method
     const isValidShippingMethod = await validateShippingMethod(shippingMethod);
@@ -306,13 +330,18 @@ const _useCheckoutValidate = () => {
       return false;
     }
 
+    // 3. Validate address
+    const isValidAddress = await validateAdress(addressLocation, shippingMethod, isAvailableDrivers, isDeliverySupport);
+    if (!isValidAddress) {
+      return false;
+    }
+
     // 3. Validate payment method
-    const isValidPaymentMethod = await validatePaymentMethod(paymentMethod);
+    const isValidPaymentMethod = await validatePaymentMethod(paymentMethod,);
     if (!isValidPaymentMethod) {
       return false;
     }
 
-    
     return true;
   };
 

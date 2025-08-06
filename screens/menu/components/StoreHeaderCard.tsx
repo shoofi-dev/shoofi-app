@@ -20,6 +20,7 @@ import BackButton from "../../../components/back-button";
 import { t } from "i18next";
 import Text from "../../../components/controls/Text";
 import { getCurrentLang } from "../../../translations/i18n";
+import { ShippingMethodPickStatic } from "../../../components/address/shipping-method-pick/shipping-method-static";
 interface StoreHeaderCardProps {
   store: any;
   onBack?: () => void;
@@ -29,6 +30,10 @@ interface StoreHeaderCardProps {
   scrollY?: any;
   onlyCarousel?: boolean;
   onlyInfoCard?: boolean;
+  availableDrivers?: any;
+  takeAwayReadyTime?: any;
+  driversLoading?: boolean;
+  deliveryTime?: any;
 }
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -42,9 +47,14 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
   scrollY,
   onlyCarousel,
   onlyInfoCard,
+  availableDrivers,
+  takeAwayReadyTime,
+  driversLoading,
+  deliveryTime,
 }) => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const { languageStore } = useContext(StoreContext);
+  const { languageStore, cartStore, shoofiAdminStore, storeDataStore } =
+    useContext(StoreContext);
   // Use store fields with fallbacks
   const storeImages =
     store?.cover_sliders?.length > 0
@@ -60,8 +70,6 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
       ? store?.descriptionAR
       : store?.descriptionHE;
   const rating = store?.rating || 4.7;
-  const deliveryTime = store?.deliveryTime || 20;
-  const deliveryPrice = store?.deliveryPrice || 10;
   const minOrder = store?.minOrder || 120;
   const closingHour = store?.end || "23:00";
 
@@ -84,15 +92,21 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
     };
   }, []);
 
+  const getStoreStatusIsOpen = () => {
+    if (store?.isBusy || !store?.isOpen) {
+      return false;
+    }
+    return true;
+  };
+
   const getStoreStatus = () => {
-    console.log("store", store?.isBusy)
     if (store?.isBusy) {
       return t("store-is-busy");
     }
     if (store?.isOpen) {
       return t("store-is-open");
     }
-  
+
     return t("store-is-closed");
   };
   const getStoreStatusColor = () => {
@@ -131,7 +145,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
       <Carousel
         loop
         width={screenWidth}
-        height={280}
+        height={200}
         data={storeImages}
         renderItem={renderCarouselItem}
         onSnapToItem={setActiveSlide}
@@ -185,7 +199,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
 
   // Default: full card
   return (
-    <View style={{ position: "relative", height: 260 }}>
+    <View style={{ position: "relative", height: 180 }}>
       {/* Animated carousel */}
       <Animated.View
         style={{
@@ -212,7 +226,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
           alignItems: "center",
         }}
       >
-        <View style={[styles.infoCard, { top: 220, zIndex: 2, height: 135 }]}>
+        <View style={[styles.infoCard, { top: 140, zIndex: 2, height: 135 }]}>
           {/* 210 (image) - 50 (overlap) */}
           <View style={styles.infoRow}>
             <TouchableOpacity style={styles.arrowBtn}>
@@ -226,7 +240,11 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               style={{ flex: 1, marginHorizontal: 8, alignItems: "flex-start" }}
             >
               <Text style={styles.storeName}>{storeName}</Text>
-              <Text style={styles.subtitle} numberOfLines={2}>{languageStore.selectedLang === "ar" ? store?.descriptionAR : store?.descriptionHE}</Text>
+              <Text style={styles.subtitle} numberOfLines={2}>
+                {languageStore.selectedLang === "ar"
+                  ? store?.descriptionAR
+                  : store?.descriptionHE}
+              </Text>
             </View>
 
             <CustomFastImage
@@ -235,34 +253,63 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               isLogo={true}
             />
           </View>
-          <View style={styles.storeStatus}>
-              <Text
-                style={[
-                  styles.storeStatusText,
-                  {
-                    color: getStoreStatusColor(),
-                  },
-                ]}
-              >
-                {getStoreStatus()}
-              </Text>
-            </View>
+
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               position: "absolute",
-    bottom: 15,
-    left: 10,
-    zIndex: 1000,
+              bottom: 15,
+              left: 10,
+              zIndex: 1000,
             }}
           >
-  
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginLeft: 70,
+                marginLeft: 0,
+              }}
+            >
+              {getStoreStatusIsOpen() ? (
+                <ShippingMethodPickStatic
+                  onChange={() => {}}
+                  shippingMethodValue={cartStore.shippingMethod}
+                  isDeliverySupport={
+                    availableDrivers?.available &&
+                    shoofiAdminStore.storeData?.delivery_support
+                  }
+                  isTakeAwaySupport={
+                    shoofiAdminStore.storeData?.takeaway_support &&
+                    storeDataStore.storeData?.takeaway_support
+                  }
+                  takeAwayReadyTime={takeAwayReadyTime}
+                  deliveryTime={deliveryTime}
+                  distanceKm={availableDrivers?.distanceKm}
+                  driversLoading={driversLoading}
+                />
+              ) : (
+                <View style={styles.storeStatus}>
+                  <Text
+                    style={[
+                      styles.storeStatusText,
+                      {
+                        color: getStoreStatusColor(),
+                      },
+                    ]}
+                  >
+                    {getStoreStatus()}
+                  </Text>
+                </View>
+              )}
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+
+                flex: 1,
+                justifyContent: "flex-end",
               }}
             >
               <View style={{ alignItems: "center", marginRight: 5 }}>
@@ -305,7 +352,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: "100%",
-    height: 280,
+    height: 200,
 
     overflow: "hidden",
     position: "relative",
@@ -374,7 +421,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: themeStyle.GRAY_900,
     textAlign: "center",
-
   },
   infoRowCentered: {
     flexDirection: "row",
@@ -444,7 +490,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "right",
     fontFamily: `${getCurrentLang()}-SemiBold`,
-
   },
   subtitle: {
     fontSize: 12,
@@ -521,14 +566,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
-    position: "absolute",
-    bottom: 10,
-    right: 10,
+  
     zIndex: 1000,
   },
   storeStatusText: {
     fontSize: themeStyle.FONT_SIZE_SM,
-
+    color: themeStyle.GRAY_60,
   },
 });
 

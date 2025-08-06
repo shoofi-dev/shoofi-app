@@ -12,6 +12,7 @@ export type TPropsCheckoutSubmit = {
   paymentMthod: any;
   shippingMethod: any;
   totalPrice: any;
+  itemsPrice: any;
   orderDate: any;
   editOrderData: any;
   address?: any;
@@ -49,6 +50,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     paymentMthod,
     shippingMethod,
     totalPrice,
+    itemsPrice,
     orderDate,
     editOrderData,
     address,
@@ -78,6 +80,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
       paymentMthod,
       shippingMethod,
       totalPrice,
+      itemsPrice,
       products: cartStore.cartItems,
       orderDate,
       orderType: ordersStore.orderType,
