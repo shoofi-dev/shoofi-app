@@ -4,7 +4,6 @@ import { observer } from "mobx-react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
-import { useSilentRefresh } from "../../hooks/use-silent-refresh";
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -175,11 +174,7 @@ const MenuScreen = () => {
   }, [menuStore, storeDataStore, fetchActiveCoupons]);
 
   // Use silent refresh hook for menu screen
-  useSilentRefresh({
-    onAppForeground: handleSilentRefresh,
-    enabled: !!storeDataStore.storeData?.appName, // Only enable when we have store data
-    minBackgroundTime: 10000, // 10 seconds minimum background time
-  });
+
 
   useEffect(() => {
     initMenu();
