@@ -44,7 +44,6 @@ export default function TotalPriceCMP({
 
   useEffect(() => {
     if (shippingMethod !== SHIPPING_METHODS.shipping) return;
-    console.log("XXX2")
 
     const defaultAddress = addressStore?.defaultAddress;
     if (
@@ -102,8 +101,6 @@ export default function TotalPriceCMP({
 
   // Auto-apply coupons when component loads or when total price changes
   useEffect(() => {
-    console.log("availableDrivers?.area?.id", areaId);
-    console.log("areaDeliveryPrice", areaDeliveryPrice);
     const applyAutoCoupons = async () => {
       setAppliedCoupon(null);
       setDiscount(0);
@@ -126,7 +123,6 @@ export default function TotalPriceCMP({
           );
           if (autoCoupon) {
             setAppliedCoupon(autoCoupon);
-            console.log("autoCoupon", autoCoupon);
             // Set discount amount for all coupon types
             setDiscount(autoCoupon.discountAmount || 0);
             // Notify parent component about the applied coupon
@@ -151,11 +147,6 @@ export default function TotalPriceCMP({
     // const effectiveDeliveryPrice =
     //   appliedCoupon?.coupon.type === "free_delivery" ? 0 : deliveryPrice;
     
-    // console.log("deliveryPrice", deliveryPrice);
-    // console.log("effectiveDeliveryPrice", effectiveDeliveryPrice);
-    // console.log("appliedCoupon", appliedCoupon);
-    // console.log("itemsPrice", itemsPrice);
-    // console.log("discount", discount);
     
     // Calculate total: items + delivery - discount
     const totalPriceTmp = itemsPrice + deliveryPrice - discount;
@@ -198,9 +189,9 @@ export default function TotalPriceCMP({
     
     // Add coupon type information to the label
    if (appliedCoupon.coupon.type === "percentage") {
-     couponLabel = `${t(appliedCoupon.coupon.name)}`;
+     couponLabel = `${t(appliedCoupon?.coupon?.name)}`;
       } else if (appliedCoupon.coupon.type === "fixed_amount") {
-      couponLabel = `${t(appliedCoupon.coupon.name)}`;
+      couponLabel = `${t(appliedCoupon?.coupon?.name)}`;
     }
     
     rows.push({ 

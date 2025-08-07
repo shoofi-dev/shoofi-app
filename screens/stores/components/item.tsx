@@ -43,10 +43,8 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
   const [coupon, setCoupon] = useState(null);
   let { menuStore, cartStore, shoofiAdminStore, languageStore, couponsStore } =
     useContext(StoreContext);
-    console.log("couponsStore",couponsStore.activeCoupons);
 
     useEffect(() => {
-      console.log("couponsStore",couponsStore.activeCoupons);
       couponsStore.activeCoupons.forEach(coupon => {
         if(coupon.applicableTo.stores.includes(storeItem.store.appName)) {
           setCoupon(coupon);
@@ -54,7 +52,6 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
       });
     }, [couponsStore.activeCoupons]);
 
-    console.log("coupon",coupon);
 
   // Memoized store selection handler
   const onStoreSelect = useCallback(async (store: any, product?: any) => {
@@ -156,7 +153,7 @@ const StoreItem = ({ storeItem, searchProducts, isExploreScreen }: TProps) => {
       </View>}
       {isCouponAvailable && <View style={{position: "absolute", top: isExploreScreen ? 100 : 170, left: 10, backgroundColor: themeStyle.PRIMARY_COLOR, paddingHorizontal: 10, paddingVertical: 2, borderRadius: 50, flexDirection:"row",alignItems:"center", justifyContent:"center"}}>
         <Icon icon={getCouponIcon} size={16} color={themeStyle.SECONDARY_COLOR} style={{marginRight: 5}} />
-        <Text style={[styles.freeDeliveryText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{coupon.storeTagName}</Text>
+        <Text style={[styles.freeDeliveryText, isExploreScreen ? {fontSize: themeStyle.FONT_SIZE_XS} : {}]}>{t(coupon?.storeTagName)}</Text>
       </View>}
       {/* Card Content */}
       <View style={styles.content}>

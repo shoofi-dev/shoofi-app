@@ -107,8 +107,8 @@ const CurrentLocationModal = () => {
   const isLocationAdjusted = latitude && longitude &&
     (Math.abs(region.latitude - latitude) > 0.0001 ||
      Math.abs(region.longitude - longitude) > 0.0001);
-console.log('region1', region);
-  return (
+
+     return (
     <Modal
       isVisible={visible}
       onBackdropPress={hideModal}

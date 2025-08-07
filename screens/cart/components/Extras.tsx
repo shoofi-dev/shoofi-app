@@ -189,7 +189,7 @@ const CartExtras = ({
               <View style={{   }}>
                 {opts.map((o) => (
                   <View>
-                    <Text style={{ textAlign: "left" }}>
+                    <Text style={{  }}>
                       {getName(o)}
                       {o.price ? ` (${o.price}+₪)` : ""}
                     </Text>

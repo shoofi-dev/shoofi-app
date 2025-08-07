@@ -136,7 +136,7 @@ export const ShippingMethodPickStatic = ({
     <View style={styles.pillContainer}>
       {/* Delivery Option */}
       <View style={{ flexDirection: "row", alignItems: "center", }}>
-        <Icon icon="bicycle1" size={16} color={themeStyle.GRAY_60} style={{marginRight:5}} />
+        <Icon icon="bicycle1" size={16}  style={{marginRight:5}} />
 
         {isDeliverySupport && !driversLoading ? (
           deliveryTime?.min &&
@@ -162,7 +162,7 @@ export const ShippingMethodPickStatic = ({
       <View
         style={{ marginLeft: 10, flexDirection: "row", alignItems: "center" }}
       >
-        <Icon icon="cart" size={16} color={themeStyle.GRAY_60} style={{marginRight:4}}/>
+        <Icon icon="cart" size={16}  style={{marginRight:4}}/>
         {takeAwayReadyTime?.min && takeAwayReadyTime?.max && (
           <Text style={styles.pillOptionSubtext}>
             {isTakeAwaySupport
@@ -207,7 +207,6 @@ const styles = StyleSheet.create({
   },
   pillOptionSubtext: {
     fontSize: themeStyle.FONT_SIZE_XS,
-    color: themeStyle.GRAY_60,
     textAlign: "center",
   },
 });

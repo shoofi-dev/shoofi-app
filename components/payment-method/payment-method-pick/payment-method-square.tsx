@@ -19,6 +19,7 @@ import themeStyle from "../../../styles/theme.style";
 import Icon from "../../icon";
 import isStoreSupportAction from "../../../helpers/is-store-support-action";
 import { DIALOG_EVENTS } from "../../../consts/events";
+import { getCurrentLang } from "../../../translations/i18n";
 
 const icons = {
   bagOff: require("../../../assets/pngs/buy-off.png"),
@@ -93,8 +94,14 @@ export const PaymentMethodPickSquare = ({
   };
 
   return (
-    <View style={styles.optionsContainer}>
+    <View >
       {/* Cash Option */}
+      <View style={{ marginBottom: 5 }}>
+          <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, color: themeStyle.TEXT_PRIMARY_COLOR,  fontFamily: `${getCurrentLang()}-Bold`}}>
+            {t("choose-payment-method")}
+          </Text>
+        </View>
+        <View style={styles.optionsContainer}>
       <TouchableOpacity
         style={[
           styles.optionBox,
@@ -151,6 +158,7 @@ export const PaymentMethodPickSquare = ({
           {t("credit-card")}
         </Text>
       </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -162,7 +170,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 8,
     gap: 16,
-    justifyContent: "space-around",
+    justifyContent: "space-between",
   },
   optionBox: {
     backgroundColor: themeStyle.WHITE_COLOR,
@@ -178,7 +186,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
-    width: 140
+    width: "45%",
+    height: 80
   },
   optionBoxSelected: {
     borderColor: themeStyle.PRIMARY_COLOR,

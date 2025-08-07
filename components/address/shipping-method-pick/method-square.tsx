@@ -19,6 +19,7 @@ import isStoreSupportAction from "../../../helpers/is-store-support-action";
 import { DIALOG_EVENTS } from "../../../consts/events";
 import { StoreContext } from "../../../stores";
 import Icon from "../../icon";
+import { getCurrentLang } from "../../../translations/i18n";
 
 const icons = {
   bagOff: require("../../../assets/pngs/buy-off.png"),
@@ -130,10 +131,15 @@ export const ShippingMethodPickSquare = ({
     setShippingMethodLocal(value);
     onChange(value);
   };
-  console.log("isDeliverySupportByAdmin",isDeliverySupportByAdmin)
   return (
-    <View style={styles.optionsContainer}>
+    <View >
       {/* Delivery Option */}
+      <View style={{ marginBottom: 5 }}>
+          <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, color: themeStyle.TEXT_PRIMARY_COLOR,  fontFamily: `${getCurrentLang()}-Bold`}}>
+            {t("choose-delivery-method")}
+          </Text>
+        </View>
+      <View style={styles.optionsContainer}>
       <TouchableOpacity
         style={[
           styles.optionBox,
@@ -144,7 +150,7 @@ export const ShippingMethodPickSquare = ({
         activeOpacity={isDeliverySupport ? 0.8 : 1}
         disabled={!isDeliverySupportByAdmin}
       >
-        <Icon icon="delivery" size={24} color={themeStyle.TEXT_PRIMARY_COLOR} style={{ marginBottom: 5 }}/>
+        <Icon icon="bicycle1" size={24} color={themeStyle.TEXT_PRIMARY_COLOR} style={{ marginBottom: 5 }}/>
         <Text
           style={[
             styles.optionText,
@@ -200,6 +206,7 @@ export const ShippingMethodPickSquare = ({
           </Text>
         )}
       </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -211,7 +218,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 8,
     gap: 16,
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     
   },
   optionBox: {
@@ -228,7 +235,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
-    width: 140
+    width: "45%",
+    height: 145
   },
   optionBoxSelected: {
     borderColor: themeStyle.PRIMARY_COLOR,

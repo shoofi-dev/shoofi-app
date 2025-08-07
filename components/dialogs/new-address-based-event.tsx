@@ -23,10 +23,6 @@ export default function NewAddressBasedEventDialog() {
   const [visible, setVisible] = useState(false);
   const [locationData, setLocationData] = useState(null);
 
-  // Debug: Track visible state changes
-  useEffect(() => {
-    console.log('NewAddressModal: visible state changed to:', visible);
-  }, [visible]);
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
@@ -50,25 +46,21 @@ export default function NewAddressBasedEventDialog() {
   // }, []);
 
   const handleLocationSelected = (data: any) => {
-    console.log('NewAddressModal: Location data received:', data);
     setLocationData(data);
     setVisible(true);
 
   };
 
   const openDialog = (data: any) => {
-    console.log('NewAddressModal: openDialog called, setting visible to true');
     setVisible(true);
   };
 
   // Test function to manually open the modal
   const testOpenDialog = () => {
-    console.log('NewAddressModal: testOpenDialog called');
     setVisible(true);
   };
 
   const hideDialog = () => {
-    console.log('NewAddressModal: hideDialog called, setting visible to false');
     setVisible(false);
     setLocationData(null);
   };

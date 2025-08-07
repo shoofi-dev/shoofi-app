@@ -102,7 +102,6 @@ class ShoofiAdminStore {
       return response;
     } catch (error) {
       console.error('Error fetching explore data:', error);
-      throw error;
     }
   };
 

@@ -226,7 +226,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
           alignItems: "center",
         }}
       >
-        <View style={[styles.infoCard, { top: 140, zIndex: 2, height: 135 }]}>
+        <View style={[styles.infoCard, { top: 140, zIndex: 2, height: 130 }]}>
           {/* 210 (image) - 50 (overlap) */}
           <View style={styles.infoRow}>
             <TouchableOpacity style={styles.arrowBtn}>
@@ -268,7 +268,7 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginLeft: 0,
+                marginLeft:15,
               }}
             >
               {getStoreStatusIsOpen() ? (
@@ -310,22 +310,23 @@ const StoreHeaderCard: React.FC<StoreHeaderCardProps> = ({
 
                 flex: 1,
                 justifyContent: "flex-end",
+                marginRight:15,
               }}
             >
               <View style={{ alignItems: "center", marginRight: 5 }}>
-                <Icon icon="clock" size={22} color={getStoreStatusColor()} />
+                <Icon icon="clock" size={16} />
               </View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={styles.storeStatusText} type="number">
+                <Text style={[styles.storeStatusText, { color: getStoreStatusColor()}]} type="number">
                   {store?.workingHours?.end}
                 </Text>
                 <View style={{ width: 10, alignItems: "center" }}>
-                  <Text style={styles.storeStatusText} type="number">
+                  <Text style={[styles.storeStatusText, { color: getStoreStatusColor()}]} type="number">
                     -
                   </Text>
                 </View>
 
-                <Text style={styles.storeStatusText} type="number">
+                <Text style={[styles.storeStatusText, { color: getStoreStatusColor()}]} type="number">
                   {store?.workingHours?.start}
                 </Text>
               </View>
@@ -570,8 +571,7 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   storeStatusText: {
-    fontSize: themeStyle.FONT_SIZE_SM,
-    color: themeStyle.GRAY_60,
+    fontSize: themeStyle.FONT_SIZE_XS,
   },
 });
 

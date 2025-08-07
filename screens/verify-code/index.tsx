@@ -166,14 +166,12 @@ const VerifyCodeScreen = ({ route }) => {
                 isDriver: authStore.verifyCodeToken.startsWith("11"),
               })
               .then(async (res) => {
-                setIsLoading(false);
                 await shoofiAdminStore.getStoreZCrData();
 
                 if (cartStore.getProductsCount() > 0) {
                   const routes = navigation.getState()?.routes;
                   const currentRoute = routes[routes.length - 1]?.name;
 
-                  console.log("currentRoute", currentRoute);
                   if (currentRoute === "cart") {
                     (navigation as any).navigate("checkout-screen");
                   } else {
@@ -182,9 +180,12 @@ const VerifyCodeScreen = ({ route }) => {
                 } else {
                   (navigation as any).navigate("homeScreen");
                 }
+                setIsLoading(false);
+
               });
           } else {
             (navigation as any).navigate("insert-customer-name");
+            setIsLoading(false);
           }
         })
         .catch(function (error) {

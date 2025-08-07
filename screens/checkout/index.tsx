@@ -380,10 +380,8 @@ const CheckoutScreen = ({ route }) => {
             <SelectedTimeCMP selectedTime={selectedDate} />
           </Animatable.View>
         )}
-        <Animatable.View
-          animation="fadeInRight"
-          duration={animationDuration}
-          style={{ marginTop: 20 }}
+        <View
+          style={{ marginTop: 20, }}
         >
           <AddressCMP
             onShippingMethodChangeFN={onShippingMethodChange}
@@ -393,10 +391,9 @@ const CheckoutScreen = ({ route }) => {
             onAddressChange={onAddressChange}
             shippingMethod={shippingMethod}
           />
-        </Animatable.View>
-        <Animatable.View
-          animation="fadeInLeft"
-          duration={animationDuration}
+        </View>
+        <View
+
           style={{ marginTop: 40 }}
         >
           <PaymentMethodCMP
@@ -405,7 +402,7 @@ const CheckoutScreen = ({ route }) => {
             defaultValue={paymentMthod}
             shippingMethod={shippingMethod}
           />
-        </Animatable.View>
+        </View>
         <View style={{ marginTop: 10 }}>
             <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} shippingMethod={shippingMethod} isCheckCoupon={true} appName={storeDataStore.storeData?.appName}  />
         </View>

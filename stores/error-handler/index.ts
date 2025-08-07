@@ -26,6 +26,8 @@ class ErrorHandlerStore {
     return new Promise((resolve) => {
       this.sendClientErrorFromServer(data).then((res) => {
           resolve(true);
+      }).catch(logErr => {
+        // silent fail, avoid nested logging
       })
     });
   }

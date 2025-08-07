@@ -300,7 +300,6 @@ const ExploreScreen = () => {
       // Debounce location changes to prevent rapid API calls
       const timeoutId = setTimeout(() => {
         const newLocation = addressStore.defaultAddress?.location || addressStore.systemAddress?.location;
-        console.log("newLocation", newLocation);
         // Only update if location has actually changed
         if (JSON.stringify(lastFetchedLocation.current) !== JSON.stringify(newLocation)) {
           setDebouncedLocation(newLocation);
@@ -323,8 +322,6 @@ const ExploreScreen = () => {
   
   // Create a stable location key for comparison
   const locationKey = useMemo(() => {
-    console.log("debouncedLocation", debouncedLocation);
-
     if (!debouncedLocation) return null;
     return `${debouncedLocation.lat}_${debouncedLocation.lng}`;
   }, [debouncedLocation]);

@@ -124,7 +124,6 @@ const AllCategoriesList = forwardRef<AllCategoriesListRef, AllCategoriesListProp
       }
     }
 
-    console.log('Category offsets calculated:', offsets.length, 'categories');
     return offsets;
   }, [filteredCategoryList]);
 

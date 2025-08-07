@@ -18,7 +18,7 @@ import { StoreContext } from "../../stores";
 import { useNavigation } from "@react-navigation/native";
 import { SHIPPING_METHODS } from "../../consts/shared";
 import { Coupon } from "../../types/coupon";
-
+import { useTranslation } from "react-i18next";
 const { width } = Dimensions.get("window");
 const CARD_HEIGHT = 80;
 const CARD_RADIUS = 10;
@@ -38,6 +38,7 @@ const CouponItem = React.memo(
     onCouponPress: (coupon: Coupon) => void;
     copunsLength: number;
   }) => {
+    const { t } = useTranslation();
     const backgroundUrl =  cdnUrl + item?.image?.uri;
     let cleanUri = backgroundUrl.replace(/^https?:\/\//, '').replace(/^shoofi.imgix.net\//, '');
     cleanUri = cleanUri.replace(/^shoofi-spaces\.fra1\.cdn\.digitaloceanspaces\.com\//, '');
@@ -59,7 +60,7 @@ const CouponItem = React.memo(
       <View style={[styles.cardContainer, {width: copunsLength > 1 ? width - width / 6 : width - 20,}]}>
         
         {/* Background color fallback */}
-        <View style={styles.backgroundFallback} />
+      <View style={styles.backgroundFallback} />
         <CustomFastImage
               source={{ uri: baseUrl }}
               resizeMode="cover"
@@ -70,17 +71,17 @@ const CouponItem = React.memo(
               }}
             />
         {/* Text overlay with gradient */}
-        <LinearGradient
+        { (displayName || item?.subNameForStore) && <LinearGradient
           colors={["#00000000", "#232323"]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
           style={styles.gradientOverlay}
         >
           <View style={styles.textOverlay}>
-            <Text style={[styles.title, {color: item.color}]}>{displayName}</Text>
-            <Text style={[styles.subtitle, {color: item.color}]}>{item.subNameForStore}</Text>
+            <Text style={[styles.title, {color: item.color}]}>{t(displayName)}</Text>
+            <Text style={[styles.subtitle, {color: item.color}]}>{t(item?.subNameForStore)}</Text>
           </View>
-        </LinearGradient>
+        </LinearGradient>}
       </View>
     );
   }

@@ -237,7 +237,6 @@ export const AddressCMP = observer(
       max: availableDrivers?.area?.maxETA,
     };
     const distanceKm = availableDrivers?.distanceKm;
-    console.log("address", defaultAddress);
 
     return (
       <View style={{}}>
@@ -254,6 +253,7 @@ export const AddressCMP = observer(
           driversLoading={driversLoading}
           shippingMethod={shippingMethod}
         /> */}
+      
           <ShippingMethodPickSquare
             onChange={onShippingMethodChange}
             shippingMethodValue={""}

@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import { StoreContext } from "../../stores";
 import themeStyle from "../../styles/theme.style";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { useSilentRefresh } from "../../hooks/use-silent-refresh";
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -25,7 +26,7 @@ import BackButton from "../../components/back-button";
 import Text from "../../components/controls/Text";
 import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
 import { APP_NAME } from "../../consts/shared";
-const HEADER_HEIGHT = 290;
+const HEADER_HEIGHT = 270;
 const COUPON_CONTAINER_HEIGHT = 90;
 const STICKY_HEADER_HEIGHT = 90;
 // Calculate dynamic heights based on active coupons
@@ -86,6 +87,7 @@ const MenuScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [activeCoupons, setActiveCoupons] = useState([]);
+  const isSilentRefreshing = useRef(false);
 
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
@@ -150,6 +152,34 @@ const MenuScreen = () => {
       console.error('Failed to fetch active coupons:', error);
     }
   };
+
+  // Silent refresh handler for menu screen
+  const handleSilentRefresh = useCallback(() => {
+    if (isSilentRefreshing.current) {
+      console.log('Menu silent refresh already in progress, skipping');
+      return;
+    }
+
+    console.log('Starting silent refresh of menu data');
+    isSilentRefreshing.current = true;
+
+    // Refresh menu and store data silently
+    Promise.all([
+      menuStore.getMenu(),
+      storeDataStore.getStoreData(),
+      fetchActiveCoupons(),
+    ]).finally(() => {
+      isSilentRefreshing.current = false;
+      console.log('Menu silent refresh completed');
+    });
+  }, [menuStore, storeDataStore, fetchActiveCoupons]);
+
+  // Use silent refresh hook for menu screen
+  useSilentRefresh({
+    onAppForeground: handleSilentRefresh,
+    enabled: !!storeDataStore.storeData?.appName, // Only enable when we have store data
+    minBackgroundTime: 10000, // 10 seconds minimum background time
+  });
 
   useEffect(() => {
     initMenu();
@@ -299,9 +329,7 @@ const MenuScreen = () => {
     const getStoreData = async () => {
       const cartStoreDBName = await cartStore.getCartStoreDBName();
       const storerDBName = storeDataStore.storeData?.appName;
-      console.log("cartStoreDBName", cartStoreDBName)
-      console.log("storerDBName", storerDBName)
-      console.log("ISSSS", cartStoreDBName === storerDBName)
+
       setIsThisStoreInCart(cartStoreDBName === storerDBName)
     }
     getStoreData();
@@ -314,7 +342,6 @@ const MenuScreen = () => {
       <StorePlaceHolder />
     );
   }
-console.log("storeDataStore.storeData?.ads", storeDataStore.storeData?.ads)
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <Animated.ScrollView

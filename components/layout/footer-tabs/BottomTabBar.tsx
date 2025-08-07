@@ -65,7 +65,6 @@ const BottomTabBar = observer(({ state, navigation }) => {
     navigation.navigate("active-orders");
   };
   const getOrders = async () => {
-    console.log("getOrders");
     const token = await AsyncStorage.getItem("@storage_userToken");
     if (token) {
       ordersStore.getCustomerActiveOrders().then((res) => {
