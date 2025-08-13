@@ -233,8 +233,8 @@ export const AddressCMP = observer(
       max: maxTakeAwayReadyTime,
     };
     const deliveryTime = {
-      min: availableDrivers?.area?.minETA,
-      max: availableDrivers?.area?.maxETA,
+      min: availableDrivers?.area?.minETA + minTakeAwayReadyTime,
+      max: availableDrivers?.area?.maxETA + maxTakeAwayReadyTime,
     };
     const distanceKm = availableDrivers?.distanceKm;
 

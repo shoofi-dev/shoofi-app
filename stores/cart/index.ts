@@ -326,7 +326,7 @@ class CartStore {
     let price = 0;
     this.cartItems.forEach((product) => {
       if (product) {
-        price += Number(product?.data?.price);
+        price += Number(product?.data?.price * product?.others?.qty);
       }
     });
     return price;

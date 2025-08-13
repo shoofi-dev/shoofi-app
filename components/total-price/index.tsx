@@ -15,6 +15,7 @@ import { CouponApplication } from "../../types/coupon";
 
 export type TProps = {
   onChangeTotalPrice: any;
+  onItemsPriceChange?: any;
   hideCouponInput?: boolean;
   onCouponApplied?: (coupon: any) => void;
   shippingMethod: any;
@@ -23,6 +24,7 @@ export type TProps = {
 };
 export default function TotalPriceCMP({
   onChangeTotalPrice,
+  onItemsPriceChange,
   hideCouponInput = false,
   onCouponApplied,
   shippingMethod,
@@ -30,7 +32,7 @@ export default function TotalPriceCMP({
   appName = null
 }: TProps) {
   const { t } = useTranslation();
-  const { cartStore, couponsStore, storeDataStore, shoofiAdminStore, addressStore } = useContext(StoreContext);
+  const { cartStore, couponsStore, storeDataStore, shoofiAdminStore, addressStore, userDetailsStore } = useContext(StoreContext);
   // const [shippingMethod, setShippingMethod] = useState(null);
   const [appliedCoupon, setAppliedCoupon] = useState<CouponApplication | null>(
     null
@@ -109,7 +111,7 @@ export default function TotalPriceCMP({
       
       if (baseTotalPrice > 0 && isCheckCoupon) {
         try {
-          const userId = "current-user-id"; // This should be replaced with actual user ID
+          const userId = userDetailsStore.userDetails?.customerId;  // This should be replaced with actual user ID
           const autoCoupon = await couponsStore?.getAndApplyAutoCoupons(
             {
               userId,
@@ -156,6 +158,9 @@ export default function TotalPriceCMP({
   };
 
   const getItemsPrice = () => {
+    if (cartStore.cartItems.length === 0) {
+      return;
+    }
     let tmpOrderPrice = 0;
     cartStore.cartItems.forEach((item) => {
       if (item) {
@@ -163,6 +168,7 @@ export default function TotalPriceCMP({
       }
     });
     setItemsPrice(tmpOrderPrice);
+    onItemsPriceChange?.(tmpOrderPrice);
   };
 
   type PriceRow = {
@@ -170,7 +176,6 @@ export default function TotalPriceCMP({
     value: number;
     isFree?: boolean;
   };
-
   const rows: PriceRow[] = [{ label: t("order-price"), value: itemsPrice }];
 
   // Handle delivery price display

@@ -25,8 +25,8 @@ import BackButton from "../../components/back-button";
 import Text from "../../components/controls/Text";
 import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
 import { APP_NAME } from "../../consts/shared";
-const HEADER_HEIGHT = 270;
-const COUPON_CONTAINER_HEIGHT = 90;
+const HEADER_HEIGHT = 290;
+const COUPON_CONTAINER_HEIGHT = 80;
 const STICKY_HEADER_HEIGHT = 90;
 // Calculate dynamic heights based on active coupons
 const getCouponContainerHeight = (activeCoupons) => activeCoupons.length > 0 ? COUPON_CONTAINER_HEIGHT : 0;
@@ -309,10 +309,9 @@ const MenuScreen = () => {
     max: storeDataStore.storeData?.maxReady,
   };
   const deliveryTime = {
-    min: availableDrivers?.area?.minETA,
-    max: availableDrivers?.area?.maxETA,
+    min: availableDrivers?.area?.minETA + takeAwayReadyTime.min,
+    max: availableDrivers?.area?.maxETA + takeAwayReadyTime.max,
   };
-
   const handleCartClick = () => {
     navigation.navigate("cart");
   };
@@ -448,7 +447,6 @@ const styles = StyleSheet.create({
     backgroundColor: themeStyle.WHITE_COLOR,
   },
   shippingPickerContainer: {
-    backgroundColor: themeStyle.WHITE_COLOR,
     justifyContent: "center",
     marginTop: 110,
   },

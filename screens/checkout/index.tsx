@@ -122,29 +122,29 @@ const CheckoutScreen = ({ route }) => {
   }, []);
 
   // Calculate total price including discount
-  useEffect(() => {
-    const calculateTotalPrice = () => {
-      let itemsPrice = 0;
-      cartStore.cartItems.forEach((item) => {
-        if (item) {
-          itemsPrice += item.data.price * item.others.qty;
-        }
-      });
+  // useEffect(() => {
+  //   const calculateTotalPrice = () => {
+  //     let itemsPrice = 0;
+  //     cartStore.cartItems.forEach((item) => {
+  //       if (item) {
+  //         itemsPrice += item.data.price * item.others.qty;
+  //       }
+  //     });
 
-      // Get delivery price if shipping method is shipping
-      const deliveryPrice = shippingMethod === SHIPPING_METHODS.shipping ? 
-        (availableDrivers?.area?.price || 0) : 0;
+  //     // Get delivery price if shipping method is shipping
+  //     const deliveryPrice = shippingMethod === SHIPPING_METHODS.shipping ? 
+  //       (availableDrivers?.area?.price || 0) : 0;
 
-      // Get discount from applied coupon
-      const discount =  shippingMethod === SHIPPING_METHODS.shipping ? couponsStore.appliedCoupon?.discountAmount || 0 : 0;
+  //     // Get discount from applied coupon
+  //     const discount =  shippingMethod === SHIPPING_METHODS.shipping ? couponsStore.appliedCoupon?.discountAmount || 0 : 0;
 
-      const finalPrice = itemsPrice + deliveryPrice - discount;
-      setItemsPrice(itemsPrice);
-      setTotalPrice(finalPrice);
-    };
+  //     const finalPrice = itemsPrice + deliveryPrice - discount;
+  //     setItemsPrice(itemsPrice);
+  //     setTotalPrice(finalPrice);
+  //   };
 
-    calculateTotalPrice();
-  }, [cartStore.cartItems, shippingMethod, couponsStore.appliedCoupon, availableDrivers]);
+  //   calculateTotalPrice();
+  // }, [cartStore.cartItems, shippingMethod, couponsStore.appliedCoupon, availableDrivers]);
 
   const goToOrderStatus = () => {
     (navigation as any).navigate("homeScreen");
@@ -294,13 +294,13 @@ const CheckoutScreen = ({ route }) => {
     //   return false;
     // }
 
-    // Remove applied coupon if shipping method is not delivery
-    if (couponsStore.appliedCoupon && shippingMethod !== SHIPPING_METHODS.shipping) {
-      couponsStore.removeCoupon();
-    }
+    // // Remove applied coupon if shipping method is not delivery
+    // if (couponsStore.appliedCoupon && shippingMethod !== SHIPPING_METHODS.shipping) {
+    //   couponsStore.removeCoupon();
+    // }
 
     // Redeem coupon if applied and shipping method is delivery
-    if (couponsStore.appliedCoupon && shippingMethod === SHIPPING_METHODS.shipping) {
+    // if (couponsStore.appliedCoupon && shippingMethod === SHIPPING_METHODS.shipping) {
       try {
         const userId = adminCustomerStore.userDetails?.customerId || editOrderData?.customerId || userDetailsStore.userDetails?.customerId;
         const orderId = editOrderData?._id || `temp-${Date.now()}`;
@@ -315,7 +315,7 @@ const CheckoutScreen = ({ route }) => {
       } catch (error) {
         // Continue with checkout even if coupon redemption fails
       }
-    }
+  //  }
     const checkoutSubmitOrderRes = await checkoutSubmitOrder({
       paymentMthod,
       shippingMethod,
@@ -345,7 +345,11 @@ const CheckoutScreen = ({ route }) => {
   };
 
   const onChangeTotalPrice = (toalPriceValue) => {
-    //setTotalPrice(toalPriceValue);
+    setTotalPrice(toalPriceValue);
+  };
+
+  const onItemsPriceChange = (itemsPriceValue) => {
+    setItemsPrice(itemsPriceValue);
   };
 
   return (
@@ -404,7 +408,7 @@ const CheckoutScreen = ({ route }) => {
           />
         </View>
         <View style={{ marginTop: 10 }}>
-            <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} shippingMethod={shippingMethod} isCheckCoupon={true} appName={storeDataStore.storeData?.appName}  />
+            <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} onItemsPriceChange={onItemsPriceChange} shippingMethod={shippingMethod} isCheckCoupon={true} appName={storeDataStore.storeData?.appName}  />
         </View>
         </View>
 

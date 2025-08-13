@@ -167,9 +167,7 @@ const styles = StyleSheet.create({
   carouselContainer: {
     width: width,
     alignItems: "center",
-    marginTop: 8,
-    marginBottom: 16,
-    height: 90,
+    height: 80,
   },
   scrollViewContent: {
     // paddingHorizontal: 8, // Add some padding between items
