@@ -13,6 +13,7 @@ import Button from "../../components/controls/button/button";
 import themeStyle from "../../styles/theme.style";
 import { useResponsive } from "../../hooks/useResponsive";
 import { colors } from "../../styles/colors";
+import { getCurrentLang } from "../../translations/i18n";
 
 interface PaymentMethod {
   id: string;
@@ -26,19 +27,36 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
   const { scale, fontSize } = useResponsive();
   const [selectedMethod, setSelectedMethod] = useState<string>("");
 
-  // Temporary hardcoded translations (until server translations are updated)
+  // Dynamic translations based on current language
   const getPaymentTranslations = () => {
-    return {
-      title: "אמצעי תשלום",
-      add: "הוסף",
-      methods: {
-        apple_pay: "Apple Pay",
-        bit: "בִּיט",
-        paybox: "פיי בוקס", 
-        credit_card: "כרטיס אשראי",
-        cash: "מזומן"
-      }
-    };
+    const currentLang = getCurrentLang();
+    
+    if (currentLang === 'he') {
+      return {
+        title: "אמצעי תשלום",
+        add: "הוסף",
+        methods: {
+          apple_pay: "Apple Pay",
+          bit: "בִּיט",
+          paybox: "פיי בוקס", 
+          credit_card: "כרטיס אשראי",
+          cash: "מזומן"
+        }
+      };
+    } else {
+      // Arabic translations
+      return {
+        title: "طرق الدفع",
+        add: "إضافة",
+        methods: {
+          apple_pay: "Apple Pay",
+          bit: "بيت",
+          paybox: "باي بوكس",
+          credit_card: "بطاقة ائتمان",
+          cash: "نقداً"
+        }
+      };
+    }
   };
 
   const translations = getPaymentTranslations();
@@ -99,18 +117,6 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
         activeOpacity={0.7}
       >
         <View style={styles.paymentMethodContent}>
-          <View style={styles.iconContainer}>
-            <Icon
-              icon={method.icon}
-              size={scale(24)}
-              color={method.color}
-            />
-          </View>
-          
-          <Text style={[styles.paymentMethodText, { fontSize: fontSize(16) }]}>
-            {method.name}
-          </Text>
-          
           <View style={styles.radioContainer}>
             <View style={[
               styles.radioOuter,
@@ -119,6 +125,18 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
               {isSelected && <View style={styles.radioInner} />}
             </View>
           </View>
+          
+          <View style={styles.iconContainer}>
+            <Icon
+              icon={method.icon}
+              size={scale(20)}
+              color={method.color}
+            />
+          </View>
+          
+          <Text style={[styles.paymentMethodText, { fontSize: fontSize(16) }]}>
+            {method.name}
+          </Text>
         </View>
       </TouchableOpacity>
     );
@@ -126,22 +144,23 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
 
   return (
     <View style={styles.container}>
+      {/* Modal Handle */}
+      <View style={styles.modalHandle} />
+
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.title, { fontSize: fontSize(18) }]}>
-          {translations.title}
-        </Text>
         <TouchableOpacity
           style={styles.closeButton}
           onPress={onClose}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Icon icon="x-close1" size={scale(24)} color="#666" />
+          <Icon icon="x-close1" size={scale(20)} color="#999" />
         </TouchableOpacity>
+        <Text style={[styles.title, { fontSize: fontSize(18) }]}>
+          {translations.title}
+        </Text>
+        <View style={styles.headerSpacer} />
       </View>
-
-      {/* Modal Handle */}
-      <View style={styles.modalHandle} />
 
       {/* Payment Methods List */}
       <View style={styles.methodsList}>
@@ -174,8 +193,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
+    paddingTop: 8, // Reduced from 20 to 8 since handle is now above
+    paddingBottom: 16, // Increased for better spacing below title
   },
   title: {
     fontWeight: "600",
@@ -184,7 +203,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   closeButton: {
-    padding: 5,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: "#f5f5f5",
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerSpacer: {
+    width: 32, // Same width as close button for balance
   },
   modalHandle: {
     width: 40,
@@ -192,38 +220,46 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDD",
     borderRadius: 2,
     alignSelf: "center",
-    marginBottom: 20,
+    marginTop: 12,
+    marginBottom: 16,
   },
   methodsList: {
     paddingHorizontal: 20,
   },
   paymentMethodItem: {
-    marginBottom: 16,
+    marginBottom: 8, // Reduced from 16 to 8
   },
   paymentMethodContent: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 16,
+    paddingVertical: 12, // Reduced from 16 to 12
     paddingHorizontal: 4,
   },
   iconContainer: {
-    width: 40,
+    width: 36,
+    height: 36,
     alignItems: "center",
-    marginRight: 16,
+    justifyContent: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#f9fafb",
+    backgroundColor: "transparent",
+    marginHorizontal: 8, // Reduced from 12 to 8
   },
   paymentMethodText: {
     flex: 1,
     color: "#333",
     fontWeight: "500",
-    textAlign: "right", // Hebrew text alignment
+    textAlign: "right", // Right alignment for Hebrew text
+    marginRight: 2, // Reduced from 4 to 2
   },
   radioContainer: {
-    marginLeft: 16,
+    marginLeft: 2, // Reduced from 4 to 2
   },
   radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     borderWidth: 2,
     borderColor: "#DDD",
     alignItems: "center",
@@ -233,9 +269,9 @@ const styles = StyleSheet.create({
     borderColor: colors.primary || "#8BC34A",
   },
   radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: colors.primary || "#8BC34A",
   },
   buttonContainer: {
