@@ -1,12 +1,12 @@
 PODS:
-  - ASN1Decoder (1.8.0)
+  - ASN1Decoder (1.10.0)
   - boost (1.76.0)
   - DoubleConversion (1.1.6)
   - EASClient (0.3.0):
     - ExpoModulesCore
   - EXApplication (4.2.2):
     - ExpoModulesCore
-  - EXBarCodeScanner (11.4.0):
+  - EXBarCodeScanner (11.5.0):
     - EXImageLoader
     - ExpoModulesCore
     - ZXingObjC/OneD
@@ -14,6 +14,8 @@ PODS:
   - EXConstants (13.2.4):
     - ExpoModulesCore
   - EXDevice (4.3.0):
+    - ExpoModulesCore
+  - EXErrorRecovery (3.2.0):
     - ExpoModulesCore
   - EXFileSystem (14.1.0):
     - ExpoModulesCore
@@ -482,17 +484,17 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.22.0):
+  - RNScreens (3.15.0):
     - React-Core
     - React-RCTImage
-  - RNSVG (12.5.1):
+  - RNSVG (12.3.0):
     - React-Core
   - UMAppLoader (3.1.0)
   - Yoga (1.14.0)
-  - ZXingObjC/Core (3.6.5)
-  - ZXingObjC/OneD (3.6.5):
+  - ZXingObjC/Core (3.6.9)
+  - ZXingObjC/OneD (3.6.9):
     - ZXingObjC/Core
-  - ZXingObjC/PDF417 (3.6.5):
+  - ZXingObjC/PDF417 (3.6.9):
     - ZXingObjC/Core
 
 DEPENDENCIES:
@@ -503,6 +505,7 @@ DEPENDENCIES:
   - EXBarCodeScanner (from `../node_modules/expo-barcode-scanner/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXDevice (from `../node_modules/expo-device/ios`)
+  - EXErrorRecovery (from `../node_modules/expo-error-recovery/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
@@ -600,6 +603,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-constants/ios"
   EXDevice:
     :path: "../node_modules/expo-device/ios"
+  EXErrorRecovery:
+    :path: "../node_modules/expo-error-recovery/ios"
   EXFileSystem:
     :path: "../node_modules/expo-file-system/ios"
   EXFont:
@@ -748,68 +753,69 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
-  boost: a7c83b31436843459a1961bfd74b96033dc77234
+  ASN1Decoder: 91cb1d781b5a178ea7375b2f1519e2bdaaa4c427
+  boost: bb65545cff00ef2a57d478bafc61c34dbabe9cf5
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  EASClient: a2581835cf9b97d0defd5d630fc6eb1bf77045e7
-  EXApplication: e418d737a036e788510f2c4ad6c10a7d54d18586
-  EXBarCodeScanner: 8e13bad5d197b4b9a58d16af41f8690875a5f736
-  EXConstants: 7c44785d41d8e959d527d23d29444277a4d1ee73
-  EXDevice: 7647ca9b1fd8b269dfd896a7643d659343358054
-  EXFileSystem: 927e0a8885aa9c49e50fc38eaba2c2389f2f1019
-  EXFont: 06df627203afcb8a3b3152ec06eb2f11f46f0cff
-  EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
+  EASClient: e8a6a5994596a56931faea25dabe88f603e20383
+  EXApplication: 4a1c5c1fb9f34535fad77a685b403dfc1cc7d9c1
+  EXBarCodeScanner: 038f64104a78af684c7c38967aa8ae987a319ff7
+  EXConstants: ae4d3f303c655a6120b4aff07e46dab8c27562e9
+  EXDevice: 48895f8d05eacac8eac50bc3b45943d0dcc2e97b
+  EXErrorRecovery: 27d876ef121ced3295e91ea7722d3682744f4386
+  EXFileSystem: 18014a3201470bdec46e02447f8d43db7cf3d224
+  EXFont: e7314cef5a25a50c3957b4a2d94cdfeabb849f8d
+  EXImageLoader: 502667377b5260b2a9c650a2f329b186c46c9b02
   EXJSONUtils: 2a74b8f40f1523cc3f92af99c91aa78201737a77
-  EXLocation: b8cba3cb354bee6abb181c1dd245abe5aef22955
-  EXManifests: b38dc61303f5eede990b4c8ecbfac32f82160e65
-  EXNotifications: 9a2aa201deb19dfe1dbe0e370eeb2922de0d2422
-  Expo: 99284f9f697b6def5988fdf50652e21f062991e3
-  expo-dev-client: 381f39773b9fd83008fd58bf493d3a7be748752d
-  expo-dev-launcher: 5a2a86276911631997b8821d278a964252bfbbf7
-  expo-dev-menu: 5c8f08081eedb470fc8384195c044feba5055cec
-  expo-dev-menu-interface: 27047461614aee1dc082cacc0e0f5b4c7b8edd1b
-  ExpoHaptics: efe9e68e9dfe0d15c183c0c70a25f3874124ab9e
-  ExpoKeepAwake: 8b47e5358d54ea4922b630a74f2acb026ab7a28b
-  ExpoLinearGradient: 1a3af07c6dab3c612967a294836df9ae717431df
-  ExpoLocalization: 63204f4b9d4f653469d266332ceaa6c6ac8a305d
-  ExpoModulesCore: 1b2f5f91eff132671f6d0642aad2ba7915c6ff41
-  ExpoRandom: f9f1faa299a40733867f344d6b7bfa2d1f4ab04d
-  EXSplashScreen: 799bece80089219b2c989c1082d70f3b00995cda
+  EXLocation: f589711ccc2c14a88cb9a9b7126200fab068ed6a
+  EXManifests: da7e03aa118af39011686150706ac5c45253c066
+  EXNotifications: fd552cbd14157af342cca498635c19124bb0b0c5
+  Expo: ff3da425b541a39581eb73721a9e773f825dcf1b
+  expo-dev-client: b625229bb4c5ba64ff017fbb28f06cf86b4ba9aa
+  expo-dev-launcher: fdef9e7a93850cdb166fc500b43f908ff29dc90a
+  expo-dev-menu: e8114ec86eed489596e3be35e1cd1a68fb756486
+  expo-dev-menu-interface: 26690d5a34ffa887f7114b8ce0893f123a42b341
+  ExpoHaptics: acfc3e15d111022f12268bb40f56c38883aab375
+  ExpoKeepAwake: 4888cd8888beef5a474bcded9985311fe50f6bd1
+  ExpoLinearGradient: 05ecaa830d1f1fc95a06d583ebee1461ff596dd2
+  ExpoLocalization: b00d0596dfd56cc76bb73db00393cad7264408b4
+  ExpoModulesCore: 137aa0c45ba2136bdae28937189a8ad725c9b43d
+  ExpoRandom: da431ccd1deafb0705642f1e81a4a1239e8348b8
+  EXSplashScreen: be364303b208e8579aecaab39a854c0976b46cb7
   EXStructuredHeaders: 5d86829469399370a9fc7cb1e4391b09de87681d
-  EXTaskManager: 6e7e5c31d14ba62cdccc979e23ebebe182557669
-  EXUpdates: 7a705a119c7551d50fbcdd8e3b5b414c4fefadb8
+  EXTaskManager: 78f022c28d49d2637802620e5e3b18ef470fa39f
+  EXUpdates: cc5e38246410a5aab13e7c55e1316183ff3723da
   EXUpdatesInterface: 2bbc11815dfa2ec3fc02e5534c7592c6b42b5327
   FBLazyVector: d3c1d2923b1009f4e709e8f1b793dedf5b323454
   FBReactNativeSpec: d460df7d796ed4979c6cd4e092145b63eb28b5bb
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
-  lottie-react-native: a501112fa980529ccb80b9f3ee117a7f98c6af3a
-  RCT-Folly: b9d9fe1fc70114b751c076104e52f3b1b5e5a95a
+  lottie-react-native: 1e1233e7e9df75008498733123c1de4d1227a778
+  RCT-Folly: ba26c9ca44b1fb56915c3efd9ce618472addc544
   RCTRequired: fe80e9f71dd15939e5399dd94d0aa0e5e069d592
   RCTTypeSafety: 4c802f7c4b9e7c55470e7fc56d50385cbfcce89b
   React: efe0b6d0b7401a208d2d1bf8320c0b6a0dcd593b
   React-bridging: 11a324da43d8467cfe528ccff0e00ab43bdf1cf4
   React-callinvoker: d4d34002df449053784f1131a6382e526d172395
   React-Codegen: 63eb91553568558cbd6fb2f336c3ff2fea66b37a
-  React-Core: 2875b1749729d07ef7cacef36e8b1381f27cc86e
+  React-Core: 9ddf6ce498a84ce0d0c45950a552f594adf331cb
   React-CoreModules: 8b6665f9b128b875660d75a7144122c742ad4af9
-  React-cxxreact: 76d426551a4d1d6f623ef8f87a26690d5a6be93e
-  React-jsi: 47b65f4f789f198004c47e5b6ceaae95ea3f3659
-  React-jsiexecutor: 3b506d7fc50275bf44f8fd5624f23eaedd78bf78
+  React-cxxreact: bcc953d0a5456e0f147aafa8ae5d6eb3c18dfbde
+  React-jsi: 9da03b046fe346b9e2aefdd9f92c03fcf6573dac
+  React-jsiexecutor: 06dba9cd8105d5b58d935946d8b452cef1dee34f
   React-jsinspector: 5b92a5a30e02e1a21802f293cc71e05d887c7378
-  React-logger: 96d904c5bc87c2660d48e6a36fb2edf65f9cfb11
-  react-native-blur: 32db1a8e94964c17f3f85424dd822b2ffa1a83c4
-  react-native-cameraroll: 4701ae7c3dbcd3f5e9e150ca17f250a276154b35
-  react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
-  react-native-image-picker: 3269f75c251cdcd61ab51b911dd30d6fff8c6169
-  react-native-maps: 8b8bfada2c86205a7f5a07dd1f92f29b33ea83aa
-  react-native-month-year-picker: 948797e981ca502427024a34b17f545eb321bbff
-  react-native-netinfo: 129bd99f607a2dc5bb096168f3e5c150fd1f1c95
-  react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
-  react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
-  react-native-view-shot: da768466e1cd371de50a3a5c722d1e95456b5b2c
-  react-native-webview: e771bc375f789ebfa02a26939a57dbc6fa897336
+  React-logger: 52038e064f4ec6897bd820f3bdcc09d2d7aa40bb
+  react-native-blur: 31d3c608b337f9d15d356148e0d88549fbf5fdc7
+  react-native-cameraroll: 9c9027acae394d1248b7255bbc1cd8fbddd7ba8f
+  react-native-get-random-values: 0fd2b6a3129988d701d10e30f0622d5f039531bc
+  react-native-image-picker: b981b88b807605540b2de3245c76e9729f418b37
+  react-native-maps: f0735cb10a019046e6c5ad4cb403d9f9e7448f77
+  react-native-month-year-picker: 8b72e984757e47e08fece220fa09fcdf1816203d
+  react-native-netinfo: 17063d97f52803d5b38048b6425ba670c1e50dca
+  react-native-restart: df7caae89026a8ab2ecdd82839978f657701f51d
+  react-native-safe-area-context: 3147a84d005125c9b38b59a32807db4bb28115b0
+  react-native-view-shot: 5e71b4995166120915e781077ab3e221f1e42c75
+  react-native-webview: 5c84c9e56ab8cdfc211da7d59fa038a9ceed9738
   React-perflogger: f6f4b3c63629ead2e8a5a22eaedd06368c31617a
   React-RCTActionSheet: 5e95058e99c53313d778d96b7f37697ce3a9418e
   React-RCTAnimation: c4f86d756d8398c674f61d00075993a368d83480
@@ -821,18 +827,18 @@ SPEC CHECKSUMS:
   React-RCTText: 87456d45e8bcc0c831b7c7fcfcfd860a54f54a79
   React-RCTVibration: ea899478e6f10ee526f476f769ab33211be2addd
   React-runtimeexecutor: df1518d092e8c74cafddc56690d1ac386ec24d7a
-  ReactCommon: fac40473e2c4117522384027ab33ad0cb6717dc5
-  RNCAsyncStorage: 09fc8595e6d6f6d5abf16b23a56b257d9c6b7c5b
-  RNCMaskedView: cb9670ea9239998340eaab21df13fa12a1f9de15
-  RNDateTimePicker: 30e6733efc179d1e49d6008ea5fce42cdc9aeeca
-  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
-  RNReanimated: 2cf7451318bb9cc430abeec8d67693f9cf4e039c
-  RNScreens: 68fd1060f57dd1023880bf4c05d74784b5392789
-  RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
+  ReactCommon: 0269321cb72a5979555d06490697270757aca921
+  RNCAsyncStorage: 8b77ee488cbf644ac2335dbcd5fafd25d280ea13
+  RNCMaskedView: 4326a4b674e2178239c4a13e76eeff5b992385d2
+  RNDateTimePicker: 90bee35f76c09db29aaded4185eccdd43b918568
+  RNGestureHandler: 0bfff8f10b0710e37b355b458b92143cd0414064
+  RNReanimated: 5c80fa36e57c4c72cc4b56bc14f4ede4af8359b6
+  RNScreens: 3c581ebc42ad074c9be97825081d1ad9a004dd2d
+  RNSVG: d4a5ecffcb2c1094082455e7f39c90eebe50a200
   UMAppLoader: 6185e8c45922f187002b85afae097961c4781df4
   Yoga: 7a4d48cfb35dfa542151e615fa73c1a0d88caf21
-  ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
+  ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: e59ee3b25acd7f69447a3cfc081ebb9c8e881963
+PODFILE CHECKSUM: 471fdef77fdb2721c3932b0aa02ee7faa637290d
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.16.2
