@@ -15,6 +15,7 @@ import { creditCardsStore } from "../../stores/creditCards";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Modal from "react-native-modal";
 import CreditCardModal from "../CreditCardModal";
+import PaymentMethodModal from "../PaymentMethodModal";
 
 // Navigation type definition
 type RootStackParamList = {
@@ -207,7 +208,7 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
         animationOut="slideOutDown"
         backdropOpacity={0.5}
       >
-        <CreditCardModal onClose={handleCloseCreditCardModal} />
+        <PaymentMethodModal onClose={handleCloseCreditCardModal} />
       </Modal>
     </View>
   );

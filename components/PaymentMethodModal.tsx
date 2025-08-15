@@ -1,24 +1,24 @@
 import React from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
-import CreditCardsScreen from "../screens/credit-cards";
+import PaymentMethodsScreen from "../screens/payment-methods";
 
 // TypeScript interface for component props
-interface CreditCardModalProps {
+interface PaymentMethodModalProps {
   onClose: () => void;
 }
 
 // Get screen dimensions once (performance improvement)
 const { height: screenHeight } = Dimensions.get('window');
 
-const CreditCardModal: React.FC<CreditCardModalProps> = ({ onClose }) => {
+const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ onClose }) => {
   return (
     <View 
       style={styles.modalContainer}
       accessibilityRole="none"
-      accessibilityLabel="Credit Cards Modal"
+      accessibilityLabel="Payment Methods Modal"
       accessible={true}
     >
-      <CreditCardsScreen onClose={onClose} isModal={true} />
+      <PaymentMethodsScreen onClose={onClose} isModal={true} />
     </View>
   );
 };
@@ -41,4 +41,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreditCardModal; 
+export default PaymentMethodModal; 
