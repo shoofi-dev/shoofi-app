@@ -25,21 +25,25 @@ class MenuStore {
     const mealTags = groupBy(this.meals[mealId], (x) => x.tag);
     return mealTags;
   };
-  getMenuFromServer = () => {
+  getMenuFromServer = (appName?: string) => {
     const body = {};
     return axiosInstance
-      .get(`${MENU_API.GET_MENU_API}`)
+      .get(`${MENU_API.GET_MENU_API}`, {
+        headers: {
+          'app-name': appName,
+        },
+      })
       .then(function (response) {
         return response;
       });
   };
-  getMenu = () => {
+  getMenu = (appName?: string) => {
     return new Promise((resolve) => {
       runInAction(() => {
         this.isLoading = true;
       });
       
-      this.getMenuFromServer().then((res: any) => {
+      this.getMenuFromServer(appName).then((res: any) => {
         runInAction(() => {
           this.categories = res.menu;
           this.imagesUrl = res.productsImagesList;
@@ -52,7 +56,7 @@ class MenuStore {
           //   this.meals[key].data = res.menu.find((product) => product.id.toString() === key)
           //   this.imagesUrl.push(this.meals[key].data?.image_url)
           // });
-          resolve(true);
+          resolve(res.menu);
         });
       }).catch((error) => {
         runInAction(() => {

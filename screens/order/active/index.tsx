@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, ActivityIndicator } from "react-native";
+import { StyleSheet, View, Image, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { useNavigation } from "@react-navigation/native";
@@ -12,6 +12,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import OrderFooter from "./components/order-footer";
 import { useTranslation } from "react-i18next";
 import BackButton from "../../../components/back-button";
+import Icon from "../../../components/icon";
 
 // Mock data for testing
 const mockOrders = [
@@ -70,6 +71,7 @@ const mockOrders = [
 
 const AtiveOrdersScreen = ({ route }) => {
   const { t } = useTranslation();
+  const navigation = useNavigation();
 
   const { ordersStore, authStore } = useContext(StoreContext);
   const [ordersList, setOrdersList] = useState([]);
@@ -106,6 +108,14 @@ const AtiveOrdersScreen = ({ route }) => {
     if (isReachedBottom) {
       setPageNumber(pageNumber + 1);
     }
+  };
+
+  const handleOrderPress = (order) => {
+    const params = { 
+      orderId: order._id || order.orderId,
+      sourceScreen: 'active-orders'
+    };
+    (navigation as any).navigate('order-item', params);
   };
 
   // Use mock data if no real orders
@@ -149,40 +159,52 @@ const AtiveOrdersScreen = ({ route }) => {
             >
               <View style={{ marginBottom: 130 }}>
                 {displayOrders?.slice(0, pageNumber * 5)?.map((order) => (
-                  <View
+                  <TouchableOpacity
                     key={order._id}
-                    style={[
-                      styles.orderContainer,
-                      {
-                        shadowColor: 'rgba(0, 0, 0, 0.12)',
-                        shadowOffset: {
-                          width: 0,
-                          height: 0,
-                        },
-                        shadowOpacity: 1,
-                        shadowRadius: 10.84,
-                        elevation: 30,
-                        borderRadius: 20,
-                        backgroundColor: themeStyle.WHITE_COLOR
-                      },
-                    ]}
+                    onPress={() => handleOrderPress(order)}
+                    activeOpacity={0.8}
                   >
-                    {/* <LinearGradient
-                      colors={[
-                        "#c1bab3",
-                        "#efebe5",
-                        "#d8d1ca",
-                        "#dcdcd4",
-                        "#ccccc4",
+                    <View
+                      style={[
+                        styles.orderContainer,
+                        {
+                          shadowColor: 'rgba(0, 0, 0, 0.12)',
+                          shadowOffset: {
+                            width: 0,
+                            height: 0,
+                          },
+                          shadowOpacity: 1,
+                          shadowRadius: 10.84,
+                          elevation: 30,
+                          borderRadius: 20,
+                          backgroundColor: themeStyle.WHITE_COLOR,
+                          borderWidth: 1,
+                          borderColor: 'transparent',
+                        },
                       ]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={[styles.background, { borderRadius: 20 }]}
-                    /> */}
-                    <OrderHeader order={order} />
-                    {/* <OrderItems order={order} /> */}
-                    {/* <OrderFooter order={order} /> */}
-                  </View>
+                    >
+                      {/* <LinearGradient
+                        colors={[
+                          "#c1bab3",
+                          "#efebe5",
+                          "#d8d1ca",
+                          "#dcdcd4",
+                          "#ccccc4",
+                        ]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={[styles.background, { borderRadius: 20 }]}
+                      /> */}
+                      <OrderHeader order={order} />
+                      {/* <OrderItems order={order} /> */}
+                      {/* <OrderFooter order={order} /> */}
+                      
+                      {/* Click indicator */}
+                      <View style={styles.clickIndicator}>
+                        <Icon icon="chevron_forward" size={16} color={themeStyle.GRAY_60} />
+                      </View>
+                    </View>
+                  </TouchableOpacity>
                 ))}
               </View>
               {displayOrders.length >= pageNumber * 5 && (
@@ -224,5 +246,11 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
+  },
+  clickIndicator: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: [{ translateY: -8 }],
   },
 });

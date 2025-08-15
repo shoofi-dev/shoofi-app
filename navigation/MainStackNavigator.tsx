@@ -17,7 +17,7 @@ import SearchCustomerScreen from "../screens/search-customer";
 import VerifyCodeScreen from "../screens/verify-code";
 import LanguageScreen from "../screens/language";
 import OrderSubmittedScreen from "../screens/order/submitted";
-import OrderHistoryScreen from "../screens/order/history";
+import OrderHistoryScreen from "../screens/order/history";  
 import insertCustomerName from "../screens/insert-customer-name";
 import OrdersListScreen from "../screens/admin/order/list";
 import NewOrdersListScreen from "../screens/admin/order/new-orders/list";
@@ -52,6 +52,7 @@ import DeliveryDriverOrderDetails from "../screens/delivery-driver/order-details
 import DeliveryDriverProfile from "../screens/delivery-driver/profile";
 import DeliveryDriverNotifications from "../screens/delivery-driver/notifications";
 import UserInformation from "../screens/user-information";
+import OrderItemScreen from "../screens/order/item";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -162,6 +163,7 @@ export const MainStackNavigator = () => {
       <Stack.Screen name="delivery-driver-order-details" component={DeliveryDriverOrderDetails} initialParams={{ orderId: null }} />
       <Stack.Screen name="delivery-driver-profile" component={DeliveryDriverProfile} />
       <Stack.Screen name="delivery-driver-notifications" component={DeliveryDriverNotifications} />
+      <Stack.Screen name="order-item" component={OrderItemScreen} initialParams={{ orderId: null, isHistory: false }} />
     </Stack.Navigator>
   );
 };

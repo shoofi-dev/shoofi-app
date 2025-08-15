@@ -165,6 +165,20 @@ class OrdersStore {
     });
   };
 
+  getCustomerOrdersHistoryFromServer = async () => {
+    const api = `${ORDER_API.CONTROLLER}/${ORDER_API.GET_CUSTOMER_ORDERS_HISTORY_API}`;
+    return axiosInstance.get(api).then(function (response: any) {
+      return response;
+    });
+  };
+
+  getCustomerOrdersHistory = () => {
+    return this.getCustomerOrdersHistoryFromServer().then((res) => {
+      const customerOrdersHistoryList = res;
+      return customerOrdersHistoryList;
+    });
+  };
+
   updateOrderStatusServer = async (
     status: string,
     orderId: string,

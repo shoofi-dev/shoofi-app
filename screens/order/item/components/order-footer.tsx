@@ -97,7 +97,7 @@ const OrderFooter = ({ order }) => {
                   dashLength={5}
                   dashThickness={1}
                   dashGap={0}
-                  dashColor={themeStyle.GRAY_20}
+                  dashColor={themeStyle.GRAY_300}
                   style={{ marginTop:10}}
                 />
     {renderOrderTotalRaw(order)}

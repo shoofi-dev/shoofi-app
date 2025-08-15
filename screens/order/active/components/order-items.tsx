@@ -9,10 +9,11 @@ import { useContext } from "react";
 import { StoreContext } from "../../../../stores";
 import { isEmpty } from "lodash";
 import DashedLine from "react-native-dashed-line";
-import { cdnUrl } from "../../../../consts/shared";
+import { APP_NAME, cdnUrl } from "../../../../consts/shared";
 import sizeTitleAdapter from "../../../../helpers/size-name-adapter";
 import Button from "../../../../components/controls/button/button";
 import isShowSize from "../../../../helpers/is-show-size";
+import CustomFastImage from "../../../../components/custom-fast-image";
 
 const OrderItems = ({ order }) => {
   const { t } = useTranslation();
@@ -33,7 +34,7 @@ const OrderItems = ({ order }) => {
               dashLength={5}
               dashThickness={1}
               dashGap={0}
-              dashColor={themeStyle.GRAY_300}
+              dashColor={themeStyle.GRAY_20}
               style={{ marginTop: 15 }}
             />
           )}
@@ -43,17 +44,29 @@ const OrderItems = ({ order }) => {
               marginTop: index !== 0 ? 15 : 0,
               paddingHorizontal: 5,
               flexWrap: "wrap",
+          
             }}
           >
-            <View style={{}}>
-              <View style={{ flexDirection: "row" }}>
+            <View style={{alignItems: "center"}}>
+              <View style={{ flexDirection: "row", flex: 1 }}>
                 <View
                   style={{
-                    flexBasis: "20%",
-                    height: 80,
-                    marginVertical: 10,
+                    width: 90,
+                    height: 60,
                   }}
                 >
+                      <CustomFastImage
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 5
+                      }}
+                      source={{
+                        uri: `${cdnUrl}${item.img[0].uri}`,
+                      }}
+                      resizeMode="contain"
+                  
+                    />
                   {/* <Image
                     style={{ width: "100%", height: "100%" }}
                     source={{ uri: `${cdnUrl}${meal.img[0].uri}` }}
@@ -67,85 +80,47 @@ const OrderItems = ({ order }) => {
             </View>
             <View
               style={{
-                alignItems: "flex-start",
                 marginLeft: 10,
                 flexDirection: "column",
+                flex: 1,
               }}
             >
               <View
                 style={{
                   flexDirection: "row",
                   alignContent: "center",
+                  justifyContent: "space-between",
+                  flex: 1,
                 }}
               >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text
                   style={{
-                    fontSize: 18,
-                    textDecorationLine: "underline",
+                    fontSize: themeStyle.FONT_SIZE_MD,
+                    color: themeStyle.GRAY_800,
                   }}
                 >
-                  {/* {languageStore.selectedLang === "ar"
-                    ? meal.nameAR
-                    : meal.nameHE} */}
+                  {languageStore.selectedLang === "ar"
+                    ? item.nameAR
+                    : item.nameHE}
                 </Text>
-              </View>
-              {isShowSize(item.item_id) && (
-                <View style={{ marginTop: 10 }}>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                    }}
-                  >
-                    {t("size")} : {t(item.size)}
-                  </Text>
+                <View style={{ marginLeft: 10 }}>
+                <Text style={{ fontSize: themeStyle.FONT_SIZE_XS, color: themeStyle.GRAY_800 }}>X{item.qty}</Text>
                 </View>
-              )}
-              <View style={{ marginTop: 10 }}>
-                <Text
-                  style={{
-                    fontSize: 18,
-                  }}
-                >
-                  {t("count")}: {item.qty}
-                </Text>
-              </View>
-              {item.size == "large" && (
-                <View style={{ marginTop: 2 }}>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                    }}
-                  >
-                    {t("size")}: {sizeTitleAdapter(item.size)}
-                  </Text>
                 </View>
-              )}
-              <View style={{ alignItems: "flex-start", marginTop: 2 }}>
-                {item.taste &&
-                  Object.keys(item.taste).map((key) => {
-                    return (
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          marginTop: 2,
-                        }}
-                      >
-                        {`${t("level")} ${key}`} - {t(item.taste[key])}
-                      </Text>
-                    );
-                  })}
+             
+                <View style={{ flexDirection: "row", alignItems: "center",  }}>
+                  
+                  <Text style={{ fontSize: themeStyle.FONT_SIZE_SM, color: themeStyle.GRAY_800 }}>₪{item.price}</Text>
+                </View>
               </View>
 
-              <View style={{ marginTop: 2, alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontSize: 18,
-                  }}
-                >
-                  {t("price")}: ₪
-                  {(item.item_id === 3027 ? item.price : item.price) * item.qty}
-                </Text>
+              <View>
+                <Text style={{ fontSize: themeStyle.FONT_SIZE_SM, color: themeStyle.GRAY_800 }}>{JSON.stringify(item.selectedExtras)  }</Text>
               </View>
+     
+      
+
               {item.note && (
                 <View
                   style={{
@@ -156,14 +131,14 @@ const OrderItems = ({ order }) => {
                 >
                   <Text
                     style={{
-                      fontSize: 18,
+                      fontSize: themeStyle.FONT_SIZE_MD,
                     }}
                   >
-                    {t("مواصفات الكعكة")}:
+                    {t("note")}:  
                   </Text>
                   <Text
                     style={{
-                      fontSize: 18,
+                      fontSize: themeStyle.FONT_SIZE_MD,
                       fontFamily: `${getCurrentLang()}-SemiBold`,
                       color: themeStyle.GRAY_700,
                       textAlign: "left",
@@ -175,39 +150,6 @@ const OrderItems = ({ order }) => {
                 </View>
               )}
             </View>
-
-            {(item?.clienImage?.uri || item?.suggestedImage) && (
-              <View
-                style={{
-                  marginVertical: 10,
-                  flexGrow: 1,
-                }}
-              >
-                <View style={{ alignItems: "center", marginBottom: 10 }}>
-                  <Text style={{ fontSize: 16 }}>{t("client-image")}</Text>
-                </View>
-                <View
-                  style={{
-                    height: 80,
-                  }}
-                >
-                  {item?.clienImage?.uri && (
-                    <Image
-                      style={{ width: "100%", height: "100%" }}
-                      source={{ uri: `${cdnUrl}${item?.clienImage?.uri}` }}
-                      resizeMode="contain"
-                    />
-                  )}
-                  {item?.suggestedImage && (
-                    <Image
-                      style={{ width: "100%", height: "100%" }}
-                      source={{ uri: `${cdnUrl}${item?.suggestedImage}` }}
-                      resizeMode="contain"
-                    />
-                  )}
-                </View>
-              </View>
-            )}
           </View>
         </View>
       );

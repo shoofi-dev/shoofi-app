@@ -42,7 +42,10 @@ export const hideHHeaderScreens = [
   "about-us",
   "delete-account",
   "logout",
-  "Profile"
+  "Profile",
+  "order-item",
+  "order-history",
+  "active-orders"
 ];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];

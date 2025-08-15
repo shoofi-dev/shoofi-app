@@ -45,13 +45,13 @@ const ProfileScreen = () => {
         color: themeStyle.SUCCESS_COLOR,
       },
     ],
-   //  [
-      // {
-      //   key: "orders",
-      //   label: t("orders-history"),
-      //   icon: "orders-icon",
-      //   color: themeStyle.SUCCESS_COLOR,
-      // },
+     [
+      {
+        key: "orders",
+        label: t("orders-history"),
+        icon: "orders-icon",
+        color: themeStyle.SUCCESS_COLOR,
+      },
     //   {
     //     key: "favorites",
     //     label: t("מועדפים"),
@@ -84,7 +84,7 @@ const ProfileScreen = () => {
     //     icon: "star",
     //     color: themeStyle.TEXT_PRIMARY_COLOR,
     //   },
-    // ],
+     ],
      [
       {
         key: "contact-us",
@@ -114,16 +114,23 @@ const ProfileScreen = () => {
     switch (key) {
       case "details":
         // Go to details
-        navigation.navigate("user-information");
+        (navigation as any).navigate("user-information");
         break;
       case "address":
         // Go to address
         break;
       case "language":
-        navigation.navigate("language");
+        (navigation as any).navigate("language");
         break;
       case "orders":
-        navigation.navigate("order-history");
+        // Navigate to order-history which is at the root stack level
+        // Try to get parent navigation to access root stack
+        const parentNavigation = (navigation as any).getParent?.();
+        if (parentNavigation) {
+          parentNavigation.navigate("order-history");
+        } else {
+          (navigation as any).navigate("order-history");
+        }
         break;
       case "favorites":
         // Go to favorites
@@ -138,18 +145,18 @@ const ProfileScreen = () => {
         // Go to FAQ
         break;
       case "contact-us":
-      navigation.navigate("contact-us");
-      // Linking.openURL(`https://wa.me/${shoofiAdminStore?.storeData?.waSupportPhone}`)
+        (navigation as any).navigate("contact-us");
+        // Linking.openURL(`https://wa.me/${shoofiAdminStore?.storeData?.waSupportPhone}`)
         break;
       case "logout":
         authStore.logOut();
         userDetailsStore.resetUser();
-        navigation.navigate("homeScreen");
+        (navigation as any).navigate("homeScreen");
         break;
       case "delete-account":
         // Go to delete account
         authStore.deleteAccount();
-        navigation.navigate("homeScreen");
+        (navigation as any).navigate("homeScreen");
         break;
     }
   };
@@ -212,7 +219,7 @@ const ProfileScreen = () => {
           <Text style={styles.versionText}>גרסה {version}</Text>
         </View> */}
         <View style={{flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 16, alignItems: "center", alignSelf: "center"}}>
-          <TouchableOpacity onPress={() => navigation.navigate("terms-and-conditions")}>
+          <TouchableOpacity onPress={() => (navigation as any).navigate("terms-and-conditions")}>
             <Text style={styles.versionText}>{t("terms-of-use")}</Text>
             <View style={{borderBottomColor: themeStyle.SUCCESS_COLOR, borderBottomWidth: 1, paddingBottom: 2}}>
             </View>

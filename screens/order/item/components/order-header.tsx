@@ -11,11 +11,13 @@ import { StoreContext } from "../../../../stores";
 import { useContext } from "react";
 import Icon from "../../../../components/icon";
 import OrderTimer from "./order-timer";
+import BackButton from "../../../../components/back-button";
+import { useNavigation } from "@react-navigation/native";
 
-const OrderHeader = ({ order }) => {
+const OrderHeader = ({ order, isHistory, sourceScreen }) => {
   const { t } = useTranslation();
   const oOrder = order.order;
-
+  const navigation = useNavigation();
   const { languageStore, shoofiAdminStore } = useContext(StoreContext);
 
   // Mock data for timer testing
@@ -107,10 +109,30 @@ const OrderHeader = ({ order }) => {
     );
   };
 
+  const handleBack = () => {
+    console.log('Back button pressed - sourceScreen:', sourceScreen, 'isHistory:', isHistory);
+    
+    // Use goBack() for most reliable navigation back to previous screen
+    if (sourceScreen === 'active-orders') {
+      console.log('Navigating back to active-orders tab');
+      // For active orders, we need to navigate to the tab specifically
+      (navigation as any).navigate('MainTabs', { screen: 'active-orders' });
+    } else {
+      console.log('Using goBack for order-history or other screens');
+      // For order-history and other screens, use goBack() which is more reliable
+      // navigation.navigate("order-history");
+      
+    }
+  }
+
   return (
     <View style={{ width: "100%" }}>
       <View style={[styles.orderContainer]}>
         <View style={styles.imageWrapper}>
+          <View style={{position: "absolute", left: 10, top: 10, zIndex: 1000}}>
+            <BackButton onClick={handleBack} color={themeStyle.WHITE_COLOR} />    
+          </View>
+         
           <CustomFastImage
             style={styles.image}
             source={{
@@ -149,7 +171,7 @@ const OrderHeader = ({ order }) => {
               alignItems: "center",
             }}
           >
-            <TouchableOpacity
+            { !isHistory &&   <TouchableOpacity
               style={styles.iconWrapper}
               onPress={() => {
                 const phoneNumber =
@@ -170,7 +192,7 @@ const OrderHeader = ({ order }) => {
               }}
             >
               <Icon icon="whatapp" size={24} color={themeStyle.SUCCESS_COLOR} />
-            </TouchableOpacity>
+            </TouchableOpacity> }
 
             { order?.ccPaymentRefData?.url && shoofiAdminStore?.storeData?.isShowInvoice && <View>
               {/* <Text>{order?.ccPaymentRefData?.url}</Text> */}
@@ -199,7 +221,7 @@ const OrderHeader = ({ order }) => {
               </TouchableOpacity>
             </View>}
             <View style={styles.receiptMethodWrapper}>
-            <Icon icon={oOrder.receipt_method === SHIPPING_METHODS.shipping ? "bicycle1" : "bicycle1"} size={16} style={{ color: themeStyle.SECONDARY_COLOR, opacity: 1, marginRight: 5 }} />
+            <Icon icon={oOrder.receipt_method === SHIPPING_METHODS.shipping ? "bicycle1" : "cart"} size={16} style={{ color: themeStyle.SECONDARY_COLOR, opacity: 1, marginRight: 5 }} />
 
               <Text>{t(oOrder.receipt_method?.toLowerCase())}</Text>
             </View>
@@ -211,7 +233,7 @@ const OrderHeader = ({ order }) => {
       </View>
 
       {/* Timer Component */}
-      <View
+      {!isHistory &&    <View
         style={{
           position: "absolute",
           right: 20,
@@ -223,6 +245,7 @@ const OrderHeader = ({ order }) => {
       >
         <OrderTimer order={order} mockData={mockTimerData} />
       </View>
+      }
     </View>
   );
 };
