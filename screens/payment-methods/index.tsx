@@ -231,12 +231,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   paymentMethodItem: {
-    marginBottom: 8, // Reduced from 16 to 8
+    marginBottom: 8,
   },
   paymentMethodContent: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12, // Reduced from 16 to 12
+    paddingVertical: 12,
     paddingHorizontal: 4,
   },
   iconContainer: {
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#f9fafb",
     backgroundColor: "transparent",
-    marginHorizontal: 8, // Reduced from 12 to 8
+    marginHorizontal: 8,
   },
   paymentIcon: {
     width: 28,
