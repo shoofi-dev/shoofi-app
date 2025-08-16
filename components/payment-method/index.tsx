@@ -208,7 +208,7 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
         animationOut="slideOutDown"
         backdropOpacity={0.5}
       >
-        <PaymentMethodModal onClose={handleCloseCreditCardModal} />
+        <CreditCardModal onClose={handleCloseCreditCardModal} />
       </Modal>
     </View>
   );

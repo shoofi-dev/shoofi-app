@@ -5,12 +5,13 @@ import PaymentMethodsScreen from "../screens/payment-methods";
 // TypeScript interface for component props
 interface PaymentMethodModalProps {
   onClose: () => void;
+  onSelect?: (selectedMethod: string) => void;
 }
 
 // Get screen dimensions once (performance improvement)
 const { height: screenHeight } = Dimensions.get('window');
 
-const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ onClose }) => {
+const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ onClose, onSelect }) => {
   return (
     <View 
       style={styles.modalContainer}
@@ -18,7 +19,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ onClose }) => {
       accessibilityLabel="Payment Methods Modal"
       accessible={true}
     >
-      <PaymentMethodsScreen onClose={onClose} isModal={true} />
+      <PaymentMethodsScreen onClose={onClose} onSelect={onSelect} isModal={true} />
     </View>
   );
 };

@@ -24,7 +24,7 @@ interface PaymentMethod {
   color?: string;
 }
 
-const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
+const PaymentMethodsScreen = ({ onClose, onSelect, isModal = false }) => {
   const { t } = useTranslation();
   const { scale, fontSize } = useResponsive();
   const [selectedMethod, setSelectedMethod] = useState<string>("");
@@ -54,7 +54,7 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
           apple_pay: "Apple Pay",
           google_pay: "Google Pay",
           bit: "بيت",
-          credit_card: "بطاقة ائتمان",
+          credit_card: "بطاقة",
           cash: "نقداً"
         }
       };
@@ -99,6 +99,12 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
     if (selectedMethod) {
       // Handle adding the selected payment method
       console.log("Selected payment method:", selectedMethod);
+      
+      // Call onSelect if provided
+      if (onSelect) {
+        onSelect(selectedMethod);
+      }
+      
       onClose();
     }
   };
