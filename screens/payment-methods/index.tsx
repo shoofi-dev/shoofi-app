@@ -3,6 +3,7 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
@@ -19,6 +20,7 @@ interface PaymentMethod {
   id: string;
   name: string;
   icon?: string;
+  iconSource?: any; // For PNG images
   color?: string;
 }
 
@@ -31,14 +33,14 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
   const getPaymentTranslations = () => {
     const currentLang = getCurrentLang();
     
-    if (currentLang === 'he') {
+         if (currentLang === 'he') {
       return {
         title: "אמצעי תשלום",
         add: "הוסף",
         methods: {
           apple_pay: "Apple Pay",
+          google_pay: "Google Pay",
           bit: "בִּיט",
-          paybox: "פיי בוקס", 
           credit_card: "כרטיס אשראי",
           cash: "מזומן"
         }
@@ -50,8 +52,8 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
         add: "إضافة",
         methods: {
           apple_pay: "Apple Pay",
+          google_pay: "Google Pay",
           bit: "بيت",
-          paybox: "باي بوكس",
           credit_card: "بطاقة ائتمان",
           cash: "نقداً"
         }
@@ -65,32 +67,27 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
     {
       id: "apple_pay",
       name: translations.methods.apple_pay,
-      icon: "plus3",
-      color: "#000",
+      iconSource: require("../../assets/icons/apple-pay.png"),
+    },
+    {
+      id: "google_pay", 
+      name: translations.methods.google_pay,
+      iconSource: require("../../assets/icons/google-pay.png"),
     },
     {
       id: "bit",
       name: translations.methods.bit,
-      icon: "phone1",
-      color: "#00B4D8",
-    },
-    {
-      id: "paybox",
-      name: translations.methods.paybox,
-      icon: "kupa1",
-      color: "#FF6B35",
+      iconSource: require("../../assets/icons/bit.png"),
     },
     {
       id: "credit_card",
       name: translations.methods.credit_card,
-      icon: "credit-card1",
-      color: "#2196F3",
+      iconSource: require("../../assets/icons/credit-card.png"),
     },
     {
       id: "cash",
       name: translations.methods.cash,
-      icon: "shekel1",
-      color: "#4CAF50",
+      icon: "shekel1", // Keep vector icon for cash
     },
   ];
 
@@ -127,11 +124,18 @@ const PaymentMethodsScreen = ({ onClose, isModal = false }) => {
           </View>
           
           <View style={styles.iconContainer}>
-            <Icon
-              icon={method.icon}
-              size={scale(20)}
-              color={method.color}
-            />
+            {method.iconSource ? (
+              <Image
+                source={method.iconSource}
+                style={styles.paymentIcon}
+                resizeMode="contain"
+              />
+            ) : (
+              <Icon
+                icon={method.icon}
+                size={scale(20)}
+              />
+            )}
           </View>
           
           <Text style={[styles.paymentMethodText, { fontSize: fontSize(16) }]}>
@@ -245,6 +249,10 @@ const styles = StyleSheet.create({
     borderColor: "#f9fafb",
     backgroundColor: "transparent",
     marginHorizontal: 8, // Reduced from 12 to 8
+  },
+  paymentIcon: {
+    width: 28,
+    height: 28,
   },
   paymentMethodText: {
     flex: 1,
