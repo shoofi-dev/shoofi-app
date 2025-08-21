@@ -29,11 +29,13 @@ const icons = {
 
 export type TProps = {
   onChange: any;
+  onDigitalPaymentSelect?: () => Promise<void>;
   paymentMethodValue: any;
   isLoadingCreditCards?: boolean;
 };
 export const PaymentMethodPickSquare = ({
   onChange,
+  onDigitalPaymentSelect,
   paymentMethodValue,
   isLoadingCreditCards = false,
 }: TProps) => {
@@ -121,10 +123,13 @@ export const PaymentMethodPickSquare = ({
         mappedMethod = PAYMENT_METHODS.cash;
         break;
       case 'apple_pay':
+        mappedMethod = PAYMENT_METHODS.applePay;
+        break;
       case 'google_pay':
+        mappedMethod = PAYMENT_METHODS.googlePay;
+        break;
       case 'bit':
-        // For now, these are handled as cash since the app only supports creditCard and cash
-        mappedMethod = PAYMENT_METHODS.cash;
+        mappedMethod = PAYMENT_METHODS.bit;
         break;
       default:
         mappedMethod = PAYMENT_METHODS.cash;
@@ -142,6 +147,13 @@ export const PaymentMethodPickSquare = ({
     
     // Close the modal
     setIsPaymentMethodModalOpen(false);
+
+    // Call ZCredit session creation for digital payment methods
+    if ((selectedMethod === 'apple_pay' || selectedMethod === 'google_pay' || selectedMethod === 'bit') && onDigitalPaymentSelect) {
+      setTimeout(() => {
+        onDigitalPaymentSelect();
+      }, 500); // Small delay to ensure modal is closed and state is updated
+    }
   };
 
   const getPaymentMethodDisplayName = () => {
@@ -171,6 +183,12 @@ export const PaymentMethodPickSquare = ({
         return "بطاقة";
       case PAYMENT_METHODS.cash:
         return "نقداً";
+      case PAYMENT_METHODS.applePay:
+        return "Apple Pay";
+      case PAYMENT_METHODS.googlePay:
+        return "Google Pay";
+      case PAYMENT_METHODS.bit:
+        return "بيت";
       default:
         return "اختر وسيلة دفع";
     }
@@ -200,6 +218,12 @@ export const PaymentMethodPickSquare = ({
         return <Icon icon="credit-card-1" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
       case PAYMENT_METHODS.cash:
         return <Icon icon="shekel1" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+      case PAYMENT_METHODS.applePay:
+        return <Image source={require("../../../assets/icons/apple-pay.png")} style={styles.iconImage} />;
+      case PAYMENT_METHODS.googlePay:
+        return <Image source={require("../../../assets/icons/google-pay.png")} style={styles.iconImage} />;
+      case PAYMENT_METHODS.bit:
+        return <Image source={require("../../../assets/icons/bit.png")} style={styles.iconImage} />;
       default:
         return <Icon icon="creditcard" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
     }

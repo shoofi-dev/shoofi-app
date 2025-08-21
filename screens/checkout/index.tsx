@@ -38,6 +38,7 @@ import { getCurrentLang } from "../../translations/i18n";
 import Modal from "react-native-modal";
 import OrderSubmittedScreen from "../order/submitted";
 import OrderProcessingModal from "../../components/dialogs/order-processing-modal";
+import { WebView } from 'react-native-webview';
 
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -66,6 +67,10 @@ const CheckoutScreen = ({ route }) => {
 
   const [shippingMethod, setShippingMethod] = useState(null);
   const [cartCount, setCartCount] = useState(0);
+  
+  // WebView state for digital payments
+  const [paymentPageUrl, setPaymentPageUrl] = useState(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
   }, [cartStore.cartItems]);
@@ -181,11 +186,20 @@ const CheckoutScreen = ({ route }) => {
 
   const onPaymentMethodChange = (data: any) => {
     setPaymentMthod(data);
+    if (data === PAYMENT_METHODS.applePay || data === PAYMENT_METHODS.googlePay || data === PAYMENT_METHODS.bit) {
+      createZCreditSession();
+    }
+    // Clear payment URL if switching to non-digital payment method
+    if (data !== PAYMENT_METHODS.applePay && data !== PAYMENT_METHODS.googlePay && data !== PAYMENT_METHODS.bit) {
+      setPaymentPageUrl(null);
+      setIsProcessingPayment(false);
+    }
   };
 
   // Handle payment data from credit card component
   const onPaymentDataChange = (data: any) => {
     console.log("onPaymentDataChange", data)
+    alert(data);
     setPaymentData(data);
   };
 
@@ -259,6 +273,127 @@ const CheckoutScreen = ({ route }) => {
     setTimeout(() => {
       setIsOrderSubmittedModalOpen(true);
     }, 700); // Increased delay to ensure processing modal is fully hidden
+  };
+
+  // Function to create ZCredit payment session for digital payments
+  const createZCreditSession = async () => {
+    try {
+      setIsProcessingPayment(true);
+      
+      // Get user details
+      const userDetails = adminCustomerStore.userDetails || userDetailsStore.userDetails;
+      const customerName = userDetails?.name || "";
+      const customerPhone = userDetails?.phone || "";
+      
+      // Determine FocusType based on payment method
+      let focusType = "ApplePayOnly";
+      if (paymentMthod === PAYMENT_METHODS.googlePay) {
+        focusType = "GooglePayOnly";
+      } else if (paymentMthod === PAYMENT_METHODS.bit) {
+        focusType = "BitOnly";
+      }
+      
+      // Prepare cart items
+      const cartItems = cartStore.cartItems.map(item => ({
+        Amount: (1 * item.others.qty).toString(),
+        Currency: "ILS",
+        Name: item.data.name,
+        Description: item.data.description || "Item from order",
+        Quantity: item.others.qty,
+        Image: "",
+        IsTaxFree: "false",
+        AdjustAmount: "false"
+      }));
+
+      const requestBody = {
+        Key: "c0863aa14e77ec032effda671797c295d8a2ab154e49242871a197d158fa3f30",
+        Local: "He",
+        UniqueId: "",
+        SuccessUrl: "",
+        CancelUrl: "",
+        CallbackUrl: "",
+        FailureCallBackUrl: "",
+        FailureRedirectUrl: "",
+        NumberOfFailures: 5,
+        PaymentType: "regular",
+        CreateInvoice: "false",
+        AdditionalText: "",
+        ShowCart: "false",
+        ThemeColor: "c0e202",
+        BitButtonEnabled: paymentMthod === PAYMENT_METHODS.bit ? "true" : "false",
+        ApplePayButtonEnabled: paymentMthod === PAYMENT_METHODS.applePay ? "true" : "false",
+        GooglePayButtonEnabled: paymentMthod === PAYMENT_METHODS.googlePay ? "true" : "false",
+        Installments: 1,
+        Customer: {
+          Email: "",
+          Name: customerName,
+          PhoneNumber: customerPhone,
+          Attributes: {
+            HolderId: "none",
+            Name: "required",
+            PhoneNumber: "required",
+            Email: "optional"
+          }
+        },
+        CartItems: cartItems,
+        FocusType: focusType,
+        CardsIcons: {
+          ShowVisaIcon: "true",
+          ShowMastercardIcon: "true",
+          ShowDinersIcon: "true",
+          ShowAmericanExpressIcon: "true",
+          ShowIsracardIcon: "true",
+        },
+        IssuerWhiteList: [1,2,3,4,5,6],
+        BrandWhiteList: [1,2,3,4,5,6],
+        UseLightMode: "true",
+        UseCustomCSS: "true",
+        BackgroundColor: "FFFFFF",
+        ShowTotalSumInPayButton: "false",
+        ForceCaptcha: "false",
+        CustomCSS: "",
+        Bypass3DS: "false"
+      };
+
+      const response = await fetch('https://pci.zcredit.co.il/webcheckout/api/WebCheckout/CreateSession', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      const responseData = await response.json();
+      
+      if (responseData.HasError === false && responseData.Data?.SessionUrl) {
+        setPaymentPageUrl(responseData.Data.SessionUrl);
+      } else {
+        console.error('Failed to create payment session:', responseData);
+        // Handle error - maybe show an error dialog
+        alert('Failed to create payment session. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error creating payment session:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // Handle WebView navigation state changes
+  const handleWebViewNavigationStateChange = (navState) => {
+    console.log('WebView navigation state changed:', navState.url);
+    
+    // Check for success/failure URLs and handle accordingly
+    if (navState.url.includes('success') || navState.url.includes('callback')) {
+      // Payment successful - proceed with order submission
+      setPaymentPageUrl(null);
+      handleCheckout();
+    } else if (navState.url.includes('cancel') || navState.url.includes('failure')) {
+      // Payment cancelled or failed
+      setPaymentPageUrl(null);
+      setIsProcessingPayment(false);
+    }
   };
 
   const handleCheckout = async () => {
@@ -352,6 +487,18 @@ const CheckoutScreen = ({ route }) => {
     setItemsPrice(itemsPriceValue);
   };
 
+  // Helper function to check if payment method is digital (Apple Pay, Google Pay, Bit)
+  const isDigitalPaymentMethod = () => {
+    return paymentMthod === PAYMENT_METHODS.applePay || 
+           paymentMthod === PAYMENT_METHODS.googlePay || 
+           paymentMthod === PAYMENT_METHODS.bit;
+  };
+
+  // Handle payment button click (only for non-digital payment methods)
+  const handlePaymentButtonClick = () => {
+    handleCheckout();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.backContainer}>
@@ -428,30 +575,43 @@ const CheckoutScreen = ({ route }) => {
           borderTopEndRadius: (30),
 
           alignItems: "center",
-          height: (100),
+          height: (100), // Keep same height for both button and WebView
           justifyContent: "center",
         }}
       >
 
-        <View style={{ width: "90%", alignSelf: "center" }}>
-          <Button
-            onClickFn={() => handleCheckout()}
-            disabled={isLoadingOrderSent || driversLoading}
-            text={t("send-order")}
-            isLoading={isLoadingOrderSent || driversLoading}
+        <View style={{ width: "90%", alignSelf: "center", height: "100%" }}>
+          {paymentPageUrl && isDigitalPaymentMethod() ? (
+            // WebView for digital payments - replaces the button
+              <WebView
+                  source={{ uri: paymentPageUrl }}
+                  style={styles.webview}
+                  onNavigationStateChange={handleWebViewNavigationStateChange}
+                  startInLoadingState={true}
+                  javaScriptEnabled={true}
+                  domStorageEnabled={true}
+              />
+          ) : (
+            // Regular checkout button
+            <Button
+              onClickFn={() => handlePaymentButtonClick()}
+              disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
+              text={t("send-order")}
+              isLoading={isLoadingOrderSent || driversLoading || isProcessingPayment}
 
-            icon="kupa"
-            iconSize={themeStyle.FONT_SIZE_LG}
-            fontSize={themeStyle.FONT_SIZE_LG}
-            iconColor={themeStyle.SECONDARY_COLOR}
-            fontFamily={`${getCurrentLang()}-Bold`}
-            bgColor={themeStyle.PRIMARY_COLOR}
-            textColor={themeStyle.SECONDARY_COLOR}
-            borderRadious={100}
-            extraText={`₪${totalPrice}`}
-            countText={`${cartCount}`}
-            countTextColor={themeStyle.PRIMARY_COLOR}
-          />
+              icon="kupa"
+              iconSize={themeStyle.FONT_SIZE_LG}
+              fontSize={themeStyle.FONT_SIZE_LG}
+              iconColor={themeStyle.SECONDARY_COLOR}
+              fontFamily={`${getCurrentLang()}-Bold`}
+              bgColor={themeStyle.PRIMARY_COLOR}
+              textColor={themeStyle.SECONDARY_COLOR}
+              borderRadious={100}
+              extraText={`₪${totalPrice}`}
+              countText={`${cartCount}`}
+              countTextColor={themeStyle.PRIMARY_COLOR}
+            />
+          )}
         </View>
       </Animatable.View>
       <ConfirmActiondBasedEventDialog />
@@ -499,5 +659,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 15,
     marginTop: 10,
+  },
+  webview: {
+    height: "100%",
+    paddingTop: 100,
   },
 });

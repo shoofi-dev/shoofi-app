@@ -126,7 +126,6 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
 
     setPaymentMethod(paymentMethodValue);
     onChange(paymentMethodValue);
-    
     // Only fetch credit cards when selecting credit card payment
     if (paymentMethodValue === PAYMENT_METHODS.creditCard) {
 
