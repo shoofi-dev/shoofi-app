@@ -123,7 +123,6 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
   };
 
   const onPaymentMethodChange = async (paymentMethodValue: string) => {
-
     setPaymentMethod(paymentMethodValue);
     onChange(paymentMethodValue);
     // Only fetch credit cards when selecting credit card payment

@@ -186,13 +186,15 @@ const CheckoutScreen = ({ route }) => {
 
   const onPaymentMethodChange = (data: any) => {
     setPaymentMthod(data);
+    
+    // Always clear payment URL and processing state when payment method changes
+    setPaymentPageUrl(null);
+    setIsProcessingPayment(false);
+    
+    // Create new ZCredit session for digital payment methods
     if (data === PAYMENT_METHODS.applePay || data === PAYMENT_METHODS.googlePay || data === PAYMENT_METHODS.bit) {
+      // Small delay to ensure state is cleared before creating new session
       createZCreditSession();
-    }
-    // Clear payment URL if switching to non-digital payment method
-    if (data !== PAYMENT_METHODS.applePay && data !== PAYMENT_METHODS.googlePay && data !== PAYMENT_METHODS.bit) {
-      setPaymentPageUrl(null);
-      setIsProcessingPayment(false);
     }
   };
 
@@ -278,6 +280,7 @@ const CheckoutScreen = ({ route }) => {
   // Function to create ZCredit payment session for digital payments
   const createZCreditSession = async () => {
     try {
+      alert('chaned to:'  + paymentMthod);
       setIsProcessingPayment(true);
       
       // Get user details
@@ -365,7 +368,16 @@ const CheckoutScreen = ({ route }) => {
 
       const responseData = await response.json();
       
+      // Log the complete response
+      console.log('ZCredit API Response:', responseData);
+      
+      // Log the SessionId specifically
+      if (responseData.Data?.SessionId) {
+        console.log('ZCredit SessionId:', responseData.Data.SessionId);
+      }
+      
       if (responseData.HasError === false && responseData.Data?.SessionUrl) {
+        console.log('ZCredit SessionUrl:', responseData.Data.SessionUrl);
         setPaymentPageUrl(responseData.Data.SessionUrl);
       } else {
         console.error('Failed to create payment session:', responseData);
