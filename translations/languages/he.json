@@ -2,6 +2,16 @@
   "home": {
     "newOrder": "הזמנה חדשה"
   },
+  "payment-method": "אמצעי תשלום",
+  "cash": "מזומן",
+  "credit-card": "כרטיס אשראי", 
+  "apple-pay": "Apple Pay",
+  "google-pay": "Google Pay",
+  "bit": "בִּיט",
+  "select-payment-method": "בחר אמצעי תשלום",
+  "loading": "טוען...",
+  "add": "הוסף",
+  "no-payment-methods-available": "אין אמצעי תשלום זמינים",
   "please_select_location": "אנא בחר מיקום כדי לראות חנויות זמינות",
   "no_stores_in_area": "אין חנויות זמינות באזור שלך",
   "loading_stores": "טוען חנויות..."

@@ -1,24 +1,16 @@
-import React from "react";
-import {
-  View,
-  Image,
-  StyleSheet,
-  DeviceEventEmitter,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import React, {useEffect, useState} from "react";
+import {DeviceEventEmitter, Image, StyleSheet, TouchableOpacity, View,} from "react-native";
 import Text from "../../controls/Text";
-import { useTranslation } from "react-i18next";
-import { PAYMENT_METHODS } from "../../../consts/shared";
-import { useEffect, useState } from "react";
-import theme from "../../../styles/theme.style";
+import {useTranslation} from "react-i18next";
+import {PAYMENT_METHODS} from "../../../consts/shared";
 import themeStyle from "../../../styles/theme.style";
 import Icon from "../../icon";
 import isStoreSupportAction from "../../../helpers/is-store-support-action";
-import { DIALOG_EVENTS } from "../../../consts/events";
-import { getCurrentLang } from "../../../translations/i18n";
+import {DIALOG_EVENTS} from "../../../consts/events";
+import {getCurrentLang} from "../../../translations/i18n";
 import Modal from "react-native-modal";
 import PaymentMethodModal from "../../PaymentMethodModal";
+import { getPaymentMethodById, getPaymentMethodByValue, getSupportedPaymentMethods, PaymentMethodOption, getPaymentMethodTranslatedName } from "../../../helpers/get-supported-payment-methods";
 
 const icons = {
   bagOff: require("../../../assets/pngs/buy-off.png"),
@@ -33,6 +25,7 @@ export type TProps = {
   paymentMethodValue: any;
   isLoadingCreditCards?: boolean;
 };
+
 export const PaymentMethodPickSquare = ({
   onChange,
   onDigitalPaymentSelect,
@@ -43,6 +36,8 @@ export const PaymentMethodPickSquare = ({
   const [paymentMthod, setPaymentMthod] = useState<any>(paymentMethodValue);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string>("");
+  const [supportedPaymentMethods, setSupportedPaymentMethods] = useState<PaymentMethodOption[]>([]);
+  const [isLoadingPaymentMethods, setIsLoadingPaymentMethods] = useState(true);
 
   useEffect(() => {
     console.log('PaymentMethodPickSquare - paymentMethodValue changed:', paymentMethodValue);
@@ -52,6 +47,25 @@ export const PaymentMethodPickSquare = ({
   useEffect(() => {
     console.log('PaymentMethodPickSquare - selectedPaymentMethodId changed:', selectedPaymentMethodId);
   }, [selectedPaymentMethodId]);
+
+  // Preload supported payment methods when component mounts
+  useEffect(() => {
+    const loadSupportedPaymentMethods = async () => {
+      try {
+        setIsLoadingPaymentMethods(true);
+        const methods = await getSupportedPaymentMethods();
+        setSupportedPaymentMethods(methods);
+        console.log('Preloaded supported payment methods:', methods);
+      } catch (error) {
+        console.error('Error loading supported payment methods:', error);
+        setSupportedPaymentMethods([]);
+      } finally {
+        setIsLoadingPaymentMethods(false);
+      }
+    };
+
+    loadSupportedPaymentMethods();
+  }, []);
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
@@ -78,16 +92,16 @@ export const PaymentMethodPickSquare = ({
     if (value == null) {
       return;
     }
-    let selectedPM = "";
-    switch (value) {
-      case "CREDITCARD":
-        selectedPM = "creditcard_support";
-        break;
-      case "CASH":
-        selectedPM = "cash_support";
-        break;
+    
+    // Get the payment method configuration
+    const paymentMethodConfig = getPaymentMethodByValue(value);
+    if (!paymentMethodConfig) {
+      console.warn('Unknown payment method:', value);
+      return;
     }
-    const isSupported = await isStoreSupportAction(selectedPM);
+
+    // Check if payment method is supported
+    const isSupported = await isStoreSupportAction(paymentMethodConfig.supportKey);
     if (!isSupported) {
       toggleDialog({
         text: "creditcard-not-supported",
@@ -97,6 +111,7 @@ export const PaymentMethodPickSquare = ({
       onChange(PAYMENT_METHODS.cash);
       return;
     }
+    
     setPaymentMthod(value);
     onChange(value);
   };
@@ -112,47 +127,29 @@ export const PaymentMethodPickSquare = ({
   const handlePaymentMethodSelect = (selectedMethod: string) => {
     console.log('handlePaymentMethodSelect called with:', selectedMethod);
     
-    // Map the selected method from modal to our payment method constants
-    let mappedMethod = PAYMENT_METHODS.cash; // Default
-    
-    switch (selectedMethod) {
-      case 'credit_card':
-        mappedMethod = PAYMENT_METHODS.creditCard;
-        break;
-      case 'cash':
-        mappedMethod = PAYMENT_METHODS.cash;
-        break;
-      case 'apple_pay':
-        mappedMethod = PAYMENT_METHODS.applePay;
-        break;
-      case 'google_pay':
-        mappedMethod = PAYMENT_METHODS.googlePay;
-        break;
-      case 'bit':
-        mappedMethod = PAYMENT_METHODS.bit;
-        break;
-      default:
-        mappedMethod = PAYMENT_METHODS.cash;
+    // Get the payment method configuration
+    const paymentMethodConfig = getPaymentMethodById(selectedMethod);
+    if (!paymentMethodConfig) {
+      console.warn('Unknown payment method:', selectedMethod);
+      return;
     }
     
-    console.log('Mapped method:', mappedMethod);
+    console.log('Mapped method:', paymentMethodConfig.paymentMethodValue);
     console.log('Setting selectedPaymentMethodId to:', selectedMethod);
     
     // Store the selected payment method ID for display purposes
     setSelectedPaymentMethodId(selectedMethod);
     
     // Update the payment method state
-    setPaymentMthod(mappedMethod);
-    onChange(mappedMethod);
+    setPaymentMthod(paymentMethodConfig.paymentMethodValue);
+    onChange(paymentMethodConfig.paymentMethodValue);
     
     // Close the modal
     setIsPaymentMethodModalOpen(false);
 
     // Call ZCredit session creation for digital payment methods
     if ((selectedMethod === 'apple_pay' || selectedMethod === 'google_pay' || selectedMethod === 'bit') && onDigitalPaymentSelect) {
-      setTimeout(() => {
-        onDigitalPaymentSelect();
-      }, 500); // Small delay to ensure modal is closed and state is updated
+      onDigitalPaymentSelect();
     }
   };
 
@@ -160,73 +157,49 @@ export const PaymentMethodPickSquare = ({
     console.log('getPaymentMethodDisplayName - selectedPaymentMethodId:', selectedPaymentMethodId);
     console.log('getPaymentMethodDisplayName - paymentMthod:', paymentMthod);
     
+    // If we have a selected payment method ID, use it to get the translation
     if (selectedPaymentMethodId) {
-      switch (selectedPaymentMethodId) {
-        case 'credit_card':
-          return "بطاقة";
-        case 'cash':
-          return "نقداً";
-        case 'apple_pay':
-          return "Apple Pay";
-        case 'google_pay':
-          return "Google Pay";
-        case 'bit':
-          return "بيت";
-        default:
-          return "اختر وسيلة دفع";
+      const paymentMethodConfig = getPaymentMethodById(selectedPaymentMethodId);
+      if (paymentMethodConfig) {
+        return getPaymentMethodTranslatedName(paymentMethodConfig);
       }
     }
     
     // Fallback to payment method constant
-    switch (paymentMthod) {
-      case PAYMENT_METHODS.creditCard:
-        return "بطاقة";
-      case PAYMENT_METHODS.cash:
-        return "نقداً";
-      case PAYMENT_METHODS.applePay:
-        return "Apple Pay";
-      case PAYMENT_METHODS.googlePay:
-        return "Google Pay";
-      case PAYMENT_METHODS.bit:
-        return "بيت";
-      default:
-        return "اختر وسيلة دفع";
+    const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
+    if (paymentMethodConfig) {
+      return getPaymentMethodTranslatedName(paymentMethodConfig);
     }
+    
+    // Final fallback
+    return t("select-payment-method");
   };
 
   const getPaymentMethodIcon = () => {
+    // If we have a selected payment method ID, use it to get the icon
     if (selectedPaymentMethodId) {
-      switch (selectedPaymentMethodId) {
-        case 'apple_pay':
-          return <Image source={require("../../../assets/icons/apple-pay.png")} style={styles.iconImage} />;
-        case 'google_pay':
-          return <Image source={require("../../../assets/icons/google-pay.png")} style={styles.iconImage} />;
-        case 'bit':
-          return <Image source={require("../../../assets/icons/bit.png")} style={styles.iconImage} />;
-        case 'credit_card':
-          return <Image source={require("../../../assets/icons/credit-card.png")} style={styles.iconImage} />;
-        case 'cash':
-          return <Icon icon="shekel1" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
-        default:
-          return <Icon icon="creditcard" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+      const paymentMethodConfig = getPaymentMethodById(selectedPaymentMethodId);
+      if (paymentMethodConfig) {
+        if (paymentMethodConfig.iconSource) {
+          return <Image source={paymentMethodConfig.iconSource} style={styles.iconImage} />;
+        } else if (paymentMethodConfig.iconName) {
+          return <Icon icon={paymentMethodConfig.iconName} size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+        }
       }
     }
     
-    // Default icon based on current payment method
-    switch (paymentMthod) {
-      case PAYMENT_METHODS.creditCard:
-        return <Icon icon="credit-card-1" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
-      case PAYMENT_METHODS.cash:
-        return <Icon icon="shekel1" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
-      case PAYMENT_METHODS.applePay:
-        return <Image source={require("../../../assets/icons/apple-pay.png")} style={styles.iconImage} />;
-      case PAYMENT_METHODS.googlePay:
-        return <Image source={require("../../../assets/icons/google-pay.png")} style={styles.iconImage} />;
-      case PAYMENT_METHODS.bit:
-        return <Image source={require("../../../assets/icons/bit.png")} style={styles.iconImage} />;
-      default:
-        return <Icon icon="creditcard" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+    // Fallback to payment method constant
+    const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
+    if (paymentMethodConfig) {
+      if (paymentMethodConfig.iconSource) {
+        return <Image source={paymentMethodConfig.iconSource} style={styles.iconImage} />;
+      } else if (paymentMethodConfig.iconName) {
+        return <Icon icon={paymentMethodConfig.iconName} size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+      }
     }
+    
+    // Default icon
+    return <Icon icon="creditcard" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
   };
 
   return (
@@ -282,6 +255,8 @@ export const PaymentMethodPickSquare = ({
         <PaymentMethodModal 
           onClose={handleClosePaymentMethodModal}
           onSelect={handlePaymentMethodSelect}
+          supportedMethods={supportedPaymentMethods}
+          isLoading={isLoadingPaymentMethods}
         />
       </Modal>
     </View>

@@ -601,10 +601,12 @@ const CheckoutScreen = ({ route }) => {
         border-radius: 50px;
         height: 55px;
         box-shadow: none:
-        background-color: #c0e202;
+        background-color: #C1E300;
         border: none;
-            color: #4d2e53;
-            font-size: 18px;
+       color: #4d2e53;
+       font-size: 20px;
+       font-family: 'Tajawal', Arial, sans-serif !important;
+       font-weight: 500;
     }
 
 
@@ -617,10 +619,12 @@ const CheckoutScreen = ({ route }) => {
 .SubmitButton .ng-binding::before {
     content: "اتمام الدفع";
     visibility: visible;
-    font-size: 18px;
+    font-size: 20px;
     position: absolute;
-        left: 0;
-        top: 0;
+        left: -40px;
+        top: -17px;
+        bottom: 0;
+        margin: auto;
     white-space: nowrap;
 }
 
@@ -634,7 +638,7 @@ const CheckoutScreen = ({ route }) => {
       background-position: center;
       display: inline-block;
       position: absolute;
-      top: -2px;
+      top: 0;
       left: 0;
     }
     .SubmitButton:hover {
@@ -644,9 +648,28 @@ const CheckoutScreen = ({ route }) => {
      }
   `;
 
-  // JavaScript code to inject CSS into the WebView
+  // JavaScript code to inject CSS and fonts into the WebView
   const injectedJavaScript = `
     (function() {
+      // Add Google Fonts preconnect links
+      var preconnect1 = document.createElement('link');
+      preconnect1.rel = 'preconnect';
+      preconnect1.href = 'https://fonts.googleapis.com';
+      document.head.appendChild(preconnect1);
+      
+      var preconnect2 = document.createElement('link');
+      preconnect2.rel = 'preconnect';
+      preconnect2.href = 'https://fonts.gstatic.com';
+      preconnect2.crossOrigin = 'anonymous';
+      document.head.appendChild(preconnect2);
+      
+      // Add Tajawal font link
+      var fontLink = document.createElement('link');
+      fontLink.rel = 'stylesheet';
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap';
+      document.head.appendChild(fontLink);
+      
+      // Add custom CSS styles
       var style = document.createElement('style');
       style.type = 'text/css';
       style.innerHTML = \`${customCSS}\`;

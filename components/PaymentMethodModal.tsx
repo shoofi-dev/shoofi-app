@@ -1,17 +1,25 @@
 import React from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import PaymentMethodsScreen from "../screens/payment-methods";
+import { PaymentMethodOption } from "../helpers/get-supported-payment-methods";
 
 // TypeScript interface for component props
 interface PaymentMethodModalProps {
   onClose: () => void;
   onSelect?: (selectedMethod: string) => void;
+  supportedMethods?: PaymentMethodOption[];
+  isLoading?: boolean;
 }
 
 // Get screen dimensions once (performance improvement)
 const { height: screenHeight } = Dimensions.get('window');
 
-const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ onClose, onSelect }) => {
+const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ 
+  onClose, 
+  onSelect, 
+  supportedMethods = [],
+  isLoading = false 
+}) => {
   return (
     <View 
       style={styles.modalContainer}
@@ -19,7 +27,13 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ onClose, onSele
       accessibilityLabel="Payment Methods Modal"
       accessible={true}
     >
-      <PaymentMethodsScreen onClose={onClose} onSelect={onSelect} isModal={true} />
+      <PaymentMethodsScreen 
+        onClose={onClose} 
+        onSelect={onSelect} 
+        isModal={true}
+        supportedMethods={supportedMethods}
+        isLoading={isLoading}
+      />
     </View>
   );
 };

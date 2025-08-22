@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -15,81 +15,51 @@ import themeStyle from "../../styles/theme.style";
 import { useResponsive } from "../../hooks/useResponsive";
 import { colors } from "../../styles/colors";
 import { getCurrentLang } from "../../translations/i18n";
+import { getSupportedPaymentMethods, PaymentMethodOption, getPaymentMethodTranslatedName } from "../../helpers/get-supported-payment-methods";
 
-interface PaymentMethod {
-  id: string;
-  name: string;
-  icon?: string;
-  iconSource?: any; // For PNG images
-  color?: string;
+interface PaymentMethodsScreenProps {
+  onClose: any;
+  onSelect: any;
+  isModal?: boolean;
+  supportedMethods?: PaymentMethodOption[];
+  isLoading?: boolean;
 }
 
-const PaymentMethodsScreen = ({ onClose, onSelect, isModal = false }) => {
+const PaymentMethodsScreen = ({ 
+  onClose, 
+  onSelect, 
+  isModal = false,
+  supportedMethods = [],
+  isLoading = false
+}: PaymentMethodsScreenProps) => {
   const { t } = useTranslation();
   const { scale, fontSize } = useResponsive();
   const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [internalSupportedMethods, setInternalSupportedMethods] = useState<PaymentMethodOption[]>([]);
+  const [internalIsLoading, setInternalIsLoading] = useState(true);
 
-  // Dynamic translations based on current language
-  const getPaymentTranslations = () => {
-    const currentLang = getCurrentLang();
-    
-         if (currentLang === 'he') {
-      return {
-        title: "אמצעי תשלום",
-        add: "הוסף",
-        methods: {
-          apple_pay: "Apple Pay",
-          google_pay: "Google Pay",
-          bit: "בִּיט",
-          credit_card: "כרטיס אשראי",
-          cash: "מזומן"
-        }
-      };
+  // Use provided supported methods if available, otherwise load them internally
+  useEffect(() => {
+    if (supportedMethods.length > 0) {
+      setInternalSupportedMethods(supportedMethods);
+      setInternalIsLoading(isLoading);
     } else {
-      // Arabic translations
-      return {
-        title: "طرق الدفع",
-        add: "إضافة",
-        methods: {
-          apple_pay: "Apple Pay",
-          google_pay: "Google Pay",
-          bit: "بيت",
-          credit_card: "بطاقة",
-          cash: "نقداً"
+      const loadSupportedMethods = async () => {
+        try {
+          setInternalIsLoading(true);
+          const methods = await getSupportedPaymentMethods();
+          setInternalSupportedMethods(methods);
+        } catch (error) {
+          console.error("Error loading supported payment methods:", error);
+          setInternalSupportedMethods([]);
+        } finally {
+          setInternalIsLoading(false);
         }
       };
+
+      loadSupportedMethods();
     }
-  };
-
-  const translations = getPaymentTranslations();
-
-  const paymentMethods: PaymentMethod[] = [
-    {
-      id: "apple_pay",
-      name: translations.methods.apple_pay,
-      iconSource: require("../../assets/icons/apple-pay.png"),
-    },
-    {
-      id: "google_pay", 
-      name: translations.methods.google_pay,
-      iconSource: require("../../assets/icons/google-pay.png"),
-    },
-    {
-      id: "bit",
-      name: translations.methods.bit,
-      iconSource: require("../../assets/icons/bit.png"),
-    },
-    {
-      id: "credit_card",
-      name: translations.methods.credit_card,
-      iconSource: require("../../assets/icons/credit-card.png"),
-    },
-    {
-      id: "cash",
-      name: translations.methods.cash,
-      icon: "shekel1", // Keep vector icon for cash
-    },
-  ];
+  }, [supportedMethods, isLoading]);
 
   const handleMethodSelect = (methodId: string) => {
     setSelectedMethod(methodId);
@@ -109,7 +79,7 @@ const PaymentMethodsScreen = ({ onClose, onSelect, isModal = false }) => {
     }
   };
 
-  const renderPaymentMethod = (method: PaymentMethod) => {
+  const renderPaymentMethod = (method: PaymentMethodOption) => {
     const isSelected = selectedMethod === method.id;
     
     return (
@@ -138,14 +108,15 @@ const PaymentMethodsScreen = ({ onClose, onSelect, isModal = false }) => {
               />
             ) : (
               <Icon
-                icon={method.icon}
+                icon={method.iconName}
                 size={scale(20)}
+                color={themeStyle.TEXT_PRIMARY_COLOR}
               />
             )}
           </View>
           
           <Text style={[styles.paymentMethodText, { fontSize: fontSize(16) }]}>
-            {method.name}
+            {getPaymentMethodTranslatedName(method)}
           </Text>
         </View>
       </TouchableOpacity>
@@ -167,14 +138,24 @@ const PaymentMethodsScreen = ({ onClose, onSelect, isModal = false }) => {
           <Icon icon="x-close1" size={scale(20)} color="#999" />
         </TouchableOpacity>
         <Text style={[styles.title, { fontSize: fontSize(18) }]}>
-          {translations.title}
+          {t("payment-method")}
         </Text>
         <View style={styles.headerSpacer} />
       </View>
 
       {/* Payment Methods List */}
       <View style={styles.methodsList}>
-        {paymentMethods.map(renderPaymentMethod)}
+        {internalIsLoading ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>{t("loading")}</Text>
+          </View>
+        ) : internalSupportedMethods.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>{t("no-payment-methods-available")}</Text>
+          </View>
+        ) : (
+          internalSupportedMethods.map(renderPaymentMethod)
+        )}
       </View>
 
       {/* Add Button */}
@@ -182,8 +163,8 @@ const PaymentMethodsScreen = ({ onClose, onSelect, isModal = false }) => {
         <Button
           bgColor={selectedMethod ? (colors.primary || "#8BC34A") : "#CCC"}
           onClickFn={handleAdd}
-          disabled={!selectedMethod}
-          text={translations.add}
+          disabled={!selectedMethod || internalIsLoading}
+          text={t("add")}
           fontSize={fontSize(16)}
           textColor={!selectedMethod ? "#999" : "#fff"}
           borderRadious={25}
@@ -291,6 +272,23 @@ const styles = StyleSheet.create({
   buttonContainer: {
     padding: 20,
     paddingBottom: 30,
+  },
+  loadingContainer: {
+    padding: 20,
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#666",
+  },
+  emptyContainer: {
+    padding: 20,
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
   },
   addButton: {
     backgroundColor: colors.primary || "#8BC34A",

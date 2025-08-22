@@ -11,6 +11,12 @@ const isStoreSupportAction = async (key: string) => {
       return shoofiAdminRes.creditcard_support;
     case "cash_support":
       return selectedStoreRes.cash_support && shoofiAdminRes.cash_support;
+    case "apple_pay_support":
+      return shoofiAdminRes.apple_pay_support;
+    case "google_pay_support":
+      return shoofiAdminRes.google_pay_support;
+    case "bit_support":
+      return shoofiAdminRes.bit_support;
     case "delivery_support":
       return shoofiAdminRes.delivery_support;
     case "takeaway_support":
