@@ -193,15 +193,14 @@ const CheckoutScreen = ({ route }) => {
     
     // Create new ZCredit session for digital payment methods
     if (data === PAYMENT_METHODS.applePay || data === PAYMENT_METHODS.googlePay || data === PAYMENT_METHODS.bit) {
-      // Small delay to ensure state is cleared before creating new session
-      createZCreditSession();
+      // Pass the new payment method directly to avoid state timing issues
+      createZCreditSession(data);
     }
   };
 
   // Handle payment data from credit card component
   const onPaymentDataChange = (data: any) => {
     console.log("onPaymentDataChange", data)
-    alert(data);
     setPaymentData(data);
   };
 
@@ -278,9 +277,8 @@ const CheckoutScreen = ({ route }) => {
   };
 
   // Function to create ZCredit payment session for digital payments
-  const createZCreditSession = async () => {
+  const createZCreditSession = async (newPaymentMethod = paymentMthod) => {
     try {
-      alert('chaned to:'  + paymentMthod);
       setIsProcessingPayment(true);
       
       // Get user details
@@ -290,9 +288,9 @@ const CheckoutScreen = ({ route }) => {
       
       // Determine FocusType based on payment method
       let focusType = "ApplePayOnly";
-      if (paymentMthod === PAYMENT_METHODS.googlePay) {
+      if (newPaymentMethod === PAYMENT_METHODS.googlePay) {
         focusType = "GooglePayOnly";
-      } else if (paymentMthod === PAYMENT_METHODS.bit) {
+      } else if (newPaymentMethod === PAYMENT_METHODS.bit) {
         focusType = "BitOnly";
       }
       
@@ -323,9 +321,9 @@ const CheckoutScreen = ({ route }) => {
         AdditionalText: "",
         ShowCart: "false",
         ThemeColor: "c0e202",
-        BitButtonEnabled: paymentMthod === PAYMENT_METHODS.bit ? "true" : "false",
-        ApplePayButtonEnabled: paymentMthod === PAYMENT_METHODS.applePay ? "true" : "false",
-        GooglePayButtonEnabled: paymentMthod === PAYMENT_METHODS.googlePay ? "true" : "false",
+        BitButtonEnabled: newPaymentMethod === PAYMENT_METHODS.bit ? "true" : "false",
+        ApplePayButtonEnabled: newPaymentMethod === PAYMENT_METHODS.applePay ? "true" : "false",
+        GooglePayButtonEnabled: newPaymentMethod === PAYMENT_METHODS.googlePay ? "true" : "false",
         Installments: 1,
         Customer: {
           Email: "",
