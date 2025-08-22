@@ -9,6 +9,7 @@ interface PaymentMethodModalProps {
   onSelect?: (selectedMethod: string) => void;
   supportedMethods?: PaymentMethodOption[];
   isLoading?: boolean;
+  currentSelectedMethodId?: string;
 }
 
 // Get screen dimensions once (performance improvement)
@@ -18,7 +19,8 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({
   onClose, 
   onSelect, 
   supportedMethods = [],
-  isLoading = false 
+  isLoading = false,
+  currentSelectedMethodId = ""
 }) => {
   return (
     <View 
@@ -33,6 +35,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({
         isModal={true}
         supportedMethods={supportedMethods}
         isLoading={isLoading}
+        currentSelectedMethodId={currentSelectedMethodId}
       />
     </View>
   );

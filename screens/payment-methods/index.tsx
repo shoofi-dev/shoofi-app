@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Text from "../../components/controls/Text";
 import Icon from "../../components/icon";
 import BackButton from "../../components/back-button";
@@ -23,6 +24,7 @@ interface PaymentMethodsScreenProps {
   isModal?: boolean;
   supportedMethods?: PaymentMethodOption[];
   isLoading?: boolean;
+  currentSelectedMethodId?: string;
 }
 
 const PaymentMethodsScreen = ({ 
@@ -30,11 +32,13 @@ const PaymentMethodsScreen = ({
   onSelect, 
   isModal = false,
   supportedMethods = [],
-  isLoading = false
+  isLoading = false,
+  currentSelectedMethodId = ""
 }: PaymentMethodsScreenProps) => {
   const { t } = useTranslation();
   const { scale, fontSize } = useResponsive();
-  const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const insets = useSafeAreaInsets();
+  const [selectedMethod, setSelectedMethod] = useState<string>(currentSelectedMethodId);
   const [internalSupportedMethods, setInternalSupportedMethods] = useState<PaymentMethodOption[]>([]);
   const [internalIsLoading, setInternalIsLoading] = useState(true);
 
@@ -61,22 +65,21 @@ const PaymentMethodsScreen = ({
     }
   }, [supportedMethods, isLoading]);
 
-  const handleMethodSelect = (methodId: string) => {
-    setSelectedMethod(methodId);
-  };
+  // Update selected method when currentSelectedMethodId changes
+  useEffect(() => {
+    setSelectedMethod(currentSelectedMethodId);
+  }, [currentSelectedMethodId]);
 
-  const handleAdd = () => {
-    if (selectedMethod) {
-      // Handle adding the selected payment method
-      console.log("Selected payment method:", selectedMethod);
-      
-      // Call onSelect if provided
-      if (onSelect) {
-        onSelect(selectedMethod);
-      }
-      
-      onClose();
+  const handleMethodSelect = (methodId: string) => {
+    console.log("Selected payment method:", methodId);
+    
+    // Call onSelect if provided
+    if (onSelect) {
+      onSelect(methodId);
     }
+    
+    // Close the modal immediately
+    onClose();
   };
 
   const renderPaymentMethod = (method: PaymentMethodOption) => {
@@ -124,7 +127,7 @@ const PaymentMethodsScreen = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: insets.bottom + 20 }]}>
       {/* Modal Handle */}
       <View style={styles.modalHandle} />
 
@@ -156,19 +159,6 @@ const PaymentMethodsScreen = ({
         ) : (
           internalSupportedMethods.map(renderPaymentMethod)
         )}
-      </View>
-
-      {/* Add Button */}
-      <View style={styles.buttonContainer}>
-        <Button
-          bgColor={selectedMethod ? (colors.primary || "#8BC34A") : "#CCC"}
-          onClickFn={handleAdd}
-          disabled={!selectedMethod || internalIsLoading}
-          text={t("add")}
-          fontSize={fontSize(16)}
-          textColor={!selectedMethod ? "#999" : "#fff"}
-          borderRadious={25}
-        />
       </View>
     </View>
   );
@@ -269,10 +259,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: colors.primary || "#8BC34A",
   },
-  buttonContainer: {
-    padding: 20,
-    paddingBottom: 30,
-  },
   loadingContainer: {
     padding: 20,
     alignItems: "center",
@@ -289,23 +275,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
     textAlign: "center",
-  },
-  addButton: {
-    backgroundColor: colors.primary || "#8BC34A",
-    borderRadius: 25,
-    paddingVertical: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  addButtonDisabled: {
-    backgroundColor: "#CCC",
-  },
-  addButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-  addButtonTextDisabled: {
-    color: "#999",
   },
 });
 

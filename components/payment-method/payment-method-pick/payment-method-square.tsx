@@ -257,6 +257,7 @@ export const PaymentMethodPickSquare = ({
           onSelect={handlePaymentMethodSelect}
           supportedMethods={supportedPaymentMethods}
           isLoading={isLoadingPaymentMethods}
+          currentSelectedMethodId={selectedPaymentMethodId}
         />
       </Modal>
     </View>
