@@ -607,6 +607,23 @@ const CheckoutScreen = ({ route }) => {
             font-size: 18px;
     }
 
+
+.SubmitButton .ng-binding {
+    font-size: 0;
+    visibility: hidden;
+    position: relative;
+}
+
+.SubmitButton .ng-binding::before {
+    content: "اتمام الدفع";
+    visibility: visible;
+    font-size: 18px;
+    position: absolute;
+        left: 0;
+        top: 0;
+    white-space: nowrap;
+}
+
     .SubmitButton i:before {
       content: '';
       width: 40px; /* Set desired width */
