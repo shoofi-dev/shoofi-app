@@ -8,16 +8,6 @@
             "description": "همبرجر بيتي، مكون من خليط من اجود انواع الحوم بلاك انجوس ، خس، بصل بنفسجي، بندورة، خيار مخلل، صوص بافلو المميز مع ستيك بطاطا  مقرمشه"
         }
     },
-    "payment-method": "طرق الدفع",
-    "cash": "نقداً",
-    "credit-card": "بطاقة",
-    "apple-pay": "Apple Pay",
-    "google-pay": "Google Pay",
-    "bit": "بيت",
-    "select-payment-method": "اختر طريقة الدفع",
-    "loading": "جاري التحميل...",
-    "add": "إضافة",
-    "no-payment-methods-available": "لا توجد وسائل دفع متاحة",
     "please_select_location": "يرجى تحديد موقعك لعرض المتاجر المتاحة",
     "no_stores_in_area": "لا توجد متاجر متاحة في منطقتك",
     "loading_stores": "جاري تحميل المتاجر..."
