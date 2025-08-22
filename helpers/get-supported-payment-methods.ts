@@ -13,20 +13,6 @@ export interface PaymentMethodOption {
 // Define all available payment methods with their configurations
 const ALL_PAYMENT_METHODS: PaymentMethodOption[] = [
   {
-    id: "cash",
-    paymentMethodValue: PAYMENT_METHODS.cash,
-    supportKey: "cash_support",
-    translationKey: "cash",
-    iconName: "shekel1",
-  },
-  {
-    id: "credit_card",
-    paymentMethodValue: PAYMENT_METHODS.creditCard,
-    supportKey: "creditcard_support", 
-    translationKey: "credit-card",
-    iconSource: require("../assets/icons/credit-card.png"),
-  },
-  {
     id: "apple_pay",
     paymentMethodValue: PAYMENT_METHODS.applePay,
     supportKey: "apple_pay_support",
@@ -46,6 +32,20 @@ const ALL_PAYMENT_METHODS: PaymentMethodOption[] = [
     supportKey: "bit_support",
     translationKey: "bit",
     iconSource: require("../assets/icons/bit.png"),
+  },
+  {
+    id: "credit_card",
+    paymentMethodValue: PAYMENT_METHODS.creditCard,
+    supportKey: "creditcard_support",
+    translationKey: "credit-card",
+    iconSource: require("../assets/icons/credit-card.png"),
+  },
+  {
+    id: "cash",
+    paymentMethodValue: PAYMENT_METHODS.cash,
+    supportKey: "cash_support",
+    translationKey: "cash",
+    iconName: "shekel1",
   },
 ];
 
