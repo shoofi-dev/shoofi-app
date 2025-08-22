@@ -10,7 +10,7 @@ import {DIALOG_EVENTS} from "../../../consts/events";
 import {getCurrentLang} from "../../../translations/i18n";
 import Modal from "react-native-modal";
 import PaymentMethodModal from "../../PaymentMethodModal";
-import { getPaymentMethodById, getPaymentMethodByValue, getSupportedPaymentMethods, PaymentMethodOption, getPaymentMethodTranslatedName } from "../../../helpers/get-supported-payment-methods";
+import { getPaymentMethodById, getPaymentMethodByValue, getSupportedPaymentMethods, PaymentMethodOption } from "../../../helpers/get-supported-payment-methods";
 
 const icons = {
   bagOff: require("../../../assets/pngs/buy-off.png"),
@@ -161,14 +161,14 @@ export const PaymentMethodPickSquare = ({
     if (selectedPaymentMethodId) {
       const paymentMethodConfig = getPaymentMethodById(selectedPaymentMethodId);
       if (paymentMethodConfig) {
-        return getPaymentMethodTranslatedName(paymentMethodConfig);
+        return t(paymentMethodConfig.translationKey);
       }
     }
     
     // Fallback to payment method constant
     const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
     if (paymentMethodConfig) {
-      return getPaymentMethodTranslatedName(paymentMethodConfig);
+      return t(paymentMethodConfig.translationKey);
     }
     
     // Final fallback

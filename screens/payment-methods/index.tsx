@@ -15,7 +15,7 @@ import themeStyle from "../../styles/theme.style";
 import { useResponsive } from "../../hooks/useResponsive";
 import { colors } from "../../styles/colors";
 import { getCurrentLang } from "../../translations/i18n";
-import { getSupportedPaymentMethods, PaymentMethodOption, getPaymentMethodTranslatedName } from "../../helpers/get-supported-payment-methods";
+import { getSupportedPaymentMethods, PaymentMethodOption } from "../../helpers/get-supported-payment-methods";
 
 interface PaymentMethodsScreenProps {
   onClose: any;
@@ -116,7 +116,7 @@ const PaymentMethodsScreen = ({
           </View>
           
           <Text style={[styles.paymentMethodText, { fontSize: fontSize(16) }]}>
-            {getPaymentMethodTranslatedName(method)}
+            {t(method.translationKey)}
           </Text>
         </View>
       </TouchableOpacity>
