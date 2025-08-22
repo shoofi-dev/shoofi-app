@@ -53,6 +53,7 @@ import DeliveryDriverProfile from "../screens/delivery-driver/profile";
 import DeliveryDriverNotifications from "../screens/delivery-driver/notifications";
 import UserInformation from "../screens/user-information";
 import OrderItemScreen from "../screens/order/item";
+import MenuGeneralCategoriesScreen from "../screens/menu/menu-general-categoris";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -103,6 +104,7 @@ export const MainStackNavigator = () => {
     >
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="menuScreen" component={MenuScreen}  />
+      <Stack.Screen name="menuGeneralCategoriesScreen" component={MenuGeneralCategoriesScreen} initialParams={{ categoryId: null }} />
       <Stack.Screen name="terms-and-conditions" component={TermsAndConditionsScreen} />
       <Stack.Screen name="orders-status" component={OrdersStatusScreen} />
       <Stack.Screen name="invoices-list" component={InvoicesScreen} />

@@ -86,6 +86,7 @@ const OrderHistoryScreen = ({ route }) => {
 
   const getOrders = () => {
     ordersStore.getCustomerOrdersHistory().then((res) => {
+      console.log("res", res);
       setOrdersList(res || []);
       setIsLoading(false);
     });
@@ -127,8 +128,8 @@ const OrderHistoryScreen = ({ route }) => {
     navigation.navigate("profile");
   };
   // Use mock data if no real orders
-  const displayOrders = ordersList.length > 0 && ordersList;
-  if (!displayOrders) return null;
+  const displayOrders = ordersList?.length > 0 ? ordersList : [];
+  console.log("displayOrders", displayOrders);
   return (
     <View style={{ width: "100%", marginTop: 20, paddingBottom: 100 }}>
       <View style={{ position: "absolute", left: 10, zIndex: 1000 }}>
@@ -156,7 +157,7 @@ const OrderHistoryScreen = ({ route }) => {
             <View style={{ position: "absolute", left: 10 }}></View>
           </View>
 
-          {displayOrders.length === 0 ? (
+          {displayOrders?.length === 0 ? (
             <View style={{ marginTop: 60 }}>
               {isLoading ? (
                 <View
@@ -169,7 +170,7 @@ const OrderHistoryScreen = ({ route }) => {
                   />
                 </View>
               ) : (
-                <Text style={{ fontSize: 20, color: themeStyle.WHITE_COLOR }}>
+                <Text style={{ fontSize: 20, color: themeStyle.TEXT_PRIMARY_COLOR }}>
                   {t("empty-orders")}...
                 </Text>
               )}
@@ -182,7 +183,7 @@ const OrderHistoryScreen = ({ route }) => {
               onMomentumScrollBegin={onScrollEnd}
             >
               <View style={{ marginBottom: 130 }}>
-                {displayOrders?.slice(0, pageNumber * 5)?.map((order) => (
+                {displayOrders?.length > 0 && displayOrders?.slice(0, pageNumber * 5)?.map((order) => (
                   <TouchableOpacity
                     key={order._id}
                     onPress={() => handleOrderPress(order)}
@@ -235,7 +236,7 @@ const OrderHistoryScreen = ({ route }) => {
                   </TouchableOpacity>
                 ))}
               </View>
-              {displayOrders.length >= pageNumber * 5 && (
+              {displayOrders?.length >= pageNumber * 5 && (
                 <View
                   style={{ flexDirection: "row", justifyContent: "center" }}
                 >

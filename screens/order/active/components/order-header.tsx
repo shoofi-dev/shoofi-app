@@ -106,6 +106,13 @@ const OrderHeader = ({ order }) => {
       </View>
     );
   };
+  
+  const openWaze = (lat: number, lng: number) => {
+    if (lat && lng) {
+      const url = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+      Linking.openURL(url);
+    }
+  };
 
   return (
     <View style={{ width: "100%" }}>
@@ -204,8 +211,43 @@ const OrderHeader = ({ order }) => {
               <Text>{t(oOrder.receipt_method?.toLowerCase())}</Text>
             </View>
           </View>
-          <View style={{flexDirection: "row",alignItems: "center",justifyContent: "center", marginTop: 10, borderTopWidth: 1, borderTopColor: themeStyle.GRAY_20, paddingTop: 10}}>
-            <Text style={{fontSize: 12, color: themeStyle.GRAY_60}}> {moment(order.orderDate).format('HH:mm DD/MM/YY')}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 10,
+              borderTopWidth: 1,
+              borderTopColor: themeStyle.GRAY_20,
+              paddingTop: 10,
+            }}
+          >
+            <View>
+              <Text style={{ fontSize: 12, color: themeStyle.GRAY_60 }}>
+                {moment(order.orderDate).format("HH:mm DD/MM/YY")}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={{
+                position: "absolute",
+                right: 0,
+                top: 10,
+                bottom: 0,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: themeStyle.GRAY_10,
+                padding: 5,
+                borderRadius: 5,
+              }}
+              onPress={() => {
+                openWaze(
+                  order?.storeData?.location?.lat,
+                  order?.storeData?.location?.lng
+                );
+              }}
+            >
+              <Icon icon="waze" size={18} />
+            </TouchableOpacity>
           </View>
         </View>
       </View>

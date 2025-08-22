@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity, I18nManager, ScrollView } from "react-native";
+import { StyleSheet, View, TouchableOpacity, I18nManager } from "react-native";
 import { useState, useEffect, useRef, useContext, useCallback } from "react";
 import { observer } from "mobx-react";
 import { StoreContext } from "../../stores";
@@ -26,8 +26,7 @@ import Text from "../../components/controls/Text";
 import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
 import { APP_NAME } from "../../consts/shared";
 import GeneralCategoriesList from "./components/GeneralCategoriesList";
-import ProductItem from "./components/product-item";
-import BigStoreProduct from "./components/product-item/big-sotre-product";
+import AllGeneralCategoriesList from "./components/AllGeneralCategoriesList";
 const HEADER_HEIGHT = 290;
 const COUPON_CONTAINER_HEIGHT = 80;
 const STICKY_HEADER_HEIGHT = 90;
@@ -37,15 +36,16 @@ const getScrollablePartHeight = (activeCoupons) => HEADER_HEIGHT + getCouponCont
 const categoryHeaderHeight = 35;
 const productHeight = 140;
 const sectionMargin = 28;
-const MenuScreen = () => {
+const MenuGeneralCategoriesScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  const { categoryId } = route.params;
   const scrollViewRef = useRef<Animated.ScrollView>(null);
   const allCategoriesListRef = useRef<AllCategoriesListRef>(null);
   const categoryUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const manualSelectionRef = useRef<boolean>(false);
-
+console.log("========categoryId", categoryId);
   const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore, websocket, addressStore, couponsStore } =
     useContext(StoreContext);
   const { availableDrivers, availableDriversLoading: driversLoading } = shoofiAdminStore;
@@ -98,17 +98,31 @@ const MenuScreen = () => {
   }, [cartStore.cartItems]);
 
   const getMenu = () => {
-    const categories = menuStore.categories;
-    setCategoryList(categories);
+    const selectedGeneralCategory = menuStore.generalCategories.find((cat) => cat._id === categoryId);
+    console.log("========selectedGeneralCategory", selectedGeneralCategory);
+    
+    // Filter categories that support the selected general category
+    const filteredCategories = menuStore.categories?.filter(category => 
+      category.supportedGeneralCategoryIds && category.products.length > 0 &&
+      category.supportedGeneralCategoryIds.some(id => 
+        id === selectedGeneralCategory?._id || id.$oid === selectedGeneralCategory?._id
+      )
+    ) || [];
+    
+    console.log("========filteredCategories", filteredCategories);
+
+    setCategoryList(filteredCategories);
     setGeneralCategories(menuStore.generalCategories);
-    if (!selectedCategory && categories?.length > 0) {
-      setSelectedCategory(categories[0]);
+    if (!selectedCategory && filteredCategories?.length > 0) {
+      setSelectedCategory(filteredCategories[0]);
     }
   };
 
   useEffect(() => {
-    getMenu();
-  }, [menuStore.categories]);
+    if(menuStore.generalCategories){
+      getMenu();
+    }
+  }, [menuStore.generalCategories]);
 
 
     // Clear menu data when navigating back to prevent showing old store data
@@ -198,7 +212,7 @@ const MenuScreen = () => {
         manualSelectionRef.current = true;
         
         setSelectedCategory(cat);
-        
+        return;
         // Find the category index in the list
         const categoryIndex = categoryList.findIndex(c => c._id === cat._id);
         
@@ -342,125 +356,16 @@ const MenuScreen = () => {
     );
   }
 
+  
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <Animated.ScrollView
-        ref={scrollViewRef}
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          paddingTop: getScrollablePartHeight(activeCoupons),
-          paddingBottom: 80,
-        }}
-        scrollEventThrottle={16}
-        onScroll={(event) => {
-          handleScroll(event);
-        }}
-      >
-             { generalCategories && <Animated.View
-        style={[
-          styles.header,
-          { 
-            height: getScrollablePartHeight(activeCoupons),
-            //transform: [{ translateY: headerTranslateY }] 
-          },
-        ]}
-      >
-        <StoreHeaderCard store={storeDataStore.storeData} availableDrivers={availableDrivers} takeAwayReadyTime={takeAwayReadyTime} driversLoading={driversLoading} deliveryTime={deliveryTime}/>
-         <View style={[styles.shippingPickerContainer, { height: getCouponContainerHeight(activeCoupons) }]}>
-         <CouponCarousel coupons={activeCoupons}  />
-
-        </View> 
-      </Animated.View>}
-        <View style={{ marginTop:15,}}>
-          { generalCategories ? <GeneralCategoriesList   
-            ref={allCategoriesListRef}
-            categoryList={generalCategories}
-            productId={route.params?.productId} // Removed productId prop
-          /> : <AllCategoriesList
-            ref={allCategoriesListRef}
-            categoryList={categoryList}
-             productId={route.params?.productId} // Removed productId prop
-          />
-          }
-          {
-            
-          }
-          {generalCategories?.map((generalCategory,index)=>{
-   
-            const filteredCategories = menuStore.categories?.find(category => 
-              category.supportedGeneralCategoryIds && category.products.length > 0 &&
-              category.supportedGeneralCategoryIds.some(id => 
-                id === generalCategory?._id || id.$oid === generalCategory?._id
-              )
-            ) || [];
-            return (
-              <View key={index} style={{padding:10}}>
-                <Text style={{fontSize:themeStyle.FONT_SIZE_MD,fontWeight:"bold"}}>{languageStore.selectedLang === "ar" ? filteredCategories.nameAR : filteredCategories.nameHE}</Text>
-                <ScrollView horizontal={true} style={{flexDirection:"row",padding:10}}>
-                  {filteredCategories.products.map((product,index)=>{
-                    return (
-                      <View key={index} style={{width:150,marginRight:10}}>
-                        <BigStoreProduct item={product} onItemSelect={(item)=>{}} onDeleteProduct={()=>{}} onEditProduct={()=>{}} />
-                      </View>
-                    )
-                  })}
-                </ScrollView>
-              </View>
-            )
-
-          })}
-          {/* {categoryList.map((category) => {
-            return (
-    
-            <View >
-      <View >
-        <Text >{category.name_ar}</Text>
-      </View>
-      <View >
-        {category.products.map((product) => {
-          // if (product.isHidden) {
-          //   return null;
-          // }
-          return (
-            <ProductItem  
-              key={product._id}
-              item={product}
-              onItemSelect={(item) => {}}
-              onDeleteProduct={() => {}}
-              onEditProduct={() => {}}
-            />
-          );
-        })}
-      </View>
-    </View>
-            );
-          })} */}
-        </View>
-      </Animated.ScrollView>
-     { !generalCategories && <Animated.View
-        style={[
-          styles.header,
-          { 
-            height: getScrollablePartHeight(activeCoupons),
-            transform: [{ translateY: headerTranslateY }] 
-          },
-        ]}
-      >
-        <StoreHeaderCard store={storeDataStore.storeData} availableDrivers={availableDrivers} takeAwayReadyTime={takeAwayReadyTime} driversLoading={driversLoading} deliveryTime={deliveryTime}/>
-         <View style={[styles.shippingPickerContainer, { height: getCouponContainerHeight(activeCoupons) }]}>
-         <CouponCarousel coupons={activeCoupons}  />
-
-        </View> 
-      </Animated.View>}
-
-      {!generalCategories && <Animated.View
+            <Animated.View
         style={[
           styles.stickyHeader,
           {
-            top: getScrollablePartHeight(activeCoupons) - STICKY_HEADER_HEIGHT,
-            opacity: stickyCategoryHeaderOpacity,
-            transform: [{ translateY: headerTranslateY }],
-            zIndex: stickyHeaderZIndex,
+            // opacity: stickyCategoryHeaderOpacity,
+            // transform: [{ translateY: headerTranslateY }],
+            // zIndex: stickyHeaderZIndex,
           },
         ]}
       >
@@ -483,7 +388,30 @@ const MenuScreen = () => {
           selectedCategory={selectedCategory}
           isDisabledCatItem={false}
         />
-      </Animated.View>}
+      </Animated.View>
+      <Animated.ScrollView
+        ref={scrollViewRef}
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+        }}
+        scrollEventThrottle={16}
+        onScroll={(event) => {
+          handleScroll(event);
+        }}
+      >
+        <View style={{ marginTop:15}}>
+     <AllGeneralCategoriesList
+            ref={allCategoriesListRef}
+            categoryList={categoryList}
+            categoryId={selectedCategory._id}
+             productId={route.params?.productId} // Removed productId prop
+          />
+          
+        </View>
+      </Animated.ScrollView>
+
+
+
 
       {/* <View style={styles.fixedButtons} pointerEvents="box-none">
        <BackButton  />
@@ -514,7 +442,7 @@ const MenuScreen = () => {
   );
 };
 
-export default observer(MenuScreen);
+export default observer(MenuGeneralCategoriesScreen);
 
 const styles = StyleSheet.create({
   header: {
@@ -530,15 +458,12 @@ const styles = StyleSheet.create({
     marginTop: 110,
   },
   stickyHeader: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    zIndex: 11,
+
     backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+
     height: STICKY_HEADER_HEIGHT,
     paddingTop: 0,
+    top: 0,
   },
   cartContainer: {
     position: "absolute",

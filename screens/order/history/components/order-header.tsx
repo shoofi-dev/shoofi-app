@@ -31,12 +31,15 @@ const OrderHeader = ({ order }) => {
   };
   const getOrderPrice = () => {
     let displayPrice = order.orderPrice;
-    
+
     // Apply coupon discount to order price if it's an order_items discount
-    if (order.appliedCoupon?.discountAmount > 0 && order.appliedCoupon.coupon?.discountType === 'order_items') {
+    if (
+      order.appliedCoupon?.discountAmount > 0 &&
+      order.appliedCoupon.coupon?.discountType === "order_items"
+    ) {
       displayPrice = order.orderPrice - order.appliedCoupon.discountAmount;
     }
-    
+
     if (oOrder.receipt_method === SHIPPING_METHODS.shipping) {
       return (
         <View style={{ marginTop: 10, flexDirection: "row" }}>
@@ -56,12 +59,16 @@ const OrderHeader = ({ order }) => {
   const getShippingPrice = () => {
     if (oOrder.receipt_method === SHIPPING_METHODS.shipping) {
       let shippingPrice = order.shippingPrice;
-      
+
       // Apply coupon discount to shipping price if it's a delivery discount
-      if (order.appliedCoupon?.discountAmount > 0 && order.appliedCoupon.coupon?.discountType === 'delivery') {
-        shippingPrice = order.shippingPrice - order.appliedCoupon.discountAmount;
+      if (
+        order.appliedCoupon?.discountAmount > 0 &&
+        order.appliedCoupon.coupon?.discountType === "delivery"
+      ) {
+        shippingPrice =
+          order.shippingPrice - order.appliedCoupon.discountAmount;
       }
-      
+
       return (
         <View style={{ marginTop: 10, flexDirection: "row" }}>
           <Text style={styles.subTitleInfo}>{t("delivery-price")}: </Text>
@@ -108,11 +115,17 @@ const OrderHeader = ({ order }) => {
     );
   };
 
+  const openWaze = (lat: number, lng: number) => {
+    if (lat && lng) {
+      const url = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+      Linking.openURL(url);
+    }
+  };
+
   return (
     <View style={{ width: "100%" }}>
       <View style={[styles.orderContainer]}>
         <View style={styles.imageWrapper}>
-         
           <CustomFastImage
             style={styles.image}
             source={{
@@ -151,48 +164,98 @@ const OrderHeader = ({ order }) => {
               alignItems: "center",
             }}
           >
-
-
-            { order?.ccPaymentRefData?.url && shoofiAdminStore?.storeData?.isShowInvoice && <View>
-              {/* <Text>{order?.ccPaymentRefData?.url}</Text> */}
-              <TouchableOpacity
-                onPress={() => actionHandler(order?.ccPaymentRefData?.url)}
-              >
-                <View
-                  style={{
-                    alignItems: "center",
-                    backgroundColor: themeStyle.GRAY_10,
-                    padding: 5,
-                    borderRadius: 5,
-                  }}
-                >
-                  <View style={{ alignItems: "center" }}>
-                    <Icon
-                      icon="file-pdf"
-                      size={25}
-                      style={{ color: themeStyle.SECONDARY_COLOR, opacity: 1 }}
-                    />
-                  </View>
-                  <View style={{ alignItems: "center" }}>
-                    <Text style={{ fontSize: 12 }}>{t("invoice")}</Text>
-                  </View>
+            {order?.ccPaymentRefData?.url &&
+              shoofiAdminStore?.storeData?.isShowInvoice && (
+                <View>
+                  {/* <Text>{order?.ccPaymentRefData?.url}</Text> */}
+                  <TouchableOpacity
+                    onPress={() => actionHandler(order?.ccPaymentRefData?.url)}
+                  >
+                    <View
+                      style={{
+                        alignItems: "center",
+                        backgroundColor: themeStyle.GRAY_10,
+                        padding: 5,
+                        borderRadius: 5,
+                      }}
+                    >
+                      <View style={{ alignItems: "center" }}>
+                        <Icon
+                          icon="file-pdf"
+                          size={25}
+                          style={{
+                            color: themeStyle.SECONDARY_COLOR,
+                            opacity: 1,
+                          }}
+                        />
+                      </View>
+                      <View style={{ alignItems: "center" }}>
+                        <Text style={{ fontSize: 12 }}>{t("invoice")}</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
-            </View>}
+              )}
             <View style={styles.receiptMethodWrapper}>
-            <Icon icon={oOrder.receipt_method === SHIPPING_METHODS.shipping ? "bicycle1" : "cart"} size={16} style={{ color: themeStyle.SECONDARY_COLOR, opacity: 1, marginRight: 5 }} />
+              <Icon
+                icon={
+                  oOrder.receipt_method === SHIPPING_METHODS.shipping
+                    ? "bicycle1"
+                    : "cart"
+                }
+                size={16}
+                style={{
+                  color: themeStyle.SECONDARY_COLOR,
+                  opacity: 1,
+                  marginRight: 5,
+                }}
+              />
 
               <Text>{t(oOrder.receipt_method?.toLowerCase())}</Text>
             </View>
           </View>
-          <View style={{flexDirection: "row",alignItems: "center",justifyContent: "center", marginTop: 10, borderTopWidth: 1, borderTopColor: themeStyle.GRAY_20, paddingTop: 10}}>
-            <Text style={{fontSize: 12, color: themeStyle.GRAY_60}}> {moment(order.orderDate).format('HH:mm DD/MM/YY')}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 10,
+              borderTopWidth: 1,
+              borderTopColor: themeStyle.GRAY_20,
+              paddingTop: 10,
+            }}
+          >
+            <View>
+              <Text style={{ fontSize: 12, color: themeStyle.GRAY_60 }}>
+                {moment(order.orderDate).format("HH:mm DD/MM/YY")}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={{
+                position: "absolute",
+                right: 0,
+                top: 10,
+                bottom: 0,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: themeStyle.GRAY_10,
+                padding: 5,
+                borderRadius: 5,
+              }}
+              onPress={() => {
+                openWaze(
+                  order?.storeData?.location?.lat,
+                  order?.storeData?.location?.lng
+                );
+              }}
+            >
+              <Icon icon="waze" size={18} />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
 
       {/* Timer Component */}
-
     </View>
   );
 };

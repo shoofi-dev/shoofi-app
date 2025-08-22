@@ -57,7 +57,7 @@ const MenuScreen = () => {
       }
       shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
     }
-  }, [addressStore?.defaultAddress, storeDataStore.storeData?.location.lat, storeDataStore.storeData?.location.lng]);
+  }, [addressStore?.defaultAddress, storeDataStore.storeData?.location?.lat, storeDataStore.storeData?.location?.lng]);
 
   const [categoryList, setCategoryList] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
