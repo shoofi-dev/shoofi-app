@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {DeviceEventEmitter, Image, StyleSheet, TouchableOpacity, View,} from "react-native";
+import React, {useEffect, useState, useContext} from "react";
+import {DeviceEventEmitter, Image, StyleSheet, TouchableOpacity, View, Platform,} from "react-native";
 import Text from "../../controls/Text";
 import {useTranslation} from "react-i18next";
 import {PAYMENT_METHODS} from "../../../consts/shared";
@@ -11,6 +11,7 @@ import {getCurrentLang} from "../../../translations/i18n";
 import Modal from "react-native-modal";
 import PaymentMethodModal from "../../PaymentMethodModal";
 import { getPaymentMethodById, getPaymentMethodByValue, getSupportedPaymentMethods, PaymentMethodOption } from "../../../helpers/get-supported-payment-methods";
+import { StoreContext } from "../../../stores";
 
 const icons = {
   bagOff: require("../../../assets/pngs/buy-off.png"),
@@ -33,6 +34,7 @@ export const PaymentMethodPickSquare = ({
   isLoadingCreditCards = false,
 }: TProps) => {
   const { t } = useTranslation();
+  const { ordersStore, authStore } = useContext(StoreContext);
   const [paymentMthod, setPaymentMthod] = useState<any>(paymentMethodValue);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string>("");
@@ -66,6 +68,102 @@ export const PaymentMethodPickSquare = ({
 
     loadSupportedPaymentMethods();
   }, []);
+
+  // Get last user order and set payment method based on it
+  useEffect(() => {
+    const setPaymentMethodFromLastOrder = async () => {
+      try {
+        // Check if user is logged in
+        if (!authStore.isLoggedIn()) {
+          console.log('User not logged in - no payment method selection');
+          return;
+        }
+
+        // Get customer order history
+        const orderHistory = await ordersStore.getCustomerOrdersHistory();
+        
+        // If no orders, don't select any payment method
+        if (!orderHistory || orderHistory.length === 0) {
+          console.log('No order history - no payment method selection');
+          return;
+        }
+
+        // Get the last order (first in array, should be sorted by date desc)
+        const lastOrder = orderHistory[0];
+        console.log('Last order:', lastOrder);
+
+        
+        // Get payment method from last order
+        const lastPaymentMethod = lastOrder.order.paymentMethod || lastOrder.order.payment_method;
+        console.log('Last payment method:', lastPaymentMethod);
+
+
+        // If payment method was cash, don't select any payment method
+        if (lastPaymentMethod === 'CASH' || lastPaymentMethod === PAYMENT_METHODS.cash) {
+          console.log('Last payment was cash - no payment method selection');
+          return;
+        }
+
+        // Map the payment method to our system
+        let paymentMethodId = '';
+        let paymentMethodValue = '';
+        
+        switch (lastPaymentMethod) {
+          case 'CREDITCARD':
+          case PAYMENT_METHODS.creditCard:
+            paymentMethodId = 'credit_card';
+            paymentMethodValue = PAYMENT_METHODS.creditCard;
+            break;
+          case 'APPLEPAY':
+          case PAYMENT_METHODS.applePay:
+            paymentMethodId = 'apple_pay';
+            paymentMethodValue = PAYMENT_METHODS.applePay;
+            break;
+          case 'GOOGLEPAY':  
+          case PAYMENT_METHODS.googlePay:
+            paymentMethodId = 'google_pay';
+            paymentMethodValue = PAYMENT_METHODS.googlePay;
+            break;
+          case 'BIT':
+          case PAYMENT_METHODS.bit:
+            paymentMethodId = 'bit';
+            paymentMethodValue = PAYMENT_METHODS.bit;
+            break;
+          default:
+            console.log('Unknown payment method from last order:', lastPaymentMethod);
+            return;
+        }
+
+        // Check if OS supports this payment method
+        const paymentMethodConfig = getPaymentMethodById(paymentMethodId);
+        if (paymentMethodConfig?.supportOnlyOS && Platform.OS !== paymentMethodConfig.supportOnlyOS) {
+          console.log(`Payment method ${paymentMethodId} not supported on ${Platform.OS}`);
+          return;
+        }
+
+        // Check if store supports this payment method
+        const isSupported = await isStoreSupportAction(paymentMethodConfig.supportKey);
+        if (!isSupported) {
+          console.log(`Payment method ${paymentMethodId} not supported by store`);
+          return;
+        }
+
+        // Set the payment method from last order
+        console.log(`Setting payment method from last order: ${paymentMethodId}`);
+        setSelectedPaymentMethodId(paymentMethodId);
+        setPaymentMthod(paymentMethodValue);
+        onChange(paymentMethodValue);
+
+      } catch (error) {
+        console.error('Error getting last order payment method:', error);
+      }
+    };
+
+    // Only run this after supported payment methods are loaded
+    if (!isLoadingPaymentMethods) {
+      setPaymentMethodFromLastOrder();
+    }
+  }, [authStore, ordersStore, onChange, isLoadingPaymentMethods]);
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
@@ -171,7 +269,7 @@ export const PaymentMethodPickSquare = ({
       return t(paymentMethodConfig.translationKey);
     }
     
-    // Final fallback - use proper translation key
+    // Final fallback
     return t("choose-payment-method");
   };
 
