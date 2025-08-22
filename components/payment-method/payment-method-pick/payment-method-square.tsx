@@ -171,8 +171,8 @@ export const PaymentMethodPickSquare = ({
       return t(paymentMethodConfig.translationKey);
     }
     
-    // Final fallback
-    return t("select-payment-method");
+    // Final fallback - use proper translation key
+    return t("choose-payment-method");
   };
 
   const getPaymentMethodIcon = () => {
