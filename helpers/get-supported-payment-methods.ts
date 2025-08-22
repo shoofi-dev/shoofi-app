@@ -1,5 +1,6 @@
 import { PAYMENT_METHODS } from "../consts/shared";
 import isStoreSupportAction from "./is-store-support-action";
+import { Platform } from "react-native";
 
 export interface PaymentMethodOption {
   id: string;
@@ -8,6 +9,7 @@ export interface PaymentMethodOption {
   translationKey: string;
   iconSource?: any;
   iconName?: string;
+  supportOnlyOS?: 'android' | 'ios';
 }
 
 // Define all available payment methods with their configurations
@@ -18,6 +20,7 @@ const ALL_PAYMENT_METHODS: PaymentMethodOption[] = [
     supportKey: "apple_pay_support",
     translationKey: "apple-pay",
     iconSource: require("../assets/icons/apple-pay.png"),
+    supportOnlyOS: 'ios',
   },
   {
     id: "google_pay",
@@ -25,6 +28,7 @@ const ALL_PAYMENT_METHODS: PaymentMethodOption[] = [
     supportKey: "google_pay_support",
     translationKey: "google-pay",
     iconSource: require("../assets/icons/google-pay.png"),
+    supportOnlyOS: 'android',
   },
   {
     id: "bit",
@@ -57,13 +61,20 @@ export const getAllPaymentMethods = (): PaymentMethodOption[] => {
 };
 
 /**
- * Get only the payment methods that are supported by the store
+ * Get only the payment methods that are supported by the store and platform
  */
 export const getSupportedPaymentMethods = async (): Promise<PaymentMethodOption[]> => {
   const supportedMethods: PaymentMethodOption[] = [];
 
   for (const method of ALL_PAYMENT_METHODS) {
     try {
+      // Platform-specific filtering
+      if (method.supportOnlyOS && Platform.OS !== method.supportOnlyOS) {
+        // Skip if payment method is not supported on current OS
+        continue;
+      }
+
+      // Check if payment method is supported by the store
       const isSupported = await isStoreSupportAction(method.supportKey);
       if (isSupported) {
         supportedMethods.push(method);
