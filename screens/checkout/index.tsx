@@ -39,6 +39,7 @@ import Modal from "react-native-modal";
 import OrderSubmittedScreen from "../order/submitted";
 import OrderProcessingModal from "../../components/dialogs/order-processing-modal";
 import { WebView } from 'react-native-webview';
+import { handleZCreditPostMessage, createZCreditConfigWithPostMessages, ZCreditMessageHandlerConfig } from "../../components/digital-payments/utils/zcredit-message-handler";
 
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -307,14 +308,14 @@ const CheckoutScreen = ({ route }) => {
       }));
 
       const requestBody = {
-        Key: "c0863aa14e77ec032effda671797c295d8a2ab154e49242871a197d158fa3f30",
+        Key: "952ad5fd3a963d4fec9d2e13dacb148144c04bfd5729cdbf5b6bee31a3468d6a",
         Local: "He",
-        UniqueId: "",
-        SuccessUrl: "",
-        CancelUrl: "",
-        CallbackUrl: "",
-        FailureCallBackUrl: "",
-        FailureRedirectUrl: "",
+        UniqueId: `order_${Date.now()}`,
+        SuccessUrl: "https://success.zcredit.local",
+        CancelUrl: "https://cancel.zcredit.local", 
+        CallbackUrl: "https://callback.zcredit.local",
+        FailureCallBackUrl: "https://failure.zcredit.local",
+        FailureRedirectUrl: "https://failure.zcredit.local",
         NumberOfFailures: 5,
         PaymentType: "regular",
         CreateInvoice: "false",
@@ -394,10 +395,117 @@ const CheckoutScreen = ({ route }) => {
     }
   };
 
-  // Handle WebView navigation state changes
+  // ZCredit postMessage handlers
+  const zcreditMessageHandlers: ZCreditMessageHandlerConfig = {
+    onSubmit: (data) => {
+      console.log('ZCredit: Payment form submitted', data);
+      // Show processing state while payment is being processed
+      setIsProcessingPayment(true);
+    },
+
+    onSuccess: (data) => {
+      alert('onSuccess');
+      console.log('ZCredit: Payment successful', data);
+      // Hide the WebView and proceed with order submission
+      setPaymentPageUrl(null);
+      setIsProcessingPayment(false);
+      // Proceed with checkout flow
+      handleCheckout();
+    },
+
+    onCancel: (data) => {
+      alert('onCancel');
+      console.log('ZCredit: Payment cancelled by user', data);
+      // Hide the WebView and reset processing state
+      setPaymentPageUrl(null);
+      setIsProcessingPayment(false);
+    },
+
+    onFailure: (data) => {
+      alert('onFailure');
+      console.log('ZCredit: Payment failed', data);
+      // Hide the WebView and show error
+      setPaymentPageUrl(null);
+      setIsProcessingPayment(false);
+      
+      // Show error alert with details if available
+      const errorMessage = data?.errorMessage || 'Payment failed. Please try again.';
+      alert(`Payment Error: ${errorMessage}`);
+    },
+
+    onSubmitEnd: (data) => {
+      console.log('ZCredit: Form submission ended', data);
+      // This indicates the form submission process has ended
+      // You might want to hide loading indicators here
+    },
+
+    onUnknownMessage: (message) => {
+      alert('onUnknownMessage');
+      console.warn('ZCredit: Unknown message received', message);
+    }
+  };
+
+  // Handle ZCredit WebView postMessages
+  const handleZCreditWebViewMessage = (event) => {
+    const message = event.nativeEvent.data;
+    console.log('React Native received WebView message:', message);
+    
+    // Handle injection test message
+    try {
+      const parsedMessage = JSON.parse(message);
+      
+      if (parsedMessage.type === 'InjectionComplete') {
+        console.log('✅ WebView injection successful:', parsedMessage.message);
+        alert('WebView Ready: ' + parsedMessage.message);
+        return;
+      }
+      
+      if (parsedMessage.type === 'DebugMessage') {
+        console.log('🐛 Debug message from ' + parsedMessage.source + ':', parsedMessage.originalMessage);
+        
+        // Process the original message if it's from ZCredit
+        const originalMsg = parsedMessage.originalMessage;
+        if (originalMsg && originalMsg.Reason && originalMsg.SessionID) {
+          console.log('Processing ZCredit message from debug:', originalMsg);
+          
+          // Map ZCredit messages to our handler format
+          if (originalMsg.Reason === 'IsWhileSubmit' && originalMsg.State === true) {
+            console.log('🟡 ZCredit: Payment form submitted');
+            zcreditMessageHandlers.onSubmit?.({
+              sessionId: originalMsg.SessionID,
+              reason: originalMsg.Reason,
+              state: originalMsg.State
+            });
+          } else if (originalMsg.Code && originalMsg.Code !== 0) {
+            console.log('🔴 ZCredit: Payment failed with code', originalMsg.Code);
+            zcreditMessageHandlers.onFailure?.({
+              sessionId: originalMsg.SessionID,
+              errorCode: originalMsg.Code,
+              errorMessage: originalMsg.Reason
+            });
+          } else if (originalMsg.Reason === 'Success' || originalMsg.Reason === 'Completed') {
+            console.log('🟢 ZCredit: Payment successful');
+            zcreditMessageHandlers.onSuccess?.({
+              sessionId: originalMsg.SessionID,
+              reason: originalMsg.Reason
+            });
+          }
+        }
+        
+        return; // Don't process debug messages further
+      }
+    } catch (e) {
+      // Not JSON, continue with normal handling
+    }
+          // Handle ZCredit postMessages
+    handleZCreditPostMessage(message, zcreditMessageHandlers);
+  };
+
+  // Handle WebView navigation state changes (fallback for non-postMessage scenarios)
   const handleWebViewNavigationStateChange = (navState) => {
     console.log('WebView navigation state changed:', navState.url);
     
+    // Note: With postMessage implementation, this is mainly a fallback
     // Check for success/failure URLs and handle accordingly
     if (navState.url.includes('success') || navState.url.includes('callback')) {
       // Payment successful - proceed with order submission
@@ -652,7 +760,7 @@ const CheckoutScreen = ({ route }) => {
      }
   `;
 
-  // JavaScript code to inject CSS and fonts into the WebView
+  // JavaScript code to inject CSS, fonts, and postMessage listener into the WebView
   const injectedJavaScript = `
     (function() {
       // Add Google Fonts preconnect links
@@ -679,6 +787,157 @@ const CheckoutScreen = ({ route }) => {
       style.innerHTML = \`${customCSS}\`;
       document.head.appendChild(style);
       
+      // Comprehensive ZCredit postMessage capture
+      function captureZCreditMessage(message, source) {
+        console.log('ZCredit message captured from ' + source + ':', message);
+        
+        // Forward all messages to React Native for debugging
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            source: source,
+            originalMessage: message,
+            type: 'DebugMessage'
+          }));
+        }
+        
+        // Check if this is a ZCredit postMessage
+        var messageToProcess = message;
+        if (typeof message === 'string') {
+          // Try to parse JSON message
+          try {
+            messageToProcess = JSON.parse(message);
+          } catch (e) {
+            // Not JSON, check for specific keywords
+            if (message.includes('PostMessage') || 
+                message.includes('Submit') || 
+                message.includes('Success') || 
+                message.includes('Cancel') || 
+                message.includes('Failure')) {
+              // Likely a ZCredit message - forward to React Native
+              if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(message);
+              }
+            }
+            return;
+          }
+        }
+        
+        // Check if it's a ZCredit postMessage type (original format)
+        if (messageToProcess && messageToProcess.type && (
+          messageToProcess.type === 'PostMessageOnSubmit' ||
+          messageToProcess.type === 'PostMessageOnSuccess' ||
+          messageToProcess.type === 'PostMessageOnCancel' ||
+          messageToProcess.type === 'PostMessageOnFailure'
+        )) {
+          console.log('ZCredit postMessage detected:', messageToProcess.type);
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify(messageToProcess));
+          }
+        }
+        
+        // Check if it's ZCredit's actual message format
+        if (messageToProcess && messageToProcess.Reason && messageToProcess.SessionID) {
+          console.log('ZCredit custom message detected:', messageToProcess.Reason);
+          
+          var zcreditEvent = null;
+          
+          // Map ZCredit's Reason to our standard postMessage types
+          if (messageToProcess.Reason === 'IsWhileSubmit' && messageToProcess.State === true) {
+            zcreditEvent = {
+              type: 'PostMessageOnSubmit',
+              data: {
+                sessionId: messageToProcess.SessionID,
+                reason: messageToProcess.Reason,
+                state: messageToProcess.State
+              }
+            };
+          } else if (messageToProcess.Reason === 'IsWhileSubmit' && messageToProcess.State === false) {
+            // This could be end of submit or form ready state
+            zcreditEvent = {
+              type: 'PostMessageOnSubmitEnd',
+              data: {
+                sessionId: messageToProcess.SessionID,
+                reason: messageToProcess.Reason,
+                state: messageToProcess.State
+              }
+            };
+          } else if (messageToProcess.Code && messageToProcess.Code !== 0) {
+            // Error/failure case
+            zcreditEvent = {
+              type: 'PostMessageOnFailure',
+              data: {
+                sessionId: messageToProcess.SessionID,
+                reason: messageToProcess.Reason,
+                errorCode: messageToProcess.Code,
+                errorMessage: messageToProcess.Reason
+              }
+            };
+          } else if (messageToProcess.Reason === 'Success' || messageToProcess.Reason === 'Completed') {
+            // Success case (if they use this format)
+            zcreditEvent = {
+              type: 'PostMessageOnSuccess',
+              data: {
+                sessionId: messageToProcess.SessionID,
+                reason: messageToProcess.Reason
+              }
+            };
+          }
+          
+          if (zcreditEvent && window.ReactNativeWebView) {
+            console.log('Sending mapped ZCredit event:', zcreditEvent.type);
+            window.ReactNativeWebView.postMessage(JSON.stringify(zcreditEvent));
+          }
+        }
+      }
+      
+      // Listen for postMessages on current window
+      window.addEventListener('message', function(event) {
+        captureZCreditMessage(event.data, 'window');
+      });
+      
+      // Listen for postMessages on parent window (if in iframe)
+      if (window.parent && window.parent !== window) {
+        window.parent.addEventListener('message', function(event) {
+          captureZCreditMessage(event.data, 'parent');
+        });
+      }
+      
+      // Listen for postMessages on top window
+      if (window.top && window.top !== window) {
+        window.top.addEventListener('message', function(event) {
+          captureZCreditMessage(event.data, 'top');
+        });
+      }
+      
+      // Override postMessage to intercept all outgoing messages
+      var originalPostMessage = window.postMessage;
+      window.postMessage = function(message, targetOrigin) {
+        console.log('Intercepted postMessage:', message);
+        captureZCreditMessage(message, 'intercepted');
+        return originalPostMessage.call(this, message, targetOrigin);
+      };
+      
+      // Also override parent.postMessage if available
+      if (window.parent && window.parent.postMessage) {
+        var originalParentPostMessage = window.parent.postMessage;
+        window.parent.postMessage = function(message, targetOrigin) {
+          console.log('Intercepted parent postMessage:', message);
+          captureZCreditMessage(message, 'parent-intercepted');
+          return originalParentPostMessage.call(this, message, targetOrigin);
+        };
+      }
+      
+      // Also listen for custom events that ZCredit might dispatch
+      document.addEventListener('ZCreditEvent', function(event) {
+        console.log('ZCredit custom event:', event.detail);
+        if (window.ReactNativeWebView) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: 'ZCreditEvent',
+            data: event.detail
+          }));
+        }
+      });
+      
       // Optional: Hide loading screen faster
       setTimeout(function() {
         var loadingElements = document.querySelectorAll('.loading, .spinner, .loader');
@@ -686,6 +945,17 @@ const CheckoutScreen = ({ route }) => {
           el.style.display = 'none';
         });
       }, 1000);
+      
+      // Debug: Log that the injection was successful
+      console.log('ZCredit WebView injection completed - postMessage listeners active');
+      
+      // Send a test message to confirm communication works
+      if (window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'InjectionComplete',
+          message: 'ZCredit WebView JavaScript injection completed'
+        }));
+      }
     })();
     true; // Required for iOS
   `;
@@ -787,9 +1057,24 @@ const CheckoutScreen = ({ route }) => {
                   javaScriptEnabled={true}
                   domStorageEnabled={true}
                   injectedJavaScript={injectedJavaScript}
-                  onMessage={(event) => {
-                    // Handle messages from injected JavaScript if needed
-                    console.log('WebView message:', event.nativeEvent.data);
+                  injectedJavaScriptBeforeContentLoaded={`
+                    console.log('WebView: JavaScript injection before content loaded');
+                    window.isReactNativeWebView = true;
+                  `}
+                  onMessage={handleZCreditWebViewMessage}
+                  // Enable postMessage communication from WebView to React Native
+                  mixedContentMode="compatibility"
+                  allowsInlineMediaPlayback={true}
+                  // Additional WebView settings for better postMessage support
+                  allowFileAccess={true}
+                  allowUniversalAccessFromFileURLs={true}
+                  allowFileAccessFromFileURLs={true}
+                  onLoadEnd={() => {
+                    console.log('WebView: Load completed');
+                  }}
+                  onError={(syntheticEvent) => {
+                    const { nativeEvent } = syntheticEvent;
+                    console.error('WebView error:', nativeEvent);
                   }}
               />
           ) : (
