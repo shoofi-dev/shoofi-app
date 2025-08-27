@@ -1615,45 +1615,51 @@ const CheckoutScreen = ({ route }) => {
       >
 
         <View style={{ width: "90%", alignSelf: "center", height: "100%" }}>
-          {/* Hidden WebView for digital payments - always render but make invisible */}
+          {/* Hidden WebView for digital payments - completely invisible and out of layout flow */}
           {paymentPageUrl && isDigitalPaymentMethod() && (
-            <WebView
-              ref={webViewRef}
-              source={{ uri: paymentPageUrl }}
-              style={{
-                position: 'absolute',
-                left: -9999,
-                top: -9999,
-                width: 1,
-                height: 1,
-                opacity: 0,
-                zIndex: -1,
-              }}
-              onNavigationStateChange={handleWebViewNavigationStateChange}
-              startInLoadingState={true}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              injectedJavaScript={injectedJavaScript}
-              injectedJavaScriptBeforeContentLoaded={`
-                console.log('WebView: JavaScript injection before content loaded');
-                window.isReactNativeWebView = true;
-              `}
-              onMessage={handleZCreditWebViewMessage}
-              // Enable postMessage communication from WebView to React Native
-              mixedContentMode="compatibility"
-              allowsInlineMediaPlayback={true}
-              // Additional WebView settings for better postMessage support
-              allowFileAccess={true}
-              allowUniversalAccessFromFileURLs={true}
-              allowFileAccessFromFileURLs={true}
-              onLoadEnd={() => {
-                console.log('WebView: Load completed');
-              }}
-              onError={(syntheticEvent) => {
-                const { nativeEvent } = syntheticEvent;
-                console.error('WebView error:', nativeEvent);
-              }}
-            />
+            <View style={{
+              position: 'absolute',
+              left: -10000,
+              top: -10000,
+              width: 0,
+              height: 0,
+              overflow: 'hidden',
+              opacity: 0,
+              zIndex: -999,
+            }}>
+              <WebView
+                ref={webViewRef}
+                source={{ uri: paymentPageUrl }}
+                style={{
+                  width: 300, // Give it some size inside the hidden container
+                  height: 400,
+                }}
+                onNavigationStateChange={handleWebViewNavigationStateChange}
+                startInLoadingState={true}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                injectedJavaScript={injectedJavaScript}
+                injectedJavaScriptBeforeContentLoaded={`
+                  console.log('WebView: JavaScript injection before content loaded');
+                  window.isReactNativeWebView = true;
+                `}
+                onMessage={handleZCreditWebViewMessage}
+                // Enable postMessage communication from WebView to React Native
+                mixedContentMode="compatibility"
+                allowsInlineMediaPlayback={true}
+                // Additional WebView settings for better postMessage support
+                allowFileAccess={true}
+                allowUniversalAccessFromFileURLs={true}
+                allowFileAccessFromFileURLs={true}
+                onLoadEnd={() => {
+                  console.log('WebView: Load completed');
+                }}
+                onError={(syntheticEvent) => {
+                  const { nativeEvent } = syntheticEvent;
+                  console.error('WebView error:', nativeEvent);
+                }}
+              />
+            </View>
           )}
           
           {/* Custom Button for digital payments when ZCredit is ready */}
