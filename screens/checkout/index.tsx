@@ -72,6 +72,8 @@ const CheckoutScreen = ({ route }) => {
   // WebView state for digital payments
   const [paymentPageUrl, setPaymentPageUrl] = useState(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [isZCreditReady, setIsZCreditReady] = useState(false);
+  const [zcreditLoadingTimeout, setZcreditLoadingTimeout] = useState(null);
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
   }, [cartStore.cartItems]);
@@ -382,6 +384,17 @@ const CheckoutScreen = ({ route }) => {
       if (responseData.HasError === false && responseData.Data?.SessionUrl) {
         console.log('ZCredit SessionUrl:', responseData.Data.SessionUrl);
         setPaymentPageUrl(responseData.Data.SessionUrl);
+        setIsZCreditReady(false); // Reset ready state for new session
+        
+        // Add a fallback timeout to avoid infinite loading
+        if (zcreditLoadingTimeout) {
+          clearTimeout(zcreditLoadingTimeout);
+        }
+        const timeout = setTimeout(() => {
+          console.log('⚠️ ZCredit loading timeout reached - forcing ready state');
+          setIsZCreditReady(true);
+        }, 10000); // 10 seconds timeout
+        setZcreditLoadingTimeout(timeout);
       } else {
         console.error('Failed to create payment session:', responseData);
         // Handle error - maybe show an error dialog
@@ -405,25 +418,22 @@ const CheckoutScreen = ({ route }) => {
 
     onSuccess: (data) => {
       console.log('ZCredit: Payment successful', data);
-      // Hide the WebView and proceed with order submission
-      // setPaymentPageUrl(null);
-      // setIsProcessingPayment(false);
-      // Proceed with checkout flow
-      handleCheckout();
+      // Complete the checkout process with the successful digital payment
+      completeDigitalPaymentCheckout(data);
     },
 
     onCancel: (data) => {
       console.log('ZCredit: Payment cancelled by user', data);
-      // Hide the WebView and reset processing state
-      // setPaymentPageUrl(null);
-      // setIsProcessingPayment(false);
+      // Reset states to allow user to try again
+      setIsProcessingPayment(false);
+      setIsZCreditReady(true); // Keep ready so button is available again
     },
 
     onFailure: (data) => {
       console.log('ZCredit: Payment failed', data);
-      // Hide the WebView and show error
-      // setPaymentPageUrl(null);
-      // setIsProcessingPayment(false);
+      // Reset states to allow user to try again after error
+      setIsProcessingPayment(false);
+      setIsZCreditReady(true); // Keep ready so button is available again
       
       // Use the exact same error dialog as credit card payments
       const errorMessage = data?.errorMessage || t("order-error-modal-message");
@@ -457,6 +467,22 @@ const CheckoutScreen = ({ route }) => {
       
       if (parsedMessage.type === 'InjectionComplete') {
         console.log('✅ WebView injection successful:', parsedMessage.message);
+        return;
+      }
+      
+      if (parsedMessage.type === 'ZCreditReady') {
+        console.log('✅ ZCredit iframe ready:', parsedMessage.message);
+        if (parsedMessage.availableButtons) {
+          console.log('Available payment buttons:', parsedMessage.availableButtons);
+        }
+        
+        // Clear the loading timeout since we're ready
+        if (zcreditLoadingTimeout) {
+          clearTimeout(zcreditLoadingTimeout);
+          setZcreditLoadingTimeout(null);
+        }
+        
+        setIsZCreditReady(true);
         return;
       }
       
@@ -927,6 +953,8 @@ const CheckoutScreen = ({ route }) => {
         };
       }
       
+
+      
       // Also listen for custom events that ZCredit might dispatch
       document.addEventListener('ZCreditEvent', function(event) {
         console.log('ZCredit custom event:', event.detail);
@@ -946,6 +974,383 @@ const CheckoutScreen = ({ route }) => {
         });
       }, 1000);
       
+      // Hide the ZCredit iframe but keep it in DOM
+      function hideZCreditIframe() {
+        console.log('Attempting to hide ZCredit iframe');
+        
+        // Hide the entire page body initially
+        if (document.body) {
+          document.body.style.display = 'none';
+          document.body.style.visibility = 'hidden';
+          document.body.style.opacity = '0';
+          document.body.style.height = '0';
+          document.body.style.overflow = 'hidden';
+        }
+        
+        // Set up observer to hide iframe when it appears
+        var observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+              if (node.nodeType === 1) { // Element node
+                // Hide any iframe or container that appears
+                if (node.tagName === 'IFRAME' || node.classList && node.classList.contains('payment-frame')) {
+                  node.style.display = 'none';
+                }
+                // Also check children
+                var iframes = node.querySelectorAll && node.querySelectorAll('iframe');
+                if (iframes) {
+                  for (var i = 0; i < iframes.length; i++) {
+                    iframes[i].style.display = 'none';
+                  }
+                }
+              }
+            });
+          });
+        });
+        
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      }
+      
+             // Function to trigger ZCredit payment methods
+       function triggerZCreditPaymentMethod(paymentMethod) {
+         console.log('Triggering ZCredit payment for method:', paymentMethod);
+         
+         // Try multiple ways to access the Angular controller
+         var vm = null;
+         var scope = null;
+         
+         // Method 1: Standard Angular element selector
+         try {
+           var angularElement = document.querySelector('[ng-controller="ZCreditWebCheckoutController"]');
+           if (angularElement && window.angular) {
+             scope = window.angular.element(angularElement).scope();
+             vm = scope ? scope.vm : null;
+             console.log('Method 1 - Angular element access:', vm ? 'Success' : 'Failed');
+           }
+         } catch (e) {
+           console.log('Method 1 failed:', e);
+         }
+         
+         // Method 2: Try accessing through body or document
+         if (!vm) {
+           try {
+             var bodyElement = document.body;
+             if (bodyElement && window.angular) {
+               var bodyScope = window.angular.element(bodyElement).scope();
+               if (bodyScope && bodyScope.$$childHead) {
+                 // Walk through child scopes to find the controller
+                 var currentScope = bodyScope.$$childHead;
+                 while (currentScope) {
+                   if (currentScope.vm) {
+                     vm = currentScope.vm;
+                     scope = currentScope;
+                     console.log('Method 2 - Body scope walk:', vm ? 'Success' : 'Failed');
+                     break;
+                   }
+                   currentScope = currentScope.$$nextSibling;
+                 }
+               }
+             }
+           } catch (e) {
+             console.log('Method 2 failed:', e);
+           }
+         }
+         
+         // Method 3: Global scope access (if Angular puts it there)
+         if (!vm) {
+           try {
+             if (window.angular && window.angular.element(document).scope()) {
+               var rootScope = window.angular.element(document).scope();
+               if (rootScope.$$childHead) {
+                 var currentScope = rootScope.$$childHead;
+                 while (currentScope) {
+                   if (currentScope.vm) {
+                     vm = currentScope.vm;
+                     scope = currentScope;
+                     console.log('Method 3 - Root scope walk:', vm ? 'Success' : 'Failed');
+                     break;
+                   }
+                   currentScope = currentScope.$$nextSibling;
+                 }
+               }
+             }
+           } catch (e) {
+             console.log('Method 3 failed:', e);
+           }
+         }
+         
+         if (!vm) {
+           console.error('Could not access ZCredit controller vm through any method');
+           return false;
+         }
+         
+         console.log('Successfully found controller vm:', vm);
+         
+         // Trigger the appropriate payment method based on the payment type
+         try {
+           switch (paymentMethod) {
+             case 'apple_pay':
+               console.log('Triggering Apple Pay');
+               if (typeof vm.PayWithApplePay_Clicked === 'function') {
+                 console.log('Calling vm.PayWithApplePay_Clicked()');
+                 
+                 // Wrap the Apple Pay call to catch cancellation
+                 try {
+                   vm.PayWithApplePay_Clicked();
+                   if (scope) scope.$apply();
+                   return true;
+                 } catch (error) {
+                   console.log('Apple Pay error or cancellation:', error);
+                   
+                   // Send cancel message back to React Native
+                   if (window.ReactNativeWebView) {
+                     window.ReactNativeWebView.postMessage(JSON.stringify({
+                       type: 'PostMessageOnCancel',
+                       data: {
+                         message: 'Apple Pay cancelled',
+                         cancelled: true
+                       }
+                     }));
+                   }
+                   return false;
+                 }
+               } else {
+                 console.error('Apple Pay method not found or not a function:', typeof vm.PayWithApplePay_Clicked);
+               }
+               break;
+               
+             case 'google_pay':
+               console.log('Triggering Google Pay');
+               if (typeof vm.PayWithGooglePay_Clicked === 'function') {
+                 console.log('Calling vm.PayWithGooglePay_Clicked()');
+                 vm.PayWithGooglePay_Clicked();
+                 if (scope) scope.$apply();
+                 return true;
+               } else {
+                 console.error('Google Pay method not found or not a function:', typeof vm.PayWithGooglePay_Clicked);
+               }
+               break;
+               
+             case 'bit':
+               console.log('Triggering Bit payment');
+               if (typeof vm.PayWithBit_Clicked === 'function') {
+                 console.log('Calling vm.PayWithBit_Clicked()');
+                 vm.PayWithBit_Clicked();
+                 if (scope) scope.$apply();
+                 return true;
+               } else {
+                 console.error('Bit payment method not found or not a function:', typeof vm.PayWithBit_Clicked);
+               }
+               break;
+               
+             default:
+               console.log('Unknown payment method:', paymentMethod);
+               // Fallback to clicking submit button
+               return triggerSubmitButton();
+           }
+         } catch (error) {
+           console.error('Error triggering payment method:', error);
+           return false;
+         }
+         
+         return false;
+       }
+       
+               // Listen for postMessages from React Native to trigger payments
+        window.addEventListener('message', function(event) {
+          console.log('ZCredit iframe received message:', event.data);
+          console.log('Message origin:', event.origin);
+          console.log('Message source:', event.source);
+          
+          try {
+            var data;
+            if (typeof event.data === 'string') {
+              data = JSON.parse(event.data);
+            } else {
+              data = event.data;
+            }
+            
+            console.log('Parsed message data:', data);
+            
+            if (data.type === 'TriggerZCreditPayment') {
+              console.log('Processing TriggerZCreditPayment message');
+              var result = triggerZCreditPaymentMethod(data.paymentMethod);
+              console.log('Payment trigger result:', result);
+            }
+          } catch (e) {
+            console.log('Message processing error:', e);
+          }
+        });
+        
+        // Also listen for custom events as fallback
+        window.addEventListener('triggerZCreditPayment', function(event) {
+          console.log('ZCredit iframe received custom event:', event.detail);
+          
+          if (event.detail && event.detail.type === 'TriggerZCreditPayment') {
+            console.log('Processing custom event');
+            var result = triggerZCreditPaymentMethod(event.detail.paymentMethod);
+            console.log('Custom event trigger result:', result);
+          }
+        });
+        
+                 // Monitor for payment session cancellations/completions
+         var paymentInProgress = false;
+         
+         // Override PaymentRequest show method to detect cancellations
+         if (window.PaymentRequest) {
+           var originalShow = window.PaymentRequest.prototype.show;
+           window.PaymentRequest.prototype.show = function() {
+             console.log('Payment session started');
+             paymentInProgress = true;
+             
+             var promise = originalShow.apply(this, arguments);
+             
+             promise.then(function(response) {
+               console.log('Payment session completed successfully');
+               paymentInProgress = false;
+             }).catch(function(error) {
+               console.log('Payment session cancelled or failed:', error);
+               paymentInProgress = false;
+               
+               // Send cancel message back to React Native
+               if (window.ReactNativeWebView) {
+                 window.ReactNativeWebView.postMessage(JSON.stringify({
+                   type: 'PostMessageOnCancel',
+                   data: {
+                     message: 'Payment cancelled by user',
+                     cancelled: true,
+                     error: error.message
+                   }
+                 }));
+               }
+             });
+             
+             return promise;
+           };
+         }
+         
+         // Additional debugging - check if Angular is available
+         setTimeout(function() {
+           console.log('Angular availability check:');
+           console.log('- window.angular:', typeof window.angular);
+           console.log('- angular.element:', typeof (window.angular && window.angular.element));
+           console.log('- Controller element:', document.querySelector('[ng-controller="ZCreditWebCheckoutController"]'));
+           
+           // Try to access the controller
+           var angularElement = document.querySelector('[ng-controller="ZCreditWebCheckoutController"]');
+           if (angularElement && window.angular) {
+             try {
+               var scope = window.angular.element(angularElement).scope();
+               console.log('- Angular scope:', scope);
+               console.log('- Controller vm:', scope ? scope.vm : 'No scope');
+               if (scope && scope.vm) {
+                 console.log('- Available payment methods:', {
+                   applePay: typeof scope.vm.PayWithApplePay_Clicked,
+                   googlePay: typeof scope.vm.PayWithGooglePay_Clicked,
+                   bit: typeof scope.vm.PayWithBit_Clicked
+                 });
+               }
+             } catch (e) {
+               console.log('- Error accessing Angular scope:', e);
+             }
+           }
+         }, 2000);
+      
+      // Fallback function to click submit button
+      function triggerSubmitButton() {
+        console.log('Attempting to trigger submit button as fallback');
+        
+        var selectors = [
+          '.SubmitButton',
+          'button[type="submit"]',
+          'input[type="submit"]',
+          '.payment-button',
+          'button'
+        ];
+        
+        for (var i = 0; i < selectors.length; i++) {
+          var buttons = document.querySelectorAll(selectors[i]);
+          if (buttons && buttons.length > 0) {
+            for (var j = 0; j < buttons.length; j++) {
+              var button = buttons[j];
+              if (button.offsetParent !== null || button.style.display !== 'none') {
+                console.log('Clicking submit button:', button);
+                button.click();
+                return true;
+              }
+            }
+          }
+        }
+        
+        return false;
+      }
+      
+      // Wait for page to load then hide iframe and check for payment buttons
+      var retryCount = 0;
+      var maxRetries = 10; // Max 5 seconds of retrying
+      
+      function checkAndSetupPayment() {
+        console.log('Checking for payment setup... attempt', retryCount + 1);
+        hideZCreditIframe();
+        
+        // Check if payment buttons are available
+        var paymentButtons = [
+          document.querySelector('.SubmitButton'),
+          document.querySelector('.apple-pay-button'), 
+          document.querySelector('.GooglePayContainer button')
+        ];
+        
+        var foundButton = false;
+        for (var i = 0; i < paymentButtons.length; i++) {
+          if (paymentButtons[i]) {
+            console.log('Found payment button:', paymentButtons[i]);
+            foundButton = true;
+            break;
+          }
+        }
+        
+        if (foundButton || document.querySelector('form')) {
+          console.log('Payment ready - sending ZCreditReady message');
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'ZCreditReady',
+              message: 'ZCredit iframe hidden and payment buttons ready',
+              hasPaymentButtons: foundButton,
+              availableButtons: {
+                submitButton: !!document.querySelector('.SubmitButton'),
+                applePayButton: !!document.querySelector('.apple-pay-button'),
+                googlePayButton: !!document.querySelector('.GooglePayContainer button')
+              }
+            }));
+          }
+        } else if (retryCount < maxRetries) {
+          console.log('Payment buttons not ready yet, retrying...', retryCount + 1, '/', maxRetries);
+          retryCount++;
+          setTimeout(checkAndSetupPayment, 500);
+        } else {
+          console.log('Max retries reached, proceeding anyway - sending ZCreditReady message');
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'ZCreditReady',
+              message: 'ZCredit iframe hidden - proceeding without payment buttons detected',
+              hasPaymentButtons: false,
+              maxRetriesReached: true,
+              availableButtons: {
+                submitButton: false,
+                applePayButton: false,
+                googlePayButton: false
+              }
+            }));
+          }
+        }
+      }
+      
+      // Start checking after initial load
+      setTimeout(checkAndSetupPayment, 1000);
+      
       // Debug: Log that the injection was successful
       console.log('ZCredit WebView injection completed - postMessage listeners active');
       
@@ -960,10 +1365,173 @@ const CheckoutScreen = ({ route }) => {
     true; // Required for iOS
   `;
 
+  // Complete checkout for successful digital payments (bypasses validation)
+  const completeDigitalPaymentCheckout = async (paymentData) => {
+    console.log('Completing digital payment checkout with data:', paymentData);
+    
+    // Prevent multiple submissions
+    if (isCheckoutInProgress.current) {
+      return;
+    }
+    
+    isCheckoutInProgress.current = true;
+    setIsLoadingOrderSent(true);
+    setIsProcessingPayment(false); // Digital payment is already processed
+    setIsProcessingModalOpen(true); // Show processing modal
+
+    try {
+      // Skip validation since payment is already successful
+      
+      // Handle coupon redemption if needed
+      try {
+        const userId = adminCustomerStore.userDetails?.customerId || editOrderData?.customerId || userDetailsStore.userDetails?.customerId;
+        const orderId = editOrderData?._id || `temp-${Date.now()}`;
+        
+        if (couponsStore.appliedCoupon) {
+          await couponsStore.redeemCoupon(
+            couponsStore.appliedCoupon.coupon.code,
+            userId,
+            orderId,
+            couponsStore.appliedCoupon.discountAmount
+          );
+        }
+      } catch (error) {
+        console.log('Coupon redemption error (continuing):', error);
+      }
+
+      // Submit the order with successful digital payment
+      const checkoutSubmitOrderRes = await checkoutSubmitOrder({
+        paymentMthod,
+        shippingMethod,
+        totalPrice,
+        itemsPrice,
+        orderDate: selectedDate,
+        editOrderData: ordersStore.editOrderData,
+        address: addressLocation,
+        locationText: addressLocationText,
+        paymentData: paymentData, // Use digital payment data
+        shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
+        storeData: storeDataStore.storeData,
+      });
+      
+      if (checkoutSubmitOrderRes) {
+        // Success - proceed with post-checkout actions
+        postChargeOrderActions();
+        return;
+      }
+      
+      // If order submission failed
+      setIsLoadingOrderSent(false);
+      isCheckoutInProgress.current = false;
+      setIsProcessingModalOpen(false);
+      setIsZCreditReady(true); // Re-enable digital payment button
+      
+    } catch (error) {
+      console.error('Digital payment checkout error:', error);
+      setIsLoadingOrderSent(false);
+      isCheckoutInProgress.current = false;
+      setIsProcessingModalOpen(false);
+      setIsZCreditReady(true); // Re-enable digital payment button
+      
+      // Show error dialog
+      setTimeout(() => {
+        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+          title: t("order-error-modal-title"),
+          message: t("order-error-modal-message")
+        });
+      }, 500);
+    }
+  };
+
   // Handle payment button click (only for non-digital payment methods)
   const handlePaymentButtonClick = () => {
     handleCheckout();
   };
+
+  // Trigger ZCredit payment from custom button
+  const triggerZCreditPayment = async () => {
+    if (paymentPageUrl && isDigitalPaymentMethod() && webViewRef.current) {
+      console.log('Triggering ZCredit payment via custom button');
+      
+      // Set processing state for validation
+      setIsProcessingPayment(true);
+      
+      try {
+        // For digital payments, use cash as payment method for validation 
+        // since digital payments are handled through ZCredit and might not be 
+        // configured as supported payment methods in store settings
+        const isCheckoutValidRes = await isCheckoutValid({
+          shippingMethod,
+          addressLocation,
+          addressLocationText,
+          place,
+          paymentMethod: PAYMENT_METHODS.cash, // Use cash for validation
+          isAvailableDrivers: availableDrivers?.available,
+          isDeliverySupport: shoofiAdminStore.storeData?.delivery_support,
+        });
+        
+        if (!isCheckoutValidRes) {
+          console.log('Digital payment validation failed');
+          // Reset processing state if validation fails
+          setIsProcessingPayment(false);
+          return;
+        }
+        
+        console.log('Digital payment validation passed, proceeding with payment');
+        
+        // Add fallback timeout to reset processing state if no response
+        setTimeout(() => {
+          if (isProcessingPayment) {
+            console.log('Payment timeout - resetting processing state');
+            setIsProcessingPayment(false);
+          }
+        }, 30000); // 30 second timeout
+        
+        // Determine which payment method is selected
+        let paymentMethod = 'unknown';
+        if (paymentMthod === PAYMENT_METHODS.applePay) {
+          paymentMethod = 'apple_pay';
+        } else if (paymentMthod === PAYMENT_METHODS.googlePay) {
+          paymentMethod = 'google_pay';
+        } else if (paymentMthod === PAYMENT_METHODS.bit) {
+          paymentMethod = 'bit';
+        }
+        
+        console.log('Selected payment method:', paymentMethod);
+        
+        // Send postMessage to iframe with payment method info
+        const triggerScript = `
+          (function() {
+            console.log('Sending postMessage to trigger ZCredit payment:', '${paymentMethod}');
+            
+            // Send message to the iframe's window
+            window.postMessage(JSON.stringify({
+              type: 'TriggerZCreditPayment',
+              paymentMethod: '${paymentMethod}'
+            }), '*');
+            
+            // Also dispatch a custom event as a fallback
+            window.dispatchEvent(new CustomEvent('triggerZCreditPayment', {
+              detail: {
+                type: 'TriggerZCreditPayment',
+                paymentMethod: '${paymentMethod}'
+              }
+            }));
+          })();
+          true;
+        `;
+        
+        webViewRef.current.injectJavaScript(triggerScript);
+        
+      } catch (error) {
+        console.error('Error during digital payment validation:', error);
+        setIsProcessingPayment(false);
+      }
+    }
+  };
+
+  // WebView ref to communicate with iframe
+  const webViewRef = useRef(null);
 
   return (
     <View style={styles.container}>
@@ -1047,44 +1615,92 @@ const CheckoutScreen = ({ route }) => {
       >
 
         <View style={{ width: "90%", alignSelf: "center", height: "100%" }}>
-          {paymentPageUrl && isDigitalPaymentMethod() ? (
-            // WebView for digital payments - replaces the button
-              <WebView
-                  source={{ uri: paymentPageUrl }}
-                  style={styles.webview}
-                  onNavigationStateChange={handleWebViewNavigationStateChange}
-                  startInLoadingState={true}
-                  javaScriptEnabled={true}
-                  domStorageEnabled={true}
-                  injectedJavaScript={injectedJavaScript}
-                  injectedJavaScriptBeforeContentLoaded={`
-                    console.log('WebView: JavaScript injection before content loaded');
-                    window.isReactNativeWebView = true;
-                  `}
-                  onMessage={handleZCreditWebViewMessage}
-                  // Enable postMessage communication from WebView to React Native
-                  mixedContentMode="compatibility"
-                  allowsInlineMediaPlayback={true}
-                  // Additional WebView settings for better postMessage support
-                  allowFileAccess={true}
-                  allowUniversalAccessFromFileURLs={true}
-                  allowFileAccessFromFileURLs={true}
-                  onLoadEnd={() => {
-                    console.log('WebView: Load completed');
-                  }}
-                  onError={(syntheticEvent) => {
-                    const { nativeEvent } = syntheticEvent;
-                    console.error('WebView error:', nativeEvent);
-                  }}
-              />
+          {/* Hidden WebView for digital payments - always render but make invisible */}
+          {paymentPageUrl && isDigitalPaymentMethod() && (
+            <WebView
+              ref={webViewRef}
+              source={{ uri: paymentPageUrl }}
+              style={{
+                position: 'absolute',
+                left: -9999,
+                top: -9999,
+                width: 1,
+                height: 1,
+                opacity: 0,
+                zIndex: -1,
+              }}
+              onNavigationStateChange={handleWebViewNavigationStateChange}
+              startInLoadingState={true}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              injectedJavaScript={injectedJavaScript}
+              injectedJavaScriptBeforeContentLoaded={`
+                console.log('WebView: JavaScript injection before content loaded');
+                window.isReactNativeWebView = true;
+              `}
+              onMessage={handleZCreditWebViewMessage}
+              // Enable postMessage communication from WebView to React Native
+              mixedContentMode="compatibility"
+              allowsInlineMediaPlayback={true}
+              // Additional WebView settings for better postMessage support
+              allowFileAccess={true}
+              allowUniversalAccessFromFileURLs={true}
+              allowFileAccessFromFileURLs={true}
+              onLoadEnd={() => {
+                console.log('WebView: Load completed');
+              }}
+              onError={(syntheticEvent) => {
+                const { nativeEvent } = syntheticEvent;
+                console.error('WebView error:', nativeEvent);
+              }}
+            />
+          )}
+          
+          {/* Custom Button for digital payments when ZCredit is ready */}
+          {paymentPageUrl && isDigitalPaymentMethod() && isZCreditReady ? (
+            <Button
+              onClickFn={triggerZCreditPayment}
+              disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
+              text={isProcessingPayment ? t("processing") : t("send-order")}
+              isLoading={isLoadingOrderSent || driversLoading || isProcessingPayment}
+              icon="kupa"
+              iconSize={themeStyle.FONT_SIZE_LG}
+              fontSize={themeStyle.FONT_SIZE_LG}
+              iconColor={themeStyle.SECONDARY_COLOR}
+              fontFamily={`${getCurrentLang()}-Bold`}
+              bgColor={isProcessingPayment ? themeStyle.GRAY_30 : themeStyle.PRIMARY_COLOR}
+              textColor={themeStyle.SECONDARY_COLOR}
+              borderRadious={100}
+              extraText={`₪${totalPrice}`}
+              countText={`${cartCount}`}
+              countTextColor={themeStyle.PRIMARY_COLOR}
+            />
+          ) : paymentPageUrl && isDigitalPaymentMethod() && !isZCreditReady ? (
+            // Loading state for digital payments
+            <Button
+              onClickFn={() => {}}
+              disabled={true}
+              text={t("loading")}
+              isLoading={true}
+              icon="kupa"
+              iconSize={themeStyle.FONT_SIZE_LG}
+              fontSize={themeStyle.FONT_SIZE_LG}
+              iconColor={themeStyle.SECONDARY_COLOR}
+              fontFamily={`${getCurrentLang()}-Bold`}
+              bgColor={themeStyle.GRAY_30}
+              textColor={themeStyle.SECONDARY_COLOR}
+              borderRadious={100}
+              extraText={`₪${totalPrice}`}
+              countText={`${cartCount}`}
+              countTextColor={themeStyle.PRIMARY_COLOR}
+            />
           ) : (
-            // Regular checkout button
+            // Regular checkout button for non-digital payments
             <Button
               onClickFn={() => handlePaymentButtonClick()}
               disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
               text={t("send-order")}
               isLoading={isLoadingOrderSent || driversLoading || isProcessingPayment}
-
               icon="kupa"
               iconSize={themeStyle.FONT_SIZE_LG}
               fontSize={themeStyle.FONT_SIZE_LG}
