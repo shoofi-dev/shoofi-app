@@ -353,7 +353,11 @@ const CheckoutScreen = ({ route }) => {
         ShowTotalSumInPayButton: "false",
         ForceCaptcha: "false",
         CustomCSS: "",
-        Bypass3DS: "false"
+        Bypass3DS: "false",
+        PostMessageOnSubmit: "true",
+        PostMessageOnSuccess: "true",
+        PostMessageOnCancel: "true",
+        PostMessageOnFailure: "true",
       };
 
       const response = await fetch('https://pci.zcredit.co.il/webcheckout/api/WebCheckout/CreateSession', {
