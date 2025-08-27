@@ -1,4 +1,4 @@
-import { StyleSheet, View, DeviceEventEmitter } from "react-native";
+import { StyleSheet, View, DeviceEventEmitter, TouchableOpacity, Image } from "react-native";
 import { observer } from "mobx-react";
 import { useNavigation } from "@react-navigation/native";
 import Button from "../../components/controls/button/button";
@@ -40,6 +40,8 @@ import OrderSubmittedScreen from "../order/submitted";
 import OrderProcessingModal from "../../components/dialogs/order-processing-modal";
 import { WebView } from 'react-native-webview';
 import { handleZCreditPostMessage, createZCreditConfigWithPostMessages, ZCreditMessageHandlerConfig } from "../../components/digital-payments/utils/zcredit-message-handler";
+import { getPaymentMethodByValue } from "../../helpers/get-supported-payment-methods";
+import Icon from "../../components/icon";
 
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
@@ -1443,6 +1445,25 @@ const CheckoutScreen = ({ route }) => {
     }
   };
 
+  // Get the payment method configuration for digital payments
+  const getDigitalPaymentMethodConfig = () => {
+    const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
+    return paymentMethodConfig;
+  };
+
+  // Get the appropriate icon name for digital payment method (fallback)
+  const getDigitalPaymentIcon = () => {
+    if (paymentMthod === PAYMENT_METHODS.applePay) {
+      return "kupa"; // Use payment icon for Apple Pay
+    } else if (paymentMthod === PAYMENT_METHODS.googlePay) {
+      return "kupa"; // Use payment icon for Google Pay  
+    } else if (paymentMthod === PAYMENT_METHODS.bit) {
+      return "shekel"; // Use shekel icon for Bit
+    }
+    // Fallback to default payment icon
+    return "kupa";
+  };
+
   // Handle payment button click (only for non-digital payment methods)
   const handlePaymentButtonClick = () => {
     handleCheckout();
@@ -1664,23 +1685,82 @@ const CheckoutScreen = ({ route }) => {
           
           {/* Custom Button for digital payments when ZCredit is ready */}
           {paymentPageUrl && isDigitalPaymentMethod() && isZCreditReady ? (
-            <Button
-              onClickFn={triggerZCreditPayment}
+            <TouchableOpacity
+              onPress={triggerZCreditPayment}
               disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
-              text={isProcessingPayment ? t("processing") : t("send-order")}
-              isLoading={isLoadingOrderSent || driversLoading || isProcessingPayment}
-              icon="kupa"
-              iconSize={themeStyle.FONT_SIZE_LG}
-              fontSize={themeStyle.FONT_SIZE_LG}
-              iconColor={themeStyle.SECONDARY_COLOR}
-              fontFamily={`${getCurrentLang()}-Bold`}
-              bgColor={isProcessingPayment ? themeStyle.GRAY_30 : themeStyle.PRIMARY_COLOR}
-              textColor={themeStyle.SECONDARY_COLOR}
-              borderRadious={100}
-              extraText={`₪${totalPrice}`}
-              countText={`${cartCount}`}
-              countTextColor={themeStyle.PRIMARY_COLOR}
-            />
+              style={[
+                styles.customButton,
+                {
+                  backgroundColor: isProcessingPayment ? themeStyle.GRAY_30 : themeStyle.PRIMARY_COLOR,
+                  opacity: (isLoadingOrderSent || driversLoading || isProcessingPayment) ? 0.5 : 1,
+                }
+              ]}
+              activeOpacity={0.8}
+            >
+              <View style={styles.customButtonRow}>
+                {/* Cart Count */}
+                {cartCount && (
+                  <View style={styles.customButtonCountContainer}>
+                    <Text style={[
+                      styles.customButtonCountText,
+                      { color: themeStyle.PRIMARY_COLOR }
+                    ]}>
+                      {cartCount}
+                    </Text>
+                  </View>
+                )}
+
+                {/* Center Content - Icon and Text */}
+                <View style={styles.customButtonCenterContent}>
+                  {/* Payment Method Icon */}
+                  {(() => {
+                    const paymentConfig = getDigitalPaymentMethodConfig();
+                    if (paymentConfig?.iconSource) {
+                      return (
+                        <Image 
+                          source={paymentConfig.iconSource} 
+                          style={styles.customButtonIcon}
+                        />
+                      );
+                    } else {
+                      return (
+                        <Icon
+                          icon={getDigitalPaymentIcon()}
+                          size={themeStyle.FONT_SIZE_LG}
+                          style={{ color: themeStyle.SECONDARY_COLOR, marginRight: 8 }}
+                        />
+                      );
+                    }
+                  })()}
+                  
+                  {/* Button Text */}
+                  <Text style={[
+                    styles.customButtonText,
+                    {
+                      color: themeStyle.SECONDARY_COLOR,
+                      fontSize: themeStyle.FONT_SIZE_LG,
+                      fontFamily: `${getCurrentLang()}-Bold`,
+                    }
+                  ]}>
+                    {isProcessingPayment ? t("processing") : t("pay")}
+                  </Text>
+                </View>
+
+                {/* Price */}
+                <View style={styles.customButtonPriceContainer}>
+                  <Text style={[
+                    styles.customButtonPriceText,
+                    {
+                      color: themeStyle.SECONDARY_COLOR,
+                      fontSize: themeStyle.FONT_SIZE_MD,
+                      fontFamily: `${getCurrentLang()}-Bold`,
+                    }
+                  ]}>
+                    ₪{totalPrice}
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
           ) : paymentPageUrl && isDigitalPaymentMethod() && !isZCreditReady ? (
             // Loading state for digital payments
             <Button
@@ -1771,5 +1851,57 @@ const styles = StyleSheet.create({
   webview: {
     height: "100%",
     paddingTop: 100,
+  },
+  // Custom Button Styles
+  customButton: {
+    width: "100%",
+    borderRadius: 999,
+    borderWidth: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 15,
+  },
+  customButtonRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  customButtonCountContainer: {
+    backgroundColor: "#4E2E53",
+    borderRadius: 50,
+    alignSelf: "center",
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  customButtonCountText: {
+    fontWeight: "bold",
+    fontSize: themeStyle.FONT_SIZE_MD,
+  },
+  customButtonCenterContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  customButtonIcon: {
+    width: 32,
+    height: 32,
+    marginRight: 8,
+    resizeMode: "contain",
+  },
+  customButtonText: {
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  customButtonPriceContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    right: 5,
+  },
+  customButtonPriceText: {
+    fontWeight: "bold",
   },
 });
