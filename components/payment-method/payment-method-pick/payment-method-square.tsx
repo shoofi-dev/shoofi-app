@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useContext, useRef, useCallback} from "react";
-import {DeviceEventEmitter, Image, StyleSheet, TouchableOpacity, View, Platform, ActivityIndicator,} from "react-native";
+import React, {useEffect, useState, useRef} from "react";
+import {DeviceEventEmitter, Image, StyleSheet, TouchableOpacity, View, Platform} from "react-native";
 import Text from "../../controls/Text";
 import {useTranslation} from "react-i18next";
 import {PAYMENT_METHODS} from "../../../consts/shared";
@@ -11,7 +11,6 @@ import {getCurrentLang} from "../../../translations/i18n";
 import Modal from "react-native-modal";
 import PaymentMethodModal from "../../PaymentMethodModal";
 import { getPaymentMethodById, getPaymentMethodByValue, getSupportedPaymentMethods, PaymentMethodOption } from "../../../helpers/get-supported-payment-methods";
-import { StoreContext } from "../../../stores";
 
 const icons = {
   bagOff: require("../../../assets/pngs/buy-off.png"),
@@ -34,111 +33,13 @@ export const PaymentMethodPickSquare = ({
   isLoadingCreditCards = false,
 }: TProps) => {
   const { t } = useTranslation();
-  const { ordersStore, authStore } = useContext(StoreContext);
   const [paymentMthod, setPaymentMthod] = useState<any>(paymentMethodValue);
   const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string>("");
   const [supportedPaymentMethods, setSupportedPaymentMethods] = useState<PaymentMethodOption[]>([]);
   const [isLoadingPaymentMethods, setIsLoadingPaymentMethods] = useState(true);
-  const [isLoadingLastOrder, setIsLoadingLastOrder] = useState(true);
-  const hasProcessedLastOrder = useRef(false);
-  const lastOrderDataRef = useRef(null);
-  const hasFetchedOrders = useRef(false);
 
-  const processLastOrderData = useCallback(async () => {
-    // Prevent running multiple times
-    if (hasProcessedLastOrder.current) {
-      console.log('processLastOrderData: Already processed, skipping');
-      return;
-    }
-    
-    console.log('processLastOrderData: Starting processing...');
-    
-    try {
-      const orderHistory = lastOrderDataRef.current;
-      
-      // If no orders, don't select any payment method
-      if (!orderHistory || orderHistory.length === 0) {
-        setIsLoadingLastOrder(false);
-        hasProcessedLastOrder.current = true;
-        return;
-      }
 
-      // Get the last order (first in array, should be sorted by date desc)
-      const lastOrder = orderHistory[0];
-      
-      // Get payment method from last order
-      const lastPaymentMethod = lastOrder.order?.paymentMethod || lastOrder.order?.payment_method;
-
-      // If payment method was cash, don't select any payment method
-      if (lastPaymentMethod === 'CASH' || lastPaymentMethod === PAYMENT_METHODS.cash) {
-        setIsLoadingLastOrder(false);
-        hasProcessedLastOrder.current = true;
-        return;
-      }
-
-      // Map the payment method to our system
-      let paymentMethodId = '';
-      let paymentMethodValue = '';
-      
-      switch (lastPaymentMethod) {
-        case 'CREDITCARD':
-        case PAYMENT_METHODS.creditCard:
-          paymentMethodId = 'credit_card';
-          paymentMethodValue = PAYMENT_METHODS.creditCard;
-          break;
-        case 'APPLEPAY':
-        case PAYMENT_METHODS.applePay:
-          paymentMethodId = 'apple_pay';
-          paymentMethodValue = PAYMENT_METHODS.applePay;
-          break;
-        case 'GOOGLEPAY':  
-        case PAYMENT_METHODS.googlePay:
-          paymentMethodId = 'google_pay';
-          paymentMethodValue = PAYMENT_METHODS.googlePay;
-          break;
-        case 'BIT':
-        case PAYMENT_METHODS.bit:
-          paymentMethodId = 'bit';
-          paymentMethodValue = PAYMENT_METHODS.bit;
-          break;
-        default:
-          setIsLoadingLastOrder(false);
-          hasProcessedLastOrder.current = true;
-          return;
-      }
-
-      // Check if OS supports this payment method
-      const paymentMethodConfig = getPaymentMethodById(paymentMethodId);
-      if (paymentMethodConfig?.supportOnlyOS && Platform.OS !== paymentMethodConfig.supportOnlyOS) {
-        setIsLoadingLastOrder(false);
-        hasProcessedLastOrder.current = true;
-        return;
-      }
-
-      // Check if store supports this payment method
-      const isSupported = await isStoreSupportAction(paymentMethodConfig.supportKey);
-      if (!isSupported) {
-        setIsLoadingLastOrder(false);
-        hasProcessedLastOrder.current = true;
-        return;
-      }
-
-      // Set the payment method from last order
-      console.log(`Auto-selected payment method from last order: ${paymentMethodId}`);
-      setSelectedPaymentMethodId(paymentMethodId);
-      setPaymentMthod(paymentMethodValue);
-      onChange(paymentMethodValue);
-
-      setIsLoadingLastOrder(false);
-      hasProcessedLastOrder.current = true;
-
-    } catch (error) {
-      console.error('Error processing last order payment method:', error);
-      setIsLoadingLastOrder(false);
-      hasProcessedLastOrder.current = true;
-    }
-  }, []);
 
   useEffect(() => {
     setPaymentMthod(paymentMethodValue);
@@ -162,52 +63,7 @@ export const PaymentMethodPickSquare = ({
     loadSupportedPaymentMethods();
   }, []);
 
-    // Fetch last user order immediately on mount
-  useEffect(() => {
-    const fetchLastOrderData = async () => {
-      // Prevent multiple fetches
-      if (hasFetchedOrders.current) {
-        return;
-      }
-      
-      hasFetchedOrders.current = true;
-      
-      try {
-        // Check if user is logged in
-        if (!authStore.isLoggedIn()) {
-          setIsLoadingLastOrder(false);
-          hasProcessedLastOrder.current = true;
-          return;
-        }
 
-        console.log('Fetching order history...');
-        // Get customer order history
-        const orderHistory = await ordersStore.getCustomerOrdersHistory();
-        
-        // Store the order data for later processing
-        lastOrderDataRef.current = orderHistory;
-        
-        // If we have supported payment methods loaded, process immediately
-        if (!isLoadingPaymentMethods && !hasProcessedLastOrder.current) {
-          processLastOrderData();
-        }
-
-      } catch (error) {
-        console.error('Error fetching last order:', error);
-        setIsLoadingLastOrder(false);
-        hasProcessedLastOrder.current = true;
-      }
-    };
-
-    fetchLastOrderData();
-  }, []);
-
-  // Process last order data once supported payment methods are loaded
-  useEffect(() => {
-    if (!isLoadingPaymentMethods && lastOrderDataRef.current && !hasProcessedLastOrder.current) {
-      processLastOrderData();
-    }
-  }, [isLoadingPaymentMethods]);
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
@@ -348,8 +204,7 @@ export const PaymentMethodPickSquare = ({
       {/* Payment Method Selector - CCDataCMP Style */}
       <TouchableOpacity 
         onPress={openPaymentMethodModal}
-        disabled={isLoadingLastOrder}
-        style={[styles.paymentMethodContainer, isLoadingLastOrder && styles.paymentMethodContainerDisabled]}
+        style={styles.paymentMethodContainer}
       >
         <View style={styles.paymentMethodContent}>
           {/* Left Side - Icon and Text */}
@@ -371,13 +226,9 @@ export const PaymentMethodPickSquare = ({
             </Text>
           </View>
 
-          {/* Right Side - Arrow or Loading */}
+                    {/* Right Side - Arrow */}
           <View style={styles.arrowContainer}>
-            {isLoadingLastOrder ? (
-              <ActivityIndicator size="small" color={themeStyle.GRAY_30} />
-            ) : (
-              <Icon icon="chevron" size={20} color={themeStyle.GRAY_30} />
-            )}
+            <Icon icon="chevron" size={20} color={themeStyle.GRAY_30} />
           </View>
         </View>
       </TouchableOpacity>
@@ -410,9 +261,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 5,
   },
-  paymentMethodContainerDisabled: {
-    opacity: 0.6,
-  },
+
   paymentMethodContent: {
     flexDirection: "row",
     alignItems: "center",
