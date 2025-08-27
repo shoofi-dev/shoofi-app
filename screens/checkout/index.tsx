@@ -404,33 +404,35 @@ const CheckoutScreen = ({ route }) => {
     },
 
     onSuccess: (data) => {
-      alert('onSuccess');
       console.log('ZCredit: Payment successful', data);
       // Hide the WebView and proceed with order submission
-      setPaymentPageUrl(null);
-      setIsProcessingPayment(false);
+      // setPaymentPageUrl(null);
+      // setIsProcessingPayment(false);
       // Proceed with checkout flow
       handleCheckout();
     },
 
     onCancel: (data) => {
-      alert('onCancel');
       console.log('ZCredit: Payment cancelled by user', data);
       // Hide the WebView and reset processing state
-      setPaymentPageUrl(null);
-      setIsProcessingPayment(false);
+      // setPaymentPageUrl(null);
+      // setIsProcessingPayment(false);
     },
 
     onFailure: (data) => {
-      alert('onFailure');
       console.log('ZCredit: Payment failed', data);
       // Hide the WebView and show error
-      setPaymentPageUrl(null);
-      setIsProcessingPayment(false);
+      // setPaymentPageUrl(null);
+      // setIsProcessingPayment(false);
       
-      // Show error alert with details if available
-      const errorMessage = data?.errorMessage || 'Payment failed. Please try again.';
-      alert(`Payment Error: ${errorMessage}`);
+      // Use the exact same error dialog as credit card payments
+      const errorMessage = data?.errorMessage || t("order-error-modal-message");
+      setTimeout(() => {
+        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+          title: t("order-error-modal-title"),
+          message: errorMessage
+        });
+      }, 500);
     },
 
     onSubmitEnd: (data) => {
@@ -440,7 +442,6 @@ const CheckoutScreen = ({ route }) => {
     },
 
     onUnknownMessage: (message) => {
-      alert('onUnknownMessage');
       console.warn('ZCredit: Unknown message received', message);
     }
   };
@@ -456,7 +457,6 @@ const CheckoutScreen = ({ route }) => {
       
       if (parsedMessage.type === 'InjectionComplete') {
         console.log('✅ WebView injection successful:', parsedMessage.message);
-        alert('WebView Ready: ' + parsedMessage.message);
         return;
       }
       
