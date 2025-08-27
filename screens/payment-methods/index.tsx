@@ -72,14 +72,14 @@ const PaymentMethodsScreen = ({
 
   const handleMethodSelect = (methodId: string) => {
     console.log("Selected payment method:", methodId);
-    
-    // Call onSelect if provided
-    if (onSelect) {
+      
+      // Call onSelect if provided
+      if (onSelect) {
       onSelect(methodId);
-    }
-    
+      }
+      
     // Close the modal immediately
-    onClose();
+      onClose();
   };
 
   const renderPaymentMethod = (method: PaymentMethodOption) => {
@@ -155,7 +155,7 @@ const PaymentMethodsScreen = ({
         ) : internalSupportedMethods.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>{t("no-payment-methods-available")}</Text>
-          </View>
+      </View>
         ) : (
           internalSupportedMethods.map(renderPaymentMethod)
         )}
