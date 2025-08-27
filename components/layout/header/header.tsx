@@ -45,7 +45,8 @@ export const hideHHeaderScreens = [
   "Profile",
   "order-item",
   "order-history",
-  "active-orders"
+  "active-orders",
+  "menuGeneralCategoriesScreen"
 ];
 
 const yellowBgScreens = ["homeScreen", "terms-and-conditions"];

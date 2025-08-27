@@ -17,6 +17,7 @@ class MenuStore {
   categoriesImages = [];
   selectedCategoryId = null;
   isLoading = false;
+  generalCategories = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -48,6 +49,7 @@ class MenuStore {
           this.categories = res.menu;
           this.imagesUrl = res.productsImagesList;
           this.categoriesImages = res.categoryImages;
+          this.generalCategories = res.generalCategories;
           this.isLoading = false;
           // Object.keys(this.meals).map((key) => {
           //   const extras = this.getMealTags(key);
