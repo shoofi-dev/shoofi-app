@@ -1,9 +1,21 @@
+# Ruby compatibility patch for deprecated File.exists? method
+unless ::File.respond_to?(:exists?)
+  class ::File
+    def self.exists?(path)
+      self.exist?(path)
+    end
+  end
+end
+
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
 
 require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
+
+# Specify the Xcode project
+project 'app.xcodeproj'
 
 platform :ios, podfile_properties['ios.deploymentTarget'] || '12.4'
 install! 'cocoapods',
@@ -36,6 +48,57 @@ target 'app' do
   post_install do |installer|
     react_native_post_install(installer)
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
+
+    # Remove fmt target to avoid C++ template issues
+    installer.pods_project.targets.each do |target|
+      if target.name == 'fmt'
+        target.remove_from_project
+        puts "Removed fmt target to avoid C++ template compilation issues"
+      end
+    end
+
+    # Fix iOS deployment target for all pods
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.4'
+        
+        # Comprehensive fmt disabling for all targets
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_USE_LIBFMT=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_HEADER_ONLY=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_USE_STD_STRING_VIEW=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_DISABLE=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_WINDOWS_H=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_NONTYPE_TEMPLATE_ARGS=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_CONSTEXPR=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_CHAR8_T=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_UCHAR=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_CHAR8_T=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_UCHAR=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_NONTYPE_TEMPLATE_ARGS=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_CONSTEXPR=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_USE_WINDOWS_H=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_DISABLE=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_USE_STD_STRING_VIEW=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FMT_HEADER_ONLY=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_USE_LIBFMT=0'
+        
+        # Remove fmt from header search paths
+        if config.build_settings['HEADER_SEARCH_PATHS']
+          config.build_settings['HEADER_SEARCH_PATHS'] = config.build_settings['HEADER_SEARCH_PATHS'].reject { |path| path.include?('fmt') }
+        end
+        
+        # Fix C++ standard for RCT-Folly compatibility
+        if target.name == 'RCT-Folly' || target.name == 'ReactCommon'
+          config.build_settings['GCC_C_LANGUAGE_STANDARD'] = 'gnu11'
+          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++14'
+          config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
+        end
+        
+        # General C++ fixes for Xcode 16 compatibility
+        config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+      end
+    end
 
     # This is necessary for Xcode 14, because it signs resource bundles by default
     # when building for devices.
