@@ -24,7 +24,8 @@
             "./assets/sounds/storelate.wav",
             "./assets/sounds/customer.wav",
             "./assets/sounds/driver.wav",
-            "./assets/sounds/driverlate.wav"          ]
+            "./assets/sounds/driverlate.wav"
+          ]
         }
       ]
     ],
@@ -45,7 +46,7 @@
       "splash": {
         "image": "./assets/splash-screen.png",
         "backgroundColor": "#FFFFFF",
-        "resizeMode":"cover"
+        "resizeMode": "cover"
       },
       "package": "com.shoofi.shopping",
       "config": {
@@ -53,13 +54,20 @@
           "apiKey": "AIzaSyD0CSVYW-UxSDEnderEtAB9YDmYYZLu8q8"
         }
       },
-      "permissions" : ["CAMERA"],
+      "permissions": [
+        "CAMERA"
+      ],
       "googleServicesFile": "./google-services.json",
       "useNextNotificationsApi": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "runtimeVersion": "1.0.2"
+    "runtimeVersion": "1.0.2",
+    "extra": {
+      "eas": {
+        "projectId": "9ba2e1cb-ea1f-4d96-9480-55054771cb4c"
+      }
+    }
   }
 }

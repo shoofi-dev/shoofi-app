@@ -142,7 +142,7 @@ export const PaymentMethodPickSquare = ({
 
     // Call ZCredit session creation for digital payment methods
     if ((selectedMethod === 'apple_pay' || selectedMethod === 'google_pay' || selectedMethod === 'bit') && onDigitalPaymentSelect) {
-      onDigitalPaymentSelect();
+        onDigitalPaymentSelect();
     }
   };
 
@@ -189,7 +189,7 @@ export const PaymentMethodPickSquare = ({
     }
     
     // Default icon
-    return <Icon icon="creditcard" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+        return <Icon icon="creditcard" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
   };
 
   return (
@@ -226,7 +226,7 @@ export const PaymentMethodPickSquare = ({
             </Text>
           </View>
 
-                    {/* Right Side - Arrow */}
+          {/* Right Side - Arrow */}
           <View style={styles.arrowContainer}>
             <Icon icon="chevron" size={20} color={themeStyle.GRAY_30} />
           </View>
