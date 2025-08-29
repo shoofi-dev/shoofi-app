@@ -90,6 +90,7 @@ const CheckoutScreen = ({ route }) => {
   // Google Pay Configuration
   const [googlePayAvailable, setGooglePayAvailable] = useState(false);
   const [googlePayRequest, setGooglePayRequest] = useState(null);
+  const [text, setText] = React.useState('React Native demo');
   
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
@@ -176,7 +177,45 @@ const CheckoutScreen = ({ route }) => {
       initGooglePay();
     }
   }, [totalPrice]);
-
+  const paymentMethods = [
+    {
+      supportedMethods: 'google_pay',
+      data: googlePayRequest,
+    },
+  ];
+  const paymentRequest = new PaymentRequest(paymentMethods, paymentDetails);
+  function checkCanMakePayment() {
+    paymentRequest
+        .canMakePayment()
+        .then((canMakePayment) => {
+          if (canMakePayment) {
+            showPaymentForm();
+          } else {
+            handleResponse('Google Pay unavailable');
+          }
+        })
+        .catch((error) => {
+          handleResponse(`paymentRequest.canMakePayment() error: ${error}`);
+        });
+  }
+  function showPaymentForm() {
+    paymentRequest
+        .show()
+        .then((response) => {
+          if (response === null) {
+            handleResponse('Payment sheet cancelled');
+          } else {
+            handleResponse(JSON.stringify(response, null, 2));
+          }
+        })
+        .catch((error) => {
+          handleResponse(`paymentRequest.show() error: ${error}`);
+        });
+  }
+  function handleResponse(response) {
+    setText(response);
+    console.log(response);
+  }
   // Google Pay payment handler
   const handleGooglePayPress = async () => {
     if (!googlePayRequest) {
@@ -2049,7 +2088,7 @@ const CheckoutScreen = ({ route }) => {
         </View>
 
         {/* Google Pay Button Section */}
-        {paymentMthod === PAYMENT_METHODS.googlePay && googlePayAvailable && (
+        {paymentMthod === PAYMENT_METHODS.googlePay && (
           <Animatable.View
             animation="fadeInUp"
             duration={animationDuration}
@@ -2059,13 +2098,14 @@ const CheckoutScreen = ({ route }) => {
               paddingHorizontal: 20,
             }}
           >
+
             <GooglePayButton
               style={{
                 height: 60,
                 width: '100%',
                 borderRadius: 30,
               }}
-              onPress={handleGooglePayPress}
+              onPress={checkCanMakePayment}
               allowedPaymentMethods={createGooglePayRequest().allowedPaymentMethods}
               theme={GooglePayButtonConstants.Themes.Dark}
               type={GooglePayButtonConstants.Types.Buy}
