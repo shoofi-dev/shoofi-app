@@ -44,6 +44,13 @@ import { handleZCreditPostMessage, createZCreditConfigWithPostMessages, ZCreditM
 import { getPaymentMethodByValue } from "../../helpers/get-supported-payment-methods";
 import Icon from "../../components/icon";
 
+// Google Pay imports
+import {
+  PaymentRequest,
+  GooglePayButton,
+  GooglePayButtonConstants,
+} from '@google/react-native-make-payment';
+
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -79,14 +86,198 @@ const CheckoutScreen = ({ route }) => {
   const [zcreditLoadingTimeout, setZcreditLoadingTimeout] = useState(null);
   const [isWebViewVisibleForAuth, setIsWebViewVisibleForAuth] = useState(false);
   const [authPopupUrl, setAuthPopupUrl] = useState(null);
+
+  // Google Pay Configuration
+  const [googlePayAvailable, setGooglePayAvailable] = useState(false);
+  const [googlePayRequest, setGooglePayRequest] = useState(null);
+  const [text, setText] = React.useState('React Native demo');
+
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
   }, [cartStore.cartItems]);
-  const {
-    availableDrivers,
-    availableDriversLoading: driversLoading,
-    availableDriversError: driversError,
-  } = shoofiAdminStore;
+
+  // Google Pay payment details
+  const paymentDetails = {
+    total: {
+      amount: {
+        currency: 'ILS', // Israeli Shekel
+        value: totalPrice.toString(),
+      },
+    },
+  };
+
+  // Google Pay request configuration
+  const createGooglePayRequest = () => ({
+    apiVersion: 2,
+    apiVersionMinor: 0,
+    allowedPaymentMethods: [
+      {
+        type: 'CARD',
+        parameters: {
+          allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+          allowedCardNetworks: [
+            'AMEX',
+            'DISCOVER',
+            'INTERAC',
+            'JCB',
+            'MASTERCARD',
+            'VISA',
+          ],
+        },
+        tokenizationSpecification: {
+          type: 'PAYMENT_GATEWAY',
+          parameters: {
+            gateway: 'adyen', // You may need to update this with your actual gateway
+            gatewayMerchantId: 'your-gateway-merchant-id', // Update with your merchant ID
+          },
+        },
+      },
+    ],
+    merchantInfo: {
+      merchantId: '01234567890123456789', // Update with your Google Pay merchant ID
+      merchantName: storeDataStore.storeData?.name_ar || 'Merchant Name',
+    },
+    transactionInfo: {
+      totalPriceStatus: 'FINAL',
+      totalPrice: paymentDetails.total.amount.value,
+      currencyCode: paymentDetails.total.amount.currency,
+      countryCode: 'IL', // Israel country code
+    },
+  });
+
+  // Initialize Google Pay
+  useEffect(() => {
+    const initGooglePay = async () => {
+      try {
+        const googlePayConfig = createGooglePayRequest();
+
+        const paymentMethods = [
+          {
+            supportedMethods: 'google_pay',
+            data: googlePayConfig,
+          },
+        ];
+
+        const paymentRequest = new PaymentRequest(paymentMethods, paymentDetails);
+
+        // Check if Google Pay is available
+        const canMakePayment = await paymentRequest.canMakePayment();
+        setGooglePayAvailable(canMakePayment);
+
+        if (canMakePayment) {
+          setGooglePayRequest(paymentRequest);
+        }
+      } catch (error) {
+        console.error('Google Pay initialization error:', error);
+        setGooglePayAvailable(false);
+      }
+    };
+
+    if (totalPrice > 0) {
+      initGooglePay();
+    }
+  }, [totalPrice]);
+  const paymentMethods = [
+    {
+      supportedMethods: 'google_pay',
+      data: googlePayRequest,
+    },
+  ];
+  const paymentRequest = new PaymentRequest(paymentMethods, paymentDetails);
+  function checkCanMakePayment() {
+    paymentRequest
+        .canMakePayment()
+        .then((canMakePayment) => {
+          if (canMakePayment) {
+            showPaymentForm();
+          } else {
+            handleResponse('Google Pay unavailable');
+          }
+        })
+        .catch((error) => {
+          handleResponse(`paymentRequest.canMakePayment() error: ${error}`);
+        });
+  }
+  function showPaymentForm() {
+    paymentRequest
+        .show()
+        .then((response) => {
+          if (response === null) {
+            handleResponse('Payment sheet cancelled');
+          } else {
+            handleResponse(JSON.stringify(response, null, 2));
+          }
+        })
+        .catch((error) => {
+          handleResponse(`paymentRequest.show() error: ${error}`);
+        });
+  }
+  function handleResponse(response) {
+    setText(response);
+    console.log(response);
+  }
+  // Google Pay payment handler
+  const handleGooglePayPress = async () => {
+    if (!googlePayRequest) {
+      console.error('Google Pay not initialized');
+      return;
+    }
+
+    try {
+      setIsProcessingPayment(true);
+
+      const canMakePayment = await googlePayRequest.canMakePayment();
+      if (canMakePayment) {
+        const response = await googlePayRequest.show();
+
+        if (response === null) {
+          console.log('Google Pay: Payment sheet cancelled');
+          setIsProcessingPayment(false);
+        } else {
+          console.log('Google Pay: Payment successful', response);
+          // Handle successful payment response
+          await handleGooglePaySuccess(response);
+        }
+      } else {
+        console.log('Google Pay unavailable');
+        setIsProcessingPayment(false);
+      }
+    } catch (error) {
+      console.error('Google Pay payment error:', error);
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // Handle Google Pay success
+  const handleGooglePaySuccess = async (response) => {
+    try {
+      console.log('Processing Google Pay payment:', response);
+
+      // Complete the checkout process with Google Pay payment
+      const checkoutSubmitOrderRes = await checkoutSubmitOrder({
+        paymentMthod: PAYMENT_METHODS.googlePay,
+        shippingMethod,
+        totalPrice,
+        itemsPrice,
+        orderDate: selectedDate,
+        editOrderData: ordersStore.editOrderData,
+        address: addressLocation,
+        locationText: addressLocationText,
+        paymentData: response, // Pass Google Pay response as payment data
+        shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
+        storeData: storeDataStore.storeData,
+      });
+
+      if (checkoutSubmitOrderRes) {
+        postChargeOrderActions();
+      } else {
+        setIsProcessingPayment(false);
+      }
+    } catch (error) {
+      console.error('Error processing Google Pay payment:', error);
+      setIsProcessingPayment(false);
+    }
+  };
 
   useEffect(()=>{
     // cartStore.getShippingMethod().then((shippingMethodTmp)=>{
@@ -1834,6 +2025,12 @@ const CheckoutScreen = ({ route }) => {
   // WebView ref to communicate with iframe
   const webViewRef = useRef(null);
 
+  const {
+    availableDrivers,
+    availableDriversLoading: driversLoading,
+    availableDriversError: driversError,
+  } = shoofiAdminStore;
+
   return (
       <View style={styles.container}>
         <View style={styles.backContainer}>
@@ -1889,6 +2086,34 @@ const CheckoutScreen = ({ route }) => {
                   shippingMethod={shippingMethod}
               />
             </View>
+
+            {/* Google Pay Button Section */}
+            {paymentMthod === PAYMENT_METHODS.googlePay && (
+                <Animatable.View
+                    animation="fadeInUp"
+                    duration={animationDuration}
+                    style={{
+                      marginTop: 20,
+                      alignItems: 'center',
+                      paddingHorizontal: 20,
+                    }}
+                >
+
+                  <GooglePayButton
+                      style={{
+                        height: 60,
+                        width: '100%',
+                        borderRadius: 30,
+                      }}
+                      onPress={checkCanMakePayment}
+                      allowedPaymentMethods={createGooglePayRequest().allowedPaymentMethods}
+                      theme={GooglePayButtonConstants.Themes.Dark}
+                      type={GooglePayButtonConstants.Types.Buy}
+                      radius={30}
+                  />
+                </Animatable.View>
+            )}
+
             <View style={{ marginTop: 10 }}>
               <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} onItemsPriceChange={onItemsPriceChange} shippingMethod={shippingMethod} isCheckCoupon={true} appName={storeDataStore.storeData?.appName}  />
             </View>
@@ -1939,7 +2164,6 @@ const CheckoutScreen = ({ route }) => {
                         }}
                         onNavigationStateChange={handleWebViewNavigationStateChange}
                         startInLoadingState={true}
-                        
                         javaScriptEnabled={true}
                         domStorageEnabled={true}
                         injectedJavaScript={injectedJavaScript}
