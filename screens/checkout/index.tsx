@@ -44,23 +44,16 @@ import { handleZCreditPostMessage, createZCreditConfigWithPostMessages, ZCreditM
 import { getPaymentMethodByValue } from "../../helpers/get-supported-payment-methods";
 import Icon from "../../components/icon";
 
-// Google Pay imports
-import {
-  PaymentRequest,
-  GooglePayButton,
-  GooglePayButtonConstants,
-} from '@google/react-native-make-payment';
-
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
   const { ordersStore, cartStore, adminCustomerStore, couponsStore, userDetailsStore, languageStore, shoofiAdminStore, addressStore } =
-    useContext(StoreContext);
+      useContext(StoreContext);
   const { selectedDate } = route.params;
 
   const { isCheckoutValid } = _useCheckoutValidate();
-  
+
 
   const [isLoadingOrderSent, setIsLoadingOrderSent] = useState(null);
   const [paymentMthod, setPaymentMthod] = useState(null);
@@ -72,13 +65,13 @@ const CheckoutScreen = ({ route }) => {
   const [addressLocationText, setAddressLocationText] = useState();
   const [place, setPlace] = useState(PLACE.current);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [itemsPrice, setItemsPrice] = useState(0);  
+  const [itemsPrice, setItemsPrice] = useState(0);
 
   const [editOrderData, setEditOrderData] = useState(null);
 
   const [shippingMethod, setShippingMethod] = useState(null);
   const [cartCount, setCartCount] = useState(0);
-  
+
   // WebView state for digital payments
   const [paymentPageUrl, setPaymentPageUrl] = useState(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -86,198 +79,14 @@ const CheckoutScreen = ({ route }) => {
   const [zcreditLoadingTimeout, setZcreditLoadingTimeout] = useState(null);
   const [isWebViewVisibleForAuth, setIsWebViewVisibleForAuth] = useState(false);
   const [authPopupUrl, setAuthPopupUrl] = useState(null);
-  
-  // Google Pay Configuration
-  const [googlePayAvailable, setGooglePayAvailable] = useState(false);
-  const [googlePayRequest, setGooglePayRequest] = useState(null);
-  const [text, setText] = React.useState('React Native demo');
-  
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
   }, [cartStore.cartItems]);
-
-  // Google Pay payment details
-  const paymentDetails = {
-    total: {
-      amount: {
-        currency: 'ILS', // Israeli Shekel
-        value: totalPrice.toString(),
-      },
-    },
-  };
-
-  // Google Pay request configuration
-  const createGooglePayRequest = () => ({
-    apiVersion: 2,
-    apiVersionMinor: 0,
-    allowedPaymentMethods: [
-      {
-        type: 'CARD',
-        parameters: {
-          allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
-          allowedCardNetworks: [
-            'AMEX',
-            'DISCOVER',
-            'INTERAC',
-            'JCB',
-            'MASTERCARD',
-            'VISA',
-          ],
-        },
-        tokenizationSpecification: {
-          type: 'PAYMENT_GATEWAY',
-          parameters: {
-            gateway: 'adyen', // You may need to update this with your actual gateway
-            gatewayMerchantId: 'your-gateway-merchant-id', // Update with your merchant ID
-          },
-        },
-      },
-    ],
-    merchantInfo: {
-      merchantId: '01234567890123456789', // Update with your Google Pay merchant ID
-      merchantName: storeDataStore.storeData?.name_ar || 'Merchant Name',
-    },
-    transactionInfo: {
-      totalPriceStatus: 'FINAL',
-      totalPrice: paymentDetails.total.amount.value,
-      currencyCode: paymentDetails.total.amount.currency,
-      countryCode: 'IL', // Israel country code
-    },
-  });
-
-  // Initialize Google Pay
-  useEffect(() => {
-    const initGooglePay = async () => {
-      try {
-        const googlePayConfig = createGooglePayRequest();
-        
-        const paymentMethods = [
-          {
-            supportedMethods: 'google_pay',
-            data: googlePayConfig,
-          },
-        ];
-
-        const paymentRequest = new PaymentRequest(paymentMethods, paymentDetails);
-        
-        // Check if Google Pay is available
-        const canMakePayment = await paymentRequest.canMakePayment();
-        setGooglePayAvailable(canMakePayment);
-        
-        if (canMakePayment) {
-          setGooglePayRequest(paymentRequest);
-        }
-      } catch (error) {
-        console.error('Google Pay initialization error:', error);
-        setGooglePayAvailable(false);
-      }
-    };
-
-    if (totalPrice > 0) {
-      initGooglePay();
-    }
-  }, [totalPrice]);
-  const paymentMethods = [
-    {
-      supportedMethods: 'google_pay',
-      data: googlePayRequest,
-    },
-  ];
-  const paymentRequest = new PaymentRequest(paymentMethods, paymentDetails);
-  function checkCanMakePayment() {
-    paymentRequest
-        .canMakePayment()
-        .then((canMakePayment) => {
-          if (canMakePayment) {
-            showPaymentForm();
-          } else {
-            handleResponse('Google Pay unavailable');
-          }
-        })
-        .catch((error) => {
-          handleResponse(`paymentRequest.canMakePayment() error: ${error}`);
-        });
-  }
-  function showPaymentForm() {
-    paymentRequest
-        .show()
-        .then((response) => {
-          if (response === null) {
-            handleResponse('Payment sheet cancelled');
-          } else {
-            handleResponse(JSON.stringify(response, null, 2));
-          }
-        })
-        .catch((error) => {
-          handleResponse(`paymentRequest.show() error: ${error}`);
-        });
-  }
-  function handleResponse(response) {
-    setText(response);
-    console.log(response);
-  }
-  // Google Pay payment handler
-  const handleGooglePayPress = async () => {
-    if (!googlePayRequest) {
-      console.error('Google Pay not initialized');
-      return;
-    }
-
-    try {
-      setIsProcessingPayment(true);
-      
-      const canMakePayment = await googlePayRequest.canMakePayment();
-      if (canMakePayment) {
-        const response = await googlePayRequest.show();
-        
-        if (response === null) {
-          console.log('Google Pay: Payment sheet cancelled');
-          setIsProcessingPayment(false);
-        } else {
-          console.log('Google Pay: Payment successful', response);
-          // Handle successful payment response
-          await handleGooglePaySuccess(response);
-        }
-      } else {
-        console.log('Google Pay unavailable');
-        setIsProcessingPayment(false);
-      }
-    } catch (error) {
-      console.error('Google Pay payment error:', error);
-      setIsProcessingPayment(false);
-    }
-  };
-
-  // Handle Google Pay success
-  const handleGooglePaySuccess = async (response) => {
-    try {
-      console.log('Processing Google Pay payment:', response);
-      
-      // Complete the checkout process with Google Pay payment
-      const checkoutSubmitOrderRes = await checkoutSubmitOrder({
-        paymentMthod: PAYMENT_METHODS.googlePay,
-        shippingMethod,
-        totalPrice,
-        itemsPrice,
-        orderDate: selectedDate,
-        editOrderData: ordersStore.editOrderData,
-        address: addressLocation,
-        locationText: addressLocationText,
-        paymentData: response, // Pass Google Pay response as payment data
-        shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
-        storeData: storeDataStore.storeData,
-      });
-
-      if (checkoutSubmitOrderRes) {
-        postChargeOrderActions();
-      } else {
-        setIsProcessingPayment(false);
-      }
-    } catch (error) {
-      console.error('Error processing Google Pay payment:', error);
-      setIsProcessingPayment(false);
-    }
-  };
+  const {
+    availableDrivers,
+    availableDriversLoading: driversLoading,
+    availableDriversError: driversError,
+  } = shoofiAdminStore;
 
   useEffect(()=>{
     // cartStore.getShippingMethod().then((shippingMethodTmp)=>{
@@ -287,22 +96,22 @@ const CheckoutScreen = ({ route }) => {
 
   useEffect(() => {
     if (shippingMethod !== SHIPPING_METHODS.shipping) return;
-   
+
     const defaultAddress = addressStore?.defaultAddress;
     if (
-      defaultAddress &&
-      defaultAddress.location &&
-      defaultAddress.location.coordinates
+        defaultAddress &&
+        defaultAddress.location &&
+        defaultAddress.location.coordinates
     ) {
       const [lng, lat] = defaultAddress.location.coordinates;
       const customerLocation = { lat, lng };
-      
+
       let storeLocation = undefined;
       if (storeDataStore.storeData?.location) {
         const { lat: storeLat, lng: storeLng } = storeDataStore.storeData.location;
         storeLocation = { lat: storeLat, lng: storeLng };
       }
-      
+
       shoofiAdminStore.fetchAvailableDrivers(customerLocation, storeLocation);
     }
   }, [shippingMethod, addressStore?.defaultAddress, addressStore.addresses, storeDataStore.storeData?.location?.lat, storeDataStore.storeData?.location?.lng]);
@@ -336,7 +145,7 @@ const CheckoutScreen = ({ route }) => {
   //     });
 
   //     // Get delivery price if shipping method is shipping
-  //     const deliveryPrice = shippingMethod === SHIPPING_METHODS.shipping ? 
+  //     const deliveryPrice = shippingMethod === SHIPPING_METHODS.shipping ?
   //       (availableDrivers?.area?.price || 0) : 0;
 
   //     // Get discount from applied coupon
@@ -385,11 +194,11 @@ const CheckoutScreen = ({ route }) => {
 
   const onPaymentMethodChange = (data: any) => {
     setPaymentMthod(data);
-    
+
     // Always clear payment URL and processing state when payment method changes
     setPaymentPageUrl(null);
     setIsProcessingPayment(false);
-    
+
     // Create new ZCredit session for digital payment methods
     if (data === PAYMENT_METHODS.applePay || data === PAYMENT_METHODS.googlePay || data === PAYMENT_METHODS.bit) {
       // Pass the new payment method directly to avoid state timing issues
@@ -428,8 +237,8 @@ const CheckoutScreen = ({ route }) => {
   // };
   const toggleShippingMethodAgrreeAnswer = () => {
     DeviceEventEmitter.emit(
-      DIALOG_EVENTS.OPEN_DELIVER_METHOD_AGGREE_BASED_EVENT_DIALOG,
-      { shippingMethod, selectedDate, paymentMthod }
+        DIALOG_EVENTS.OPEN_DELIVER_METHOD_AGGREE_BASED_EVENT_DIALOG,
+        { shippingMethod, selectedDate, paymentMthod }
     );
   };
   const isShippingMethodAgrredCheck = () => {
@@ -466,7 +275,7 @@ const CheckoutScreen = ({ route }) => {
       return;
     }
     DeviceEventEmitter.emit(
-      `ORDER_SUBMITTED`
+        `ORDER_SUBMITTED`
     );
     setSubmittedShippingMethod(shippingMethod);
     // Add a small delay to ensure processing modal is hidden before showing order submitted modal
@@ -479,12 +288,12 @@ const CheckoutScreen = ({ route }) => {
   const createZCreditSession = async (newPaymentMethod = paymentMthod) => {
     try {
       setIsProcessingPayment(true);
-      
+
       // Get user details
       const userDetails = adminCustomerStore.userDetails || userDetailsStore.userDetails;
       const customerName = userDetails?.name || "";
       const customerPhone = userDetails?.phone || "";
-      
+
       // Determine FocusType based on payment method
       let focusType = "ApplePayOnly";
       if (newPaymentMethod === PAYMENT_METHODS.googlePay) {
@@ -492,7 +301,7 @@ const CheckoutScreen = ({ route }) => {
       } else if (newPaymentMethod === PAYMENT_METHODS.bit) {
         focusType = "BitOnly";
       }
-      
+
       // Prepare cart items
       const cartItems = cartStore.cartItems.map(item => ({
         Amount: (1 * item.others.qty).toString(),
@@ -510,7 +319,7 @@ const CheckoutScreen = ({ route }) => {
         Local: "He",
         UniqueId: `order_${Date.now()}`,
         SuccessUrl: "https://success.zcredit.local",
-        CancelUrl: "https://cancel.zcredit.local", 
+        CancelUrl: "https://cancel.zcredit.local",
         CallbackUrl: "https://callback.zcredit.local",
         FailureCallBackUrl: "https://failure.zcredit.local",
         FailureRedirectUrl: "https://failure.zcredit.local",
@@ -568,20 +377,20 @@ const CheckoutScreen = ({ route }) => {
       });
 
       const responseData = await response.json();
-      
+
       // Log the complete response
       console.log('ZCredit API Response:', responseData);
-      
+
       // Log the SessionId specifically
       if (responseData.Data?.SessionId) {
         console.log('ZCredit SessionId:', responseData.Data.SessionId);
       }
-      
+
       if (responseData.HasError === false && responseData.Data?.SessionUrl) {
         console.log('ZCredit SessionUrl:', responseData.Data.SessionUrl);
         setPaymentPageUrl(responseData.Data.SessionUrl);
         setIsZCreditReady(false); // Reset ready state for new session
-        
+
         // Add a fallback timeout to avoid infinite loading
         if (zcreditLoadingTimeout) {
           clearTimeout(zcreditLoadingTimeout);
@@ -636,7 +445,7 @@ const CheckoutScreen = ({ route }) => {
       setIsZCreditReady(true); // Keep ready so button is available again
       setIsWebViewVisibleForAuth(false); // Hide auth WebView if visible
       setAuthPopupUrl(null); // Clear popup URL
-      
+
       // Use the exact same error dialog as credit card payments
       const errorMessage = data?.errorMessage || t("order-error-modal-message");
       setTimeout(() => {
@@ -662,28 +471,28 @@ const CheckoutScreen = ({ route }) => {
   const handleZCreditWebViewMessage = (event) => {
     const message = event.nativeEvent.data;
     console.log('React Native received WebView message:', message);
-    
+
     // Handle injection test message
     try {
       const parsedMessage = JSON.parse(message);
-      
+
       if (parsedMessage.type === 'InjectionComplete') {
         console.log('✅ WebView injection successful:', parsedMessage.message);
         return;
       }
-      
+
       if (parsedMessage.type === 'ZCreditReady') {
         console.log('✅ ZCredit iframe ready:', parsedMessage.message);
         if (parsedMessage.availableButtons) {
           console.log('Available payment buttons:', parsedMessage.availableButtons);
         }
-        
+
         // Clear the loading timeout since we're ready
         if (zcreditLoadingTimeout) {
           clearTimeout(zcreditLoadingTimeout);
           setZcreditLoadingTimeout(null);
         }
-        
+
         setIsZCreditReady(true);
         return;
       }
@@ -691,18 +500,18 @@ const CheckoutScreen = ({ route }) => {
       if (parsedMessage.type === 'AuthPopupRequested') {
         console.log('🔐 Authentication popup requested at', new Date().toISOString(), ':', parsedMessage.data);
         console.log('🔍 Current state - Processing:', isProcessingPayment, 'Modal Open:', isWebViewVisibleForAuth, 'Current URL:', authPopupUrl);
-        
+
         // Store the popup URL for the authentication modal
         if (parsedMessage.data && parsedMessage.data.url) {
           const url = parsedMessage.data.url;
           console.log('🔗 Setting authentication URL:', url);
-          
+
           // Validate the URL before setting it
           if (url.includes('pay.google.com') || url.includes('accounts.google.com')) {
             console.log('✅ Valid Google Pay authentication URL detected');
             setAuthPopupUrl(url);
             setIsWebViewVisibleForAuth(true);
-            
+
             // Auto-hide after 2 minutes if user doesn't interact
             setTimeout(() => {
               console.log('Auto-hiding authentication WebView after timeout');
@@ -724,12 +533,12 @@ const CheckoutScreen = ({ route }) => {
 
       if (parsedMessage.type === 'AuthenticationError') {
         console.log('❌ Authentication error detected:', parsedMessage.data);
-        
+
         // Close the modal and reset states
         setIsWebViewVisibleForAuth(false);
         setAuthPopupUrl(null);
         setIsProcessingPayment(false);
-        
+
         // Show error message to user
         setTimeout(() => {
           DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
@@ -737,7 +546,7 @@ const CheckoutScreen = ({ route }) => {
             message: t("payment-authentication-failed") || "Payment authentication failed. Please try again."
           });
         }, 500);
-        
+
         return;
       }
 
@@ -745,14 +554,14 @@ const CheckoutScreen = ({ route }) => {
         console.log('🔐 Authentication popup closed:', parsedMessage.data);
         setIsWebViewVisibleForAuth(false);
         setAuthPopupUrl(null);
-        
+
         const wasSuccessful = parsedMessage.data?.success;
         console.log('🔍 Authentication result:', wasSuccessful ? 'SUCCESS' : 'CANCELLED/FAILED');
-        
+
         if (wasSuccessful) {
           // Authentication was successful - continue payment
           console.log('✅ Authentication successful, continuing payment process...');
-          
+
           setTimeout(() => {
             if (webViewRef.current) {
               console.log('📤 Injecting payment continuation script');
@@ -794,7 +603,7 @@ const CheckoutScreen = ({ route }) => {
           // Authentication was cancelled or failed
           console.log('❌ Authentication cancelled by user');
           setIsProcessingPayment(false); // Reset payment state so user can try again
-          
+
           // Also reset authentication state in WebView for next attempt
           if (webViewRef.current) {
             const resetScript = `
@@ -809,11 +618,11 @@ const CheckoutScreen = ({ route }) => {
             `;
             webViewRef.current.injectJavaScript(resetScript);
           }
-          
+
           // Optional: Show a message that authentication was cancelled
           console.log('ℹ️ User cancelled authentication, payment button will be available again');
         }
-        
+
         return;
       }
 
@@ -825,15 +634,15 @@ const CheckoutScreen = ({ route }) => {
         setAuthPopupUrl(null);
         return;
       }
-      
+
       if (parsedMessage.type === 'DebugMessage') {
         console.log('🐛 Debug message from ' + parsedMessage.source + ':', parsedMessage.originalMessage);
-        
+
         // Process the original message if it's from ZCredit
         const originalMsg = parsedMessage.originalMessage;
         if (originalMsg && originalMsg.Reason && originalMsg.SessionID) {
           console.log('Processing ZCredit message from debug:', originalMsg);
-          
+
           // Map ZCredit messages to our handler format
           if (originalMsg.Reason === 'IsWhileSubmit' && originalMsg.State === true) {
             console.log('🟡 ZCredit: Payment form submitted');
@@ -857,20 +666,20 @@ const CheckoutScreen = ({ route }) => {
             });
           }
         }
-        
+
         return; // Don't process debug messages further
       }
     } catch (e) {
       // Not JSON, continue with normal handling
     }
-          // Handle ZCredit postMessages
+    // Handle ZCredit postMessages
     handleZCreditPostMessage(message, zcreditMessageHandlers);
   };
 
   // Handle WebView navigation state changes (fallback for non-postMessage scenarios)
   const handleWebViewNavigationStateChange = (navState) => {
     console.log('WebView navigation state changed:', navState.url);
-    
+
     // Note: With postMessage implementation, this is mainly a fallback
     // Check for success/failure URLs and handle accordingly
     if (navState.url.includes('success') || navState.url.includes('callback')) {
@@ -889,7 +698,7 @@ const CheckoutScreen = ({ route }) => {
     if (isCheckoutInProgress.current) {
       return;
     }
-    
+
     isCheckoutInProgress.current = true;
     setIsLoadingOrderSent(true);
 
@@ -912,59 +721,59 @@ const CheckoutScreen = ({ route }) => {
       }
       setIsProcessingModalOpen(true); // Show processing modal
 
-    // if (!isShippingMethodAgrredValue) {
-    //   isShippingMethodAgrredCheck();
-    //   return false;
-    // }
+      // if (!isShippingMethodAgrredValue) {
+      //   isShippingMethodAgrredCheck();
+      //   return false;
+      // }
 
-    // // Remove applied coupon if shipping method is not delivery
-    // if (couponsStore.appliedCoupon && shippingMethod !== SHIPPING_METHODS.shipping) {
-    //   couponsStore.removeCoupon();
-    // }
+      // // Remove applied coupon if shipping method is not delivery
+      // if (couponsStore.appliedCoupon && shippingMethod !== SHIPPING_METHODS.shipping) {
+      //   couponsStore.removeCoupon();
+      // }
 
-    // Redeem coupon if applied and shipping method is delivery
-    // if (couponsStore.appliedCoupon && shippingMethod === SHIPPING_METHODS.shipping) {
+      // Redeem coupon if applied and shipping method is delivery
+      // if (couponsStore.appliedCoupon && shippingMethod === SHIPPING_METHODS.shipping) {
       try {
         const userId = adminCustomerStore.userDetails?.customerId || editOrderData?.customerId || userDetailsStore.userDetails?.customerId;
         const orderId = editOrderData?._id || `temp-${Date.now()}`;
-        
+
         await couponsStore.redeemCoupon(
-          couponsStore.appliedCoupon.coupon.code,
-          userId,
-          orderId,
-          couponsStore.appliedCoupon.discountAmount
+            couponsStore.appliedCoupon.coupon.code,
+            userId,
+            orderId,
+            couponsStore.appliedCoupon.discountAmount
         );
-        
+
       } catch (error) {
         // Continue with checkout even if coupon redemption fails
       }
-  //  }
-    const checkoutSubmitOrderRes = await checkoutSubmitOrder({
-      paymentMthod,
-      shippingMethod,
-      totalPrice,
-      itemsPrice,
-      orderDate: selectedDate,
-      editOrderData: ordersStore.editOrderData,
-      address: addressLocation,
-      locationText: addressLocationText,
-      paymentData: paymentMthod === PAYMENT_METHODS.creditCard ? paymentData : undefined,
-      shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
-      storeData: storeDataStore.storeData,
-    });
-    if (checkoutSubmitOrderRes) {
-      postChargeOrderActions();
-      return;
+      //  }
+      const checkoutSubmitOrderRes = await checkoutSubmitOrder({
+        paymentMthod,
+        shippingMethod,
+        totalPrice,
+        itemsPrice,
+        orderDate: selectedDate,
+        editOrderData: ordersStore.editOrderData,
+        address: addressLocation,
+        locationText: addressLocationText,
+        paymentData: paymentMthod === PAYMENT_METHODS.creditCard ? paymentData : undefined,
+        shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
+        storeData: storeDataStore.storeData,
+      });
+      if (checkoutSubmitOrderRes) {
+        postChargeOrderActions();
+        return;
+      }
+      onLoadingOrderSent(false);
+      isCheckoutInProgress.current = false;
+      setIsProcessingModalOpen(false); // Hide processing modal
+    } catch (error) {
+      console.error('Checkout error:', error);
+      setIsLoadingOrderSent(false);
+      isCheckoutInProgress.current = false;
+      setIsProcessingModalOpen(false); // Hide processing modal
     }
-    onLoadingOrderSent(false);
-    isCheckoutInProgress.current = false;
-    setIsProcessingModalOpen(false); // Hide processing modal
-  } catch (error) {
-    console.error('Checkout error:', error);
-    setIsLoadingOrderSent(false);
-    isCheckoutInProgress.current = false;
-    setIsProcessingModalOpen(false); // Hide processing modal
-  }
   };
 
   const onChangeTotalPrice = (toalPriceValue) => {
@@ -977,9 +786,9 @@ const CheckoutScreen = ({ route }) => {
 
   // Helper function to check if payment method is digital (Apple Pay, Google Pay, Bit)
   const isDigitalPaymentMethod = () => {
-    return paymentMthod === PAYMENT_METHODS.applePay || 
-           paymentMthod === PAYMENT_METHODS.googlePay || 
-           paymentMthod === PAYMENT_METHODS.bit;
+    return paymentMthod === PAYMENT_METHODS.applePay ||
+        paymentMthod === PAYMENT_METHODS.googlePay ||
+        paymentMthod === PAYMENT_METHODS.bit;
   };
 
   // Custom CSS to inject into the WebView
@@ -1825,12 +1634,12 @@ const CheckoutScreen = ({ route }) => {
   // Complete checkout for successful digital payments (bypasses validation)
   const completeDigitalPaymentCheckout = async (paymentData) => {
     console.log('Completing digital payment checkout with data:', paymentData);
-    
+
     // Prevent multiple submissions
     if (isCheckoutInProgress.current) {
       return;
     }
-    
+
     isCheckoutInProgress.current = true;
     setIsLoadingOrderSent(true);
     setIsProcessingPayment(false); // Digital payment is already processed
@@ -1838,18 +1647,18 @@ const CheckoutScreen = ({ route }) => {
 
     try {
       // Skip validation since payment is already successful
-      
+
       // Handle coupon redemption if needed
       try {
         const userId = adminCustomerStore.userDetails?.customerId || editOrderData?.customerId || userDetailsStore.userDetails?.customerId;
         const orderId = editOrderData?._id || `temp-${Date.now()}`;
-        
+
         if (couponsStore.appliedCoupon) {
           await couponsStore.redeemCoupon(
-            couponsStore.appliedCoupon.coupon.code,
-            userId,
-            orderId,
-            couponsStore.appliedCoupon.discountAmount
+              couponsStore.appliedCoupon.coupon.code,
+              userId,
+              orderId,
+              couponsStore.appliedCoupon.discountAmount
           );
         }
       } catch (error) {
@@ -1870,26 +1679,26 @@ const CheckoutScreen = ({ route }) => {
         shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
         storeData: storeDataStore.storeData,
       });
-      
+
       if (checkoutSubmitOrderRes) {
         // Success - proceed with post-checkout actions
         postChargeOrderActions();
         return;
       }
-      
+
       // If order submission failed
       setIsLoadingOrderSent(false);
       isCheckoutInProgress.current = false;
       setIsProcessingModalOpen(false);
       setIsZCreditReady(true); // Re-enable digital payment button
-      
+
     } catch (error) {
       console.error('Digital payment checkout error:', error);
       setIsLoadingOrderSent(false);
       isCheckoutInProgress.current = false;
       setIsProcessingModalOpen(false);
       setIsZCreditReady(true); // Re-enable digital payment button
-      
+
       // Show error dialog
       setTimeout(() => {
         DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
@@ -1911,7 +1720,7 @@ const CheckoutScreen = ({ route }) => {
     if (paymentMthod === PAYMENT_METHODS.applePay) {
       return "kupa"; // Use payment icon for Apple Pay
     } else if (paymentMthod === PAYMENT_METHODS.googlePay) {
-      return "kupa"; // Use payment icon for Google Pay  
+      return "kupa"; // Use payment icon for Google Pay
     } else if (paymentMthod === PAYMENT_METHODS.bit) {
       return "shekel"; // Use shekel icon for Bit
     }
@@ -1928,7 +1737,7 @@ const CheckoutScreen = ({ route }) => {
   const triggerZCreditPayment = async () => {
     if (paymentPageUrl && isDigitalPaymentMethod() && webViewRef.current) {
       console.log('🚀 Triggering ZCredit payment via custom button');
-      
+
       // Reset authentication state in WebView before starting new payment attempt
       console.log('🔄 Resetting authentication state before payment');
       const resetScript = `
@@ -1943,13 +1752,13 @@ const CheckoutScreen = ({ route }) => {
         true;
       `;
       webViewRef.current.injectJavaScript(resetScript);
-      
+
       // Set processing state for validation
       setIsProcessingPayment(true);
-      
+
       try {
-        // For digital payments, use cash as payment method for validation 
-        // since digital payments are handled through ZCredit and might not be 
+        // For digital payments, use cash as payment method for validation
+        // since digital payments are handled through ZCredit and might not be
         // configured as supported payment methods in store settings
         const isCheckoutValidRes = await isCheckoutValid({
           shippingMethod,
@@ -1960,16 +1769,16 @@ const CheckoutScreen = ({ route }) => {
           isAvailableDrivers: availableDrivers?.available,
           isDeliverySupport: shoofiAdminStore.storeData?.delivery_support,
         });
-        
+
         if (!isCheckoutValidRes) {
           console.log('Digital payment validation failed');
           // Reset processing state if validation fails
           setIsProcessingPayment(false);
           return;
         }
-        
+
         console.log('Digital payment validation passed, proceeding with payment');
-        
+
         // Add fallback timeout to reset processing state if no response
         setTimeout(() => {
           if (isProcessingPayment) {
@@ -1977,7 +1786,7 @@ const CheckoutScreen = ({ route }) => {
             setIsProcessingPayment(false);
           }
         }, 30000); // 30 second timeout
-        
+
         // Determine which payment method is selected
         let paymentMethod = 'unknown';
         if (paymentMthod === PAYMENT_METHODS.applePay) {
@@ -1987,10 +1796,10 @@ const CheckoutScreen = ({ route }) => {
         } else if (paymentMthod === PAYMENT_METHODS.bit) {
           paymentMethod = 'bit';
         }
-        
+
         console.log('📤 Selected payment method for trigger:', paymentMethod);
         console.log('🔍 Current modal state before trigger - isWebViewVisibleForAuth:', isWebViewVisibleForAuth, 'authPopupUrl:', authPopupUrl);
-        
+
         // Send postMessage to iframe with payment method info
         const triggerScript = `
           (function() {
@@ -2012,9 +1821,9 @@ const CheckoutScreen = ({ route }) => {
           })();
           true;
         `;
-        
+
         webViewRef.current.injectJavaScript(triggerScript);
-        
+
       } catch (error) {
         console.error('Error during digital payment validation:', error);
         setIsProcessingPayment(false);
@@ -2025,226 +1834,193 @@ const CheckoutScreen = ({ route }) => {
   // WebView ref to communicate with iframe
   const webViewRef = useRef(null);
 
-  const {
-    availableDrivers,
-    availableDriversLoading: driversLoading,
-    availableDriversError: driversError,
-  } = shoofiAdminStore;
-
   return (
-    <View style={styles.container}>
-      <View style={styles.backContainer}>
-        <Animatable.View
-          animation="fadeInLeft"
-          duration={animationDuration}
-     
-        >
-          <BackButton />
-        </Animatable.View>
-        <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>
-        {languageStore.selectedLang === "ar" ? storeDataStore.storeData?.name_ar : storeDataStore.storeData?.name_he}
-        </Text>
-      </View>
-      <ScrollView
-        style={{ marginHorizontal: 20, }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={{height: "100%", paddingBottom: 100}}>
-
-        {storeDataStore.storeData?.isOrderLaterSupport && (
+      <View style={styles.container}>
+        <View style={styles.backContainer}>
           <Animatable.View
-            animation="fadeInDown"
-            duration={animationDuration}
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+              animation="fadeInLeft"
+              duration={animationDuration}
+
           >
-            <SelectedTimeCMP selectedTime={selectedDate} />
+            <BackButton />
           </Animatable.View>
-        )}
-        <View
-          style={{ marginTop: 20, }}
-        >
-          <AddressCMP
-            onShippingMethodChangeFN={onShippingMethodChange}
-            onGeoAddressChange={onGeoAddressChange}
-            onTextAddressChange={onTextAddressChange}
-            onPlaceChangeFN={onPlaceChange}
-            onAddressChange={onAddressChange}
-            shippingMethod={shippingMethod}
-          />
+          <Text style={{ fontSize: 20, color: themeStyle.BLACK_COLOR }}>
+            {languageStore.selectedLang === "ar" ? storeDataStore.storeData?.name_ar : storeDataStore.storeData?.name_he}
+          </Text>
         </View>
-        <View
-
-          style={{ marginTop: 40 }}
+        <ScrollView
+            style={{ marginHorizontal: 20, }}
+            keyboardShouldPersistTaps="handled"
         >
-          <PaymentMethodCMP
-            onChange={onPaymentMethodChange}
-            onPaymentDataChange={onPaymentDataChange}
-            defaultValue={paymentMthod}
-            shippingMethod={shippingMethod}
-          />
-        </View>
+          <View style={{height: "100%", paddingBottom: 100}}>
 
-        {/* Google Pay Button Section */}
-        {paymentMthod === PAYMENT_METHODS.googlePay && (
-          <Animatable.View
+            {storeDataStore.storeData?.isOrderLaterSupport && (
+                <Animatable.View
+                    animation="fadeInDown"
+                    duration={animationDuration}
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                >
+                  <SelectedTimeCMP selectedTime={selectedDate} />
+                </Animatable.View>
+            )}
+            <View
+                style={{ marginTop: 20, }}
+            >
+              <AddressCMP
+                  onShippingMethodChangeFN={onShippingMethodChange}
+                  onGeoAddressChange={onGeoAddressChange}
+                  onTextAddressChange={onTextAddressChange}
+                  onPlaceChangeFN={onPlaceChange}
+                  onAddressChange={onAddressChange}
+                  shippingMethod={shippingMethod}
+              />
+            </View>
+            <View
+
+                style={{ marginTop: 40 }}
+            >
+              <PaymentMethodCMP
+                  onChange={onPaymentMethodChange}
+                  onPaymentDataChange={onPaymentDataChange}
+                  defaultValue={paymentMthod}
+                  shippingMethod={shippingMethod}
+              />
+            </View>
+            <View style={{ marginTop: 10 }}>
+              <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} onItemsPriceChange={onItemsPriceChange} shippingMethod={shippingMethod} isCheckCoupon={true} appName={storeDataStore.storeData?.appName}  />
+            </View>
+          </View>
+
+        </ScrollView>
+
+        <Animatable.View
             animation="fadeInUp"
             duration={animationDuration}
             style={{
-              marginTop: 20,
-              alignItems: 'center',
-              paddingHorizontal: 20,
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: "transparent",
+              flexDirection: "row",
+              borderTopStartRadius: (30),
+              borderTopEndRadius: (30),
+
+              alignItems: "center",
+              height: (100), // Keep same height for both button and WebView
+              justifyContent: "center",
             }}
-          >
+        >
 
-            <GooglePayButton
-              style={{
-                height: 60,
-                width: '100%',
-                borderRadius: 30,
-              }}
-              onPress={checkCanMakePayment}
-              allowedPaymentMethods={createGooglePayRequest().allowedPaymentMethods}
-              theme={GooglePayButtonConstants.Themes.Dark}
-              type={GooglePayButtonConstants.Types.Buy}
-              radius={30}
-            />
-          </Animatable.View>
-        )}
-
-        <View style={{ marginTop: 10 }}>
-            <TotalPriceCMP onChangeTotalPrice={onChangeTotalPrice} onItemsPriceChange={onItemsPriceChange} shippingMethod={shippingMethod} isCheckCoupon={true} appName={storeDataStore.storeData?.appName}  />
-        </View>
-        </View>
-
-      </ScrollView>
-
-      <Animatable.View
-        animation="fadeInUp"
-        duration={animationDuration}
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: "transparent",
-          flexDirection: "row",
-          borderTopStartRadius: (30),
-          borderTopEndRadius: (30),
-
-          alignItems: "center",
-          height: (100), // Keep same height for both button and WebView
-          justifyContent: "center",
-        }}
-      >
-
-        <View style={{ width: "90%", alignSelf: "center", height: "100%" }}>
-          {/* Hidden WebView for digital payments - completely invisible and out of layout flow */}
-          {paymentPageUrl && isDigitalPaymentMethod() && (
-            <>
-              {/* Hidden WebView Container */}
-              <View style={{
-                position: 'absolute',
-                left: -10000,
-                top: -10000,
-                width: 0,
-                height: 0,
-                overflow: 'hidden',
-                opacity: 0,
-                zIndex: -999,
-                            }}>
-                <WebView
-                ref={webViewRef}
-                source={{ uri: paymentPageUrl }}
-                style={{
-                  width: 300, // Give it some size inside the hidden container
-                  height: 400,
-                }}
-                onNavigationStateChange={handleWebViewNavigationStateChange}
-                startInLoadingState={true}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                injectedJavaScript={injectedJavaScript}
-                injectedJavaScriptBeforeContentLoaded={`
+          <View style={{ width: "90%", alignSelf: "center", height: "100%" }}>
+            {/* Hidden WebView for digital payments - completely invisible and out of layout flow */}
+            {paymentPageUrl && isDigitalPaymentMethod() && (
+                <>
+                  {/* Hidden WebView Container */}
+                  <View style={{
+                    position: 'absolute',
+                    left: -10000,
+                    top: -10000,
+                    width: 0,
+                    height: 0,
+                    overflow: 'hidden',
+                    opacity: 0,
+                    zIndex: -999,
+                  }}>
+                    <WebView
+                        ref={webViewRef}
+                        source={{ uri: paymentPageUrl }}
+                        style={{
+                          width: 300, // Give it some size inside the hidden container
+                          height: 400,
+                        }}
+                        onNavigationStateChange={handleWebViewNavigationStateChange}
+                        startInLoadingState={true}
+                        
+                        javaScriptEnabled={true}
+                        domStorageEnabled={true}
+                        injectedJavaScript={injectedJavaScript}
+                        injectedJavaScriptBeforeContentLoaded={`
                   console.log('WebView: JavaScript injection before content loaded');
                   window.isReactNativeWebView = true;
                 `}
-                onMessage={handleZCreditWebViewMessage}
-                // Enable postMessage communication from WebView to React Native
-                mixedContentMode="compatibility"
-                allowsInlineMediaPlayback={true}
-                // Additional WebView settings for better postMessage support
-                allowFileAccess={true}
-                allowUniversalAccessFromFileURLs={true}
-                allowFileAccessFromFileURLs={true}
-                // Enable popup handling for Google Pay authentication
-                setSupportMultipleWindows={true}
-                onShouldStartLoadWithRequest={(request) => {
-                  console.log('WebView navigation request:', request.url);
-                  return true;
-                }}
-                // Handle new window requests (popups)
-                onOpenWindow={(syntheticEvent) => {
-                  const { nativeEvent } = syntheticEvent;
-                  console.log('WebView wants to open new window:', nativeEvent.targetUrl);
-                  // Let the WebView handle the popup
-                  return true;
-                }}
-                onLoadEnd={() => {
-                  console.log('WebView: Load completed');
-                }}
-                onError={(syntheticEvent) => {
-                  const { nativeEvent } = syntheticEvent;
-                  console.error('WebView error:', nativeEvent);
-                }}
-              />
-              
-              {/* Close button overlay when WebView is visible for authentication */}
-              {isWebViewVisibleForAuth && (
-                <TouchableOpacity
-                  style={{
-                    position: 'absolute',
-                    top: 50,
-                    right: 20,
-                    backgroundColor: 'rgba(0,0,0,0.7)',
-                    borderRadius: 20,
-                    width: 40,
-                    height: 40,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    zIndex: 10000,
-                  }}
-                  onPress={() => {
-                    console.log('User manually closed WebView authentication');
-                    setIsWebViewVisibleForAuth(false);
-                  }}
-                >
-                  <Icon 
-                    icon="close" 
-                    size={24} 
-                    color="white" 
-                  />
-                </TouchableOpacity>
-              )}
-              </View>
+                        onMessage={handleZCreditWebViewMessage}
+                        // Enable postMessage communication from WebView to React Native
+                        mixedContentMode="compatibility"
+                        allowsInlineMediaPlayback={true}
+                        // Additional WebView settings for better postMessage support
+                        allowFileAccess={true}
+                        allowUniversalAccessFromFileURLs={true}
+                        allowFileAccessFromFileURLs={true}
+                        // Enable popup handling for Google Pay authentication
+                        setSupportMultipleWindows={true}
+                        onShouldStartLoadWithRequest={(request) => {
+                          console.log('WebView navigation request:', request.url);
+                          return true;
+                        }}
+                        // Handle new window requests (popups)
+                        onOpenWindow={(syntheticEvent) => {
+                          const { nativeEvent } = syntheticEvent;
+                          console.log('WebView wants to open new window:', nativeEvent.targetUrl);
+                          // Let the WebView handle the popup
+                          return true;
+                        }}
+                        onLoadEnd={() => {
+                          console.log('WebView: Load completed');
+                        }}
+                        onError={(syntheticEvent) => {
+                          const { nativeEvent } = syntheticEvent;
+                          console.error('WebView error:', nativeEvent);
+                        }}
+                    />
 
-              {/* Authentication Modal - Centered and Animated */}
-              <Modal
-                isVisible={isWebViewVisibleForAuth}
-                onBackdropPress={() => {
-                  console.log('User closed authentication modal by tapping backdrop');
-                  setIsWebViewVisibleForAuth(false);
-                  setAuthPopupUrl(null);
-                  
-                  // Reset payment state since user cancelled authentication
-                  console.log('❌ Authentication cancelled by backdrop tap');
-                  setIsProcessingPayment(false);
-                  
-                  // Reset authentication state in WebView
-                  if (webViewRef.current) {
-                    const cancelScript = `
+                    {/* Close button overlay when WebView is visible for authentication */}
+                    {isWebViewVisibleForAuth && (
+                        <TouchableOpacity
+                            style={{
+                              position: 'absolute',
+                              top: 50,
+                              right: 20,
+                              backgroundColor: 'rgba(0,0,0,0.7)',
+                              borderRadius: 20,
+                              width: 40,
+                              height: 40,
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              zIndex: 10000,
+                            }}
+                            onPress={() => {
+                              console.log('User manually closed WebView authentication');
+                              setIsWebViewVisibleForAuth(false);
+                            }}
+                        >
+                          <Icon
+                              icon="close"
+                              size={24}
+                              color="white"
+                          />
+                        </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {/* Authentication Modal - Centered and Animated */}
+                  <Modal
+                      isVisible={isWebViewVisibleForAuth}
+                      onBackdropPress={() => {
+                        console.log('User closed authentication modal by tapping backdrop');
+                        setIsWebViewVisibleForAuth(false);
+                        setAuthPopupUrl(null);
+
+                        // Reset payment state since user cancelled authentication
+                        console.log('❌ Authentication cancelled by backdrop tap');
+                        setIsProcessingPayment(false);
+
+                        // Reset authentication state in WebView
+                        if (webViewRef.current) {
+                          const cancelScript = `
                       console.log('🔄 Resetting WebView state - user closed modal via backdrop');
                       // Reset authentication state for next attempt
                       if (window.resetAuthenticationState) {
@@ -2256,72 +2032,72 @@ const CheckoutScreen = ({ route }) => {
                       }
                       true;
                     `;
-                    webViewRef.current.injectJavaScript(cancelScript);
-                  }
-                }}
-                style={{
-                  margin: 0,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                animationIn="zoomIn"
-                animationOut="zoomOut"
-                backdropOpacity={0.5}
-                useNativeDriver={true}
-                animationInTiming={300}
-                animationOutTiming={200}
-                backdropTransitionInTiming={300}
-                backdropTransitionOutTiming={200}
-              >
-                <View style={{
-                  backgroundColor: 'white',
-                  borderRadius: 12,
-                  width: '90%',
-                  maxWidth: 400,
-                  maxHeight: '80%',
-                  overflow: 'hidden',
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 6,
-                  elevation: 8,
-                }}>
-                  {/* Modal Header */}
-                  <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingHorizontal: 20,
-                    paddingVertical: 15,
-                    backgroundColor: '#f8f9fa',
-                    borderBottomWidth: 1,
-                    borderBottomColor: '#e9ecef',
-                  }}>
-                    <Text style={{
-                      fontSize: 18,
-                      fontWeight: '600',
-                      color: '#333',
-                    }}>
-                      {t("payment-method") || "Payment Authentication"}
-                    </Text>
-                    <TouchableOpacity
-                      style={{
-                        padding: 8,
-                        borderRadius: 20,
-                        backgroundColor: 'transparent',
+                          webViewRef.current.injectJavaScript(cancelScript);
+                        }
                       }}
-                      onPress={() => {
-                        console.log('User manually closed authentication modal');
-                        setIsWebViewVisibleForAuth(false);
-                        setAuthPopupUrl(null);
-                        
-                        // Reset payment state since user cancelled authentication
-                        console.log('❌ Authentication cancelled by close button');
-                        setIsProcessingPayment(false);
-                        
-                        // Reset authentication state in WebView
-                        if (webViewRef.current) {
-                          const cancelScript = `
+                      style={{
+                        margin: 0,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      animationIn="zoomIn"
+                      animationOut="zoomOut"
+                      backdropOpacity={0.5}
+                      useNativeDriver={true}
+                      animationInTiming={300}
+                      animationOutTiming={200}
+                      backdropTransitionInTiming={300}
+                      backdropTransitionOutTiming={200}
+                  >
+                    <View style={{
+                      backgroundColor: 'white',
+                      borderRadius: 12,
+                      width: '90%',
+                      maxWidth: 400,
+                      maxHeight: '80%',
+                      overflow: 'hidden',
+                      shadowColor: "#000",
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 0.3,
+                      shadowRadius: 6,
+                      elevation: 8,
+                    }}>
+                      {/* Modal Header */}
+                      <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        paddingHorizontal: 20,
+                        paddingVertical: 15,
+                        backgroundColor: '#f8f9fa',
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#e9ecef',
+                      }}>
+                        <Text style={{
+                          fontSize: 18,
+                          fontWeight: '600',
+                          color: '#333',
+                        }}>
+                          {t("payment-method") || "Payment Authentication"}
+                        </Text>
+                        <TouchableOpacity
+                            style={{
+                              padding: 8,
+                              borderRadius: 20,
+                              backgroundColor: 'transparent',
+                            }}
+                            onPress={() => {
+                              console.log('User manually closed authentication modal');
+                              setIsWebViewVisibleForAuth(false);
+                              setAuthPopupUrl(null);
+
+                              // Reset payment state since user cancelled authentication
+                              console.log('❌ Authentication cancelled by close button');
+                              setIsProcessingPayment(false);
+
+                              // Reset authentication state in WebView
+                              if (webViewRef.current) {
+                                const cancelScript = `
                             console.log('🔄 Resetting WebView state - user closed modal via close button');
                             // Reset authentication state for next attempt
                             if (window.resetAuthenticationState) {
@@ -2333,130 +2109,130 @@ const CheckoutScreen = ({ route }) => {
                             }
                             true;
                           `;
-                          webViewRef.current.injectJavaScript(cancelScript);
-                        }
-                      }}
-                    >
-                      <Icon 
-                        icon="close" 
-                        size={24} 
-                        color="#333"
-                      />
-                    </TouchableOpacity>
-                  </View>
+                                webViewRef.current.injectJavaScript(cancelScript);
+                              }
+                            }}
+                        >
+                          <Icon
+                              icon="close"
+                              size={24}
+                              color="#333"
+                          />
+                        </TouchableOpacity>
+                      </View>
 
-                  {/* WebView in Modal */}
-                  <View style={{ 
-                    height: 500, 
-                    width: '100%',
-                    backgroundColor: 'white'
-                  }}>
-                    {/* Debug info at top */}
-                    <View style={{
-                      backgroundColor: '#f0f0f0',
-                      padding: 5,
-                      borderBottomWidth: 1,
-                      borderBottomColor: '#ddd'
-                    }}>
-                      <Text style={{ 
-                        fontSize: 10, 
-                        color: '#666',
-                        textAlign: 'center' 
+                      {/* WebView in Modal */}
+                      <View style={{
+                        height: 500,
+                        width: '100%',
+                        backgroundColor: 'white'
                       }}>
-                        Auth URL: {authPopupUrl ? authPopupUrl.substring(0, 60) + '...' : 'Loading...'}
-                      </Text>
-                    </View>
-                    
-                    {authPopupUrl ? (
-                      <WebView
-                        source={{ uri: authPopupUrl }}
-                        style={{ 
-                          width: '100%',
-                          height: 450, // Reduced to account for debug header
-                          backgroundColor: 'white'
-                        }}
-                        javaScriptEnabled={true}
-                        domStorageEnabled={true}
-                        onMessage={(event) => {
-                          console.log('Auth WebView message:', event.nativeEvent.data);
-                          // Handle authentication WebView messages
-                          try {
-                            const message = event.nativeEvent.data;
-                            const parsedMessage = typeof message === 'string' ? JSON.parse(message) : message;
-                            
-                            // Check for authentication success/completion signals
-                            if (parsedMessage.type === 'AuthenticationSuccess' || 
-                                message.includes('success') || 
-                                message.includes('authorized') ||
-                                message.includes('completed')) {
-                              console.log('✅ Authentication appears successful, closing modal');
-                              setIsWebViewVisibleForAuth(false);
-                              setAuthPopupUrl(null);
-                              
-                              // Continue payment process
-                              setTimeout(() => {
-                                if (webViewRef.current) {
-                                  console.log('📤 Continuing payment after successful authentication');
-                                  const continueScript = `
+                        {/* Debug info at top */}
+                        <View style={{
+                          backgroundColor: '#f0f0f0',
+                          padding: 5,
+                          borderBottomWidth: 1,
+                          borderBottomColor: '#ddd'
+                        }}>
+                          <Text style={{
+                            fontSize: 10,
+                            color: '#666',
+                            textAlign: 'center'
+                          }}>
+                            Auth URL: {authPopupUrl ? authPopupUrl.substring(0, 60) + '...' : 'Loading...'}
+                          </Text>
+                        </View>
+
+                        {authPopupUrl ? (
+                            <WebView
+                                source={{ uri: authPopupUrl }}
+                                style={{
+                                  width: '100%',
+                                  height: 450, // Reduced to account for debug header
+                                  backgroundColor: 'white'
+                                }}
+                                javaScriptEnabled={true}
+                                domStorageEnabled={true}
+                                onMessage={(event) => {
+                                  console.log('Auth WebView message:', event.nativeEvent.data);
+                                  // Handle authentication WebView messages
+                                  try {
+                                    const message = event.nativeEvent.data;
+                                    const parsedMessage = typeof message === 'string' ? JSON.parse(message) : message;
+
+                                    // Check for authentication success/completion signals
+                                    if (parsedMessage.type === 'AuthenticationSuccess' ||
+                                        message.includes('success') ||
+                                        message.includes('authorized') ||
+                                        message.includes('completed')) {
+                                      console.log('✅ Authentication appears successful, closing modal');
+                                      setIsWebViewVisibleForAuth(false);
+                                      setAuthPopupUrl(null);
+
+                                      // Continue payment process
+                                      setTimeout(() => {
+                                        if (webViewRef.current) {
+                                          console.log('📤 Continuing payment after successful authentication');
+                                          const continueScript = `
                                     console.log('🎉 Authentication successful, continuing payment...');
                                     // The authentication should have updated the payment state
                                     // Google Pay should now be able to proceed without popup
                                     true;
                                   `;
-                                  webViewRef.current.injectJavaScript(continueScript);
-                                }
-                              }, 1000);
-                            }
-                          } catch (error) {
-                            console.log('Error parsing auth WebView message:', error);
-                          }
-                          
-                          // Also forward to main message handler
-                          handleZCreditWebViewMessage(event);
-                        }}
-                        mixedContentMode="compatibility"
-                        allowsInlineMediaPlayback={true}
-                        allowFileAccess={false}
-                        allowUniversalAccessFromFileURLs={false}
-                        allowFileAccessFromFileURLs={false}
-                        setSupportMultipleWindows={false}
-                        scalesPageToFit={true}
-                        onShouldStartLoadWithRequest={(request) => {
-                          console.log('🔗 Auth WebView navigation to:', request.url);
-                          
-                          // Check for error URLs and handle them
-                          if (request.url.includes('error') || request.url.includes('failure')) {
-                            console.log('❌ Auth WebView: Error URL detected:', request.url);
-                            // Close modal and reset payment state
-                            setTimeout(() => {
-                              setIsWebViewVisibleForAuth(false);
-                              setAuthPopupUrl(null);
-                              setIsProcessingPayment(false);
-                            }, 2000);
-                            return true; // Allow loading to show the error
-                          }
-                          
-                          // Allow Google Pay related URLs and HTTPS
-                          if (request.url.includes('pay.google.com') || 
-                              request.url.includes('accounts.google.com') ||
-                              request.url.includes('google.com') ||
-                              request.url.includes('gstatic.com') ||
-                              request.url.startsWith('https://')) {
-                            console.log('✅ Auth WebView: Allowing navigation to', request.url);
-                            return true;
-                          }
-                          
-                          console.log('⚠️ Auth WebView: Blocking navigation to', request.url);
-                          return false;
-                        }}
-                        onLoadStart={() => {
-                          console.log('🔄 Auth WebView: Starting to load:', authPopupUrl);
-                        }}
-                        onLoadEnd={() => {
-                          console.log('✅ Auth WebView: Load completed for:', authPopupUrl);
-                          
-                          // Inject script to detect error pages
-                          const errorDetectionScript = `
+                                          webViewRef.current.injectJavaScript(continueScript);
+                                        }
+                                      }, 1000);
+                                    }
+                                  } catch (error) {
+                                    console.log('Error parsing auth WebView message:', error);
+                                  }
+
+                                  // Also forward to main message handler
+                                  handleZCreditWebViewMessage(event);
+                                }}
+                                mixedContentMode="compatibility"
+                                allowsInlineMediaPlayback={true}
+                                allowFileAccess={false}
+                                allowUniversalAccessFromFileURLs={false}
+                                allowFileAccessFromFileURLs={false}
+                                setSupportMultipleWindows={false}
+                                scalesPageToFit={true}
+                                onShouldStartLoadWithRequest={(request) => {
+                                  console.log('🔗 Auth WebView navigation to:', request.url);
+
+                                  // Check for error URLs and handle them
+                                  if (request.url.includes('error') || request.url.includes('failure')) {
+                                    console.log('❌ Auth WebView: Error URL detected:', request.url);
+                                    // Close modal and reset payment state
+                                    setTimeout(() => {
+                                      setIsWebViewVisibleForAuth(false);
+                                      setAuthPopupUrl(null);
+                                      setIsProcessingPayment(false);
+                                    }, 2000);
+                                    return true; // Allow loading to show the error
+                                  }
+
+                                  // Allow Google Pay related URLs and HTTPS
+                                  if (request.url.includes('pay.google.com') ||
+                                      request.url.includes('accounts.google.com') ||
+                                      request.url.includes('google.com') ||
+                                      request.url.includes('gstatic.com') ||
+                                      request.url.startsWith('https://')) {
+                                    console.log('✅ Auth WebView: Allowing navigation to', request.url);
+                                    return true;
+                                  }
+
+                                  console.log('⚠️ Auth WebView: Blocking navigation to', request.url);
+                                  return false;
+                                }}
+                                onLoadStart={() => {
+                                  console.log('🔄 Auth WebView: Starting to load:', authPopupUrl);
+                                }}
+                                onLoadEnd={() => {
+                                  console.log('✅ Auth WebView: Load completed for:', authPopupUrl);
+
+                                  // Inject script to detect error pages
+                                  const errorDetectionScript = `
                             (function() {
                               console.log('🔍 Checking for error content in auth page...');
                               
@@ -2487,273 +2263,273 @@ const CheckoutScreen = ({ route }) => {
                               return true;
                             })();
                           `;
-                          
-                          // Delay execution to ensure page is fully loaded
-                          setTimeout(() => {
-                            webViewRef.current?.injectJavaScript && webViewRef.current.injectJavaScript(errorDetectionScript);
-                          }, 1000);
-                        }}
-                        onError={(syntheticEvent) => {
-                          const { nativeEvent } = syntheticEvent;
-                          console.error('❌ Auth WebView error:', nativeEvent);
-                        }}
-                        onHttpError={(syntheticEvent) => {
-                          const { nativeEvent } = syntheticEvent;
-                          console.error('🔴 Auth WebView HTTP error:', nativeEvent);
-                        }}
-                        startInLoadingState={true}
-                        renderError={(errorDomain, errorCode, errorDesc) => (
-                          <View style={{ 
-                            flex: 1, 
-                            justifyContent: 'center', 
-                            alignItems: 'center',
-                            backgroundColor: 'white',
-                            padding: 20
-                          }}>
-                            <Text style={{ fontSize: 16, color: 'red', textAlign: 'center', marginBottom: 10 }}>
-                              Failed to load authentication page
-                            </Text>
-                            <Text style={{ fontSize: 12, color: '#666', textAlign: 'center' }}>
-                              Error: {errorDesc}
-                            </Text>
-                            <Text style={{ fontSize: 10, color: '#999', textAlign: 'center', marginTop: 10 }}>
-                              URL: {authPopupUrl}
-                            </Text>
-                          </View>
+
+                                  // Delay execution to ensure page is fully loaded
+                                  setTimeout(() => {
+                                    webViewRef.current?.injectJavaScript && webViewRef.current.injectJavaScript(errorDetectionScript);
+                                  }, 1000);
+                                }}
+                                onError={(syntheticEvent) => {
+                                  const { nativeEvent } = syntheticEvent;
+                                  console.error('❌ Auth WebView error:', nativeEvent);
+                                }}
+                                onHttpError={(syntheticEvent) => {
+                                  const { nativeEvent } = syntheticEvent;
+                                  console.error('🔴 Auth WebView HTTP error:', nativeEvent);
+                                }}
+                                startInLoadingState={true}
+                                renderError={(errorDomain, errorCode, errorDesc) => (
+                                    <View style={{
+                                      flex: 1,
+                                      justifyContent: 'center',
+                                      alignItems: 'center',
+                                      backgroundColor: 'white',
+                                      padding: 20
+                                    }}>
+                                      <Text style={{ fontSize: 16, color: 'red', textAlign: 'center', marginBottom: 10 }}>
+                                        Failed to load authentication page
+                                      </Text>
+                                      <Text style={{ fontSize: 12, color: '#666', textAlign: 'center' }}>
+                                        Error: {errorDesc}
+                                      </Text>
+                                      <Text style={{ fontSize: 10, color: '#999', textAlign: 'center', marginTop: 10 }}>
+                                        URL: {authPopupUrl}
+                                      </Text>
+                                    </View>
+                                )}
+                                renderLoading={() => (
+                                    <View style={{
+                                      position: 'absolute',
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 0,
+                                      justifyContent: 'center',
+                                      alignItems: 'center',
+                                      backgroundColor: 'white'
+                                    }}>
+                                      <Text style={{ fontSize: 16, color: '#666' }}>
+                                        Loading Google Pay...
+                                      </Text>
+                                      <Text style={{ fontSize: 10, color: '#999', marginTop: 10, textAlign: 'center' }}>
+                                        {authPopupUrl}
+                                      </Text>
+                                    </View>
+                                )}
+                                userAgent="Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1"
+                            />
+                        ) : (
+                            <View style={{
+                              flex: 1,
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              padding: 20,
+                              backgroundColor: 'white'
+                            }}>
+                              <Text style={{ fontSize: 16, color: '#666', textAlign: 'center' }}>
+                                Waiting for authentication URL...
+                              </Text>
+                              <Text style={{ fontSize: 12, color: '#999', marginTop: 10 }}>
+                                Current authPopupUrl: {authPopupUrl || 'null'}
+                              </Text>
+                              <Text style={{ fontSize: 12, color: '#999', marginTop: 5 }}>
+                                Fallback paymentPageUrl: {paymentPageUrl || 'null'}
+                              </Text>
+                            </View>
                         )}
-                        renderLoading={() => (
-                          <View style={{ 
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            justifyContent: 'center', 
-                            alignItems: 'center',
-                            backgroundColor: 'white'
-                          }}>
-                            <Text style={{ fontSize: 16, color: '#666' }}>
-                              Loading Google Pay...
-                            </Text>
-                            <Text style={{ fontSize: 10, color: '#999', marginTop: 10, textAlign: 'center' }}>
-                              {authPopupUrl}
-                            </Text>
-                          </View>
-                        )}
-                        userAgent="Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1"
-                      />
-                    ) : (
-                      <View style={{ 
-                        flex: 1, 
-                        justifyContent: 'center', 
-                        alignItems: 'center',
-                        padding: 20,
-                        backgroundColor: 'white'
-                      }}>
-                        <Text style={{ fontSize: 16, color: '#666', textAlign: 'center' }}>
-                          Waiting for authentication URL...
-                        </Text>
-                        <Text style={{ fontSize: 12, color: '#999', marginTop: 10 }}>
-                          Current authPopupUrl: {authPopupUrl || 'null'}
-                        </Text>
-                        <Text style={{ fontSize: 12, color: '#999', marginTop: 5 }}>
-                          Fallback paymentPageUrl: {paymentPageUrl || 'null'}
-                        </Text>
-                      </View>
-                    )}
-                    
-                    {/* Fallback button */}
-                    <View style={{
-                      backgroundColor: '#f8f9fa',
-                      borderTopWidth: 1,
-                      borderTopColor: '#e9ecef',
-                      paddingHorizontal: 20,
-                      paddingVertical: 10,
-                    }}>
-                      <TouchableOpacity
-                        style={{
-                          backgroundColor: '#6c757d',
-                          paddingHorizontal: 15,
-                          paddingVertical: 8,
-                          borderRadius: 6,
-                          alignSelf: 'center',
-                        }}
-                        onPress={() => {
-                          console.log('🔄 User requested to retry authentication');
-                          setIsWebViewVisibleForAuth(false);
-                          setAuthPopupUrl(null);
-                          setIsProcessingPayment(false);
-                          
-                          // Show message that they can try again
-                          setTimeout(() => {
-                            DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
-                              title: t("payment-method"),
-                              message: "Authentication cancelled. You can try the payment again."
-                            });
-                          }, 500);
-                        }}
-                      >
-                        <Text style={{
-                          color: 'white',
-                          fontSize: 12,
-                          fontWeight: '600',
-                          textAlign: 'center'
+
+                        {/* Fallback button */}
+                        <View style={{
+                          backgroundColor: '#f8f9fa',
+                          borderTopWidth: 1,
+                          borderTopColor: '#e9ecef',
+                          paddingHorizontal: 20,
+                          paddingVertical: 10,
                         }}>
-                          {t("cancel") || "Cancel & Try Again"}
-                        </Text>
-                      </TouchableOpacity>
+                          <TouchableOpacity
+                              style={{
+                                backgroundColor: '#6c757d',
+                                paddingHorizontal: 15,
+                                paddingVertical: 8,
+                                borderRadius: 6,
+                                alignSelf: 'center',
+                              }}
+                              onPress={() => {
+                                console.log('🔄 User requested to retry authentication');
+                                setIsWebViewVisibleForAuth(false);
+                                setAuthPopupUrl(null);
+                                setIsProcessingPayment(false);
+
+                                // Show message that they can try again
+                                setTimeout(() => {
+                                  DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+                                    title: t("payment-method"),
+                                    message: "Authentication cancelled. You can try the payment again."
+                                  });
+                                }, 500);
+                              }}
+                          >
+                            <Text style={{
+                              color: 'white',
+                              fontSize: 12,
+                              fontWeight: '600',
+                              textAlign: 'center'
+                            }}>
+                              {t("cancel") || "Cancel & Try Again"}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </Modal>
+                </>
+            )}
+
+            {/* Custom Button for digital payments when ZCredit is ready */}
+            {paymentPageUrl && isDigitalPaymentMethod() && isZCreditReady ? (
+                <TouchableOpacity
+                    onPress={triggerZCreditPayment}
+                    disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
+                    style={[
+                      styles.customButton,
+                      {
+                        backgroundColor: isProcessingPayment ? themeStyle.GRAY_30 : themeStyle.PRIMARY_COLOR,
+                        opacity: (isLoadingOrderSent || driversLoading || isProcessingPayment) ? 0.5 : 1,
+                      }
+                    ]}
+                    activeOpacity={0.8}
+                >
+                  <View style={styles.customButtonRow}>
+                    {/* Cart Count */}
+                    {cartCount && (
+                        <View style={styles.customButtonCountContainer}>
+                          <Text style={[
+                            styles.customButtonCountText,
+                            { color: themeStyle.PRIMARY_COLOR }
+                          ]}>
+                            {cartCount}
+                          </Text>
+                        </View>
+                    )}
+
+                    {/* Center Content - Icon and Text */}
+                    <View style={styles.customButtonCenterContent}>
+                      {/* Payment Method Icon */}
+                      {(() => {
+                        const paymentConfig = getDigitalPaymentMethodConfig();
+                        if (paymentConfig?.iconSource) {
+                          return (
+                              <Image
+                                  source={paymentConfig.iconSource}
+                                  style={styles.customButtonIcon}
+                              />
+                          );
+                        } else {
+                          return (
+                              <Icon
+                                  icon={getDigitalPaymentIcon()}
+                                  size={themeStyle.FONT_SIZE_LG}
+                                  style={{ color: themeStyle.SECONDARY_COLOR, marginRight: 8 }}
+                              />
+                          );
+                        }
+                      })()}
+
+                      {/* Button Text */}
+                      <Text style={[
+                        styles.customButtonText,
+                        {
+                          color: themeStyle.SECONDARY_COLOR,
+                          fontSize: themeStyle.FONT_SIZE_LG,
+                          fontFamily: `${getCurrentLang()}-Bold`,
+                        }
+                      ]}>
+                        {isProcessingPayment ? t("processing") : t("pay")}
+                      </Text>
+                    </View>
+
+                    {/* Price */}
+                    <View style={styles.customButtonPriceContainer}>
+                      <Text style={[
+                        styles.customButtonPriceText,
+                        {
+                          color: themeStyle.SECONDARY_COLOR,
+                          fontSize: themeStyle.FONT_SIZE_MD,
+                          fontFamily: `${getCurrentLang()}-Bold`,
+                        }
+                      ]}>
+                        ₪{totalPrice}
+                      </Text>
                     </View>
                   </View>
-                </View>
-              </Modal>
-            </>
-          )}
-          
-          {/* Custom Button for digital payments when ZCredit is ready */}
-          {paymentPageUrl && isDigitalPaymentMethod() && isZCreditReady ? (
-            <TouchableOpacity
-              onPress={triggerZCreditPayment}
-              disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
-              style={[
-                styles.customButton,
-                {
-                  backgroundColor: isProcessingPayment ? themeStyle.GRAY_30 : themeStyle.PRIMARY_COLOR,
-                  opacity: (isLoadingOrderSent || driversLoading || isProcessingPayment) ? 0.5 : 1,
-                }
-              ]}
-              activeOpacity={0.8}
-            >
-              <View style={styles.customButtonRow}>
-                {/* Cart Count */}
-                {cartCount && (
-                  <View style={styles.customButtonCountContainer}>
-                    <Text style={[
-                      styles.customButtonCountText,
-                      { color: themeStyle.PRIMARY_COLOR }
-                    ]}>
-                      {cartCount}
-                    </Text>
-                  </View>
-                )}
-
-                {/* Center Content - Icon and Text */}
-                <View style={styles.customButtonCenterContent}>
-                  {/* Payment Method Icon */}
-                  {(() => {
-                    const paymentConfig = getDigitalPaymentMethodConfig();
-                    if (paymentConfig?.iconSource) {
-                      return (
-                        <Image 
-                          source={paymentConfig.iconSource} 
-                          style={styles.customButtonIcon}
-                        />
-                      );
-                    } else {
-                      return (
-                        <Icon
-                          icon={getDigitalPaymentIcon()}
-                          size={themeStyle.FONT_SIZE_LG}
-                          style={{ color: themeStyle.SECONDARY_COLOR, marginRight: 8 }}
-                        />
-                      );
-                    }
-                  })()}
-                  
-                  {/* Button Text */}
-                  <Text style={[
-                    styles.customButtonText,
-                    {
-                      color: themeStyle.SECONDARY_COLOR,
-                      fontSize: themeStyle.FONT_SIZE_LG,
-                      fontFamily: `${getCurrentLang()}-Bold`,
-                    }
-                  ]}>
-                    {isProcessingPayment ? t("processing") : t("pay")}
-                  </Text>
-                </View>
-
-                {/* Price */}
-                <View style={styles.customButtonPriceContainer}>
-                  <Text style={[
-                    styles.customButtonPriceText,
-                    {
-                      color: themeStyle.SECONDARY_COLOR,
-                      fontSize: themeStyle.FONT_SIZE_MD,
-                      fontFamily: `${getCurrentLang()}-Bold`,
-                    }
-                  ]}>
-                    ₪{totalPrice}
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ) : paymentPageUrl && isDigitalPaymentMethod() && !isZCreditReady ? (
-            // Loading state for digital payments
-            <Button
-              onClickFn={() => {}}
-              disabled={true}
-              text={t("loading")}
-              isLoading={true}
-              icon="kupa"
-              iconSize={themeStyle.FONT_SIZE_LG}
-              fontSize={themeStyle.FONT_SIZE_LG}
-              iconColor={themeStyle.SECONDARY_COLOR}
-              fontFamily={`${getCurrentLang()}-Bold`}
-              bgColor={themeStyle.GRAY_30}
-              textColor={themeStyle.SECONDARY_COLOR}
-              borderRadious={100}
-              extraText={`₪${totalPrice}`}
-              countText={`${cartCount}`}
-              countTextColor={themeStyle.PRIMARY_COLOR}
-            />
-          ) : (
-            // Regular checkout button for non-digital payments
-            <Button
-              onClickFn={() => handlePaymentButtonClick()}
-              disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
-              text={t("send-order")}
-              isLoading={isLoadingOrderSent || driversLoading || isProcessingPayment}
-              icon="kupa"
-              iconSize={themeStyle.FONT_SIZE_LG}
-              fontSize={themeStyle.FONT_SIZE_LG}
-              iconColor={themeStyle.SECONDARY_COLOR}
-              fontFamily={`${getCurrentLang()}-Bold`}
-              bgColor={themeStyle.PRIMARY_COLOR}
-              textColor={themeStyle.SECONDARY_COLOR}
-              borderRadious={100}
-              extraText={`₪${totalPrice}`}
-              countText={`${cartCount}`}
-              countTextColor={themeStyle.PRIMARY_COLOR}
-            />
-          )}
-        </View>
-      </Animatable.View>
-      <ConfirmActiondBasedEventDialog />
-      <LocationIsDisabledBasedEventDialog />
-      <RecipetNotSupportedBasedEventDialog />
-      <NewPaymentMethodBasedEventDialog />
-      <StoreErrorMsgDialogEventBased />
-      <StoreIsCloseBasedEventDialog />
-      <DeliveryMethodAggreeBasedEventDialog />
-      <InvalidAddressdBasedEventDialog />
-      <PaymentFailedBasedEventDialog />
-      <OrderProcessingModal visible={isProcessingModalOpen} />
-      <Modal
-        isVisible={isOrderSubmittedModalOpen}
-        onBackdropPress={() => {}}
-        style={{ margin: 0, justifyContent: "flex-end", zIndex: 1000 }}
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-        backdropOpacity={0.5}
-        useNativeDriver
-      >
-        <OrderSubmittedScreen
-          route={{ params: { shippingMethod: submittedShippingMethod } }}
-          onClose={() => setIsOrderSubmittedModalOpen(false)}
-          isModal={true}
-        />
-      </Modal>
-    </View>
+                </TouchableOpacity>
+            ) : paymentPageUrl && isDigitalPaymentMethod() && !isZCreditReady ? (
+                // Loading state for digital payments
+                <Button
+                    onClickFn={() => {}}
+                    disabled={true}
+                    text={t("loading")}
+                    isLoading={true}
+                    icon="kupa"
+                    iconSize={themeStyle.FONT_SIZE_LG}
+                    fontSize={themeStyle.FONT_SIZE_LG}
+                    iconColor={themeStyle.SECONDARY_COLOR}
+                    fontFamily={`${getCurrentLang()}-Bold`}
+                    bgColor={themeStyle.GRAY_30}
+                    textColor={themeStyle.SECONDARY_COLOR}
+                    borderRadious={100}
+                    extraText={`₪${totalPrice}`}
+                    countText={`${cartCount}`}
+                    countTextColor={themeStyle.PRIMARY_COLOR}
+                />
+            ) : (
+                // Regular checkout button for non-digital payments
+                <Button
+                    onClickFn={() => handlePaymentButtonClick()}
+                    disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
+                    text={t("send-order")}
+                    isLoading={isLoadingOrderSent || driversLoading || isProcessingPayment}
+                    icon="kupa"
+                    iconSize={themeStyle.FONT_SIZE_LG}
+                    fontSize={themeStyle.FONT_SIZE_LG}
+                    iconColor={themeStyle.SECONDARY_COLOR}
+                    fontFamily={`${getCurrentLang()}-Bold`}
+                    bgColor={themeStyle.PRIMARY_COLOR}
+                    textColor={themeStyle.SECONDARY_COLOR}
+                    borderRadious={100}
+                    extraText={`₪${totalPrice}`}
+                    countText={`${cartCount}`}
+                    countTextColor={themeStyle.PRIMARY_COLOR}
+                />
+            )}
+          </View>
+        </Animatable.View>
+        <ConfirmActiondBasedEventDialog />
+        <LocationIsDisabledBasedEventDialog />
+        <RecipetNotSupportedBasedEventDialog />
+        <NewPaymentMethodBasedEventDialog />
+        <StoreErrorMsgDialogEventBased />
+        <StoreIsCloseBasedEventDialog />
+        <DeliveryMethodAggreeBasedEventDialog />
+        <InvalidAddressdBasedEventDialog />
+        <PaymentFailedBasedEventDialog />
+        <OrderProcessingModal visible={isProcessingModalOpen} />
+        <Modal
+            isVisible={isOrderSubmittedModalOpen}
+            onBackdropPress={() => {}}
+            style={{ margin: 0, justifyContent: "flex-end", zIndex: 1000 }}
+            animationIn="slideInUp"
+            animationOut="slideOutDown"
+            backdropOpacity={0.5}
+            useNativeDriver
+        >
+          <OrderSubmittedScreen
+              route={{ params: { shippingMethod: submittedShippingMethod } }}
+              onClose={() => setIsOrderSubmittedModalOpen(false)}
+              isModal={true}
+          />
+        </Modal>
+      </View>
   );
 };
 export default observer(CheckoutScreen);
