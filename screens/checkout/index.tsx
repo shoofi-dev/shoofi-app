@@ -791,676 +791,464 @@ const CheckoutScreen = ({ route }) => {
         paymentMthod === PAYMENT_METHODS.bit;
   };
 
-  // Custom CSS to inject into the WebView
-  const customCSS = `
-    .ProductsMarginHE {
-      display: none;
-    }
-      
-    .CustomerDivTitle {
-      display: none;
-    }
-
-    .PoweredBy {
-      display: none;
-    }
-
-    /* Hide the parent element with ng-disabled attribute */
-    .row[ng-disabled="vm.IsSubmitButtonDisabled()"][disabled="disabled"] {
-      display: none !important;
-    }
-
-    .row[ng-show="vm.IsNameFieldShow()"] {
-      display: none !important;
-    }
-
-    .row[ng-show="vm.IsEmailFieldShow()"] {
-      display: none !important;
-    }
-
-    .row[ng-show="vm.IsPhoneNumberFieldShow()"] {
-      display: none !important;
-    }
-
-    .row {
-      margin-top: -16px;
-      display: block;
-    }
-
-    .container {
-      width: 100%;
-      padding-left: 0;
-      padding-right: 0;
-      margin-left: unset;
-      margin-right: unset;
-    }
-
-    #wrapper > div:first-child,
-    #wrapper > div:nth-child(2) {
-      display: none;
-    }
-
-    .sweet-overlay {
-      display: none !important;
-    }
-
-    .showSweetAlert {
-      display: none !important;
-    }
-
-    .gpay-card-info-container.black.hover, .gpay-card-info-animation-container.black.hover {
-      background-color: #000 !important;
-      outline: 1px solid #757575 !important;
-    }
-
-    #gpay-button-online-api-id {
-      border-radius: 40px;
-    }
-
-    .col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto {
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    .gpay-card-info-animation-container {
-      display: none !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
-    }
-
-    .gpay-card-info-container {
-      overflow: hidden !important;
-    }
-
-    .gpay-card-info-container * {
-      animation: none !important;
-      transition: none !important;
-    }
-
-    /* Force iframe to be immediately visible */
-    .gpay-card-info-iframe {
-      display: block !important;
-      opacity: 1 !important;
-      animation: none !important;
-    }
-    
-    .SubmitButton {
-        border-radius: 50px;
-        height: 55px;
-        box-shadow: none:
-        background-color: #C1E300;
-        border: none;
-       color: #4d2e53;
-       font-size: 20px;
-       font-family: 'Tajawal', Arial, sans-serif !important;
-       font-weight: 500;
-    }
-
-
-.SubmitButton .ng-binding {
-    font-size: 0;
-    visibility: hidden;
-    position: relative;
-}
-  `;
-
   // JavaScript code to inject CSS, fonts, and postMessage listener into the WebView
   const injectedJavaScript = `
-    (function() {
-      // Add Google Fonts preconnect links
-      var preconnect1 = document.createElement('link');
-      preconnect1.rel = 'preconnect';
-      preconnect1.href = 'https://fonts.googleapis.com';
-      document.head.appendChild(preconnect1);
-      
-      var preconnect2 = document.createElement('link');
-      preconnect2.rel = 'preconnect';
-      preconnect2.href = 'https://fonts.gstatic.com';
-      preconnect2.crossOrigin = 'anonymous';
-      document.head.appendChild(preconnect2);
-      
-      // Add Tajawal font link
-      var fontLink = document.createElement('link');
-      fontLink.rel = 'stylesheet';
-      fontLink.href = 'https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap';
-      document.head.appendChild(fontLink);
-      
-      // Add custom CSS styles
-      var style = document.createElement('style');
-      style.type = 'text/css';
-      style.innerHTML = \`${customCSS}\`;
-      document.head.appendChild(style);
-      
-      // Comprehensive ZCredit postMessage capture
-      function captureZCreditMessage(message, source) {
-        console.log('ZCredit message captured from ' + source + ':', message);
-        
-        // Forward all messages to React Native for debugging
-        if (window.ReactNativeWebView) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-            source: source,
-            originalMessage: message,
-            type: 'DebugMessage'
-          }));
-        }
-        
-        // Check if this is a ZCredit postMessage
-        var messageToProcess = message;
-        if (typeof message === 'string') {
-          // Try to parse JSON message
-          try {
-            messageToProcess = JSON.parse(message);
-          } catch (e) {
-            // Not JSON, check for specific keywords
-            if (message.includes('PostMessage') || 
-                message.includes('Submit') || 
-                message.includes('Success') || 
-                message.includes('Cancel') || 
-                message.includes('Failure')) {
-              // Likely a ZCredit message - forward to React Native
-              if (window.ReactNativeWebView) {
-                window.ReactNativeWebView.postMessage(message);
-              }
-            }
-            return;
-          }
-        }
-        
-        // Check if it's a ZCredit postMessage type (original format)
-        if (messageToProcess && messageToProcess.type && (
-          messageToProcess.type === 'PostMessageOnSubmit' ||
-          messageToProcess.type === 'PostMessageOnSuccess' ||
-          messageToProcess.type === 'PostMessageOnCancel' ||
-          messageToProcess.type === 'PostMessageOnFailure'
-        )) {
-          console.log('ZCredit postMessage detected:', messageToProcess.type);
-          if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage(JSON.stringify(messageToProcess));
-          }
-        }
-        
-        // Check if it's ZCredit's actual message format
-        if (messageToProcess && messageToProcess.Reason && messageToProcess.SessionID) {
-          console.log('ZCredit custom message detected:', messageToProcess.Reason);
-          
-          var zcreditEvent = null;
-          
-          // Map ZCredit's Reason to our standard postMessage types
-          if (messageToProcess.Reason === 'IsWhileSubmit' && messageToProcess.State === true) {
-            zcreditEvent = {
-              type: 'PostMessageOnSubmit',
-              data: {
-                sessionId: messageToProcess.SessionID,
-                reason: messageToProcess.Reason,
-                state: messageToProcess.State
-              }
-            };
-          } else if (messageToProcess.Reason === 'IsWhileSubmit' && messageToProcess.State === false) {
-            // This could be end of submit or form ready state
-            zcreditEvent = {
-              type: 'PostMessageOnSubmitEnd',
-              data: {
-                sessionId: messageToProcess.SessionID,
-                reason: messageToProcess.Reason,
-                state: messageToProcess.State
-              }
-            };
-          } else if (messageToProcess.Code && messageToProcess.Code !== 0) {
-            // Error/failure case
-            zcreditEvent = {
-              type: 'PostMessageOnFailure',
-              data: {
-                sessionId: messageToProcess.SessionID,
-                reason: messageToProcess.Reason,
-                errorCode: messageToProcess.Code,
-                errorMessage: messageToProcess.Reason
-              }
-            };
-          } else if (messageToProcess.Reason === 'Success' || messageToProcess.Reason === 'Completed') {
-            // Success case (if they use this format)
-            zcreditEvent = {
-              type: 'PostMessageOnSuccess',
-              data: {
-                sessionId: messageToProcess.SessionID,
-                reason: messageToProcess.Reason
-              }
-            };
-          }
-          
-          if (zcreditEvent && window.ReactNativeWebView) {
-            console.log('Sending mapped ZCredit event:', zcreditEvent.type);
-            window.ReactNativeWebView.postMessage(JSON.stringify(zcreditEvent));
-          }
-        }
-      }
-      
-      // Listen for postMessages on current window
-      window.addEventListener('message', function(event) {
-        captureZCreditMessage(event.data, 'window');
-      });
-      
-      // Listen for postMessages on parent window (if in iframe)
-      if (window.parent && window.parent !== window) {
-        window.parent.addEventListener('message', function(event) {
-          captureZCreditMessage(event.data, 'parent');
-        });
-      }
-      
-      // Listen for postMessages on top window
-      if (window.top && window.top !== window) {
-        window.top.addEventListener('message', function(event) {
-          captureZCreditMessage(event.data, 'top');
-        });
-      }
-      
-      // Override postMessage to intercept all outgoing messages
-      var originalPostMessage = window.postMessage;
-      window.postMessage = function(message, targetOrigin) {
-        console.log('Intercepted postMessage:', message);
-        captureZCreditMessage(message, 'intercepted');
-        return originalPostMessage.call(this, message, targetOrigin);
-      };
-      
-      // Also override parent.postMessage if available
-      if (window.parent && window.parent.postMessage) {
-        var originalParentPostMessage = window.parent.postMessage;
-        window.parent.postMessage = function(message, targetOrigin) {
-          console.log('Intercepted parent postMessage:', message);
-          captureZCreditMessage(message, 'parent-intercepted');
-          return originalParentPostMessage.call(this, message, targetOrigin);
-        };
-      }
-      
+ (function() {
 
-      
-      // Also listen for custom events that ZCredit might dispatch
-      document.addEventListener('ZCreditEvent', function(event) {
-        console.log('ZCredit custom event:', event.detail);
-        if (window.ReactNativeWebView) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-            type: 'ZCreditEvent',
-            data: event.detail
-          }));
-        }
-      });
-      
-      // Optional: Hide loading screen faster
-      setTimeout(function() {
-        var loadingElements = document.querySelectorAll('.loading, .spinner, .loader');
-        loadingElements.forEach(function(el) {
-          el.style.display = 'none';
-        });
-      }, 1000);
-      
-      // Hide the ZCredit iframe but keep it in DOM
-      function hideZCreditIframe() {
-        console.log('Attempting to hide ZCredit iframe');
-        
-        // Hide the entire page body initially
-        if (document.body) {
-          document.body.style.display = 'none';
-          document.body.style.visibility = 'hidden';
-          document.body.style.opacity = '0';
-          document.body.style.height = '0';
-          document.body.style.overflow = 'hidden';
-        }
-        
-        // Set up observer to hide iframe when it appears
-        var observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            mutation.addedNodes.forEach(function(node) {
-              if (node.nodeType === 1) { // Element node
-                // Hide any iframe or container that appears
-                if (node.tagName === 'IFRAME' || node.classList && node.classList.contains('payment-frame')) {
-                  node.style.display = 'none';
-                }
-                // Also check children
-                var iframes = node.querySelectorAll && node.querySelectorAll('iframe');
-                if (iframes) {
-                  for (var i = 0; i < iframes.length; i++) {
-                    iframes[i].style.display = 'none';
-                  }
-                }
-              }
-            });
-          });
-        });
-        
-        observer.observe(document.body, {
-          childList: true,
-          subtree: true
-        });
-      }
-      
-             // Function to trigger ZCredit payment methods
-       function triggerZCreditPaymentMethod(paymentMethod) {
-         console.log('Triggering ZCredit payment for method:', paymentMethod);
-         
-         // Try multiple ways to access the Angular controller
-         var vm = null;
-         var scope = null;
-         
-         // Method 1: Standard Angular element selector
-         try {
-           var angularElement = document.querySelector('[ng-controller="ZCreditWebCheckoutController"]');
-           if (angularElement && window.angular) {
-             scope = window.angular.element(angularElement).scope();
-             vm = scope ? scope.vm : null;
-             console.log('Method 1 - Angular element access:', vm ? 'Success' : 'Failed');
-           }
-         } catch (e) {
-           console.log('Method 1 failed:', e);
-         }
-         
-         // Method 2: Try accessing through body or document
-         if (!vm) {
-           try {
-             var bodyElement = document.body;
-             if (bodyElement && window.angular) {
-               var bodyScope = window.angular.element(bodyElement).scope();
-               if (bodyScope && bodyScope.$$childHead) {
-                 // Walk through child scopes to find the controller
-                 var currentScope = bodyScope.$$childHead;
-                 while (currentScope) {
-                   if (currentScope.vm) {
-                     vm = currentScope.vm;
-                     scope = currentScope;
-                     console.log('Method 2 - Body scope walk:', vm ? 'Success' : 'Failed');
-                     break;
-                   }
-                   currentScope = currentScope.$$nextSibling;
-                 }
-               }
-             }
-           } catch (e) {
-             console.log('Method 2 failed:', e);
-           }
-         }
-         
-         // Method 3: Global scope access (if Angular puts it there)
-         if (!vm) {
-           try {
-             if (window.angular && window.angular.element(document).scope()) {
-               var rootScope = window.angular.element(document).scope();
-               if (rootScope.$$childHead) {
-                 var currentScope = rootScope.$$childHead;
-                 while (currentScope) {
-                   if (currentScope.vm) {
-                     vm = currentScope.vm;
-                     scope = currentScope;
-                     console.log('Method 3 - Root scope walk:', vm ? 'Success' : 'Failed');
-                     break;
-                   }
-                   currentScope = currentScope.$$nextSibling;
-                 }
-               }
-             }
-           } catch (e) {
-             console.log('Method 3 failed:', e);
-           }
-         }
-         
-         if (!vm) {
-           console.error('Could not access ZCredit controller vm through any method');
-           return false;
-         }
-         
-         console.log('Successfully found controller vm:', vm);
-         
-         // Trigger the appropriate payment method based on the payment type
-         try {
-           switch (paymentMethod) {
-             case 'apple_pay':
-               console.log('Triggering Apple Pay');
-               if (typeof vm.PayWithApplePay_Clicked === 'function') {
-                 console.log('Calling vm.PayWithApplePay_Clicked()');
-                 
-                 // Wrap the Apple Pay call to catch cancellation
-                 try {
-                   vm.PayWithApplePay_Clicked();
-                   if (scope) scope.$apply();
-                   return true;
-                 } catch (error) {
-                   console.log('Apple Pay error or cancellation:', error);
-                   
-                   // Send cancel message back to React Native
-                   if (window.ReactNativeWebView) {
-                     window.ReactNativeWebView.postMessage(JSON.stringify({
-                       type: 'PostMessageOnCancel',
-                       data: {
-                         message: 'Apple Pay cancelled',
-                         cancelled: true
-                       }
-                     }));
-                   }
-                   return false;
-                 }
-               } else {
-                 console.error('Apple Pay method not found or not a function:', typeof vm.PayWithApplePay_Clicked);
-               }
-               break;
-               
- 
-               
-               
-             default:
-               console.log('Unknown payment method:', paymentMethod);
-               // Fallback to clicking submit button
-               return triggerSubmitButton();
-           }
-         } catch (error) {
-           console.error('Error triggering payment method:', error);
-           return false;
-         }
-         
-         return false;
-       }
-       
-               // Listen for postMessages from React Native to trigger payments
-        window.addEventListener('message', function(event) {
-          console.log('ZCredit iframe received message:', event.data);
-          console.log('Message origin:', event.origin);
-          console.log('Message source:', event.source);
-          
-          try {
-            var data;
-            if (typeof event.data === 'string') {
-              data = JSON.parse(event.data);
-            } else {
-              data = event.data;
-            }
-            
-            console.log('Parsed message data:', data);
-            
-            if (data.type === 'TriggerZCreditPayment') {
-              console.log('Processing TriggerZCreditPayment message');
-              var result = triggerZCreditPaymentMethod(data.paymentMethod);
-              console.log('Payment trigger result:', result);
-            }
-          } catch (e) {
-            console.log('Message processing error:', e);
-          }
-        });
-        
-        // Also listen for custom events as fallback
-        window.addEventListener('triggerZCreditPayment', function(event) {
-          console.log('ZCredit iframe received custom event:', event.detail);
-          
-          if (event.detail && event.detail.type === 'TriggerZCreditPayment') {
-            console.log('Processing custom event');
-            var result = triggerZCreditPaymentMethod(event.detail.paymentMethod);
-            console.log('Custom event trigger result:', result);
-          }
-        });
-        
-                 // Monitor for payment session cancellations/completions
-         var paymentInProgress = false;
-         
-         // Override PaymentRequest show method to detect cancellations
-         if (window.PaymentRequest) {
-           var originalShow = window.PaymentRequest.prototype.show;
-           window.PaymentRequest.prototype.show = function() {
-             console.log('Payment session started');
-             paymentInProgress = true;
-             
-             var promise = originalShow.apply(this, arguments);
-             
-             promise.then(function(response) {
-               console.log('Payment session completed successfully');
-               paymentInProgress = false;
-             }).catch(function(error) {
-               console.log('Payment session cancelled or failed:', error);
-               paymentInProgress = false;
-               
-               // Send cancel message back to React Native
-               if (window.ReactNativeWebView) {
-                 window.ReactNativeWebView.postMessage(JSON.stringify({
-                   type: 'PostMessageOnCancel',
-                   data: {
-                     message: 'Payment cancelled by user',
-                     cancelled: true,
-                     error: error.message
-                   }
-                 }));
-               }
-             });
-             
-             return promise;
-           };
-         }
-         
- 
-         // Additional debugging - check if Angular is available
-         setTimeout(function() {
-           console.log('Angular availability check:');
-           console.log('- window.angular:', typeof window.angular);
-           console.log('- angular.element:', typeof (window.angular && window.angular.element));
-           console.log('- Controller element:', document.querySelector('[ng-controller="ZCreditWebCheckoutController"]'));
-           
-           // Try to access the controller
-           var angularElement = document.querySelector('[ng-controller="ZCreditWebCheckoutController"]');
-           if (angularElement && window.angular) {
-             try {
-               var scope = window.angular.element(angularElement).scope();
-               console.log('- Angular scope:', scope);
-               console.log('- Controller vm:', scope ? scope.vm : 'No scope');
-               if (scope && scope.vm) {
-                 console.log('- Available payment methods:', {
-                   applePay: typeof scope.vm.PayWithApplePay_Clicked,
-                   googlePay: typeof scope.vm.PayWithGooglePay_Clicked,
-                   bit: typeof scope.vm.PayWithBit_Clicked
-                 });
-               }
-             } catch (e) {
-               console.log('- Error accessing Angular scope:', e);
-             }
-           }
-         }, 2000);
-      
-      // Fallback function to click submit button
-      function triggerSubmitButton() {
-        console.log('Attempting to trigger submit button as fallback');
-        
-        var selectors = [
-          '.SubmitButton',
-          'button[type="submit"]',
-          'input[type="submit"]',
-          '.payment-button',
-          'button'
-        ];
-        
-        for (var i = 0; i < selectors.length; i++) {
-          var buttons = document.querySelectorAll(selectors[i]);
-          if (buttons && buttons.length > 0) {
-            for (var j = 0; j < buttons.length; j++) {
-              var button = buttons[j];
-              if (button.offsetParent !== null || button.style.display !== 'none') {
-                console.log('Clicking submit button:', button);
-                button.click();
-                return true;
-              }
-            }
-          }
-        }
-        
-        return false;
-      }
-      
-      // Wait for page to load then hide iframe and check for payment buttons
-      var retryCount = 0;
-      var maxRetries = 10; // Max 5 seconds of retrying
-      
-      function checkAndSetupPayment() {
-        console.log('Checking for payment setup... attempt', retryCount + 1);
-        hideZCreditIframe();
-        
-        // Check if payment buttons are available
-        var paymentButtons = [
-          document.querySelector('.SubmitButton'),
-          document.querySelector('.apple-pay-button'), 
-          document.querySelector('.GooglePayContainer button')
-        ];
-        
-        var foundButton = false;
-        for (var i = 0; i < paymentButtons.length; i++) {
-          if (paymentButtons[i]) {
-            console.log('Found payment button:', paymentButtons[i]);
-            foundButton = true;
-            break;
-          }
-        }
-        
-        if (foundButton || document.querySelector('form')) {
-          console.log('Payment ready - sending ZCreditReady message');
-          if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              type: 'ZCreditReady',
-              message: 'ZCredit iframe hidden and payment buttons ready',
-              hasPaymentButtons: foundButton,
-              availableButtons: {
-                submitButton: !!document.querySelector('.SubmitButton'),
-                applePayButton: !!document.querySelector('.apple-pay-button'),
-                googlePayButton: !!document.querySelector('.GooglePayContainer button')
-              }
-            }));
-          }
-        } else if (retryCount < maxRetries) {
-          console.log('Payment buttons not ready yet, retrying...', retryCount + 1, '/', maxRetries);
-          retryCount++;
-          setTimeout(checkAndSetupPayment, 500);
-        } else {
-          console.log('Max retries reached, proceeding anyway - sending ZCreditReady message');
-          if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              type: 'ZCreditReady',
-              message: 'ZCredit iframe hidden - proceeding without payment buttons detected',
-              hasPaymentButtons: false,
-              maxRetriesReached: true,
-              availableButtons: {
-                submitButton: false,
-                applePayButton: false,
-                googlePayButton: false
-              }
-            }));
-          }
-        }
-      }
-      
-      // Start checking after initial load
-      setTimeout(checkAndSetupPayment, 1000);
-      
-      // Debug: Log that the injection was successful
-      console.log('ZCredit WebView injection completed - postMessage listeners active');
-      
-      // Send a test message to confirm communication works
-      if (window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({
-          type: 'InjectionComplete',
-          message: 'ZCredit WebView JavaScript injection completed'
-        }));
-      }
-    })();
-    true; // Required for iOS
+	// Comprehensive ZCredit postMessage capture
+	function captureZCreditMessage(message, source) {
+		console.log('ZCredit message captured from ' + source + ':', message);
+
+		// Forward all messages to React Native for debugging
+		if (window.ReactNativeWebView) {
+			window.ReactNativeWebView.postMessage(JSON.stringify({
+				source: source,
+				originalMessage: message,
+				type: 'DebugMessage'
+			}));
+		}
+
+		// Check if this is a ZCredit postMessage
+		var messageToProcess = message;
+		if (typeof message === 'string') {
+			// Try to parse JSON message
+			try {
+				messageToProcess = JSON.parse(message);
+			} catch (e) {
+				// Not JSON, check for specific keywords
+				if (message.includes('PostMessage') ||
+					message.includes('Submit') ||
+					message.includes('Success') ||
+					message.includes('Cancel') ||
+					message.includes('Failure')) {
+					// Likely a ZCredit message - forward to React Native
+					if (window.ReactNativeWebView) {
+						window.ReactNativeWebView.postMessage(message);
+					}
+				}
+				return;
+			}
+		}
+
+		// Check if it's a ZCredit postMessage type (original format)
+		if (messageToProcess && messageToProcess.type && (
+				messageToProcess.type === 'PostMessageOnSubmit' ||
+				messageToProcess.type === 'PostMessageOnSuccess' ||
+				messageToProcess.type === 'PostMessageOnCancel' ||
+				messageToProcess.type === 'PostMessageOnFailure'
+			)) {
+			console.log('ZCredit postMessage detected:', messageToProcess.type);
+			if (window.ReactNativeWebView) {
+				window.ReactNativeWebView.postMessage(JSON.stringify(messageToProcess));
+			}
+		}
+
+		// Check if it's ZCredit's actual message format
+		if (messageToProcess && messageToProcess.Reason && messageToProcess.SessionID) {
+			console.log('ZCredit custom message detected:', messageToProcess.Reason);
+
+			var zcreditEvent = null;
+
+			// Map ZCredit's Reason to our standard postMessage types
+			if (messageToProcess.Reason === 'IsWhileSubmit' && messageToProcess.State === true) {
+				zcreditEvent = {
+					type: 'PostMessageOnSubmit',
+					data: {
+						sessionId: messageToProcess.SessionID,
+						reason: messageToProcess.Reason,
+						state: messageToProcess.State
+					}
+				};
+			} else if (messageToProcess.Reason === 'IsWhileSubmit' && messageToProcess.State === false) {
+				// This could be end of submit or form ready state
+				zcreditEvent = {
+					type: 'PostMessageOnSubmitEnd',
+					data: {
+						sessionId: messageToProcess.SessionID,
+						reason: messageToProcess.Reason,
+						state: messageToProcess.State
+					}
+				};
+			} else if (messageToProcess.Code && messageToProcess.Code !== 0) {
+				// Error/failure case
+				zcreditEvent = {
+					type: 'PostMessageOnFailure',
+					data: {
+						sessionId: messageToProcess.SessionID,
+						reason: messageToProcess.Reason,
+						errorCode: messageToProcess.Code,
+						errorMessage: messageToProcess.Reason
+					}
+				};
+			} else if (messageToProcess.Reason === 'Success' || messageToProcess.Reason === 'Completed') {
+				// Success case (if they use this format)
+				zcreditEvent = {
+					type: 'PostMessageOnSuccess',
+					data: {
+						sessionId: messageToProcess.SessionID,
+						reason: messageToProcess.Reason
+					}
+				};
+			}
+
+			if (zcreditEvent && window.ReactNativeWebView) {
+				console.log('Sending mapped ZCredit event:', zcreditEvent.type);
+				window.ReactNativeWebView.postMessage(JSON.stringify(zcreditEvent));
+			}
+		}
+	}
+
+	// Listen for postMessages on current window
+	window.addEventListener('message', function(event) {
+		captureZCreditMessage(event.data, 'window');
+	});
+
+	// Listen for postMessages on parent window (if in iframe)
+	if (window.parent && window.parent !== window) {
+		window.parent.addEventListener('message', function(event) {
+			captureZCreditMessage(event.data, 'parent');
+		});
+	}
+
+	// Listen for postMessages on top window
+	if (window.top && window.top !== window) {
+		window.top.addEventListener('message', function(event) {
+			captureZCreditMessage(event.data, 'top');
+		});
+	}
+
+	// Override postMessage to intercept all outgoing messages
+	var originalPostMessage = window.postMessage;
+	window.postMessage = function(message, targetOrigin) {
+		console.log('Intercepted postMessage:', message);
+		captureZCreditMessage(message, 'intercepted');
+		return originalPostMessage.call(this, message, targetOrigin);
+	};
+
+	// Also override parent.postMessage if available
+	if (window.parent && window.parent.postMessage) {
+		var originalParentPostMessage = window.parent.postMessage;
+		window.parent.postMessage = function(message, targetOrigin) {
+			console.log('Intercepted parent postMessage:', message);
+			captureZCreditMessage(message, 'parent-intercepted');
+			return originalParentPostMessage.call(this, message, targetOrigin);
+		};
+	}
+
+
+
+	// Also listen for custom events that ZCredit might dispatch
+	document.addEventListener('ZCreditEvent', function(event) {
+		console.log('ZCredit custom event:', event.detail);
+		if (window.ReactNativeWebView) {
+			window.ReactNativeWebView.postMessage(JSON.stringify({
+				type: 'ZCreditEvent',
+				data: event.detail
+			}));
+		}
+	});
+
+
+	// Function to trigger ZCredit payment methods
+	function triggerZCreditPaymentMethod(paymentMethod) {
+		console.log('Triggering ZCredit payment for method:', paymentMethod);
+
+		// Try multiple ways to access the Angular controller
+		var vm = null;
+		var scope = null;
+
+		// Method 1: Standard Angular element selector
+		try {
+			var angularElement = document.querySelector('[ng-controller="ZCreditWebCheckoutController"]');
+			if (angularElement && window.angular) {
+				scope = window.angular.element(angularElement).scope();
+				vm = scope ? scope.vm : null;
+				console.log('Method 1 - Angular element access:', vm ? 'Success' : 'Failed');
+			}
+		} catch (e) {
+			console.log('Method 1 failed:', e);
+		}
+
+		// Method 2: Try accessing through body or document
+		if (!vm) {
+			try {
+				var bodyElement = document.body;
+				if (bodyElement && window.angular) {
+					var bodyScope = window.angular.element(bodyElement).scope();
+					if (bodyScope && bodyScope.$$childHead) {
+						// Walk through child scopes to find the controller
+						var currentScope = bodyScope.$$childHead;
+						while (currentScope) {
+							if (currentScope.vm) {
+								vm = currentScope.vm;
+								scope = currentScope;
+								console.log('Method 2 - Body scope walk:', vm ? 'Success' : 'Failed');
+								break;
+							}
+							currentScope = currentScope.$$nextSibling;
+						}
+					}
+				}
+			} catch (e) {
+				console.log('Method 2 failed:', e);
+			}
+		}
+
+		// Method 3: Global scope access (if Angular puts it there)
+		if (!vm) {
+			try {
+				if (window.angular && window.angular.element(document).scope()) {
+					var rootScope = window.angular.element(document).scope();
+					if (rootScope.$$childHead) {
+						var currentScope = rootScope.$$childHead;
+						while (currentScope) {
+							if (currentScope.vm) {
+								vm = currentScope.vm;
+								scope = currentScope;
+								console.log('Method 3 - Root scope walk:', vm ? 'Success' : 'Failed');
+								break;
+							}
+							currentScope = currentScope.$$nextSibling;
+						}
+					}
+				}
+			} catch (e) {
+				console.log('Method 3 failed:', e);
+			}
+		}
+
+		if (!vm) {
+			console.error('Could not access ZCredit controller vm through any method');
+			return false;
+		}
+
+		console.log('Successfully found controller vm:', vm);
+
+		// Trigger the appropriate payment method based on the payment type
+		try {
+			switch (paymentMethod) {
+				case 'apple_pay':
+					console.log('Triggering Apple Pay');
+					if (typeof vm.PayWithApplePay_Clicked === 'function') {
+						console.log('Calling vm.PayWithApplePay_Clicked()');
+
+						// Wrap the Apple Pay call to catch cancellation
+						try {
+							vm.PayWithApplePay_Clicked();
+							if (scope) scope.$apply();
+							return true;
+						} catch (error) {
+							console.log('Apple Pay error or cancellation:', error);
+
+							// Send cancel message back to React Native
+							if (window.ReactNativeWebView) {
+								window.ReactNativeWebView.postMessage(JSON.stringify({
+									type: 'PostMessageOnCancel',
+									data: {
+										message: 'Apple Pay cancelled',
+										cancelled: true
+									}
+								}));
+							}
+							return false;
+						}
+					} else {
+						console.error('Apple Pay method not found or not a function:', typeof vm.PayWithApplePay_Clicked);
+					}
+					break;
+
+
+				default:
+					console.log('Unknown payment method:', paymentMethod);
+					// Fallback to clicking submit button
+					return triggerSubmitButton();
+			}
+		} catch (error) {
+			console.error('Error triggering payment method:', error);
+			return false;
+		}
+
+		return false;
+	}
+
+	// Listen for postMessages from React Native to trigger payments
+	window.addEventListener('message', function(event) {
+		console.log('ZCredit iframe received message:', event.data);
+		console.log('Message origin:', event.origin);
+		console.log('Message source:', event.source);
+
+		try {
+			var data;
+			if (typeof event.data === 'string') {
+				data = JSON.parse(event.data);
+			} else {
+				data = event.data;
+			}
+
+			console.log('Parsed message data:', data);
+
+			if (data.type === 'TriggerZCreditPayment') {
+				console.log('Processing TriggerZCreditPayment message');
+				var result = triggerZCreditPaymentMethod(data.paymentMethod);
+				console.log('Payment trigger result:', result);
+			}
+		} catch (e) {
+			console.log('Message processing error:', e);
+		}
+	});
+
+	// Also listen for custom events as fallback
+	window.addEventListener('triggerZCreditPayment', function(event) {
+		console.log('ZCredit iframe received custom event:', event.detail);
+
+		if (event.detail && event.detail.type === 'TriggerZCreditPayment') {
+			console.log('Processing custom event');
+			var result = triggerZCreditPaymentMethod(event.detail.paymentMethod);
+			console.log('Custom event trigger result:', result);
+		}
+	});
+
+	// Monitor for payment session cancellations/completions
+	var paymentInProgress = false;
+
+	// Override PaymentRequest show method to detect cancellations
+	if (window.PaymentRequest) {
+		var originalShow = window.PaymentRequest.prototype.show;
+		window.PaymentRequest.prototype.show = function() {
+			console.log('Payment session started');
+			paymentInProgress = true;
+
+			var promise = originalShow.apply(this, arguments);
+
+			promise.then(function(response) {
+				console.log('Payment session completed successfully');
+				paymentInProgress = false;
+			}).catch(function(error) {
+				console.log('Payment session cancelled or failed:', error);
+				paymentInProgress = false;
+
+				// Send cancel message back to React Native
+				if (window.ReactNativeWebView) {
+					window.ReactNativeWebView.postMessage(JSON.stringify({
+						type: 'PostMessageOnCancel',
+						data: {
+							message: 'Payment cancelled by user',
+							cancelled: true,
+							error: error.message
+						}
+					}));
+				}
+			});
+
+			return promise;
+		};
+	}
+
+
+	// Fallback function to click submit button
+	function triggerSubmitButton() {
+		console.log('Attempting to trigger submit button as fallback');
+
+		var selectors = [
+			'.SubmitButton',
+			'button[type="submit"]',
+			'input[type="submit"]',
+			'.payment-button',
+			'button'
+		];
+
+		for (var i = 0; i < selectors.length; i++) {
+			var buttons = document.querySelectorAll(selectors[i]);
+			if (buttons && buttons.length > 0) {
+				for (var j = 0; j < buttons.length; j++) {
+					var button = buttons[j];
+					if (button.offsetParent !== null || button.style.display !== 'none') {
+						console.log('Clicking submit button:', button);
+						button.click();
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	// Wait for page to load then hide iframe and check for payment buttons
+	var retryCount = 0;
+	var maxRetries = 10; // Max 5 seconds of retrying
+
+	function checkAndSetupPayment() {
+		console.log('Checking for payment setup... attempt', retryCount + 1);
+		hideZCreditIframe();
+
+		// Check if payment buttons are available
+		var paymentButtons = [
+			document.querySelector('.SubmitButton'),
+			document.querySelector('.apple-pay-button'),
+			document.querySelector('.GooglePayContainer button')
+		];
+
+		var foundButton = false;
+		for (var i = 0; i < paymentButtons.length; i++) {
+			if (paymentButtons[i]) {
+				console.log('Found payment button:', paymentButtons[i]);
+				foundButton = true;
+				break;
+			}
+		}
+
+		if (foundButton || document.querySelector('form')) {
+			console.log('Payment ready - sending ZCreditReady message');
+			if (window.ReactNativeWebView) {
+				window.ReactNativeWebView.postMessage(JSON.stringify({
+					type: 'ZCreditReady',
+					message: 'ZCredit iframe hidden and payment buttons ready',
+					hasPaymentButtons: foundButton,
+					availableButtons: {
+						submitButton: !!document.querySelector('.SubmitButton'),
+						applePayButton: !!document.querySelector('.apple-pay-button'),
+						googlePayButton: !!document.querySelector('.GooglePayContainer button')
+					}
+				}));
+			}
+		} else if (retryCount < maxRetries) {
+			console.log('Payment buttons not ready yet, retrying...', retryCount + 1, '/', maxRetries);
+			retryCount++;
+			setTimeout(checkAndSetupPayment, 500);
+		} else {
+			console.log('Max retries reached, proceeding anyway - sending ZCreditReady message');
+			if (window.ReactNativeWebView) {
+				window.ReactNativeWebView.postMessage(JSON.stringify({
+					type: 'ZCreditReady',
+					message: 'ZCredit iframe hidden - proceeding without payment buttons detected',
+					hasPaymentButtons: false,
+					maxRetriesReached: true,
+					availableButtons: {
+						submitButton: false,
+						applePayButton: false,
+						googlePayButton: false
+					}
+				}));
+			}
+		}
+	}
+
+	// Start checking after initial load
+	setTimeout(checkAndSetupPayment, 1000);
+
+	// Debug: Log that the injection was successful
+	console.log('ZCredit WebView injection completed - postMessage listeners active');
+
+	// Send a test message to confirm communication works
+	if (window.ReactNativeWebView) {
+		window.ReactNativeWebView.postMessage(JSON.stringify({
+			type: 'InjectionComplete',
+			message: 'ZCredit WebView JavaScript injection completed'
+		}));
+	}
+})();
+true; // Required for iOS
   `;
 
   // Complete checkout for successful digital payments (bypasses validation)
