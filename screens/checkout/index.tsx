@@ -85,6 +85,7 @@ const CheckoutScreen = ({ route }) => {
   const [zcreditLoadingTimeout, setZcreditLoadingTimeout] = useState(null);
   const [isWebViewVisibleForAuth, setIsWebViewVisibleForAuth] = useState(false);
   const [authPopupUrl, setAuthPopupUrl] = useState(null);
+  const [zcreditSessionId, setZcreditSessionId] = useState(null);
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
   }, [cartStore.cartItems]);
@@ -308,11 +309,11 @@ const CheckoutScreen = ({ route }) => {
 
       // Prepare cart items
       const cartItems = cartStore.cartItems.map(item => ({
-        Amount: (1 * item.others.qty).toString(),
+        Amount: (totalPrice).toString(),
         Currency: "ILS",
         Name: item.data.name,
-        Description: item.data.description || "Item from order",
-        Quantity: item.others.qty,
+        Description: item.data.description,
+        Quantity: 1,
         Image: "",
         IsTaxFree: "false",
         AdjustAmount: "false"
@@ -392,6 +393,13 @@ const CheckoutScreen = ({ route }) => {
 
       if (responseData.HasError === false && responseData.Data?.SessionUrl) {
         console.log('ZCredit SessionUrl:', responseData.Data.SessionUrl);
+        console.log('ZCredit SessionId:', responseData.Data.SessionId);
+        
+        // Store the session ID for Google Pay configuration
+        if (responseData.Data.SessionId) {
+          setZcreditSessionId(responseData.Data.SessionId);
+        }
+        
         setPaymentPageUrl(responseData.Data.SessionUrl);
         setIsZCreditReady(false); // Reset ready state for new session
 
@@ -1203,7 +1211,8 @@ true; // Required for iOS
     },
   };
 
-  const googlePayRequest = {
+  // Dynamic Google Pay request configuration
+  const getGooglePayRequest = (sessionId = '', tPrice = totalPrice) => ({
     apiVersion: 2,
     apiVersionMinor: 0,
     allowedPaymentMethods: [
@@ -1217,7 +1226,7 @@ true; // Required for iOS
           type: 'PAYMENT_GATEWAY',
           parameters: {
             gateway: 'zcredit',
-            gatewayMerchantId: 'ae84126099a34f735ab84a2e88094f1f2d393a4197d9a801fe493faaf23f320b',
+            gatewayMerchantId: sessionId,
           },
         },
       },
@@ -1229,20 +1238,24 @@ true; // Required for iOS
     transactionInfo: {
       totalPriceStatus: 'FINAL',
       totalPriceLabel: 'Total',
-      totalPrice: '5.00',
+      totalPrice: tPrice.toString(),
       currencyCode: 'ILS',
       countryCode: 'IL',
     },
-  }
+  });
 
-  const paymentMethods = [
+  // Default Google Pay request (will be updated dynamically)
+  const googlePayRequest = getGooglePayRequest();
+
+  // Dynamic payment methods with updated Google Pay request
+  const getPaymentMethods = () => [
     {
       supportedMethods: 'google_pay',
-      data: googlePayRequest,
+      data: getGooglePayRequest(zcreditSessionId, totalPrice),
     },
   ];
 
-  const paymentRequest = new PaymentRequest(paymentMethods, paymentDetails);
+  const paymentRequest = new PaymentRequest(getPaymentMethods(), paymentDetails);
 
   const checkCanMakePayment = () => {
     paymentRequest
@@ -1536,7 +1549,7 @@ true; // Required for iOS
                             ref={googlePayButtonRef}
                             style={[styles.googlepaybutton, { opacity: 0, position: 'absolute', left: -10000 }]}
                             onPress={checkCanMakePayment}
-                            allowedPaymentMethods={googlePayRequest.allowedPaymentMethods}
+                            allowedPaymentMethods={getGooglePayRequest(zcreditSessionId, totalPrice).allowedPaymentMethods}
                             theme={GooglePayButtonConstants.Themes.Dark}
                             type={GooglePayButtonConstants.Types.Buy}
                             radius={4}
