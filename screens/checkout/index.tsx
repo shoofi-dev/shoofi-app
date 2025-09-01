@@ -44,6 +44,12 @@ import { handleZCreditPostMessage, createZCreditConfigWithPostMessages, ZCreditM
 import { getPaymentMethodByValue } from "../../helpers/get-supported-payment-methods";
 import Icon from "../../components/icon";
 
+import {
+  PaymentRequest,
+  GooglePayButton,
+  GooglePayButtonConstants,
+} from '@google/react-native-make-payment';
+
 const CheckoutScreen = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -1188,22 +1194,92 @@ true; // Required for iOS
     }
   };
 
-  // Get the payment method configuration for digital payments
-  const getDigitalPaymentMethodConfig = () => {
-    const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
-    return paymentMethodConfig;
+  const paymentDetails = {
+    total: {
+      amount: {
+        currency: 'USD',
+        value: '14.95',
+      },
+    },
   };
 
-  // Get the appropriate icon name for digital payment method (fallback)
-  const getDigitalPaymentIcon = () => {
-    if (paymentMthod === PAYMENT_METHODS.applePay) {
-      return "kupa"; // Use payment icon for Apple Pay
-    } else if (paymentMthod === PAYMENT_METHODS.googlePay) {
-      return "kupa"; // Use payment icon for Google Pay
-    }
-    // Fallback to default payment icon
-    return "kupa";
+  const googlePayRequest = {
+    apiVersion: 2,
+    apiVersionMinor: 0,
+    allowedPaymentMethods: [
+      {
+        type: 'CARD',
+        parameters: {
+          allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+          allowedCardNetworks: [
+            'AMEX',
+            'DISCOVER',
+            'INTERAC',
+            'JCB',
+            'MASTERCARD',
+            'VISA',
+          ],
+        },
+        tokenizationSpecification: {
+          type: 'PAYMENT_GATEWAY',
+          parameters: {
+            gateway: 'adyen',
+            gatewayMerchantId: '<PSP merchant ID>',
+          },
+        },
+      },
+    ],
+    merchantInfo: {
+      merchantId: '01234567890123456789',
+      merchantName: 'Example Merchant',
+    },
+    transactionInfo: {
+      totalPriceStatus: 'FINAL',
+      totalPrice: paymentDetails.total.amount.value,
+      currencyCode: paymentDetails.total.amount.currency,
+      countryCode: 'US',
+    },
   };
+
+  const paymentMethods = [
+    {
+      supportedMethods: 'google_pay',
+      data: googlePayRequest,
+    },
+  ];
+
+  const paymentRequest = new PaymentRequest(paymentMethods, paymentDetails);
+
+  const checkCanMakePayment = () => {
+    paymentRequest
+        .canMakePayment()
+        .then((canMakePayment) => {
+          if (canMakePayment) {
+            showPaymentForm();
+          } else {
+            //handleResponse('Google Pay unavailable');
+          }
+        })
+        .catch((error) => {
+          //handleResponse(`paymentRequest.canMakePayment() error: ${error}`);
+        });
+  }
+
+  const showPaymentForm = () => {
+    paymentRequest
+        .show()
+        .then((response) => {
+          if (response === null) {
+           //handleResponse('Payment sheet cancelled');
+          } else {
+           //handleResponse(JSON.stringify(response, null, 2));
+          }
+        })
+        .catch((error) => {
+
+        });
+  }
+
 
   // Handle payment button click (only for non-digital payment methods)
   const handlePaymentButtonClick = () => {
@@ -1458,7 +1534,7 @@ true; // Required for iOS
             {/* Custom Button for digital payments when ZCredit is ready */}
             {paymentPageUrl && isDigitalPaymentMethod() && isZCreditReady ? (
                 <Button
-                    onClickFn={() => triggerZCreditPayment()}
+                    onClickFn={() => paymentMthod === PAYMENT_METHODS.applePay ? triggerZCreditPayment() : checkCanMakePayment() }
                     disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
                     text={t("send-order")}
                     isLoading={isLoadingOrderSent || driversLoading || isProcessingPayment}
