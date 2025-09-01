@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   leftContentNoIcon: {
-    justifyContent: "center",
+    justifyContent: Platform.OS === 'ios' ? 'flex-end' : 'center',
     flex: 1,
   },
   iconContainer: {
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     fontFamily: `${getCurrentLang()}-Medium`,
   },
   paymentMethodTextNoIcon: {
-    textAlign: "left",
+    textAlign: Platform.OS === 'ios' ? 'right' : 'left',
     flex: 1,
   },
   arrowContainer: {

@@ -3,7 +3,7 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Image,
+  Image, Platform,
 } from "react-native";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: "#333",
     fontWeight: "500",
-    textAlign: "right", // Right alignment for Hebrew text
+    textAlign: Platform.OS === 'ios' ? 'right' : 'left', // Right alignment for Hebrew text
     marginRight: 2, // Reduced from 4 to 2
   },
   radioContainer: {
