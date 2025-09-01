@@ -1384,6 +1384,8 @@ true; // Required for iOS
 
   // WebView ref to communicate with iframe
   const webViewRef = useRef(null);
+  // GooglePayButton ref for programmatic triggering
+  const googlePayButtonRef = useRef(null);
 
   return (
       <View style={styles.container}>
@@ -1533,23 +1535,45 @@ true; // Required for iOS
 
             {/* Custom Button for digital payments when ZCredit is ready */}
             {paymentPageUrl && isDigitalPaymentMethod() && isZCreditReady ? (
-                <Button
-                    onClickFn={() => paymentMthod === PAYMENT_METHODS.applePay ? triggerZCreditPayment() : checkCanMakePayment() }
-                    disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
-                    text={t("send-order")}
-                    isLoading={isLoadingOrderSent || driversLoading || isProcessingPayment}
-                    icon="kupa"
-                    iconSize={themeStyle.FONT_SIZE_LG}
-                    fontSize={themeStyle.FONT_SIZE_LG}
-                    iconColor={themeStyle.SECONDARY_COLOR}
-                    fontFamily={`${getCurrentLang()}-Bold`}
-                    bgColor={themeStyle.PRIMARY_COLOR}
-                    textColor={themeStyle.SECONDARY_COLOR}
-                    borderRadious={100}
-                    extraText={`₪${totalPrice}`}
-                    countText={`${cartCount}`}
-                    countTextColor={themeStyle.PRIMARY_COLOR}
-                />
+                <>
+                    {/* Hidden GooglePayButton for programmatic triggering */}
+                    {paymentMthod === PAYMENT_METHODS.googlePay && (
+                        <GooglePayButton
+                            ref={googlePayButtonRef}
+                            style={[styles.googlepaybutton, { opacity: 0, position: 'absolute', left: -10000 }]}
+                            onPress={checkCanMakePayment}
+                            allowedPaymentMethods={googlePayRequest.allowedPaymentMethods}
+                            theme={GooglePayButtonConstants.Themes.Dark}
+                            type={GooglePayButtonConstants.Types.Buy}
+                            radius={4}
+                        />
+                    )}
+                    
+                    <Button
+                        onClickFn={async () => {
+                            if (paymentMthod === PAYMENT_METHODS.applePay) {
+                                await triggerZCreditPayment();
+                            } else if (paymentMthod === PAYMENT_METHODS.googlePay) {
+                                // Trigger Google Pay - this will call the same function as the GooglePayButton
+                                checkCanMakePayment();
+                            }
+                        }}
+                        disabled={isLoadingOrderSent || driversLoading || isProcessingPayment}
+                        text={t("send-order")}
+                        isLoading={isLoadingOrderSent || driversLoading || isProcessingPayment}
+                        icon="kupa"
+                        iconSize={themeStyle.FONT_SIZE_LG}
+                        fontSize={themeStyle.FONT_SIZE_LG}
+                        iconColor={themeStyle.SECONDARY_COLOR}
+                        fontFamily={`${getCurrentLang()}-Bold`}
+                        bgColor={themeStyle.PRIMARY_COLOR}
+                        textColor={themeStyle.SECONDARY_COLOR}
+                        borderRadious={100}
+                        extraText={`₪${totalPrice}`}
+                        countText={`${cartCount}`}
+                        countTextColor={themeStyle.PRIMARY_COLOR}
+                    />
+                </>
             ) : paymentPageUrl && isDigitalPaymentMethod() && !isZCreditReady ? (
                 // Loading state for digital payments
                 <Button
@@ -1692,5 +1716,12 @@ const styles = StyleSheet.create({
   },
   customButtonPriceText: {
     fontWeight: "bold",
+  },
+  googlepaybutton: {
+    width: 0,
+    height: 0,
+    opacity: 0,
+    position: 'absolute',
+    left: -10000,
   },
 });
