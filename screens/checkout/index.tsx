@@ -1202,8 +1202,8 @@ true; // Required for iOS
   const paymentDetails = {
     total: {
       amount: {
-        currency: 'USD',
-        value: '14.95',
+        currency: 'ILS',
+        value: totalPrice.toString(),
       },
     },
   };
@@ -1234,7 +1234,6 @@ true; // Required for iOS
     },
     transactionInfo: {
       totalPriceStatus: 'FINAL',
-      totalPriceLabel: 'Total',
       totalPrice: tPrice.toString(),
       currencyCode: 'ILS',
       countryCode: 'IL',
@@ -1316,6 +1315,7 @@ true; // Required for iOS
             setIsProcessingPayment(false); // Reset processing state on cancellation
           } else {
             console.log('Google Pay payment successful:', response);
+            // alert(JSON.stringify(response));
             // Handle successful Google Pay payment like credit card
             completeDigitalPaymentCheckout({
               paymentMethod: PAYMENT_METHODS.googlePay,
