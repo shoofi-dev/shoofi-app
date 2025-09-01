@@ -402,13 +402,13 @@ const CheckoutScreen = ({ route }) => {
         setPaymentPageUrl(responseData.Data.SessionUrl);
         setIsZCreditReady(false); // Reset ready state for new session
 
-        // Add a fallback timeout to avoid infinite loading
+        // Add a shorter fallback timeout to avoid long loading
         if (zcreditLoadingTimeout) {
           clearTimeout(zcreditLoadingTimeout);
         }
         const timeout = setTimeout(() => {
           setIsZCreditReady(true);
-        }, 10000); // 10 seconds timeout
+        }, 3000); // 3 seconds timeout - much faster
         setZcreditLoadingTimeout(timeout);
       }
     } catch (error) {
@@ -1560,6 +1560,17 @@ true; // Required for iOS
                         }}
                         onLoadEnd={() => {
                           console.log('WebView: Load completed');
+                          // Set ready state faster when WebView loads
+                          setTimeout(() => {
+                            if (!isZCreditReady) {
+                              console.log('WebView loaded, setting ready state');
+                              setIsZCreditReady(true);
+                              if (zcreditLoadingTimeout) {
+                                clearTimeout(zcreditLoadingTimeout);
+                                setZcreditLoadingTimeout(null);
+                              }
+                            }
+                          }, 1000); // Wait 1 second after load to ensure injection is complete
                         }}
                         onError={(syntheticEvent) => {
                           const { nativeEvent } = syntheticEvent;
