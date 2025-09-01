@@ -27,6 +27,8 @@ import StorePlaceHolder from "../../components/placeholders/StorePlaceHolder";
 import { APP_NAME } from "../../consts/shared";
 import GeneralCategoriesList from "./components/GeneralCategoriesList";
 import AllGeneralCategoriesList from "./components/AllGeneralCategoriesList";
+import GeneralCategoriesModal from "../../components/GeneralCategoriesModal";
+import Modal from "react-native-modal";
 const HEADER_HEIGHT = 290;
 const COUPON_CONTAINER_HEIGHT = 80;
 const STICKY_HEADER_HEIGHT = 90;
@@ -45,7 +47,6 @@ const MenuGeneralCategoriesScreen = () => {
   const allCategoriesListRef = useRef<AllCategoriesListRef>(null);
   const categoryUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const manualSelectionRef = useRef<boolean>(false);
-console.log("========categoryId", categoryId);
   const { menuStore, storeDataStore, cartStore, languageStore, shoofiAdminStore, websocket, addressStore, couponsStore } =
     useContext(StoreContext);
   const { availableDrivers, availableDriversLoading: driversLoading } = shoofiAdminStore;
@@ -87,9 +88,11 @@ console.log("========categoryId", categoryId);
 
   const [categoryList, setCategoryList] = useState(null);
   const [generalCategories, setGeneralCategories] = useState(null);
+  const [selectedGeneralCategory, setSelectedGeneralCategory] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [activeCoupons, setActiveCoupons] = useState([]);
+  const [isGeneralCategoriesModalOpen, setIsGeneralCategoriesModalOpen] = useState(false);
   const isSilentRefreshing = useRef(false);
 
   useEffect(() => {
@@ -99,7 +102,6 @@ console.log("========categoryId", categoryId);
 
   const getMenu = () => {
     const selectedGeneralCategory = menuStore.generalCategories.find((cat) => cat._id === categoryId);
-    console.log("========selectedGeneralCategory", selectedGeneralCategory);
     
     // Filter categories that support the selected general category
     const filteredCategories = menuStore.categories?.filter(category => 
@@ -109,8 +111,7 @@ console.log("========categoryId", categoryId);
       )
     ) || [];
     
-    console.log("========filteredCategories", filteredCategories);
-
+    setSelectedGeneralCategory(selectedGeneralCategory);
     setCategoryList(filteredCategories);
     setGeneralCategories(menuStore.generalCategories);
     if (!selectedCategory && filteredCategories?.length > 0) {
@@ -338,6 +339,40 @@ console.log("========categoryId", categoryId);
   const handleShippingMethodChange = async (value) => {
     await cartStore.setShippingMethod(value);
   };
+
+  const handleMenuIconPress = () => {
+    setIsGeneralCategoriesModalOpen(true);
+  };
+
+  const handleGeneralCategorySelect = (category) => {
+    setIsGeneralCategoriesModalOpen(false);
+    // Update the current screen to show the selected general category
+    setSelectedGeneralCategory(category);
+    
+    // Update route params to reflect the new category selection
+    navigation.setParams({ categoryId: category._id });
+    
+    // Filter categories that support the selected general category
+    const filteredCategories = menuStore.categories?.filter(categoryItem => 
+      categoryItem.supportedGeneralCategoryIds && categoryItem.products.length > 0 &&
+      categoryItem.supportedGeneralCategoryIds.some(id => 
+        id === category._id || id.$oid === category._id
+      )
+    ) || [];
+    
+    setCategoryList(filteredCategories);
+    
+    // Set the first category as selected if available
+    if (filteredCategories?.length > 0) {
+      setSelectedCategory(filteredCategories[0]);
+    } else {
+      setSelectedCategory(null);
+    }
+  };
+
+  const handleCloseGeneralCategoriesModal = () => {
+    setIsGeneralCategoriesModalOpen(false);
+  };
   useEffect(() => {
     const getStoreData = async () => {
       const cartStoreDBName = await cartStore.getCartStoreDBName();
@@ -366,6 +401,7 @@ console.log("========categoryId", categoryId);
             // opacity: stickyCategoryHeaderOpacity,
             // transform: [{ translateY: headerTranslateY }],
             // zIndex: stickyHeaderZIndex,
+            height:150,
           },
         ]}
       >
@@ -381,6 +417,15 @@ console.log("========categoryId", categoryId);
             </Text>
           </View>
         </View>
+        <View style={{ flexDirection: "row", alignItems: "center",marginLeft: 15, marginTop: 15, marginBottom: 5 }}>
+        <TouchableOpacity onPress={handleMenuIconPress} activeOpacity={0.7}>
+          <Icon icon="menu1" size={24} />
+        </TouchableOpacity>
+          <View style={{ marginLeft: 10 }}>
+            <Text style={{ fontSize: themeStyle.FONT_SIZE_LG, fontFamily: `${getCurrentLang()}-Bold` }}>{getCurrentLang() === "ar" ? selectedGeneralCategory.nameAR :  selectedGeneralCategory.nameHE}</Text>
+          </View>
+    
+        </View>
         <CategoryList
           style={{ width: "100%" }}
           categoryList={categoryList}
@@ -393,13 +438,14 @@ console.log("========categoryId", categoryId);
         ref={scrollViewRef}
         style={{ flex: 1 }}
         contentContainerStyle={{
+      
         }}
         scrollEventThrottle={16}
         onScroll={(event) => {
           handleScroll(event);
         }}
       >
-        <View style={{ marginTop:15}}>
+        <View style={{ }}>
      <AllGeneralCategoriesList
             ref={allCategoriesListRef}
             categoryList={categoryList}
@@ -438,6 +484,23 @@ console.log("========categoryId", categoryId);
           />
         )}
       </View>
+
+      {/* General Categories Modal */}
+      <Modal
+        isVisible={isGeneralCategoriesModalOpen}
+        onBackdropPress={handleCloseGeneralCategoriesModal}
+        style={styles.modal}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        backdropOpacity={0.5}
+      >
+        <GeneralCategoriesModal
+          generalCategories={generalCategories}
+          selectedGeneralCategory={selectedGeneralCategory}
+          onCategorySelect={handleGeneralCategorySelect}
+          onClose={handleCloseGeneralCategoriesModal}
+        />
+      </Modal>
     </View>
   );
 };
@@ -499,5 +562,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+  },
+  modal: {
+    justifyContent: "flex-end",
+    margin: 0,
   },
 });

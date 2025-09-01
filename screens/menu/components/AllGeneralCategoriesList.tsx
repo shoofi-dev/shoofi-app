@@ -28,6 +28,8 @@ import MealModal from "../../../components/MealModal";
 import Text from "../../../components/controls/Text";
 import { getCurrentLang } from "../../../translations/i18n";
 import BigStoreProductItem from "./product-item/big-sotre-product";
+import Button from "../../../components/controls/button/button";
+import { useTranslation } from "react-i18next";
 const categoryHeaderHeight = 40;
 const productHeight = 140;
 const sectionMargin = 24;
@@ -97,13 +99,15 @@ const CategorySection = ({
 };
 
 const AllGeneralCategoriesList = forwardRef<AllGeneralCategoriesListRef, AllGeneralCategoriesListProps>(({ categoryList, ListHeaderComponent, productId, categoryId }, ref) => {   
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
-  const { languageStore } = useContext(StoreContext);
+  const { languageStore, cartStore, storeDataStore } = useContext(StoreContext);
   const scrollViewRef = useRef<ScrollView>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-
+  const [selectedProductIndex, setSelectedProductIndex] = useState(null);
+ 
   // Filter out categories with no products
   const filteredCategoryList = useMemo(
     () => categoryList.filter((cat) => cat.products && cat.products.length > 0),
@@ -162,10 +166,23 @@ const AllGeneralCategoriesList = forwardRef<AllGeneralCategoriesListRef, AllGene
 
   const onItemSelect = useCallback((item, category) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    
+    // Check if product is already in cart
+    const existingCartItem = cartStore.getProductByProductId(item._id);
+    let productIndex = null;
+    
+    if (existingCartItem) {
+      // Find the index of the product in the cart
+      productIndex = cartStore.cartItems.findIndex(cartItem => 
+        cartItem.data._id === item._id
+      );
+    }
+    
     setSelectedProduct(item);
     setSelectedCategory(category);
+    setSelectedProductIndex(productIndex);
     setIsModalOpen(true);
-  }, []);
+  }, [cartStore]);
 
   useEffect(() => {
     if (productId && filteredCategoryList) {
@@ -175,8 +192,22 @@ const AllGeneralCategoriesList = forwardRef<AllGeneralCategoriesListRef, AllGene
           for (let j = 0; j < category.products.length; j++) {
             if (category.products[j]._id === productId) {
               setTimeout(() => {
+                const product = category.products[j];
+                
+                // Check if product is already in cart
+                const existingCartItem = cartStore.getProductByProductId(product._id);
+                let productIndex = null;
+                
+                if (existingCartItem) {
+                  // Find the index of the product in the cart
+                  productIndex = cartStore.cartItems.findIndex(cartItem => 
+                    cartItem.data._id === product._id
+                  );
+                }
+                
                 setSelectedCategory(category);
-                setSelectedProduct(category.products[j]);
+                setSelectedProduct(product);
+                setSelectedProductIndex(productIndex);
                 setIsModalOpen(true);
               }, 500);
               return;
@@ -185,7 +216,7 @@ const AllGeneralCategoriesList = forwardRef<AllGeneralCategoriesListRef, AllGene
         }
       }
     }
-  }, [productId, filteredCategoryList]);
+  }, [productId, filteredCategoryList, cartStore]);
 
   const renderCategorySection = useCallback(
     (category: any) => {
@@ -205,7 +236,7 @@ const AllGeneralCategoriesList = forwardRef<AllGeneralCategoriesListRef, AllGene
     return categoryList.find((cat) => cat._id === categoryId);
   }, [categoryList, categoryId]);
 
-  console.log("========selectedCategoryA", selectedCategoryA);
+
 
   return (
     <View style={styles.container}>
@@ -220,6 +251,7 @@ const AllGeneralCategoriesList = forwardRef<AllGeneralCategoriesListRef, AllGene
           renderCategorySection(selectedCategoryA)
         }
       </ScrollView>
+
       <Modal
         isVisible={isModalOpen}
         onBackdropPress={() => setIsModalOpen(false)}
@@ -231,6 +263,7 @@ const AllGeneralCategoriesList = forwardRef<AllGeneralCategoriesListRef, AllGene
         <MealModal
           product={selectedProduct}
           category={selectedCategory}
+          index={selectedProductIndex}
           onClose={() => setIsModalOpen(false)}
         />
       </Modal>
@@ -320,6 +353,7 @@ paddingTop: 5,
     fontWeight: "bold",
     color: "#fff",
   },
+
 });
 
 export default observer(AllGeneralCategoriesList);

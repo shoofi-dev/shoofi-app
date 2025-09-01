@@ -238,6 +238,7 @@ class CartStore {
   addProductToCart = async (product, isBcoin = false) => {
     if (this.cartItems.length === 0) {
       const storeDBName = await AsyncStorage.getItem("@storage_storeDB");
+      console.log("addProductToCart-storeDBName", storeDBName);
       this.setCartStoreDBName(storeDBName);
       const storage_cartCreatedDate = {
         date: new Date(),

@@ -28,6 +28,7 @@ import { APP_NAME } from "../../consts/shared";
 import GeneralCategoriesList from "./components/GeneralCategoriesList";
 import ProductItem from "./components/product-item";
 import BigStoreProduct from "./components/product-item/big-sotre-product";
+import SubCategoriesList from "./components/SubCategoriesList";
 const HEADER_HEIGHT = 290;
 const COUPON_CONTAINER_HEIGHT = 80;
 const STICKY_HEADER_HEIGHT = 90;
@@ -91,6 +92,8 @@ const MenuScreen = () => {
   const [cartCount, setCartCount] = useState(0);
   const [activeCoupons, setActiveCoupons] = useState([]);
   const isSilentRefreshing = useRef(false);
+
+  
 
   useEffect(() => {
     setCartCount(cartStore.getProductsCount());
@@ -183,6 +186,7 @@ const MenuScreen = () => {
 
   useEffect(() => {
     initMenu();
+
   }, []);
 
   useEffect(() => {
@@ -328,7 +332,8 @@ const MenuScreen = () => {
     const getStoreData = async () => {
       const cartStoreDBName = await cartStore.getCartStoreDBName();
       const storerDBName = storeDataStore.storeData?.appName;
-
+      console.log("cartStoreDBName", cartStoreDBName);
+      console.log("storerDBName", storerDBName);
       setIsThisStoreInCart(cartStoreDBName === storerDBName)
     }
     getStoreData();
@@ -341,6 +346,8 @@ const MenuScreen = () => {
       <StorePlaceHolder />
     );
   }
+
+  console.log("isThisStoreInCart", isThisStoreInCart);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -382,33 +389,15 @@ const MenuScreen = () => {
              productId={route.params?.productId} // Removed productId prop
           />
           }
-          {
-            
-          }
-          {generalCategories?.map((generalCategory,index)=>{
-   
-            const filteredCategories = menuStore.categories?.find(category => 
-              category.supportedGeneralCategoryIds && category.products.length > 0 &&
-              category.supportedGeneralCategoryIds.some(id => 
-                id === generalCategory?._id || id.$oid === generalCategory?._id
-              )
-            ) || [];
-            return (
-              <View key={index} style={{padding:10}}>
-                <Text style={{fontSize:themeStyle.FONT_SIZE_MD,fontWeight:"bold"}}>{languageStore.selectedLang === "ar" ? filteredCategories.nameAR : filteredCategories.nameHE}</Text>
-                <ScrollView horizontal={true} style={{flexDirection:"row",padding:10}}>
-                  {filteredCategories.products.map((product,index)=>{
-                    return (
-                      <View key={index} style={{width:150,marginRight:10}}>
-                        <BigStoreProduct item={product} onItemSelect={(item)=>{}} onDeleteProduct={()=>{}} onEditProduct={()=>{}} />
-                      </View>
-                    )
-                  })}
-                </ScrollView>
-              </View>
-            )
-
-          })}
+  
+          {/* {generalCategories && (
+            <View>
+            <SubCategoriesList 
+              generalCategories={generalCategories}
+              menuStore={menuStore}
+            />
+            </View>
+          )} */}
           {/* {categoryList.map((category) => {
             return (
     
@@ -510,6 +499,7 @@ const MenuScreen = () => {
           />
         )}
       </View>
+      
     </View>
   );
 };

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import themeStyle from "../../../styles/theme.style";
 import * as Haptics from "expo-haptics";
 import Icon from "../../icon";
+import GlassBG from "../../glass-background";
 
 export default function Counter({
   onCounterChange,
@@ -13,8 +14,9 @@ export default function Counter({
   variant = null,
   size = 35,
   showTrashAtMinValue = false,
-  onDelete,
+  onDelete = null,
   useCartStyle = false,
+  isBGGlass = false,
 }) {
   const [couter, setCounter] = useState(value || 0);
   const onBtnClick = (value) => {
@@ -36,16 +38,62 @@ export default function Counter({
     styles.container,
     useCartStyle && styles.cartContainer,
   ];
+
+  const containerStylesBGGlass = [
+    styles.containerBGGlass
+  ];
   
   const textStyles = [
     styles.buttonText,
     useCartStyle && styles.cartButtonText,
   ];
 
+  const textStylesBGGlass = [
+    styles.buttonTextBGGlass,
+  ];
+
   const countTextStyles = [
     styles.countText,
     useCartStyle && styles.cartCountText,
   ];
+
+  const countTextStylesBGGlass = [
+    styles.countTextBGGlass
+  ];
+
+  if(isBGGlass) {
+    return (
+      <GlassBG style={containerStylesBGGlass} blurAmount={20}>
+        <GlassBG>
+        <TouchableOpacity
+          onPress={() => {
+            if (isTrashState) {
+              onDelete && onDelete();
+            } else {
+              onBtnClick(-stepValue);
+            }
+          }}
+          style={{width: 30, height: 30, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: themeStyle.WHITE_COLOR, borderRadius: 100}}
+        >
+          {isTrashState ? (
+            <Icon icon="trash" size={18} color={useCartStyle ? '#374151' : "#444"} />
+          ) : (
+            <Text style={textStylesBGGlass}>-</Text>
+          )}
+        </TouchableOpacity>
+        </GlassBG>
+        <Text style={countTextStylesBGGlass}>{couter}</Text>
+ 
+        <TouchableOpacity
+          onPress={() => {
+            onBtnClick(stepValue);
+          }}
+          style={{width: 30, height: 30, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: themeStyle.WHITE_COLOR, borderRadius: 100}}
+        >
+          <Text style={textStylesBGGlass}>+</Text>
+        </TouchableOpacity>
+      </GlassBG>
+    );  }
 
   return (
     <View style={containerStyles}>
@@ -91,6 +139,17 @@ const styles = StyleSheet.create({
     minWidth: 50,
     justifyContent: "space-between",
   },
+  containerBGGlass: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 999,
+    borderWidth: 1,
+     borderColor: themeStyle.WHITE_COLOR,
+    paddingHorizontal: 3,
+    paddingVertical:3,
+    minWidth: 50,
+    justifyContent: "space-between",
+  },
   cartContainer: {
     backgroundColor: "white",
     borderColor: '#E5E7EB',
@@ -99,6 +158,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: themeStyle.FONT_SIZE_MD,
+  },
+  buttonTextBGGlass: {
+    fontSize: themeStyle.FONT_SIZE_SM,
+    color: themeStyle.WHITE_COLOR,
   },
   cartButtonText: {
     color: '#374151',
@@ -112,8 +175,21 @@ const styles = StyleSheet.create({
     minWidth: 40,
     textAlign: "center",
   },
+  countTextBGGlass: {
+    fontSize: themeStyle.FONT_SIZE_SM,
+    fontWeight: "bold",
+    marginHorizontal: 5,
+    minWidth: 20,
+    textAlign: "center",
+    color: themeStyle.WHITE_COLOR,
+  },
   cartCountText: {
     color: '#1F2937',
+    fontWeight: '600',
+    fontSize: 18
+  },
+  cartCountTextBGGlass: {
+    color: themeStyle.WHITE_COLOR,
     fontWeight: '600',
     fontSize: 18
   },
