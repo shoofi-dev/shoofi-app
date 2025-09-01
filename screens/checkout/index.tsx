@@ -1451,34 +1451,6 @@ true; // Required for iOS
                           console.error('WebView error:', nativeEvent);
                         }}
                     />
-
-                    {/* Close button overlay when WebView is visible for authentication */}
-                    {isWebViewVisibleForAuth && (
-                        <TouchableOpacity
-                            style={{
-                              position: 'absolute',
-                              top: 50,
-                              right: 20,
-                              backgroundColor: 'rgba(0,0,0,0.7)',
-                              borderRadius: 20,
-                              width: 40,
-                              height: 40,
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              zIndex: 10000,
-                            }}
-                            onPress={() => {
-                              console.log('User manually closed WebView authentication');
-                              setIsWebViewVisibleForAuth(false);
-                            }}
-                        >
-                          <Icon
-                              icon="close"
-                              size={24}
-                              color="white"
-                          />
-                        </TouchableOpacity>
-                    )}
                   </View>
                 </>
             )}
