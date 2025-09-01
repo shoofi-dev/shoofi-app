@@ -1,4 +1,4 @@
-import { View, StyleSheet, DeviceEventEmitter, ActivityIndicator } from "react-native";
+import { View, StyleSheet, DeviceEventEmitter, ActivityIndicator, Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import { PAYMENT_METHODS, PLACE, SHIPPING_METHODS } from "../../consts/shared";
 import { useContext, useEffect, useState } from "react";
@@ -56,14 +56,14 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
       console.log("creditCardsResponse", creditCardsResponse)
       const defaultCard = creditCardsResponse.find(card => card.isDefault) || null;
       console.log("defaultCard", defaultCard)
-     if(creditCardsResponse.length === 0){
-       console.log("EEEEE")
-         setCCData(null);
-      //   setPaymentMethod(PAYMENT_METHODS.cash);
-        onChange(PAYMENT_METHODS.cash);
-    
-       return;
-       }
+      
+      if(creditCardsResponse.length === 0){
+        console.log("No credit cards found")
+        setCCData(null);
+        // Don't automatically change to cash - let the dialog handle it
+        return;
+      }
+      
       if (defaultCard) {
         setCCData({
           ccToken: defaultCard.ccToken,
@@ -116,26 +116,47 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
   }, []);
 
   const openNewCreditCardDialog = () => {
-    DeviceEventEmitter.emit(
-      DIALOG_EVENTS.OPEN_NEW_CREDIT_CARD_BASED_EVENT_DIALOG
-    );
+    console.log("Opening new credit card dialog");
+    // Add iOS-specific delay to ensure proper modal handling
+    const delay = Platform.OS === 'ios' ? 200 : 100;
+    
+    setTimeout(() => {
+      console.log("Emitting OPEN_NEW_CREDIT_CARD_BASED_EVENT_DIALOG event");
+      DeviceEventEmitter.emit(
+        DIALOG_EVENTS.OPEN_NEW_CREDIT_CARD_BASED_EVENT_DIALOG
+      );
+      
+      // iOS fallback: if event doesn't work, try direct modal opening
+      if (Platform.OS === 'ios') {
+        setTimeout(() => {
+          console.log("iOS fallback: checking if dialog opened");
+          // You could add additional fallback logic here if needed
+        }, 500);
+      }
+    }, delay);
   };
 
   const onPaymentMethodChange = async (paymentMethodValue: string) => {
+    console.log("Payment method changed to:", paymentMethodValue);
 
     setPaymentMethod(paymentMethodValue);
     onChange(paymentMethodValue);
     
     // Only fetch credit cards when selecting credit card payment
     if (paymentMethodValue === PAYMENT_METHODS.creditCard) {
+      console.log("Credit card selected, checking for existing cards");
 
       if (!ccData && !editOrderData) {
         // If no credit card data exists, fetch from database
         await getCCData();
         
-        // If still no data after fetching, open dialog
-        if (!creditCardsStore.defaultCreditCard) {
-          openNewCreditCardDialog();
+        // Check if we still have no credit cards after fetching
+        if (!ccData && creditCardsStore.creditCards.length === 0) {
+          console.log("No credit cards available, opening dialog");
+          // Add a small delay to ensure state is updated before opening dialog
+          setTimeout(() => {
+            openNewCreditCardDialog();
+          }, 100);
         }
       }
     }
@@ -151,22 +172,33 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
     };
   }, []);
 
-  const handleNewPMAnswer = (data: any) => {
-    // if (data.value === "close") {
-    //   // setPaymentMethod(PAYMENT_METHODS.cash);
-    //   // onChange(PAYMENT_METHODS.cash);
-    //   // if (onPaymentDataChange) {
-    //   //   onPaymentDataChange(null);
-    //   // }
-    //   return;
-    // }
+  const handleNewPMAnswer = async (data: any) => {
+    console.log("Credit card dialog closed with data:", data);
     
-    // If credit card was added successfully, refresh the credit cards list
-    // if (data.value === "success") {
-    setTimeout(async () => {
-      await getCCData();
-    }, 400);
-    // }
+    // Check if credit card was added successfully
+    if (data.value === "success") {
+      console.log("Credit card added successfully, refreshing data");
+      // If credit card was added successfully, refresh the credit cards list
+      setTimeout(async () => {
+        await getCCData();
+      }, 400);
+    } else {
+      // User closed modal without adding credit card
+      console.log("Credit card modal closed without adding card, resetting to cash");
+      
+      // Reset payment method to cash since no credit card was added
+      setPaymentMethod(PAYMENT_METHODS.cash);
+      onChange(PAYMENT_METHODS.cash);
+      
+      // Clear any credit card data
+      setCCData(undefined);
+      if (onPaymentDataChange) {
+        onPaymentDataChange(null);
+      }
+      
+      // Reset credit cards store state
+      creditCardsStore.reset();
+    }
   };
 
   const onReplaceCreditCard = () => {
