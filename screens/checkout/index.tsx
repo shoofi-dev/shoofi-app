@@ -1211,35 +1211,29 @@ true; // Required for iOS
         type: 'CARD',
         parameters: {
           allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
-          allowedCardNetworks: [
-            'AMEX',
-            'DISCOVER',
-            'INTERAC',
-            'JCB',
-            'MASTERCARD',
-            'VISA',
-          ],
+          allowedCardNetworks: ['AMEX', 'DISCOVER', 'MASTERCARD', 'VISA'],
         },
         tokenizationSpecification: {
           type: 'PAYMENT_GATEWAY',
           parameters: {
-            gateway: 'adyen',
-            gatewayMerchantId: '<PSP merchant ID>',
+            gateway: 'zcredit',
+            gatewayMerchantId: 'ae84126099a34f735ab84a2e88094f1f2d393a4197d9a801fe493faaf23f320b',
           },
         },
       },
     ],
     merchantInfo: {
-      merchantId: '01234567890123456789',
-      merchantName: 'Example Merchant',
+      merchantId: 'BCR2DN6TQ6QYPSBE',
+      merchantName: 'Z-Credit',
     },
     transactionInfo: {
       totalPriceStatus: 'FINAL',
-      totalPrice: paymentDetails.total.amount.value,
-      currencyCode: paymentDetails.total.amount.currency,
-      countryCode: 'US',
+      totalPriceLabel: 'Total',
+      totalPrice: '5.00',
+      currencyCode: 'ILS',
+      countryCode: 'IL',
     },
-  };
+  }
 
   const paymentMethods = [
     {
