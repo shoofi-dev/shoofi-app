@@ -70,7 +70,6 @@ export const PAYMENT_METHODS = {
   cash: "CASH",
   applePay: "APPLEPAY",
   googlePay: "GOOGLEPAY",
-  bit: "BIT",
 };
 export const ORDER_TYPE = {
   now: "NOW",

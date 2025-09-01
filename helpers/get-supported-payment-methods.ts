@@ -31,13 +31,6 @@ const ALL_PAYMENT_METHODS: PaymentMethodOption[] = [
     supportOnlyOS: 'android',
   },
   {
-    id: "bit",
-    paymentMethodValue: PAYMENT_METHODS.bit,
-    supportKey: "bit_support",
-    translationKey: "bit",
-    iconSource: require("../assets/icons/bit.png"),
-  },
-  {
     id: "credit_card",
     paymentMethodValue: PAYMENT_METHODS.creditCard,
     supportKey: "creditcard_support",
