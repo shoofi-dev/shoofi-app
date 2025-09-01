@@ -453,7 +453,7 @@ const CheckoutScreen = ({ route }) => {
       setAuthPopupUrl(null); // Clear popup URL
 
       // Use the exact same error dialog as credit card payments
-      const errorMessage = data?.errorMessage || t("order-error-modal-message");
+      const errorMessage = t("payment-error-modal-message");
       setTimeout(() => {
         DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
           title: t("order-error-modal-title"),
@@ -1234,6 +1234,7 @@ true; // Required for iOS
     },
     transactionInfo: {
       totalPriceStatus: 'FINAL',
+      totalPriceLabel: 'Total',
       totalPrice: tPrice.toString(),
       currencyCode: 'ILS',
       countryCode: 'IL',
