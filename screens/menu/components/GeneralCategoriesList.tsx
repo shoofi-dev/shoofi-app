@@ -121,6 +121,7 @@ const CategoryItem = React.memo<CategoryItemProps>(
             textAlign: "center",
             maxWidth: 70,
           }}
+          numberOfLines={2}
         >
           {categoryName}
         </Text>
@@ -275,34 +276,41 @@ const GeneralCategoriesList = forwardRef<GeneralCategoriesListRef, GeneralCatego
 
   const renderCategorySection = useCallback(
     (category: any, index: number) => {
-      console.log("category", category);
       return (
-        <View style={{  alignItems: "flex-start" }}>
-            <CategoryItem
-              key={category._id}
-              cat={category}
-              onPress={() => handleCategoryPress(category)}
-              languageStore={languageStore}
-            />
+        <View style={{ alignItems: "flex-start" }}>
+          <CategoryItem
+            key={category._id}
+            cat={category}
+            onPress={() => handleCategoryPress(category)}
+            languageStore={languageStore}
+          />
         </View>
-        
       );
     },
     [languageStore, onItemSelect]
   );
+
+  // Group categories into rows of 4
+  const renderCategoriesInRows = useCallback(() => {
+    const rows = [];
+    for (let i = 0; i < categoryList.length; i += 4) {
+      const rowCategories = categoryList.slice(i, i + 4);
+      rows.push(
+        <View key={`row-${i}`} style={styles.categoryRow}>
+          {rowCategories.map((category) => 
+            renderCategorySection(category, categoryList.indexOf(category))
+          )}
+        </View>
+      );
+    }
+    return rows;
+  }, [categoryList, renderCategorySection]);
   return (
     <View style={styles.container}>
-      <ScrollView
-        ref={scrollViewRef}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContainer}
-        scrollEventThrottle={16}
-      >
+      <View>
         {ListHeaderComponent}
-        {categoryList.map((category, index) => 
-          renderCategorySection(category, index)
-        )}
-      </ScrollView>
+        {renderCategoriesInRows()}
+      </View>
       <Modal
         isVisible={isModalOpen}
         onBackdropPress={() => setIsModalOpen(false)}
@@ -352,6 +360,12 @@ const styles = StyleSheet.create({
     color: themeStyle.GRAY_600,
   },
   productsContainer: {},
+  categoryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    marginBottom: 20,
+  },
   modalContainer: {
     maxHeight: screenHeight * 0.9,
     borderTopLeftRadius: 20,

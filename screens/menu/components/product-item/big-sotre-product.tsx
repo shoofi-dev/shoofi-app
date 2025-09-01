@@ -32,6 +32,8 @@ import CustomFastImage from "../../../../components/custom-fast-image";
 import GlassBG from "../../../../components/glass-background";
 import Icon from "../../../../components/icon";
 import DashedLine from "react-native-dashed-line";
+import Counter from "../../../../components/controls/counter";
+import StoreChangeConfirmationDialog from "../../../../components/dialogs/store-change-confirmation";
 
 export type TProps = {
   item: any;
@@ -55,6 +57,9 @@ const BigStoreProductItem = ({
     ordersStore,
     storeDataStore,
   } = useContext(StoreContext);
+
+  const [isStoreChangeDialogOpen, setIsStoreChangeDialogOpen] = useState(false);
+  const [pendingProduct, setPendingProduct] = useState(null);
   const { deviceType } = _useDeviceType();
   // Memoize expensive calculations
   const isDisabled = useMemo(() => {
@@ -80,15 +85,104 @@ const BigStoreProductItem = ({
     [languageStore.selectedLang, t]
   );
 
-  const isInCart = cartStore.getProductByProductId(item._id);
-  const productCountInCart = cartStore.getProductCountInCart(item._id);
+  // Make these reactive to cart store changes
+  const isInCart = useMemo(() => cartStore.getProductByProductId(item._id), [cartStore.cartItems, item._id]);
+  const productCountInCart = useMemo(() => cartStore.getProductCountInCart(item._id), [cartStore.cartItems, item._id]);
 
-  const onAddToCart = useCallback(
+  // Debug logging to help identify the issue
+  useEffect(() => {
+    if (item && !item._id) {
+      console.warn('BigStoreProductItem: item missing _id:', item);
+    }
+  }, [item]);
+
+  const handleAddToCart = useCallback(
+    async (product) => {
+      if (ordersStore.orderType == ORDER_TYPE.now && !product.isInStore) {
+        // Handle out of stock case if needed
+        return;
+      }
+
+      const isDifferentStore = await cartStore.isDifferentStore();
+
+      if (isDifferentStore) {
+        let tmpProduct: any = {};
+        tmpProduct.others = { qty: 1, note: "" };
+        tmpProduct.data = { ...product };
+        
+        // Ensure the product has a valid _id
+        if (!tmpProduct.data._id) {
+          console.warn('Product missing _id:', product);
+          return;
+        }
+        
+        setPendingProduct(tmpProduct);
+        setIsStoreChangeDialogOpen(true);
+        return;
+      }
+      
+      addProductToCart(product);
+    },
+    [cartStore, ordersStore.orderType]
+  );
+
+  const addProductToCart = useCallback(
     (product) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       let tmpProduct: any = {};
-      tmpProduct.others = { count: 1, note: "" };
-      tmpProduct.data = product;
+      tmpProduct.others = { qty: 1, note: "" };
+      tmpProduct.data = { ...product };
+      
+      // Ensure the product has a valid _id
+      if (!tmpProduct.data._id) {
+        console.warn('Product missing _id:', product);
+        return;
+      }
+      
       cartStore.addProductToCart(tmpProduct);
+    },
+    [cartStore]
+  );
+
+  const handleStoreChangeApprove = useCallback(async () => {
+    await cartStore.resetCartForNewStore();
+    // pendingProduct is already a complete product object, so add it directly
+    cartStore.addProductToCart(pendingProduct);
+    setIsStoreChangeDialogOpen(false);
+    setPendingProduct(null);
+  }, [cartStore, pendingProduct]);
+
+  const handleStoreChangeCancel = useCallback(() => {
+    setIsStoreChangeDialogOpen(false);
+    setPendingProduct(null);
+  }, []);
+
+  const onUpdateProductCount = useCallback(
+    (productId, newCount) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (newCount === 0) {
+        // Remove product from cart when count reaches 0
+        const cartItem = cartStore.getProductByProductId(productId);
+        if (cartItem) {
+          const index = cartStore.cartItems.findIndex(item => item.data._id === productId);
+          if (index !== -1) {
+            // Use the cart store's removeProduct method with the correct ID format
+            const productIdWithIndex = `${productId}${index}`;
+            cartStore.removeProduct(productIdWithIndex);
+          }
+        }
+      } else {
+        // Update product count in cart
+        const cartItem = cartStore.getProductByProductId(productId);
+        if (cartItem) {
+          const index = cartStore.cartItems.findIndex(item => item.data._id === productId);
+          if (index !== -1) {
+            // Use the cart store's updateProductCount method with the correct ID format
+            const productIdWithIndex = `${productId}${index}`;
+            cartStore.updateProductCount(productIdWithIndex, newCount);
+          }
+        }
+      }
     },
     [cartStore]
   );
@@ -118,20 +212,21 @@ const BigStoreProductItem = ({
   }, [onItemSelect, item]);
 
   return (
-    <TouchableOpacity
-      style={{
-        shadowColor: themeStyle.BLACK_COLOR,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: Platform.OS === "ios" ? 0.1 : 0.9, 
-        shadowRadius: 5,
-        elevation: 5,
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        height: 200,
-        
-      }}
-      onPress={handleItemPress}
-    >
+    <View>
+      <TouchableOpacity
+        style={{
+          shadowColor: themeStyle.BLACK_COLOR,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: Platform.OS === "ios" ? 0.1 : 0.9, 
+          shadowRadius: 5,
+          elevation: 5,
+          backgroundColor: "#fff",
+          borderRadius: 10,
+          height: 200,
+          
+        }}
+        onPress={handleItemPress}
+      >
       <View style={styles.rowCard}>
         {/* Product Image on the right */}
         <View style={styles.rowImageWrapper}>
@@ -139,32 +234,49 @@ const BigStoreProductItem = ({
         </View>
         {/* Text and price on the left */}
 
-        {/* Add button */}
+        {/* Add button or Counter */}
         {isInStore ? (
-          <GlassBG style={styles.addButton}>
-            <Icon icon="plus" size={10} color={themeStyle.WHITE_COLOR} />
-          </GlassBG>
+          isInCart ? (
+            <View style={styles.counterContainer}>
+              <Counter
+                value={productCountInCart}
+                minValue={0}
+                onCounterChange={(value) => onUpdateProductCount(item._id, value)}
+                isBGGlass={true}
+              />
+            </View>
+          ) : (
+            <TouchableOpacity
+              onPress={() => handleAddToCart(item)}
+              style={styles.addButton}
+              activeOpacity={0.8}
+            >
+              <GlassBG style={styles.addButtonInner}>
+                <Icon icon="plus" size={10} color={themeStyle.WHITE_COLOR} />
+              </GlassBG>
+            </TouchableOpacity>
+          )
         ) : (
           <View style={styles.notInStore}>
             <Text style={styles.notInStoreText}>{t("not-in-store")}</Text>
           </View>
         )}
-        {isInCart && (
-          <View style={styles.countContainerWrapper}>
-            <View style={styles.countContainer}>
-              <Text style={styles.countText}>{productCountInCart}</Text>
-            </View>
-          </View>
-        )}
       </View>
       <View style={styles.rowTextContainer}>
-        <Text style={styles.rowProductName} numberOfLines={2}>{productName}</Text>
-        <Text style={styles.rowProductDesc} numberOfLines={2}>
+        <Text style={styles.rowProductName} numberOfLines={1}>{productName}</Text>
+        <Text style={styles.rowProductDesc} numberOfLines={1}>
           {productDescription}
         </Text>
         <Text style={styles.rowPriceText}>₪{price}</Text>
       </View>
     </TouchableOpacity>
+
+    <StoreChangeConfirmationDialog
+      isOpen={isStoreChangeDialogOpen}
+      onApprove={handleStoreChangeApprove}
+      onCancel={handleStoreChangeCancel}
+    />
+    </View>
   );
 };
 
@@ -207,7 +319,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   rowProductDesc: {
-    fontSize: themeStyle.FONT_SIZE_SM,
+    fontSize: themeStyle.FONT_SIZE_XS,
     color: themeStyle.GRAY_60,
     marginBottom: 4,
   },
@@ -219,11 +331,25 @@ const styles = StyleSheet.create({
   },
   addButton: {
     position: "absolute",
-    left: 10,
-    bottom: 10,
-    width: 36,
-    height: 36,
+    right: 5,
+    bottom: -12,
+    width: 32,
+    height: 32,
     borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addButtonInner: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  counterContainer: {
+    position: "absolute",
+    right: 5,
+    bottom: -12,
     alignItems: "center",
     justifyContent: "center",
   },
