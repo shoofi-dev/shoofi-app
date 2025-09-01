@@ -394,7 +394,6 @@ const CheckoutScreen = ({ route }) => {
       if (responseData.HasError === false && responseData.Data?.SessionUrl) {
         console.log('ZCredit SessionUrl:', responseData.Data.SessionUrl);
         console.log('ZCredit SessionId:', responseData.Data.SessionId);
-        
         // Store the session ID for Google Pay configuration
         if (responseData.Data.SessionId) {
           setZcreditSessionId(responseData.Data.SessionId);
