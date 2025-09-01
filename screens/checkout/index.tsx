@@ -1316,7 +1316,6 @@ true; // Required for iOS
             setIsProcessingPayment(false); // Reset processing state on cancellation
           } else {
             console.log('Google Pay payment successful:', response);
-            alert(response);
             // Handle successful Google Pay payment like credit card
             completeDigitalPaymentCheckout({
               paymentMethod: PAYMENT_METHODS.googlePay,
