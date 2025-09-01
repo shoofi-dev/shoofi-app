@@ -1312,13 +1312,17 @@ true; // Required for iOS
         .show()
         .then((response) => {
           if (response === null) {
-           //handleResponse('Payment sheet cancelled');
+            console.log('Google Pay payment cancelled by user');
+            setIsProcessingPayment(false); // Reset processing state on cancellation
           } else {
-           //handleResponse(JSON.stringify(response, null, 2));
+            console.log('Google Pay payment successful:', response);
+            // Handle successful payment here
+            // You might want to call completeDigitalPaymentCheckout(response) here
           }
         })
         .catch((error) => {
-
+          console.error('Google Pay payment error:', error);
+          setIsProcessingPayment(false); // Reset processing state on error
         });
   }
 
