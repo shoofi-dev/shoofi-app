@@ -506,7 +506,6 @@ const CheckoutScreen = ({ route }) => {
 
       // Handle reset payment state message from WebView
       if (parsedMessage.type === 'ResetPaymentState') {
-        console.log('🔄 Received ResetPaymentState message:', parsedMessage.data);
         setIsProcessingPayment(false);
         setIsWebViewVisibleForAuth(false);
         setAuthPopupUrl(null);
@@ -514,7 +513,6 @@ const CheckoutScreen = ({ route }) => {
       }
 
       if (parsedMessage.type === 'DebugMessage') {
-        console.log('🐛 Debug message from ' + parsedMessage.source + ':', parsedMessage.originalMessage);
 
         // Process the original message if it's from ZCredit
         const originalMsg = parsedMessage.originalMessage;
@@ -1257,19 +1255,57 @@ true; // Required for iOS
 
   const paymentRequest = new PaymentRequest(getPaymentMethods(), paymentDetails);
 
-  const checkCanMakePayment = () => {
-    paymentRequest
-        .canMakePayment()
-        .then((canMakePayment) => {
-          if (canMakePayment) {
-            showPaymentForm();
-          } else {
-            //handleResponse('Google Pay unavailable');
-          }
-        })
-        .catch((error) => {
-          //handleResponse(`paymentRequest.canMakePayment() error: ${error}`);
-        });
+  const checkCanMakePayment = async () => {
+    try {
+      // Set processing state for validation
+      setIsProcessingPayment(true);
+
+      // Validate checkout first (same as Apple Pay)
+      const isCheckoutValidRes = await isCheckoutValid({
+        shippingMethod,
+        addressLocation,
+        addressLocationText,
+        place,
+        paymentMethod: PAYMENT_METHODS.cash, // Use cash for validation
+        isAvailableDrivers: availableDrivers?.available,
+        isDeliverySupport: shoofiAdminStore.storeData?.delivery_support,
+      });
+
+      if (!isCheckoutValidRes) {
+        console.log('Google Pay validation failed');
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      console.log('Google Pay validation passed, proceeding with payment');
+
+      // Add fallback timeout to reset processing state if no response
+      setTimeout(() => {
+        if (isProcessingPayment) {
+          console.log('Google Pay timeout - resetting processing state');
+          setIsProcessingPayment(false);
+        }
+      }, 30000); // 30 second timeout
+
+      // Now check if Google Pay is available
+      paymentRequest
+          .canMakePayment()
+          .then((canMakePayment) => {
+            if (canMakePayment) {
+              showPaymentForm();
+            } else {
+              console.log('Google Pay unavailable');
+              setIsProcessingPayment(false);
+            }
+          })
+          .catch((error) => {
+            console.error('Google Pay canMakePayment error:', error);
+            setIsProcessingPayment(false);
+          });
+    } catch (error) {
+      console.error('Error during Google Pay validation:', error);
+      setIsProcessingPayment(false);
+    }
   }
 
   const showPaymentForm = () => {
@@ -1296,12 +1332,7 @@ true; // Required for iOS
   // Trigger ZCredit payment from custom button
   const triggerZCreditPayment = async () => {
     if (paymentPageUrl && isDigitalPaymentMethod() && webViewRef.current) {
-      console.log('🚀 Triggering ZCredit payment via custom button');
-
-      // Reset authentication state in WebView before starting new payment attempt
-      console.log('🔄 Resetting authentication state before payment');
       const resetScript = `
-        console.log('🔄 ZCredit: Resetting authentication state for new payment attempt');
         if (window.resetAuthenticationState) {
           window.resetAuthenticationState();
         }
