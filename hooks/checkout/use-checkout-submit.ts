@@ -23,6 +23,7 @@ export type TPropsCheckoutSubmit = {
   paymentProvider?: any;
   status?: any;
   sessionId?: any;
+  errorMessage?: string;
 };
 const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
   const { cartStore, ordersStore, userDetailsStore, adminCustomerStore, shoofiAdminStore, couponsStore } =
@@ -61,9 +62,10 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
     paymentData,
     shippingPrice,
     storeData,
-      status,
-      paymentProvider,
-      sessionId,
+    status,
+    paymentProvider,
+    sessionId,
+    errorMessage
   }: TPropsCheckoutSubmit) => {
     // Prevent multiple rapid submissions
     const now = Date.now();
@@ -109,6 +111,7 @@ const _useCheckoutSubmit = (onLoadingOrderSent: any) => {
       if (paymentMthod === "CREDITCARD" && paymentProvider ==="APPLEPAY") {
         order.status = status;
         order.sessionId = sessionId;
+        order.errorMessage = errorMessage;
       }
     
     if (

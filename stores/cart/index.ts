@@ -55,6 +55,7 @@ type TOrder = {
   address?: any;
   items: TProduct[];
   locationText?: string;
+  error_message?: string;
 };
 
 type TCart = {
@@ -370,6 +371,7 @@ class CartStore {
       payment_method: order.paymentMthod,
       payment_provider: order.paymentProvider,
       status: order.status,
+      error_message: order.errorMessage,
       sessionId: order?.sessionId,
       receipt_method: order.shippingMethod,
       geo_positioning: order.geo_positioning,

@@ -678,6 +678,7 @@ const CheckoutScreen = ({ route }) => {
       let paymentProvider = paymentMthod;
       let orderStatus = "0"; // Default to failed
       let sessionId = "";
+      let errorMessage = "";
 
       if (data) {
         // Digital payment - use CREDITCARD as payment method
@@ -686,6 +687,7 @@ const CheckoutScreen = ({ route }) => {
         // Check if this is a failed payment
         if (data.failed) {
           orderStatus = "0"; // Failed status
+          errorMessage = data.errorData.errorMessage;
         } else {
           sessionId = data.sessionId;
           orderStatus = "6"; // Success for digital payments
@@ -706,7 +708,8 @@ const CheckoutScreen = ({ route }) => {
         storeData: storeDataStore.storeData,
         paymentProvider: paymentProvider,
         status: orderStatus,
-        sessionId: sessionId
+        sessionId: sessionId,
+        errorMessage
       });
       
       // For failed payments, stop here after recording the failure
