@@ -42,7 +42,16 @@ export const PaymentMethodPickSquare = ({
 
 
   useEffect(() => {
+    console.log("PaymentMethodPickSquare: paymentMethodValue prop changed to:", paymentMethodValue);
+    console.log("PaymentMethodPickSquare: Previous local state was:", paymentMthod);
     setPaymentMthod(paymentMethodValue);
+    console.log("PaymentMethodPickSquare: Local state updated to:", paymentMethodValue);
+    
+    // Reset selectedPaymentMethodId if payment method is changed externally (e.g., reset to cash)
+    if (paymentMethodValue !== paymentMthod) {
+      console.log("PaymentMethodPickSquare: Resetting selectedPaymentMethodId due to external change");
+      setSelectedPaymentMethodId("");
+    }
   }, [paymentMethodValue]);
 
   // Preload supported payment methods when component mounts
@@ -87,6 +96,8 @@ export const PaymentMethodPickSquare = ({
   };
 
   const handlePaymentMethodChange = async (value) => {
+    console.log("PaymentMethodPickSquare: handlePaymentMethodChange called with value:", value);
+    
     if (value == null) {
       return;
     }
@@ -101,6 +112,7 @@ export const PaymentMethodPickSquare = ({
     // Check if payment method is supported
     const isSupported = await isStoreSupportAction(paymentMethodConfig.supportKey);
     if (!isSupported) {
+      console.log("PaymentMethodPickSquare: Payment method not supported, resetting to cash");
       toggleDialog({
         text: "creditcard-not-supported",
         icon: "delivery-icon",
@@ -110,6 +122,7 @@ export const PaymentMethodPickSquare = ({
       return;
     }
 
+    console.log("PaymentMethodPickSquare: Setting payment method to:", value);
     setPaymentMthod(value);
     onChange(value);
   };
@@ -147,21 +160,30 @@ export const PaymentMethodPickSquare = ({
   };
 
   const getPaymentMethodDisplayName = () => {
+    console.log("PaymentMethodPickSquare: getPaymentMethodDisplayName called");
+    console.log("PaymentMethodPickSquare: selectedPaymentMethodId:", selectedPaymentMethodId);
+    console.log("PaymentMethodPickSquare: paymentMthod:", paymentMthod);
+    
     // If we have a selected payment method ID, use it to get the translation
     if (selectedPaymentMethodId) {
       const paymentMethodConfig = getPaymentMethodById(selectedPaymentMethodId);
       if (paymentMethodConfig) {
+        console.log("PaymentMethodPickSquare: Using selectedPaymentMethodId for display:", paymentMethodConfig.translationKey);
         return t(paymentMethodConfig.translationKey);
       }
     }
 
     // Fallback to payment method constant
-    const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
-    if (paymentMethodConfig) {
-      return t(paymentMethodConfig.translationKey);
+    if (paymentMthod) {
+      const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
+      if (paymentMethodConfig) {
+        console.log("PaymentMethodPickSquare: Using paymentMthod for display:", paymentMethodConfig.translationKey);
+        return t(paymentMethodConfig.translationKey);
+      }
     }
 
-    // Final fallback
+    // Final fallback - no payment method selected
+    console.log("PaymentMethodPickSquare: Using fallback display text - no payment method selected");
     return t("choose-payment-method");
   };
 
@@ -179,16 +201,18 @@ export const PaymentMethodPickSquare = ({
     }
 
     // Fallback to payment method constant
-    const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
-    if (paymentMethodConfig) {
-      if (paymentMethodConfig.iconSource) {
-        return <Image source={paymentMethodConfig.iconSource} style={styles.iconImage} />;
-      } else if (paymentMethodConfig.iconName) {
-        return <Icon icon={paymentMethodConfig.iconName} size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+    if (paymentMthod) {
+      const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
+      if (paymentMethodConfig) {
+        if (paymentMethodConfig.iconSource) {
+          return <Image source={paymentMethodConfig.iconSource} style={styles.iconImage} />;
+        } else if (paymentMethodConfig.iconName) {
+          return <Icon icon={paymentMethodConfig.iconName} size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+        }
       }
     }
 
-    // Default icon
+    // Default icon - no payment method selected
     return <Icon icon="creditcard" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
   };
 

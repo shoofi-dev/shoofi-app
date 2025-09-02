@@ -138,6 +138,7 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
 
   const onPaymentMethodChange = async (paymentMethodValue: string) => {
     console.log("Payment method changed to:", paymentMethodValue);
+    console.log("Previous payment method was:", paymentMethod);
 
     setPaymentMethod(paymentMethodValue);
     onChange(paymentMethodValue);
@@ -184,11 +185,14 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
       }, 400);
     } else {
       // User closed modal without adding credit card
-      console.log("Credit card modal closed without adding card, resetting to cash");
+      console.log("Credit card modal closed without adding card, resetting to default state");
+      console.log("Previous payment method:", paymentMethod);
+      console.log("Resetting to: null (default state)");
       
-      // Reset payment method to cash since no credit card was added
-      setPaymentMethod(PAYMENT_METHODS.cash);
-      onChange(PAYMENT_METHODS.cash);
+      // Reset payment method to null (default state) since no credit card was added
+      setPaymentMethod(null);
+      console.log("Payment method state updated, calling onChange with null");
+      onChange(null);
       
       // Clear any credit card data
       setCCData(undefined);
@@ -198,6 +202,12 @@ export const PaymentMethodCMP = ({ onChange, onPaymentDataChange, editOrderData,
       
       // Reset credit cards store state
       creditCardsStore.reset();
+      console.log("Credit card reset completed");
+      
+      // Force a small delay to ensure state updates are processed
+      setTimeout(() => {
+        console.log("Credit card reset delay completed, current payment method:", paymentMethod);
+      }, 100);
     }
   };
 

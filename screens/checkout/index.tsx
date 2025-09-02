@@ -200,14 +200,19 @@ const CheckoutScreen = ({ route }) => {
   };
 
   const onPaymentMethodChange = (data: any) => {
+    console.log("Checkout: Payment method changed to:", data);
+    console.log("Checkout: Previous payment method was:", paymentMthod);
+    console.log("Checkout: PAYMENT_METHODS.cash =", PAYMENT_METHODS.cash);
+    console.log("Checkout: PAYMENT_METHODS.creditCard =", PAYMENT_METHODS.creditCard);
+    
     setPaymentMthod(data);
 
     // Always clear payment URL and processing state when payment method changes
     setPaymentPageUrl(null);
     setIsProcessingPayment(false);
 
-    // Create new ZCredit session for digital payment methods
-    if (data === PAYMENT_METHODS.applePay || data === PAYMENT_METHODS.googlePay) {
+    // Create new ZCredit session for digital payment methods (only if data is not null)
+    if (data && (data === PAYMENT_METHODS.applePay || data === PAYMENT_METHODS.googlePay)) {
       // Pass the new payment method directly to avoid state timing issues
       createZCreditSession(data);
     }
@@ -625,6 +630,8 @@ const CheckoutScreen = ({ route }) => {
     if (isCheckoutInProgress.current) {
       return;
     }
+
+
 
     isCheckoutInProgress.current = true;
     setIsLoadingOrderSent(true);
