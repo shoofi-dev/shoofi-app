@@ -432,7 +432,11 @@ const CheckoutScreen = ({ route }) => {
       setIsWebViewVisibleForAuth(false); // Hide auth WebView if visible
       setAuthPopupUrl(null); // Clear popup URL
       // Complete the checkout process with the successful digital payment
-      completeDigitalPaymentCheckout(data);
+      handleCheckout({
+        paymentMethod: paymentMthod,
+        failed: false,
+        sessionId: data.sessionId,
+      });
     },
 
     onCancel: (data) => {
@@ -451,6 +455,15 @@ const CheckoutScreen = ({ route }) => {
       setIsZCreditReady(true); // Keep ready so button is available again
       setIsWebViewVisibleForAuth(false); // Hide auth WebView if visible
       setAuthPopupUrl(null); // Clear popup URL
+
+      // Call handleCheckout with failed status to create order record
+      handleCheckout({
+        paymentMethod: paymentMthod,
+        failed: true,
+        errorData: data,
+        method: paymentMthod === PAYMENT_METHODS.applePay ? 'apple_pay' : 
+                paymentMthod === PAYMENT_METHODS.googlePay ? 'google_pay' : 'unknown'
+      });
 
       // Use the exact same error dialog as credit card payments
       const errorMessage = t("payment-error-modal-message");
@@ -540,6 +553,49 @@ const CheckoutScreen = ({ route }) => {
 
         return; // Don't process debug messages further
       }
+
+      // Handle Apple Pay specific messages
+      if (parsedMessage.PaymentMethod === 'ApplePay') {
+        console.log('🍎 Apple Pay message received in React Native:', parsedMessage);
+        
+        if (parsedMessage.Reason === 'Success') {
+          console.log('🍎 Apple Pay successful:', parsedMessage);
+          setIsWebViewVisibleForAuth(false);
+          setAuthPopupUrl(null);
+          // Complete the checkout process with successful Apple Pay
+          handleCheckout({
+            paymentMethod: PAYMENT_METHODS.applePay,
+            sessionId: parsedMessage.SessionID,
+            transactionData: parsedMessage.TransactionData,
+            method: 'apple_pay'
+          });
+        } else if (parsedMessage.Reason.includes('Failure') || parsedMessage.Reason.includes('Error')) {
+          console.log('🍎 Apple Pay failed:', parsedMessage);
+          // Reset states to allow user to try again
+          setIsProcessingPayment(false);
+          setIsZCreditReady(true);
+          setIsWebViewVisibleForAuth(false);
+          setAuthPopupUrl(null);
+
+          // Call handleCheckout with failed status to create order record
+          handleCheckout({
+            paymentMethod: PAYMENT_METHODS.applePay,
+            failed: true,
+            errorData: parsedMessage,
+            method: 'apple_pay'
+          });
+
+          // Show error dialog
+          const errorMessage = parsedMessage.ErrorDetails?.MessageEn || parsedMessage.ErrorDetails?.message || t("payment-error-modal-message");
+          setTimeout(() => {
+            DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
+              title: t("order-error-modal-title"),
+              message: errorMessage
+            });
+          }, 500);
+        }
+        return; // Don't process Apple Pay messages further
+      }
     } catch (e) {
       // Not JSON, continue with normal handling
     }
@@ -564,7 +620,7 @@ const CheckoutScreen = ({ route }) => {
     }
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (data?: any) => {
     // Prevent multiple clicks using ref for immediate check
     if (isCheckoutInProgress.current) {
       return;
@@ -574,53 +630,70 @@ const CheckoutScreen = ({ route }) => {
     setIsLoadingOrderSent(true);
 
     try {
-      const isCheckoutValidRes = await isCheckoutValid({
-        shippingMethod,
-        addressLocation,
-        addressLocationText,
-        place,
-        paymentMethod: paymentMthod,
-        isAvailableDrivers: availableDrivers?.available,
-        isDeliverySupport: shoofiAdminStore.storeData?.delivery_support,
-      });
-      if (!isCheckoutValidRes) {
-        //todo: show error message
-        setIsLoadingOrderSent(false);
-        isCheckoutInProgress.current = false;
-        setIsProcessingModalOpen(false); // Hide processing modal
-        return;
+      // For digital payments, skip validation since payment is already processed
+      if (!data) {
+        const isCheckoutValidRes = await isCheckoutValid({
+          shippingMethod,
+          addressLocation,
+          addressLocationText,
+          place,
+          paymentMethod: paymentMthod,
+          isAvailableDrivers: availableDrivers?.available,
+          isDeliverySupport: shoofiAdminStore.storeData?.delivery_support,
+        });
+        if (!isCheckoutValidRes) {
+          //todo: show error message
+          setIsLoadingOrderSent(false);
+          isCheckoutInProgress.current = false;
+          setIsProcessingModalOpen(false); // Hide processing modal
+          return;
+        }
       }
-      setIsProcessingModalOpen(true); // Show processing modal
 
-      // if (!isShippingMethodAgrredValue) {
-      //   isShippingMethodAgrredCheck();
-      //   return false;
-      // }
+      // Only show processing modal if this is not a failed payment
+      if (!data || !data.failed) {
+        setIsProcessingModalOpen(true); // Show processing modal
+      }
 
-      // // Remove applied coupon if shipping method is not delivery
-      // if (couponsStore.appliedCoupon && shippingMethod !== SHIPPING_METHODS.shipping) {
-      //   couponsStore.removeCoupon();
-      // }
-
-      // Redeem coupon if applied and shipping method is delivery
-      // if (couponsStore.appliedCoupon && shippingMethod === SHIPPING_METHODS.shipping) {
+      // Handle coupon redemption if needed
       try {
         const userId = adminCustomerStore.userDetails?.customerId || editOrderData?.customerId || userDetailsStore.userDetails?.customerId;
         const orderId = editOrderData?._id || `temp-${Date.now()}`;
 
-        await couponsStore.redeemCoupon(
-            couponsStore.appliedCoupon.coupon.code,
-            userId,
-            orderId,
-            couponsStore.appliedCoupon.discountAmount
-        );
-
+        if (couponsStore.appliedCoupon) {
+          await couponsStore.redeemCoupon(
+              couponsStore.appliedCoupon.coupon.code,
+              userId,
+              orderId,
+              couponsStore.appliedCoupon.discountAmount
+          );
+        }
       } catch (error) {
         // Continue with checkout even if coupon redemption fails
+        console.log('Coupon redemption error (continuing):', error);
       }
-      //  }
+
+      // Determine payment method and provider for order submission
+      let orderPaymentMethod = paymentMthod;
+      let paymentProvider = paymentMthod;
+      let orderStatus = "0"; // Default to failed
+      let sessionId = "";
+
+      if (data) {
+        // Digital payment - use CREDITCARD as payment method
+        orderPaymentMethod = PAYMENT_METHODS.creditCard;
+        
+        // Check if this is a failed payment
+        if (data.failed) {
+          orderStatus = "0"; // Failed status
+        } else {
+          sessionId = data.sessionId;
+          orderStatus = "6"; // Success for digital payments
+        }
+      }
+
       const checkoutSubmitOrderRes = await checkoutSubmitOrder({
-        paymentMthod,
+        paymentMthod: orderPaymentMethod,
         shippingMethod,
         totalPrice,
         itemsPrice,
@@ -628,14 +701,29 @@ const CheckoutScreen = ({ route }) => {
         editOrderData: ordersStore.editOrderData,
         address: addressLocation,
         locationText: addressLocationText,
-        paymentData: paymentMthod === PAYMENT_METHODS.creditCard ? paymentData : undefined,
+        paymentData: data || (paymentMthod === PAYMENT_METHODS.creditCard ? paymentData : undefined),
         shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
         storeData: storeDataStore.storeData,
+        paymentProvider: paymentProvider,
+        status: orderStatus,
+        sessionId: sessionId
       });
+      
+      // For failed payments, stop here after recording the failure
+      if (data && data.failed) {
+        console.log('Payment failed, order recorded with status 0, stopping flow');
+        onLoadingOrderSent(false);
+        isCheckoutInProgress.current = false;
+        setIsProcessingModalOpen(false); // Hide processing modal if it was shown
+        return;
+      }
+      
+      // For successful payments and regular checkouts, continue with normal flow
       if (checkoutSubmitOrderRes) {
         postChargeOrderActions();
         return;
       }
+      
       onLoadingOrderSent(false);
       isCheckoutInProgress.current = false;
       setIsProcessingModalOpen(false); // Hide processing modal
@@ -1107,6 +1195,288 @@ const CheckoutScreen = ({ route }) => {
 	// Start checking after initial load
 	setTimeout(checkAndSetupPayment, 1000);
 
+	// Override only the Apple Pay response handling section
+	function overrideApplePayResponseSection() {
+		console.log('🍎 Setting up Apple Pay response section override...');
+		
+		// Wait for the ZCredit controller to be available
+		var checkController = setInterval(function() {
+			if (window.vm && window.vm.PayWithApplePay_Clicked) {
+				clearInterval(checkController);
+				console.log('🍎 PayWithApplePay_Clicked found, setting up response section override...');
+				
+				// Store the original function
+				var originalPayWithApplePayClicked = window.vm.PayWithApplePay_Clicked;
+				
+				// Override the function
+				window.vm.PayWithApplePay_Clicked = function(form) {
+					console.log('🍎 PayWithApplePay_Clicked intercepted, calling original...');
+					
+					// Call the original function
+					var result = originalPayWithApplePayClicked.call(this, form);
+					
+					// Override the AppleShowResponse section specifically
+					overrideAppleShowResponse();
+					
+					return result;
+				};
+				
+				console.log('🍎 PayWithApplePay_Clicked override successful');
+			} else {
+				console.log('🍎 PayWithApplePay_Clicked not found yet, retrying...');
+			}
+		}, 100);
+	}
+	
+	// Function to override only the AppleShowResponse section
+	function overrideAppleShowResponse() {
+		console.log('🍎 Setting up AppleShowResponse override...');
+		
+		// Since ApplePayRrequest is a local variable, we need to override the PaymentRequest constructor
+		// to intercept when it's created and add our postMessage handling
+		if (window.PaymentRequest) {
+			var originalPaymentRequest = window.PaymentRequest;
+			window.PaymentRequest = function(paymentMethods, paymentDetails, options) {
+				console.log('🍎 PaymentRequest constructor intercepted');
+				
+				// Create the original PaymentRequest
+				var paymentRequest = new originalPaymentRequest(paymentMethods, paymentDetails, options);
+				
+				// Check if this is an Apple Pay request by looking at the payment method
+				var isApplePay = false;
+				if (paymentMethods && paymentMethods.length > 0) {
+					for (var i = 0; i < paymentMethods.length; i++) {
+						if (paymentMethods[i].supportedMethods === "https://apple.com/apple-pay") {
+							isApplePay = true;
+							break;
+						}
+					}
+				}
+				
+				if (isApplePay) {
+					console.log('🍎 Apple Pay PaymentRequest detected, setting up show() override');
+					
+					// Store the original show method
+					var originalShow = paymentRequest.show;
+					
+					// Override the show method
+					paymentRequest.show = function() {
+						console.log('🍎 Apple Pay show() method intercepted');
+						
+						// Call the original show method
+						var promise = originalShow.call(this);
+						
+						// Check if it returned a promise
+						if (promise && typeof promise.then === 'function') {
+							console.log('🍎 Apple Pay show() returned promise, adding postMessage handlers');
+							
+							// Create a new promise that wraps the original
+							var newPromise = promise.then(function(CurrentPaymentResponse) {
+								console.log('🍎 Apple Pay show() resolved, setting up DoApplePaySubmit override');
+								
+								// Override DoApplePaySubmit to add postMessage handling
+								if (window.vm && window.vm.DoApplePaySubmit) {
+									var originalDoApplePaySubmit = window.vm.DoApplePaySubmit;
+									
+									window.vm.DoApplePaySubmit = function(form, AppleToken) {
+										console.log('🍎 DoApplePaySubmit intercepted in Apple Pay flow');
+										
+										// Call the original function
+										var result = originalDoApplePaySubmit.call(this, form, AppleToken);
+										
+										// Check if result is a promise
+										if (result && typeof result.then === 'function') {
+											console.log('🍎 DoApplePaySubmit returned promise, adding postMessage handlers');
+											
+											result.then(function(results) {
+												console.log('🍎 DoApplePaySubmit promise resolved:', results);
+												
+												if (results.HasError) {
+													console.log('🍎 Apple Pay transaction failed, sending failure postMessage');
+													
+													// Send failure postMessage
+													var failureMessage = {
+														Reason: 'ApplePayFailure',
+														Code: results.Errors ? results.Errors[0].Code : -1,
+														SessionID: window.vm.SessionKey,
+														PaymentMethod: 'ApplePay',
+														ErrorDetails: results.Errors ? results.Errors[0] : results
+													};
+													
+													if (window.ReactNativeWebView) {
+														window.ReactNativeWebView.postMessage(JSON.stringify(failureMessage));
+													}
+													
+													// Call original failure handling
+													window.vm.UpdateIsWhileSubmit(false);
+													const FailurStatus = "fail";
+													CurrentPaymentResponse.complete(FailurStatus);
+												} else {
+													console.log('🍎 Apple Pay transaction successful, sending success postMessage');
+													
+													// Send success postMessage
+													var successMessage = {
+														Reason: 'Success',
+														Code: 0,
+														SessionID: window.vm.SessionKey,
+														PaymentMethod: 'ApplePay',
+														TransactionData: results.Data || results,
+														Success: true
+													};
+													
+													if (window.ReactNativeWebView) {
+														window.ReactNativeWebView.postMessage(JSON.stringify(successMessage));
+													}
+													
+													// Call original success handling
+													const SuccessStatus = "success";
+													CurrentPaymentResponse.complete(SuccessStatus);
+													window.vm.IsTransactionSuccess = true;
+													
+													if (window.vm.DoRedirect) {
+														setTimeout(function () {
+															if (window.vm.CreateSessionRequest.PostMessageOnSuccess) {
+																window.vm.DoPostMessage("Success", 0);
+															}
+															window.location = window.vm.CreateSessionRequest.SuccessURL;
+														}, 1500);
+													} else {
+														alert("Success skip redirect to success. 3");
+													}
+												}
+											}).catch(function(error) {
+												console.log('🍎 DoApplePaySubmit promise rejected:', error);
+												
+												// Send error postMessage
+												var errorMessage = {
+													Reason: 'ApplePayError',
+													Code: -1,
+													SessionID: window.vm.SessionKey,
+													PaymentMethod: 'ApplePay',
+													ErrorDetails: {
+														message: 'Apple Pay transaction failed',
+														error: error
+													}
+												};
+												
+												if (window.ReactNativeWebView) {
+													window.ReactNativeWebView.postMessage(JSON.stringify(errorMessage));
+												}
+												
+												// Call original error handling
+												window.vm.UpdateIsWhileSubmit(false);
+												window.vm.IsGetSessionFinish = true;
+												window.vm.Message = "Error on http post";
+												window.vm.IsFinish = true;
+												if (window.$loading && window.$loading.finish) {
+													window.$loading.finish("MainLoading");
+												}
+												const status = "fail";
+												CurrentPaymentResponse.complete(status);
+											});
+										} else {
+											console.log('🍎 DoApplePaySubmit returned non-promise result:', result);
+											
+											// Handle non-promise result
+											if (result && !result.HasError) {
+												// Success case
+												var successMessage = {
+													Reason: 'Success',
+													Code: 0,
+													SessionID: window.vm.SessionKey,
+														PaymentMethod: 'ApplePay',
+													TransactionData: result.Data || result,
+													Success: true
+												};
+												
+												if (window.ReactNativeWebView) {
+													window.ReactNativeWebView.postMessage(JSON.stringify(successMessage));
+												}
+												
+												// Call original success handling
+												const SuccessStatus = "success";
+												CurrentPaymentResponse.complete(SuccessStatus);
+												window.vm.IsTransactionSuccess = true;
+												
+												if (window.vm.DoRedirect) {
+													setTimeout(function () {
+														if (window.vm.CreateSessionRequest.PostMessageOnSuccess) {
+															window.vm.DoPostMessage("Success", 0);
+														}
+														window.location = window.vm.CreateSessionRequest.SuccessURL;
+													}, 1500);
+												} else {
+													alert("Success skip redirect to success. 3");
+												}
+											} else if (result && result.HasError) {
+												// Failure case
+												var failureMessage = {
+													Reason: 'ApplePayFailure',
+													Code: result.Errors ? result.Errors[0].Code : -1,
+													SessionID: window.vm.SessionKey,
+													PaymentMethod: 'ApplePay',
+													ErrorDetails: result.Errors ? result.Errors[0] : result
+												};
+												
+												if (window.ReactNativeWebView) {
+													window.ReactNativeWebView.postMessage(JSON.stringify(failureMessage));
+												}
+												
+												// Call original failure handling
+												window.vm.UpdateIsWhileSubmit(false);
+												const FailurStatus = "fail";
+												CurrentPaymentResponse.complete(FailurStatus);
+											}
+										}
+										
+										return result;
+									};
+									
+									console.log('🍎 DoApplePaySubmit override in Apple Pay flow successful');
+								}
+								
+								return CurrentPaymentResponse;
+							}).catch(function(error) {
+								console.log('🍎 Apple Pay show() rejected:', error);
+								
+								// Send error postMessage for show() failure
+								var errorMessage = {
+									Reason: 'ApplePayError',
+									Code: -1,
+									SessionID: window.vm.SessionKey || 'unknown',
+									PaymentMethod: 'ApplePay',
+									ErrorDetails: {
+										message: 'Apple Pay show() failed',
+										error: error
+									}
+								};
+								
+								if (window.ReactNativeWebView) {
+									window.ReactNativeWebView.postMessage(JSON.stringify(errorMessage));
+								}
+								
+								throw error; // Re-throw to maintain original behavior
+							});
+							
+							return newPromise;
+						}
+						
+						return promise;
+					};
+					
+					console.log('🍎 Apple Pay show() override successful');
+				}
+				
+				return paymentRequest;
+			};
+			
+			console.log('🍎 PaymentRequest constructor override successful');
+		}
+	}
+	
+	// Start the override process
+	overrideApplePayResponseSection();
+
 	// Debug: Log that the injection was successful
 	console.log('ZCredit WebView injection completed - postMessage listeners active');
 
@@ -1121,83 +1491,7 @@ const CheckoutScreen = ({ route }) => {
 true; // Required for iOS
   `;
 
-  // Complete checkout for successful digital payments (bypasses validation)
-  const completeDigitalPaymentCheckout = async (paymentData) => {
-    console.log('Completing digital payment checkout with data:', paymentData);
 
-    // Prevent multiple submissions
-    if (isCheckoutInProgress.current) {
-      return;
-    }
-
-    isCheckoutInProgress.current = true;
-    setIsLoadingOrderSent(true);
-    setIsProcessingPayment(false); // Digital payment is already processed
-    setIsProcessingModalOpen(true); // Show processing modal
-
-    try {
-      // Skip validation since payment is already successful
-
-      // Handle coupon redemption if needed
-      try {
-        const userId = adminCustomerStore.userDetails?.customerId || editOrderData?.customerId || userDetailsStore.userDetails?.customerId;
-        const orderId = editOrderData?._id || `temp-${Date.now()}`;
-
-        if (couponsStore.appliedCoupon) {
-          await couponsStore.redeemCoupon(
-              couponsStore.appliedCoupon.coupon.code,
-              userId,
-              orderId,
-              couponsStore.appliedCoupon.discountAmount
-          );
-        }
-      } catch (error) {
-        console.log('Coupon redemption error (continuing):', error);
-      }
-
-      // Submit the order with successful digital payment
-      const checkoutSubmitOrderRes = await checkoutSubmitOrder({
-        paymentMthod,
-        shippingMethod,
-        totalPrice,
-        itemsPrice,
-        orderDate: selectedDate,
-        editOrderData: ordersStore.editOrderData,
-        address: addressLocation,
-        locationText: addressLocationText,
-        paymentData: paymentData, // Use digital payment data
-        shippingPrice: shippingMethod === SHIPPING_METHODS.shipping ? availableDrivers?.area?.price || 0 : 0,
-        storeData: storeDataStore.storeData,
-      });
-
-      if (checkoutSubmitOrderRes) {
-        // Success - proceed with post-checkout actions
-        postChargeOrderActions();
-        return;
-      }
-
-      // If order submission failed
-      setIsLoadingOrderSent(false);
-      isCheckoutInProgress.current = false;
-      setIsProcessingModalOpen(false);
-      setIsZCreditReady(true); // Re-enable digital payment button
-
-    } catch (error) {
-      console.error('Digital payment checkout error:', error);
-      setIsLoadingOrderSent(false);
-      isCheckoutInProgress.current = false;
-      setIsProcessingModalOpen(false);
-      setIsZCreditReady(true); // Re-enable digital payment button
-
-      // Show error dialog
-      setTimeout(() => {
-        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
-          title: t("order-error-modal-title"),
-          message: t("order-error-modal-message")
-        });
-      }, 500);
-    }
-  };
 
   const paymentDetails = {
     total: {
@@ -1318,7 +1612,7 @@ true; // Required for iOS
             console.log('Google Pay payment successful:', response);
             // alert(JSON.stringify(response));
             // Handle successful Google Pay payment like credit card
-            completeDigitalPaymentCheckout({
+            handleCheckout({
               paymentMethod: PAYMENT_METHODS.googlePay,
               token: response.details?.paymentToken || response.details?.token,
               paymentData: response,
@@ -1329,6 +1623,14 @@ true; // Required for iOS
         .catch((error) => {
           console.error('Google Pay payment error:', error);
           setIsProcessingPayment(false); // Reset processing state on error
+          
+          // Call handleCheckout with failed status to create order record
+          handleCheckout({
+            paymentMethod: PAYMENT_METHODS.googlePay,
+            failed: true,
+            errorData: error,
+            method: 'google_pay'
+          });
         });
   }
 

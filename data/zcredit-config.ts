@@ -15,7 +15,7 @@ export const ZCREDIT_CONFIG = {
     FailureRedirectUrl: "https://failure.zcredit.local",
     NumberOfFailures: 5,
     PaymentType: "regular",
-    CreateInvoice: "false",
+    CreateInvoice: "true",
     AdditionalText: "",
     ShowCart: "false",
     ThemeColor: "c0e202",

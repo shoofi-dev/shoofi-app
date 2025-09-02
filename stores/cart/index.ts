@@ -47,6 +47,9 @@ type TProduct = {
 type TOrder = {
   payment_method: "CREDITCARD" | "CASH";
   receipt_method: "DELIVERY" | "TAKEAWAY";
+  payment_provider?: string;
+  status?: string;
+  sessionId?: string;
   creditcard_ReferenceNumber?: string;
   geo_positioning?: string;
   address?: any;
@@ -365,6 +368,9 @@ class CartStore {
   getCartData = async (order: any) => {
     let finalOrder: TOrder = {
       payment_method: order.paymentMthod,
+      payment_provider: order.paymentProvider,
+      status: order.status,
+      sessionId: order?.sessionId,
       receipt_method: order.shippingMethod,
       geo_positioning: order.geo_positioning,
       address: order.address,
