@@ -68,6 +68,8 @@ export const PLACE = {
 export const PAYMENT_METHODS = {
   creditCard: "CREDITCARD",
   cash: "CASH",
+  applePay: "APPLEPAY",
+  googlePay: "GOOGLEPAY",
 };
 export const ORDER_TYPE = {
   now: "NOW",

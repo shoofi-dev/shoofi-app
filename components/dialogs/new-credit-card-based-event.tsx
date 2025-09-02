@@ -70,7 +70,7 @@ export default function NewPaymentMethodBasedEventDialog() {
         </View>
       </View>
           {/* Credit Card Form */}
-          <CreditCard onSaveCard={() => hideDialog("close")} />
+          <CreditCard onSaveCard={() => hideDialog("success")} />
         </View>
       </KeyboardAvoidingView>
       <ExpiryDate />

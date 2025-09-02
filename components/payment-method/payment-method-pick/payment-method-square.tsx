@@ -1,25 +1,16 @@
-import React from "react";
-import LottieView from "lottie-react-native";
-import {
-  View,
-  Image,
-  StyleSheet,
-  DeviceEventEmitter,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
-import { ToggleButton } from "react-native-paper";
+import React, {useEffect, useState, useRef} from "react";
+import {DeviceEventEmitter, Image, StyleSheet, TouchableOpacity, View, Platform} from "react-native";
 import Text from "../../controls/Text";
-import { useTranslation } from "react-i18next";
-import { LinearGradient } from "expo-linear-gradient";
-import { PAYMENT_METHODS, SHIPPING_METHODS } from "../../../consts/shared";
-import { useEffect, useState } from "react";
-import theme from "../../../styles/theme.style";
+import {useTranslation} from "react-i18next";
+import {PAYMENT_METHODS} from "../../../consts/shared";
 import themeStyle from "../../../styles/theme.style";
 import Icon from "../../icon";
 import isStoreSupportAction from "../../../helpers/is-store-support-action";
-import { DIALOG_EVENTS } from "../../../consts/events";
-import { getCurrentLang } from "../../../translations/i18n";
+import {DIALOG_EVENTS} from "../../../consts/events";
+import {getCurrentLang} from "../../../translations/i18n";
+import Modal from "react-native-modal";
+import PaymentMethodModal from "../../PaymentMethodModal";
+import { getPaymentMethodById, getPaymentMethodByValue, getSupportedPaymentMethods, PaymentMethodOption } from "../../../helpers/get-supported-payment-methods";
 
 const icons = {
   bagOff: require("../../../assets/pngs/buy-off.png"),
@@ -30,25 +21,63 @@ const icons = {
 
 export type TProps = {
   onChange: any;
+  onDigitalPaymentSelect?: () => Promise<void>;
   paymentMethodValue: any;
   isLoadingCreditCards?: boolean;
 };
+
 export const PaymentMethodPickSquare = ({
-  onChange,
-  paymentMethodValue,
-  isLoadingCreditCards = false,
-}: TProps) => {
+                                          onChange,
+                                          onDigitalPaymentSelect,
+                                          paymentMethodValue,
+                                          isLoadingCreditCards = false,
+                                        }: TProps) => {
   const { t } = useTranslation();
   const [paymentMthod, setPaymentMthod] = useState<any>(paymentMethodValue);
+  const [isPaymentMethodModalOpen, setIsPaymentMethodModalOpen] = useState(false);
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string>("");
+  const [supportedPaymentMethods, setSupportedPaymentMethods] = useState<PaymentMethodOption[]>([]);
+  const [isLoadingPaymentMethods, setIsLoadingPaymentMethods] = useState(true);
+
+
 
   useEffect(() => {
+    console.log("PaymentMethodPickSquare: paymentMethodValue prop changed to:", paymentMethodValue);
+    console.log("PaymentMethodPickSquare: Previous local state was:", paymentMthod);
     setPaymentMthod(paymentMethodValue);
+    console.log("PaymentMethodPickSquare: Local state updated to:", paymentMethodValue);
+    
+    // Reset selectedPaymentMethodId if payment method is changed externally (e.g., reset to cash)
+    if (paymentMethodValue !== paymentMthod) {
+      console.log("PaymentMethodPickSquare: Resetting selectedPaymentMethodId due to external change");
+      setSelectedPaymentMethodId("");
+    }
   }, [paymentMethodValue]);
+
+  // Preload supported payment methods when component mounts
+  useEffect(() => {
+    const loadSupportedPaymentMethods = async () => {
+      try {
+        setIsLoadingPaymentMethods(true);
+        const methods = await getSupportedPaymentMethods();
+        setSupportedPaymentMethods(methods);
+      } catch (error) {
+        console.error('Error loading supported payment methods:', error);
+        setSupportedPaymentMethods([]);
+      } finally {
+        setIsLoadingPaymentMethods(false);
+      }
+    };
+
+    loadSupportedPaymentMethods();
+  }, []);
+
+
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
-      `${DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG}_HIDE`,
-      handleAnswer
+        `${DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG}_HIDE`,
+        handleAnswer
     );
     return () => {
       subscription.remove();
@@ -59,28 +88,31 @@ export const PaymentMethodPickSquare = ({
 
   const toggleDialog = (data) => {
     DeviceEventEmitter.emit(
-      DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
-      {
-        data,
-      }
+        DIALOG_EVENTS.OPEN_RECIPT_METHOD_BASED_EVENT_DIALOG,
+        {
+          data,
+        }
     );
   };
 
   const handlePaymentMethodChange = async (value) => {
+    console.log("PaymentMethodPickSquare: handlePaymentMethodChange called with value:", value);
+    
     if (value == null) {
       return;
     }
-    let selectedPM = "";
-    switch (value) {
-      case "CREDITCARD":
-        selectedPM = "creditcard_support";
-        break;
-      case "CASH":
-        selectedPM = "cash_support";
-        break;
+
+    // Get the payment method configuration
+    const paymentMethodConfig = getPaymentMethodByValue(value);
+    if (!paymentMethodConfig) {
+      console.warn('Unknown payment method:', value);
+      return;
     }
-    const isSupported = await isStoreSupportAction(selectedPM);
+
+    // Check if payment method is supported
+    const isSupported = await isStoreSupportAction(paymentMethodConfig.supportKey);
     if (!isSupported) {
+      console.log("PaymentMethodPickSquare: Payment method not supported, resetting to cash");
       toggleDialog({
         text: "creditcard-not-supported",
         icon: "delivery-icon",
@@ -89,117 +121,208 @@ export const PaymentMethodPickSquare = ({
       onChange(PAYMENT_METHODS.cash);
       return;
     }
+
+    console.log("PaymentMethodPickSquare: Setting payment method to:", value);
     setPaymentMthod(value);
     onChange(value);
   };
 
+  const openPaymentMethodModal = () => {
+    setIsPaymentMethodModalOpen(true);
+  };
+
+  const handleClosePaymentMethodModal = () => {
+    setIsPaymentMethodModalOpen(false);
+  };
+
+  const handlePaymentMethodSelect = (selectedMethod: string) => {
+    // Get the payment method configuration
+    const paymentMethodConfig = getPaymentMethodById(selectedMethod);
+    if (!paymentMethodConfig) {
+      console.warn('Unknown payment method:', selectedMethod);
+      return;
+    }
+
+    // Store the selected payment method ID for display purposes
+    setSelectedPaymentMethodId(selectedMethod);
+
+    // Update the payment method state
+    setPaymentMthod(paymentMethodConfig.paymentMethodValue);
+    onChange(paymentMethodConfig.paymentMethodValue);
+
+    // Close the modal
+    setIsPaymentMethodModalOpen(false);
+
+    // Call ZCredit session creation for digital payment methods
+    if ((selectedMethod === 'apple_pay' || selectedMethod === 'google_pay' || selectedMethod === 'bit') && onDigitalPaymentSelect) {
+      onDigitalPaymentSelect();
+    }
+  };
+
+  const getPaymentMethodDisplayName = () => {
+    console.log("PaymentMethodPickSquare: getPaymentMethodDisplayName called");
+    console.log("PaymentMethodPickSquare: selectedPaymentMethodId:", selectedPaymentMethodId);
+    console.log("PaymentMethodPickSquare: paymentMthod:", paymentMthod);
+    
+    // If we have a selected payment method ID, use it to get the translation
+    if (selectedPaymentMethodId) {
+      const paymentMethodConfig = getPaymentMethodById(selectedPaymentMethodId);
+      if (paymentMethodConfig) {
+        console.log("PaymentMethodPickSquare: Using selectedPaymentMethodId for display:", paymentMethodConfig.translationKey);
+        return t(paymentMethodConfig.translationKey);
+      }
+    }
+
+    // Fallback to payment method constant
+    if (paymentMthod) {
+      const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
+      if (paymentMethodConfig) {
+        console.log("PaymentMethodPickSquare: Using paymentMthod for display:", paymentMethodConfig.translationKey);
+        return t(paymentMethodConfig.translationKey);
+      }
+    }
+
+    // Final fallback - no payment method selected
+    console.log("PaymentMethodPickSquare: Using fallback display text - no payment method selected");
+    return t("choose-payment-method");
+  };
+
+  const getPaymentMethodIcon = () => {
+    // If we have a selected payment method ID, use it to get the icon
+    if (selectedPaymentMethodId) {
+      const paymentMethodConfig = getPaymentMethodById(selectedPaymentMethodId);
+      if (paymentMethodConfig) {
+        if (paymentMethodConfig.iconSource) {
+          return <Image source={paymentMethodConfig.iconSource} style={styles.iconImage} />;
+        } else if (paymentMethodConfig.iconName) {
+          return <Icon icon={paymentMethodConfig.iconName} size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+        }
+      }
+    }
+
+    // Fallback to payment method constant
+    if (paymentMthod) {
+      const paymentMethodConfig = getPaymentMethodByValue(paymentMthod);
+      if (paymentMethodConfig) {
+        if (paymentMethodConfig.iconSource) {
+          return <Image source={paymentMethodConfig.iconSource} style={styles.iconImage} />;
+        } else if (paymentMethodConfig.iconName) {
+          return <Icon icon={paymentMethodConfig.iconName} size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+        }
+      }
+    }
+
+    // Default icon - no payment method selected
+    return <Icon icon="creditcard" size={32} color={themeStyle.TEXT_PRIMARY_COLOR} />;
+  };
+
   return (
-    <View >
-      {/* Cash Option */}
-      <View style={{ marginBottom: 5 }}>
-          <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, color: themeStyle.TEXT_PRIMARY_COLOR,  fontFamily: `${getCurrentLang()}-Bold`}}>
-            {t("choose-payment-method")}
+      <View>
+        {/* Title */}
+        <View style={{ marginBottom: 15 }}>
+          <Text style={{ fontSize: themeStyle.FONT_SIZE_MD, color: themeStyle.TEXT_PRIMARY_COLOR, fontFamily: `${getCurrentLang()}-Bold`}}>
+            {t("payment-method")}
           </Text>
         </View>
-        <View style={styles.optionsContainer}>
-      <TouchableOpacity
-        style={[
-          styles.optionBox,
-          paymentMthod === PAYMENT_METHODS.cash && styles.optionBoxSelected,
-        ]}
-        activeOpacity={0.8}
-        onPress={() => handlePaymentMethodChange(PAYMENT_METHODS.cash)}
-      >
-        <Icon 
-          icon="shekel" 
-          size={24} 
-          color={themeStyle.TEXT_PRIMARY_COLOR} 
-          style={{ marginBottom: 5 }}
-        />
-        <Text
-          style={[
-            styles.optionText,
-            paymentMthod === PAYMENT_METHODS.cash ? styles.optionTextSelected : {},
-          ]}
+
+        {/* Payment Method Selector - CCDataCMP Style */}
+        <TouchableOpacity
+            onPress={openPaymentMethodModal}
+            style={styles.paymentMethodContainer}
         >
-          {t("cash")}
-        </Text>
-      </TouchableOpacity>
-      {/* Credit Card Option */}
-      <TouchableOpacity
-        style={[
-          styles.optionBox,
-          paymentMthod === PAYMENT_METHODS.creditCard && styles.optionBoxSelected,
-        ]}
-        activeOpacity={0.8}
-        onPress={() => handlePaymentMethodChange(PAYMENT_METHODS.creditCard)}
-        disabled={isLoadingCreditCards}
-      >
-        {isLoadingCreditCards ? (
-          <ActivityIndicator 
-            size="small" 
-            color={themeStyle.GRAY_300}
-            style={{ marginBottom: 5 }}
-          />
-        ) : (
-          <Icon
-            icon="credit-card-1"
-            size={24}
-            color={themeStyle.TEXT_PRIMARY_COLOR}
-            style={{ marginBottom: 5 }}
-          />
-        )}
-        <Text
-          style={[
-            styles.optionText,
-            paymentMthod === PAYMENT_METHODS.creditCard ? styles.optionTextSelected : {},
-          ]}
+          <View style={styles.paymentMethodContent}>
+            {/* Left Side - Icon and Text */}
+            <View style={[
+              styles.leftContent,
+              !selectedPaymentMethodId && !paymentMthod && styles.leftContentNoIcon
+            ]}>
+              {/* Only show icon container when payment method is selected */}
+              {(selectedPaymentMethodId || paymentMthod) && (
+                  <View style={styles.iconContainer}>
+                    {getPaymentMethodIcon()}
+                  </View>
+              )}
+              <Text style={[
+                styles.paymentMethodText,
+                !selectedPaymentMethodId && !paymentMthod && styles.paymentMethodTextNoIcon
+              ]}>
+                {getPaymentMethodDisplayName()}
+              </Text>
+            </View>
+
+            {/* Right Side - Arrow */}
+            <View style={styles.arrowContainer}>
+              <Icon icon="chevron" size={20} color={themeStyle.GRAY_30} />
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        {/* Payment Method Modal */}
+        <Modal
+            isVisible={isPaymentMethodModalOpen}
+            onBackdropPress={() => setIsPaymentMethodModalOpen(false)}
+            style={{ margin: 0, justifyContent: "flex-end" }}
+            animationIn="slideInUp"
+            animationOut="slideOutDown"
+            backdropOpacity={0.5}
         >
-          {t("credit-card")}
-        </Text>
-      </TouchableOpacity>
+          <PaymentMethodModal
+              onClose={handleClosePaymentMethodModal}
+              onSelect={handlePaymentMethodSelect}
+              supportedMethods={supportedPaymentMethods}
+              isLoading={isLoadingPaymentMethods}
+              currentSelectedMethodId={selectedPaymentMethodId}
+          />
+        </Modal>
       </View>
-    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  optionsContainer: {
-    flexDirection: "row",
+  paymentMethodContainer: {
     width: "100%",
-    alignSelf: "center",
-    marginVertical: 8,
-    gap: 16,
+    backgroundColor: "#F6F8FA",
+    borderRadius: 4,
+    padding: 5,
+  },
+
+  paymentMethodContent: {
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
   },
-  optionBox: {
-    backgroundColor: themeStyle.WHITE_COLOR,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: themeStyle.GRAY_40,
-    padding: 18,
-    marginBottom: 0,
+  leftContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  leftContentNoIcon: {
+    justifyContent: Platform.OS === 'ios' ? 'flex-end' : 'center',
+    flex: 1,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    marginLeft: 10,
+    marginRight: 10,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-    width: "45%",
-    height: 80
   },
-  optionBoxSelected: {
-    borderColor: themeStyle.PRIMARY_COLOR,
-    backgroundColor: themeStyle.GRAY_10,
+  iconImage: {
+    width: 32,
+    height: 32,
+    resizeMode: "contain",
   },
-  optionText: {
-    fontSize: themeStyle.FONT_SIZE_MD,
-    textAlign: "center",
+  paymentMethodText: {
+    fontSize: 17,
     color: themeStyle.TEXT_PRIMARY_COLOR,
+    fontFamily: `${getCurrentLang()}-Medium`,
   },
-  optionTextSelected: {
-    color: themeStyle.TEXT_PRIMARY_COLOR,
-    fontWeight: "bold",
+  paymentMethodTextNoIcon: {
+    textAlign: Platform.OS === 'ios' ? 'right' : 'left',
+    flex: 1,
+  },
+  arrowContainer: {
+    marginRight: 0,
+    padding: 10,
   },
 });
