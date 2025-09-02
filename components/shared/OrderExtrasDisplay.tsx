@@ -38,7 +38,12 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
   const pizzaToppingExtras = extrasDef.filter(
     (extra) => extra.type === "pizza-topping"
   );
-  const allToppingSelections = [];
+  const allToppingSelections: Array<{
+    areaId: string;
+    topping: any;
+    areaData: { areaId: string; isFree: boolean };
+    extra: any;
+  }> = [];
   pizzaToppingExtras.forEach((extra) => {
     const value = selectedExtras?.[extra.id];
     if (!value) return;
@@ -61,9 +66,11 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
     return acc;
   }, {} as Record<string, Array<{ topping: any; areaData: { areaId: string; isFree: boolean }; extra: any }>>);
 
-  // Render grouped extras
+  // Render grouped extras (only groups with more than 1 item)
   const renderGroupedExtras = () => {
-    return Object.entries(groupedExtras).map(([groupId, groupExtras]) => {
+    return Object.entries(groupedExtras)
+      .filter(([groupId, groupExtras]) => (groupExtras as any[]).length > 1)
+      .map(([groupId, groupExtras]) => {
       // Find the group header
       const groupHeader = (groupExtras as any[]).find((extra: any) => extra.isGroupHeader && extra.type !== "pizza-topping");
       const groupExtrasWithoutHeader = (groupExtras as any[]).filter((extra: any) => !extra.isGroupHeader && extra.type !== "pizza-topping");
@@ -165,7 +172,29 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
                     marginLeft: groupHeader ? 10 : 0,
                   }}
                 >
-                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS), color: "#888" }}>
+                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS) }}>
+                    {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
+                  </Text>}
+                  <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS), color: "#333" }}>
+                    {value}x{extra.price ? ` (+₪${extra.price})` : ""}
+                  </Text>
+                </View>
+              );
+            }
+
+            // Weight
+            if (extra.type === "weight") {
+              return (
+                <View
+                  key={extra.id}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: 2,
+                    marginLeft: groupHeader ? 10 : 0,
+                  }}
+                >
+                  {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS) }}>
                     {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
                   </Text>}
                   <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS), color: "#333" }}>
@@ -188,6 +217,7 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
       extra.type !== "pizza-topping" && 
       (!extra.groupId || groupedExtras[extra.groupId]?.length === 1)
     );
+
 
     return ungroupedExtras.map((extra) => {
       const value = selectedExtras?.[extra.id];
@@ -259,7 +289,28 @@ const OrderExtrasDisplay = ({ extrasDef, selectedExtras, fontSize }) => {
               marginBottom: 2,
             }}
           >
-            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS), color: "#888" }}>
+            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS) }}>
+              {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
+            </Text>}
+            <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS), color: "#333" }}>
+              {value}x{extra.price ? ` (+₪${extra.price})` : ""}
+            </Text>
+          </View>
+        );
+      }
+
+      // Weight
+      if (extra.type === "weight") {
+        return (
+          <View
+            key={extra.id}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 2,
+            }}
+          >
+            {( extra.nameAR || extra.nameHE) && <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS) }}>
               {languageStore.selectedLang === "ar" ? extra.nameAR : extra.nameHE}:{" "}
             </Text>}
             <Text style={{ fontSize: (isTablet ? themeStyle.FONT_SIZE_XS : themeStyle.FONT_SIZE_XS), color: "#333" }}>
