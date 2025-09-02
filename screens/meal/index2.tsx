@@ -350,6 +350,16 @@ const MealScreen = ({
     setIsValidForm(validateMealExtras());
   }, [meal?.data?.extras, extrasStore.selections]);
 
+  // Check if meal only has weight-type extras
+  const hasOnlyWeightExtras = useMemo(() => {
+    if (!meal?.data?.extras || meal.data.extras.length === 0) {
+      return false;
+    }
+    
+    // Check if all extras are of type "weight"
+    return meal.data.extras.every(extra => extra.type === "weight");
+  }, [meal?.data?.extras]);
+
   // Pass footer props to parent component
   useEffect(() => {
     if (meal && onFooterProps) {
@@ -425,26 +435,28 @@ const MealScreen = ({
             </View>
           </View>
 
-          <View
-            style={{
-              alignItems: "center",
-              alignSelf: "center",
-              marginTop: 20,
-              paddingBottom: 20,
-            }}
-          >
-            <Counter
-              value={meal.others.qty}
-              minValue={1}
-              onCounterChange={(value) => {
-                updateOthers(value, "qty", "others");
+          {!hasOnlyWeightExtras && (
+            <View
+              style={{
+                alignItems: "center",
+                alignSelf: "center",
+                marginTop: 20,
+                paddingBottom: 20,
               }}
-              onDelete={() => {
-                // Handle delete if needed
-              }}
-              variant={"gray"}
-            />
-          </View>
+            >
+              <Counter
+                value={meal.others.qty}
+                minValue={1}
+                onCounterChange={(value) => {
+                  updateOthers(value, "qty", "others");
+                }}
+                onDelete={() => {
+                  // Handle delete if needed
+                }}
+                variant={"gray"}
+              />
+            </View>
+          )}
         </View>
       </Animated.ScrollView>
 

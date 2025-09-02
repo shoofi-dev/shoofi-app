@@ -77,9 +77,9 @@ const SubCategoriesList: React.FC<SubCategoriesListProps> = observer(({ generalC
     setIsModalOpen(true);
   }, [cartStore]);
 
-  // Memoized product renderer for FlatList
-  const renderProductItem = useCallback(({ item, index }: { item: any; index: number }) => (
-    <View style={styles.productContainer}>
+  // Memoized product renderer for ScrollView
+  const renderProductItem = useCallback((item: any, index: number) => (
+    <View key={item._id || `product-${item.id || Math.random()}`} style={styles.productContainer}>
       <MemoizedBigStoreProduct 
         item={item} 
         onItemSelect={(item) => onItemSelect(item, filteredCategoriesData.find(data => 
@@ -99,25 +99,16 @@ const SubCategoriesList: React.FC<SubCategoriesListProps> = observer(({ generalC
       return (
         <View key={`category-${index}`} style={styles.categorySection}>
           <Text style={styles.categoryTitle}>{categoryName}</Text>
-          <FlatList
-            data={filteredCategory.products.slice(0, 10)}
-            renderItem={renderProductItem}
-            keyExtractor={(item) => item._id || `product-${item.id || Math.random()}`}
+          <ScrollView
             horizontal={true}
-            style={styles.productsFlatList}
+            style={styles.productsScrollView}
             showsHorizontalScrollIndicator={false}
-            removeClippedSubviews={true}
-            initialNumToRender={5}
-            maxToRenderPerBatch={10}
-            windowSize={10}
-            getItemLayout={(data, index) => ({
-              length: 160, // 150 width + 10 marginRight
-              offset: 160 * index,
-              index,
-            })}
-            updateCellsBatchingPeriod={50}
-            disableVirtualization={false}
-          />
+            contentContainerStyle={styles.productsScrollViewContent}
+          >
+            {filteredCategory.products.slice(0, 10).map((item, productIndex) => 
+              renderProductItem(item, productIndex)
+            )}
+          </ScrollView>
         </View>
       );
     },
@@ -168,8 +159,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  productsFlatList: {
+  productsScrollView: {
     padding: 10,
+  },
+  productsScrollViewContent: {
+    paddingRight: 10,
   },
   productContainer: {
     width: 150,

@@ -390,14 +390,14 @@ const MenuScreen = () => {
           />
           }
   
-          {/* {generalCategories && (
+          {generalCategories && (
             <View>
             <SubCategoriesList 
               generalCategories={generalCategories}
               menuStore={menuStore}
             />
             </View>
-          )} */}
+          )}
           {/* {categoryList.map((category) => {
             return (
     

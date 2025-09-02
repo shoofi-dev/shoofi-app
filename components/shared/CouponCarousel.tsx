@@ -131,7 +131,6 @@ const CouponCarousel: React.FC<CouponCarouselProps> = React.memo(
     if (!coupons || coupons.length === 0) {
       return null;
     }
-    console.log("coupons", coupons);
     return (
       <View style={styles.carouselContainer}>
         <ScrollView
