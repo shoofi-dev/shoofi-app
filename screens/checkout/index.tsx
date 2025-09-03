@@ -425,18 +425,9 @@ const CheckoutScreen = ({ route }) => {
         paymentMethod: paymentMthod,
         failed: true,
         errorData: data,
-        method: paymentMthod === PAYMENT_METHODS.applePay ? 'apple_pay' : 
+        method: paymentMthod === PAYMENT_METHODS.applePay ? 'apple_pay' :
                 paymentMthod === PAYMENT_METHODS.googlePay ? 'google_pay' : 'unknown'
       });
-
-      // Use the exact same error dialog as credit card payments
-      const errorMessage = t("payment-error-modal-message");
-      setTimeout(() => {
-        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
-          title: t("order-error-modal-title"),
-          message: errorMessage
-        });
-      }, 500);
     },
 
     onSubmitEnd: (data) => {
@@ -548,15 +539,6 @@ const CheckoutScreen = ({ route }) => {
             errorData: parsedMessage,
             method: 'apple_pay'
           });
-
-          // Show error dialog
-          const errorMessage = parsedMessage.ErrorDetails?.MessageEn || parsedMessage.ErrorDetails?.message || t("payment-error-modal-message");
-          setTimeout(() => {
-            DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
-              title: t("order-error-modal-title"),
-              message: errorMessage
-            });
-          }, 500);
         }
         return; // Don't process Apple Pay messages further
       }
