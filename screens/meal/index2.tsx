@@ -357,7 +357,8 @@ const MealScreen = ({
     }
     
     // Check if all extras are of type "weight"
-    return meal.data.extras.every(extra => extra.type === "weight");
+    console.log("meal.data.extras", meal.data.extras);
+    return meal.data.extras.filter(extra => !extra.isGroupHeader).every(extra => extra.type === "weight");
   }, [meal?.data?.extras]);
 
   // Pass footer props to parent component
