@@ -82,11 +82,13 @@ const HomeScreen = ({ navigation }) => {
     //     navigation.navigate("terms-and-conditions");
     //   }, 0);
     // }
-    if(userDetailsStore.isDriver()){
-      setTimeout(() => {
-        navigation.navigate("delivery-driver-dashboard");
-      }, 0);
+    const currentLang = await AsyncStorage.getItem("@storage_Lang")
+    if(!authStore.isLoggedIn() && !currentLang){
+      navigation.navigate("language");
     }
+    // navigation.navigate("language");
+
+
     setIsAppReady(true);
     // setTimeout(() => {
     //   setIsAnimateReady(true);
