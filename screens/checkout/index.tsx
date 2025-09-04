@@ -1773,17 +1773,27 @@ true; // Required for iOS
 
             {/* Note text before submit button */}
 
-            <Text style={{
-              fontSize: 16,
-              color: themeStyle.TEXT_PRIMARY_COLOR,
-              textAlign: 'center',
-              marginHorizontal: 20,
-              marginBottom: 15,
-              fontFamily: `${getCurrentLang()}-Regular`,
-              backgroundColor: 'rgba(255, 255, 255, 1)',
-            }}>
-              {t("order-checkout-note")}
-            </Text>
+            <View
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 1)',
+                  borderTopLeftRadius: 12,
+                  borderTopRightRadius: 12,
+                  paddingVertical: 10,
+                  marginHorizontal: 25,
+                  paddingHorizontal: 10,
+                }}
+            >
+              <Text
+                  style={{
+                    fontSize: 16,
+                    color: themeStyle.TEXT_PRIMARY_COLOR,
+                    textAlign: 'center',
+                    fontFamily: `${getCurrentLang()}-Regular`,
+                  }}
+              >
+                {t("order-checkout-note")}
+              </Text>
+            </View>
 
             {/* Custom Button for digital payments when ZCredit is ready */}
 
