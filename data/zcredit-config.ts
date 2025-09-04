@@ -2,7 +2,6 @@
 export const ZCREDIT_CONFIG = {
   // API Configuration
   API_BASE_URL: 'https://pci.zcredit.co.il/webcheckout/api/WebCheckout/CreateSession',
-  API_KEY: '952ad5fd3a963d4fec9d2e13dacb148144c04bfd5729cdbf5b6bee31a3468d6a',
   
   // Default Session Configuration
   DEFAULT_CONFIG: {
@@ -81,6 +80,7 @@ export interface ZCreditSessionParams {
   }>;
   paymentMethod: string;
   focusType?: string;
+  apiKey: string; // Added API key parameter
 }
 
 // Function to create ZCredit session request body
@@ -91,11 +91,12 @@ export const createZCreditSessionBody = (params: ZCreditSessionParams) => {
     customerEmail = "",
     cartItems,
     paymentMethod,
-    focusType = ZCREDIT_CONFIG.FOCUS_TYPES.DEFAULT
+    focusType = ZCREDIT_CONFIG.FOCUS_TYPES.DEFAULT,
+    apiKey // Extract API key from params
   } = params;
 
   return {
-    Key: ZCREDIT_CONFIG.API_KEY,
+    Key: apiKey, // Use the provided API key instead of hardcoded value
     ...ZCREDIT_CONFIG.DEFAULT_CONFIG,
     
     // Payment method specific configuration

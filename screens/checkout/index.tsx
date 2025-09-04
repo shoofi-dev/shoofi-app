@@ -43,6 +43,7 @@ import { WebView } from 'react-native-webview';
 import { handleZCreditPostMessage, createZCreditConfigWithPostMessages, ZCreditMessageHandlerConfig } from "../../helpers/zcredit-message-handler";
 import { getPaymentMethodByValue } from "../../helpers/get-supported-payment-methods";
 import Icon from "../../components/icon";
+import { createZCreditSessionBody } from "../../data/zcredit-config";
 
 import {
   PaymentRequest,
@@ -325,60 +326,17 @@ const CheckoutScreen = ({ route }) => {
           AdjustAmount: "false"
         }
       ]
-
-      const requestBody = {
-        Key: "952ad5fd3a963d4fec9d2e13dacb148144c04bfd5729cdbf5b6bee31a3468d6a",
-        Local: "He",
-        UniqueId: `order_${Date.now()}`,
-        SuccessUrl: "https://success.zcredit.local",
-        CancelUrl: "https://cancel.zcredit.local",
-        CallbackUrl: "https://callback.zcredit.local",
-        FailureCallBackUrl: "https://failure.zcredit.local",
-        FailureRedirectUrl: "https://failure.zcredit.local",
-        NumberOfFailures: 5,
-        PaymentType: "regular",
-        CreateInvoice: "true",
-        AdditionalText: "",
-        ShowCart: "false",
-        ThemeColor: "c0e202",
-        BitButtonEnabled: "false",
-        ApplePayButtonEnabled: newPaymentMethod === PAYMENT_METHODS.applePay ? "true" : "false",
-        GooglePayButtonEnabled: newPaymentMethod === PAYMENT_METHODS.googlePay ? "true" : "false",
-        Installments: 1,
-        Customer: {
-          Email: "customerinvoices@shoofi.app",
-          Name: customerName,
-          PhoneNumber: customerPhone,
-          Attributes: {
-            HolderId: "none",
-            Name: "required",
-            PhoneNumber: "required",
-            Email: "optional"
-          }
-        },
-        CartItems: cartItems,
-        FocusType: focusType,
-        CardsIcons: {
-          ShowVisaIcon: "true",
-          ShowMastercardIcon: "true",
-          ShowDinersIcon: "true",
-          ShowAmericanExpressIcon: "true",
-          ShowIsracardIcon: "true",
-        },
-        IssuerWhiteList: [1,2,3,4,5,6],
-        BrandWhiteList: [1,2,3,4,5,6],
-        UseLightMode: "true",
-        UseCustomCSS: "true",
-        BackgroundColor: "FFFFFF",
-        ShowTotalSumInPayButton: "false",
-        ForceCaptcha: "false",
-        CustomCSS: "",
-        Bypass3DS: "false",
-        PostMessageOnSubmit: "true",
-        PostMessageOnSuccess: "true",
-        PostMessageOnCancel: "true",
-        PostMessageOnFailure: "true",
-      };
+      // Get API key from payment credentials
+      const apiKey = shoofiAdminStore.paymentCredentials?.zcredit_api_key;
+      // Use the createZCreditSessionBody function from config
+      const requestBody = createZCreditSessionBody({
+        customerName,
+        customerPhone,
+        cartItems,
+        paymentMethod: newPaymentMethod,
+        focusType,
+        apiKey
+      });
 
       const response = await fetch('https://pci.zcredit.co.il/webcheckout/api/WebCheckout/CreateSession', {
         method: 'POST',
@@ -468,18 +426,9 @@ const CheckoutScreen = ({ route }) => {
         paymentMethod: paymentMthod,
         failed: true,
         errorData: data,
-        method: paymentMthod === PAYMENT_METHODS.applePay ? 'apple_pay' : 
+        method: paymentMthod === PAYMENT_METHODS.applePay ? 'apple_pay' :
                 paymentMthod === PAYMENT_METHODS.googlePay ? 'google_pay' : 'unknown'
       });
-
-      // Use the exact same error dialog as credit card payments
-      const errorMessage = t("payment-error-modal-message");
-      setTimeout(() => {
-        DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
-          title: t("order-error-modal-title"),
-          message: errorMessage
-        });
-      }, 500);
     },
 
     onSubmitEnd: (data) => {
@@ -591,15 +540,6 @@ const CheckoutScreen = ({ route }) => {
             errorData: parsedMessage,
             method: 'apple_pay'
           });
-
-          // Show error dialog
-          const errorMessage = parsedMessage.ErrorDetails?.MessageEn || parsedMessage.ErrorDetails?.message || t("payment-error-modal-message");
-          setTimeout(() => {
-            DeviceEventEmitter.emit(DIALOG_EVENTS.OPEN_ORDER_ERROR_DIALOG, {
-              title: t("order-error-modal-title"),
-              message: errorMessage
-            });
-          }, 500);
         }
         return; // Don't process Apple Pay messages further
       }
