@@ -1775,7 +1775,7 @@ true; // Required for iOS
 
             <View
                 style={{
-                  backgroundColor: 'rgba(255, 255, 255, 1)',
+                  backgroundColor: 'rgba(255, 255, 255, .9)',
                   borderTopLeftRadius: 12,
                   borderTopRightRadius: 12,
                   paddingVertical: 10,
