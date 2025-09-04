@@ -313,16 +313,18 @@ const CheckoutScreen = ({ route }) => {
       }
 
       // Prepare cart items
-      const cartItems = cartStore.cartItems.map(item => ({
-        Amount: (totalPrice).toString(),
-        Currency: "ILS",
-        Name: item.data.name,
-        Description: item.data.description,
-        Quantity: 1,
-        Image: "",
-        IsTaxFree: "false",
-        AdjustAmount: "false"
-      }));
+      const cartItems = [
+        {
+          Amount: (totalPrice).toString(),
+          Currency: "ILS",
+          Name: "",
+          Description: "",
+          Quantity: 1,
+          Image: "",
+          IsTaxFree: "false",
+          AdjustAmount: "false"
+        }
+      ]
 
       const requestBody = {
         Key: "952ad5fd3a963d4fec9d2e13dacb148144c04bfd5729cdbf5b6bee31a3468d6a",
@@ -335,7 +337,7 @@ const CheckoutScreen = ({ route }) => {
         FailureRedirectUrl: "https://failure.zcredit.local",
         NumberOfFailures: 5,
         PaymentType: "regular",
-        CreateInvoice: "false",
+        CreateInvoice: "true",
         AdditionalText: "",
         ShowCart: "false",
         ThemeColor: "c0e202",
@@ -344,7 +346,7 @@ const CheckoutScreen = ({ route }) => {
         GooglePayButtonEnabled: newPaymentMethod === PAYMENT_METHODS.googlePay ? "true" : "false",
         Installments: 1,
         Customer: {
-          Email: "",
+          Email: "customerinvoices@shoofi.app",
           Name: customerName,
           PhoneNumber: customerPhone,
           Attributes: {
@@ -1828,6 +1830,24 @@ true; // Required for iOS
         >
 
           <View style={{ width: "90%", alignSelf: "center", height: "100%" }}>
+
+            {/* Note text before submit button */}
+
+            <Text style={{
+              fontSize: 16,
+              color: themeStyle.TEXT_PRIMARY_COLOR,
+              textAlign: 'center',
+              marginHorizontal: 20,
+              marginBottom: 15,
+              fontFamily: `${getCurrentLang()}-Regular`,
+              backgroundColor: 'rgba(255, 255, 255, 1)',
+            }}>
+              {t("order-checkout-note")}
+            </Text>
+
+            {/* Custom Button for digital payments when ZCredit is ready */}
+
+
             {/* Hidden WebView for digital payments - completely invisible and out of layout flow */}
             {paymentPageUrl && isDigitalPaymentMethod() && (
                 <>
